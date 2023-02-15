@@ -1,0 +1,14 @@
+node_modules
+.browser_modules
+lib
+*.log
+*-app/*
+!*-app/package.json
+tsconfig.tsbuildinfo
+src-gen
+gen-webpack.config.js
+out
+plugins
+bin
+.ignored_out
+dist

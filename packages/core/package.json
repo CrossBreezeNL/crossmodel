@@ -1,0 +1,41 @@
+{
+  "name": "@crossbreeze/core",
+  "version": "0.0.0",
+  "private": true,
+  "description": "CrossModel Core Contribution",
+  "keywords": [
+    "theia-extension"
+  ],
+  "homepage": "https://github.com/CrossBreezeNL/CrossModel",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CrossBreezeNL/CrossModel"
+  },
+  "license": "UNLICENSED",
+  "author": {
+    "name": "CrossBreeze Team",
+    "email": "team@x-breeze.com"
+  },
+  "files": [
+    "lib",
+    "src",
+    "style"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rimraf lib && rimraf tsconfig.tsbuildinfo",
+    "lint": "eslint -c ../../.eslintrc.js --ext .ts,.tsx ./src",
+    "prepare": "yarn clean && yarn build",
+    "watch": "tsc -w"
+  },
+  "dependencies": {
+    "@theia/core": "^1.34.1",
+    "@theia/markers": "^1.34.1",
+    "@theia/outline-view": "^1.34.1"
+  },
+  "theiaExtensions": [
+    {
+      "frontend": "lib/browser/core-frontend-module"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+/********************************************************************************
+ * Copyright (c) 2023 CrossBreeze.
+ ********************************************************************************/
+
+/* Hide number input arrow buttons as they look bad on dark themes */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type='number'] {
+    appearance: textfield;
+    -moz-appearance: textfield;
+}

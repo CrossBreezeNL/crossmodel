@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { DefaultWorkspaceManager } from 'langium';
+import { DefaultWorkspaceManager, interruptAndCheck, LangiumDocument } from 'langium';
 import { CancellationToken, Emitter, Event, WorkspaceFolder } from 'vscode-languageserver';
 import { URI } from 'vscode-uri';
 import { CrossModelSharedServices } from './cross-model-module';
@@ -22,8 +22,29 @@ export class CrossModelWorkspaceManager extends DefaultWorkspaceManager {
       return this.onWorkspaceInitializedEmitter.event;
    }
 
-   override async initializeWorkspace(folders: WorkspaceFolder[], cancelToken?: CancellationToken | undefined): Promise<void> {
-      await super.initializeWorkspace(folders, cancelToken);
+   override async initializeWorkspace(folders: WorkspaceFolder[], cancelToken = CancellationToken.None): Promise<void> {
+      // same as super implementation but we also call validation on the build and fire an event after we are done
+      const fileExtensions = this.serviceRegistry.all.flatMap(e => e.LanguageMetaData.fileExtensions);
+      const documents: LangiumDocument[] = [];
+      const collector = (document: LangiumDocument): void => {
+         documents.push(document);
+         if (!this.langiumDocuments.hasDocument(document.uri)) {
+            this.langiumDocuments.addDocument(document);
+         }
+      };
+      // Even though we don't await the initialization of the workspace manager,
+      // we can still assume that all library documents and file documents are loaded by the time we start building documents.
+      // The mutex prevents anything from performing a workspace build until we check the cancellation token
+      await this.loadAdditionalDocuments(folders, collector);
+      await Promise.all(
+         folders
+            .map(wf => [wf, this.getRootFolder(wf)] as [WorkspaceFolder, URI])
+            .map(async entry => this.traverseFolder(...entry, fileExtensions, collector))
+      );
+      // Only after creating all documents do we check whether we need to cancel the initialization
+      // The document builder will later pick up on all unprocessed documents
+      await interruptAndCheck(cancelToken);
+      await this.documentBuilder.build(documents, { validationChecks: 'all' }, cancelToken);
       this.logger.info('Workspace Initialized');
       this.onWorkspaceInitializedEmitter.fire();
    }

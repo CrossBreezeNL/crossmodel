@@ -41,7 +41,8 @@
         "${workspaceFolder}/applications/electron-app/src-gen/backend/main.js",
         "${workspaceFolder}/extensions/*/out/**/*.js",
         "${workspaceFolder}/packages/*/lib/**/*.js",
-        "${workspaceFolder}/node_modules/langium/lib/**/*.js"
+        "${workspaceFolder}/node_modules/langium/lib/**/*.js",
+        "${workspaceFolder}/node_modules/@eclipse-glsp/*/lib/**/*.js"
       ],
       "smartStep": true,
       "internalConsoleOptions": "openOnSessionStart",

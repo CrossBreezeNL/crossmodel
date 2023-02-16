@@ -72,6 +72,8 @@
     "*"
   ],
   "dependencies": {
+    "@eclipse-glsp/layout-elk": "1.1.0-RC05",
+    "@eclipse-glsp/server": "1.1.0-RC05",
     "chalk": "^4.1.2",
     "chevrotain": "^10.4.1",
     "commander": "^8.0.0",

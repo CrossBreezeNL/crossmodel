@@ -14,6 +14,7 @@ import {
 import { CancellationToken } from 'vscode-jsonrpc';
 import { CrossModelServices } from './cross-model-module';
 import { QualifiedNameProvider } from './cross-model-naming';
+import { isCrossModelRoot } from './generated/ast';
 
 export class CrossModelScopeComputation extends DefaultScopeComputation {
    protected override nameProvider: QualifiedNameProvider;
@@ -30,6 +31,11 @@ export class CrossModelScopeComputation extends DefaultScopeComputation {
       children: (root: AstNode) => Iterable<AstNode> = streamAllContents,
       cancelToken: CancellationToken = CancellationToken.None
    ): Promise<AstNodeDescription[]> {
+      const docRoot = document.parseResult.value;
+      if (isCrossModelRoot(docRoot) && docRoot.diagram) {
+         // we do not export anything from diagrams, they are self-contained
+         return [];
+      }
       return super.computeExportsForNode(parentNode, document, children, cancelToken);
    }
 

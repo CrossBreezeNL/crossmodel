@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "@crossbreeze/core": "0.0.0",
+    "@crossbreeze/glsp-client": "0.0.0",
     "@crossbreeze/product": "0.0.0",
     "@theia/core": "^1.34.1",
     "@theia/editor": "^1.34.1",

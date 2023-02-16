@@ -1,7 +1,7 @@
 grammar CrossModel
 
 entry CrossModelRoot:
-    (entity=Entity | relationship=Relationship);
+    (entity=Entity | relationship=Relationship | diagram=SystemDiagram);
 
 Entity:
     'entity' name=ID '{'
@@ -27,6 +27,32 @@ Property:
 
 RelationshipType returns string:
     '1:1' | '1:n' | 'n:1' | 'n:m';
+
+
+SystemDiagram:
+    'diagram' '{'
+        (nodes+=DiagramNode ';')*
+        (edges+=DiagramEdge ';')*
+    '}'
+    ;
+
+DiagramNode:
+    'node' name=ID 'for' semanticElement=[Entity:QualifiedName] '{'
+        'x' ':=' x=NUMBER ';'
+        'y' ':=' y=NUMBER ';'
+        'width' ':=' width=NUMBER ';'
+        'height' ':=' height=NUMBER ';'
+    '}'
+    ;
+
+DiagramEdge:
+    'edge' name=ID 'for' semanticElement=[Relationship:QualifiedName] '{'
+        'source' ':=' source=[DiagramNode:QualifiedName] ';'
+        'target' ':=' target=[DiagramNode:QualifiedName] ';'
+        // for non-straight connections we also need to save routing points
+    '}'
+    ;
+
 
 QualifiedName returns string:
     ID ('.' ID)*;

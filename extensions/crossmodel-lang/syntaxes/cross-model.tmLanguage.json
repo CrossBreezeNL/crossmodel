@@ -10,7 +10,7 @@
     },
     {
       "name": "keyword.control.cross-model",
-      "match": "\\b(1:n|attributes|description|entity|n:1|n:m|properties|relationship|source|target|type|with)\\b"
+      "match": "\\b(1:n|attributes|description|diagram|edge|entity|for|height|n:1|n:m|node|properties|relationship|source|target|type|width|with|x|y)\\b"
     },
     {
       "name": "string.quoted.double.cross-model",

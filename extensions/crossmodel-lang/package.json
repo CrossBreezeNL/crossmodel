@@ -1,0 +1,97 @@
+{
+  "name": "crossmodel-lang",
+  "displayName": "crossmodel-lang",
+  "version": "0.0.1",
+  "private": true,
+  "description": "CrossModel Language",
+  "categories": [
+    "Programming Languages"
+  ],
+  "homepage": "https://github.com/CrossBreezeNL/CrossModel",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CrossBreezeNL/CrossModel"
+  },
+  "license": "UNLICENSED",
+  "author": {
+    "name": "CrossBreeze Team",
+    "email": "team@x-breeze.com"
+  },
+  "main": "./out/extension.js",
+  "bin": {
+    "cross-model-cli": "./bin/cli"
+  },
+  "files": [
+    "bin",
+    "out",
+    "src"
+  ],
+  "scripts": {
+    "build": "yarn langium:generate && yarn build:webpack",
+    "build:tsc": "tsc -b tsconfig.json",
+    "build:webpack": "webpack --mode development",
+    "clean": "rimraf out && rimraf tsconfig.tsbuildinfo",
+    "langium:generate": "langium generate",
+    "langium:watch": "langium generate --watch",
+    "lint": "eslint src --ext ts",
+    "package": "rimraf out && yarn package:webpack && yarn package:vsix",
+    "package:vsix": "vsce package --yarn --allow-star-activation",
+    "package:webpack": "webpack --mode production --devtool hidden-source-map",
+    "prepare": "yarn run clean && yarn run build && yarn symlink",
+    "symlink": "yarn symlink:browser && yarn symlink:electron",
+    "symlink:browser": "symlink-dir . ../../applications/browser-app/plugins/crossmodel-lang",
+    "symlink:electron": "symlink-dir . ../../applications/electron-app/plugins/crossmodel-lang",
+    "vscode:prepublish": "yarn lint",
+    "watch": "yarn watch:webpack",
+    "watch:tsc": "tsc -b tsconfig.json --watch",
+    "watch:webpack": "webpack --mode development --watch"
+  },
+  "contributes": {
+    "grammars": [
+      {
+        "language": "cross-model",
+        "scopeName": "source.cross-model",
+        "path": "./syntaxes/cross-model.tmLanguage.json"
+      }
+    ],
+    "languages": [
+      {
+        "id": "cross-model",
+        "aliases": [
+          "CrossModel",
+          "cross-model"
+        ],
+        "extensions": [
+          ".cm"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ]
+  },
+  "activationEvents": [
+    "*"
+  ],
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "chevrotain": "^10.4.1",
+    "commander": "^8.0.0",
+    "langium": "~1.0.0",
+    "vscode-languageclient": "^8.0.2",
+    "vscode-languageserver": "^8.0.2",
+    "vscode-uri": "^3.0.2"
+  },
+  "devDependencies": {
+    "@types/node": "^14.17.3",
+    "@types/vscode": "^1.56.0",
+    "@typescript-eslint/eslint-plugin": "^5.28.0",
+    "@typescript-eslint/parser": "^5.28.0",
+    "@vscode/vsce": "^2.17.0",
+    "eslint": "^8.17.0",
+    "langium-cli": "~1.0.0",
+    "ts-loader": "^9.4.2",
+    "typescript": "^4.9.4"
+  },
+  "engines": {
+    "vscode": "^1.56.0"
+  }
+}

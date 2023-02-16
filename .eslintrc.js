@@ -6,9 +6,14 @@ module.exports = {
         './configs/warnings.eslintrc.js',
         './configs/errors.eslintrc.js'
     ],
-    ignorePatterns: ['**/{node_modules,lib}', '**/.eslintrc.js'],
+    ignorePatterns: ['**/{node_modules,lib}', '**/.eslintrc.js', 'extensions/**/generated'],
     parserOptions: {
         tsconfigRootDir: __dirname,
         project: 'tsconfig.eslint.json'
+    },
+    settings: {
+       react: {
+          version: 'detect'
+       }
     }
 };

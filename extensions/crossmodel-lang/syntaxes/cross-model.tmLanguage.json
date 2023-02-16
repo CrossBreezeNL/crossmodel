@@ -1,0 +1,57 @@
+{
+  "name": "cross-model",
+  "scopeName": "source.cross-model",
+  "fileTypes": [
+    ".cm"
+  ],
+  "patterns": [
+    {
+      "include": "#comments"
+    },
+    {
+      "name": "keyword.control.cross-model",
+      "match": "\\b(1:n|attributes|description|entity|n:1|n:m|properties|relationship|source|target|type|with)\\b"
+    },
+    {
+      "name": "string.quoted.double.cross-model",
+      "begin": "\"",
+      "end": "\""
+    },
+    {
+      "name": "string.quoted.single.cross-model",
+      "begin": "'",
+      "end": "'"
+    }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.block.cross-model",
+          "begin": "/\\*",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.cross-model"
+            }
+          },
+          "end": "\\*/",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.cross-model"
+            }
+          }
+        },
+        {
+          "begin": "//",
+          "beginCaptures": {
+            "1": {
+              "name": "punctuation.whitespace.comment.leading.cross-model"
+            }
+          },
+          "end": "(?=$)",
+          "name": "comment.line.cross-model"
+        }
+      ]
+    }
+  }
+}

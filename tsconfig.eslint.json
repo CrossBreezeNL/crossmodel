@@ -4,5 +4,5 @@
     "noEmit": true
   },
   "exclude": ["**/node_modules", "**/.eslintrc.js"],
-  "include": ["packages/*/src", "applications/*/src", "applications/*/scripts"]
+  "include": ["packages/*/src", "applications/*/src", "applications/*/scripts", "extensions/*/src"]
 }

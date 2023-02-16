@@ -39,12 +39,41 @@
         "${workspaceFolder}/applications/electron-app/src-gen/frontend/electron-main.js",
         "${workspaceFolder}/applications/electron-app/src-gen/backend/server.js",
         "${workspaceFolder}/applications/electron-app/src-gen/backend/main.js",
-        "${workspaceFolder}/packages/*/lib/**/*.js"
+        "${workspaceFolder}/extensions/*/out/**/*.js",
+        "${workspaceFolder}/packages/*/lib/**/*.js",
+        "${workspaceFolder}/node_modules/langium/lib/**/*.js"
       ],
       "smartStep": true,
       "internalConsoleOptions": "openOnSessionStart",
       "outputCapture": "std",
       "stopOnEntry": true
+    },
+    {
+      "name": "Run CrossModel Language in VS Code",
+      "type": "extensionHost",
+      "request": "launch",
+      "env": {
+        "NODE_ENV": "development"
+      },
+      "stopOnEntry": true,
+      "args": ["--extensionDevelopmentPath=${workspaceFolder}/extensions/crossmodel-lang"]
+    },
+    {
+      "name": "Attach to Language Server in VS Code",
+      "type": "node",
+      "port": 6009,
+      "request": "attach",
+      "env": {
+        "NODE_ENV": "development"
+      },
+      "skipFiles": ["<node_internals>/**"],
+      "sourceMaps": true,
+      "outFiles": [
+        "${workspaceFolder}/extensions/crossmodel-lang/out/**/*.js",
+        "${workspaceFolder}/node_modules/langium/**/*.js",
+        "${workspaceFolder}/node_modules/vscode-languageclient/**/*.js",
+        "${workspaceFolder}/node_modules/vscode-jsonrpc/**/*.js"
+      ]
     }
   ]
 }

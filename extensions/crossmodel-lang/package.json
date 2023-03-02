@@ -47,6 +47,23 @@
     "watch:webpack": "webpack --mode development --watch"
   },
   "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "CrossModel configuration",
+      "properties": {
+        "cross-model.trace.server": {
+          "scope": "window",
+          "type": "string",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "default": "off",
+          "description": "Traces the communication between VS Code and the language server."
+        }
+      }
+    },
     "grammars": [
       {
         "language": "cross-model",

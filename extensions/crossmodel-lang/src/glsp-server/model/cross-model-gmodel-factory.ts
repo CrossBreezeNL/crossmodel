@@ -19,7 +19,7 @@ export class CrossModelGModelFactory implements GModelFactory {
 
    protected createGraph(): GGraph | undefined {
       const diagramRoot = this.modelState.diagramRoot;
-      const graphBuilder = GGraph.builder().id(this.modelState.id);
+      const graphBuilder = GGraph.builder().id(this.modelState.semanticUri);
       diagramRoot.nodes.map(node => this.createDiagramNode(node)).forEach(node => graphBuilder.add(node));
       diagramRoot.edges.map(edge => this.createDiagramEdge(edge)).forEach(edge => graphBuilder.add(edge));
       return graphBuilder.build();

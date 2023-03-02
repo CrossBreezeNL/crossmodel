@@ -3,7 +3,7 @@
  ********************************************************************************/
 
 import { isReference, Reference } from 'langium';
-import { Serializer } from '../model-server/serializer';
+import { DiagramSerializer, Serializer } from '../model-server/serializer';
 import { CrossModelServices } from './cross-model-module';
 import {
    Attribute,
@@ -24,7 +24,7 @@ import {
  * cf. https://github.com/langium/langium/discussions/683
  * cf. https://github.com/langium/langium/discussions/863
  */
-export class CrossModelSerializer implements Serializer<CrossModelRoot> {
+export class CrossModelSerializer implements Serializer<CrossModelRoot>, DiagramSerializer<CrossModelRoot> {
    constructor(protected services: CrossModelServices, protected refNameProvider = services.references.QualifiedNameProvider) {}
 
    serialize(root: CrossModelRoot): string {
@@ -83,25 +83,25 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot> {
 
    protected serializeDiagram(diagram: SystemDiagram): string {
       return `diagram {
-         ${diagram.nodes.map(node => this.serializeDiagramNode(node)).join(';\n')}
-         ${diagram.edges.map(edge => this.serializeDiagramEdge(edge)).join(';\n')}
+         ${diagram.nodes.map(node => this.serializeDiagramNode(node)).join('\n')}
+         ${diagram.edges.map(edge => this.serializeDiagramEdge(edge)).join('\n')}
       }`;
    }
 
    protected serializeDiagramNode(node: DiagramNode): string {
       return `node ${node.name} for ${node.semanticElement.$refText} {
-         x := ${node.x} ;
-         y := ${node.y} ;
-         width := ${node.width} ;
-         height := ${node.height} ;
-      }`;
+         x := ${node.x};
+         y := ${node.y};
+         width := ${node.width};
+         height := ${node.height};
+      };`;
    }
 
    protected serializeDiagramEdge(edge: DiagramEdge): string {
       return `edge ${edge.name} for ${edge.semanticElement.$refText} {
-         source := ${edge.source.$refText} ;
-         target := ${edge.target.$refText} ;
-      }`;
+         source := ${edge.source.$refText};
+         target := ${edge.target.$refText};
+      };`;
    }
 
    asDiagram(element: SystemDiagram | Entity | Relationship | CrossModelRoot): string {

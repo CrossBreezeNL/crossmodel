@@ -3,6 +3,9 @@
  ********************************************************************************/
 
 import {
+   ClientSession,
+   ClientSessionListener,
+   ClientSessionManager,
    GLSPServerError,
    Logger,
    MaybePromise,
@@ -11,58 +14,48 @@ import {
    SourceModelStorage,
    SOURCE_URI_ARG
 } from '@eclipse-glsp/server';
-import { inject, injectable } from 'inversify';
-import { AstNode, findRootNode, LangiumDocument, streamReferences } from 'langium';
+import { inject, injectable, postConstruct } from 'inversify';
+import { findRootNode, streamReferences } from 'langium';
 import { URI } from 'vscode-uri';
-import { CrossModelRoot, isCrossModelRoot } from '../../language-server/generated/ast';
+import { isCrossModelRoot } from '../../language-server/generated/ast';
 import { CrossModelState } from './cross-model-state';
 
 @injectable()
-export class CrossModelStorage implements SourceModelStorage {
-   @inject(CrossModelState) protected state: CrossModelState;
+export class CrossModelStorage implements SourceModelStorage, ClientSessionListener {
    @inject(Logger) protected logger: Logger;
+   @inject(CrossModelState) protected state: CrossModelState;
+   @inject(ClientSessionManager) protected sessionManager: ClientSessionManager;
+
+   @postConstruct()
+   protected init(): void {
+      this.sessionManager.addListener(this, this.state.clientId);
+   }
 
    async loadSourceModel(action: RequestModelAction): Promise<void> {
       // load semantic model
       const sourceUri = this.getSourceUri(action);
-      const document = this.state.services.shared.workspace.LangiumDocuments.getOrCreateDocument(URI.file(sourceUri));
-      const root = document.parseResult.value;
-      if (!isCrossModelRoot(root)) {
-         throw new GLSPServerError('Unexpected root');
+      const rootUri = URI.file(sourceUri).toString();
+      const root = await this.state.modelService.request(rootUri, isCrossModelRoot);
+      if (!root || !root.diagram) {
+         throw new GLSPServerError('Expected CrossModal Diagram Root');
       }
-
-      let diagramDocument = document;
-      if (!root.diagram) {
-         // let's check if there is an existing diagram or we will create one on the fly
-         const diagramPath = document.uri.fsPath.split('.').slice(0, -1).join('.') + '.diagram.cm';
-         const diagramUri = URI.file(diagramPath);
-         const diagramString = this.state.services.language.serializer.Serializer.asDiagram(root);
-         diagramDocument = this.state.services.shared.workspace.LangiumDocumentFactory.fromString(diagramString, diagramUri);
-         // do we need to call the builder? it indexes the file but also does linking and scope computation
-         // probably no risk as diagrams are self-contained and do not export any objects anyway
-         await this.state.services.shared.workspace.DocumentBuilder.build([diagramDocument]);
-      }
-      this.state.document = diagramDocument as LangiumDocument<CrossModelRoot>;
+      this.state.setSemanticRoot(rootUri, root);
    }
 
    saveSourceModel(action: SaveModelAction): MaybePromise<void> {
       const saveUri = this.getFileUri(action);
 
       // save document and all related documents
-      this.saveDocument(this.state.semanticRoot, URI.file(saveUri));
+      this.state.modelService.save(saveUri, this.state.semanticRoot);
       streamReferences(this.state.semanticRoot)
          .map(refInfo => refInfo.reference.ref)
          .nonNullable()
          .map(ref => findRootNode(ref))
-         .forEach(root => this.saveDocument(root));
+         .forEach(root => this.state.modelService.save(root.$document!.uri.toString(), root));
    }
 
-   protected saveDocument(root: AstNode, uri: URI = root.$document!.uri): void {
-      const newContent = this.state.services.language.serializer.Serializer.serialize(this.state.semanticRoot);
-
-      // probably need to extend file service from LSP to support writing
-      // this.state.services.shared.workspace.FileSystemProvider
-      this.logger.info('SAVE', uri, newContent);
+   sessionDisposed(_clientSession: ClientSession): void {
+      this.state.modelService.close(this.state.semanticUri);
    }
 
    protected getSourceUri(action: RequestModelAction): string {

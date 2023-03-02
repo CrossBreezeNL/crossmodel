@@ -2,18 +2,20 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 import {
-   ActionHandlerConstructor,
    BindingTarget,
-   ComputedBoundsActionHandler,
    DiagramConfiguration,
    DiagramModule,
    GModelFactory,
    GModelIndex,
    InstanceMultiBinding,
    ModelState,
+   OperationHandlerConstructor,
    SourceModelStorage
 } from '@eclipse-glsp/server';
 import { injectable } from 'inversify';
+import { CrossModelChangeBoundsOperationHandler } from '../handler/change-bounds-operation-handler';
+import { CrossModelCreateEdgeOperationHandler } from '../handler/create-edge-operation-handler';
+import { CrossModelDeleteOperationHandler } from '../handler/delete-operation-handler';
 import { CrossModelGModelFactory } from '../model/cross-model-gmodel-factory';
 import { CrossModelIndex } from '../model/cross-model-index';
 import { CrossModelState } from '../model/cross-model-state';
@@ -32,9 +34,11 @@ export class CrossModelDiagramModule extends DiagramModule {
       return CrossModelStorage;
    }
 
-   protected override configureActionHandlers(binding: InstanceMultiBinding<ActionHandlerConstructor>): void {
-      super.configureActionHandlers(binding);
-      binding.add(ComputedBoundsActionHandler);
+   protected override configureOperationHandlers(binding: InstanceMultiBinding<OperationHandlerConstructor>): void {
+      super.configureOperationHandlers(binding);
+      binding.add(CrossModelChangeBoundsOperationHandler);
+      binding.add(CrossModelCreateEdgeOperationHandler);
+      binding.add(CrossModelDeleteOperationHandler);
    }
 
    protected override bindGModelIndex(): BindingTarget<GModelIndex> {

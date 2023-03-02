@@ -2,8 +2,11 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
+import { isReference, Reference } from 'langium';
+import { Serializer } from '../model-server/serializer';
 import { CrossModelServices } from './cross-model-module';
 import {
+   Attribute,
    CrossModelRoot,
    DiagramEdge,
    DiagramNode,
@@ -11,6 +14,7 @@ import {
    isCrossModelRoot,
    isEntity,
    isSystemDiagram,
+   Property,
    Relationship,
    SystemDiagram
 } from './generated/ast';
@@ -20,7 +24,7 @@ import {
  * cf. https://github.com/langium/langium/discussions/683
  * cf. https://github.com/langium/langium/discussions/863
  */
-export class CrossModelSerializer {
+export class CrossModelSerializer implements Serializer<CrossModelRoot> {
    constructor(protected services: CrossModelServices, protected refNameProvider = services.references.QualifiedNameProvider) {}
 
    serialize(root: CrossModelRoot): string {
@@ -38,22 +42,43 @@ export class CrossModelSerializer {
 
    protected serializeEntity(entity: Entity): string {
       return `entity ${entity.name} {
-         description ${entity.description};
+         description := "${entity.description}";
          attributes {
-            ${entity.attributes.map(attribute => `${attribute.name} := ${attribute.value}`).join(';\n')}
+            ${this.serializeAttributes(entity.attributes)}
          }
       }`;
    }
 
+   private serializeAttributes(attributes: Attribute[] | undefined): string {
+      return attributes && Array.isArray(attributes)
+         ? attributes.map(attribute => `${attribute.name} := ${attribute.value}`).join(';\n')
+         : '';
+   }
+
    protected serializeRelationship(relationship: Relationship): string {
       return `relationship ${relationship.name} {
-         source := ${relationship.source.$refText}${relationship.sourceAttribute ? ' with ' + relationship.sourceAttribute?.$refText : ''};
-         target := ${relationship.target.$refText}${relationship.targetAttribute ? ' with ' + relationship.targetAttribute?.$refText : ''};
+         source := ${this.serializeReference(relationship.source)}${
+         relationship.sourceAttribute ? ' with ' + this.serializeReference(relationship.sourceAttribute) : ''
+      };
+         target := ${this.serializeReference(relationship.target)}${
+         relationship.targetAttribute ? ' with ' + this.serializeReference(relationship.targetAttribute) : ''
+      };
          type := ${relationship.type};
          properties {
-            ${relationship.properties.map(property => `${property.key} := ${property.value}`).join(';\n')}
+            ${this.serializeProperties(relationship.properties)}
          }
       }`;
+   }
+
+   private serializeProperties(properties: Property[] | undefined): string {
+      return properties && Array.isArray(properties) ? properties.map(property => `${property.key} := ${property.value}`).join(';\n') : '';
+   }
+
+   protected serializeReference(reference: Reference | string | undefined): string {
+      if (reference === undefined) {
+         return '<unknown>';
+      }
+      return isReference(reference) ? reference.$refText : reference;
    }
 
    protected serializeDiagram(diagram: SystemDiagram): string {

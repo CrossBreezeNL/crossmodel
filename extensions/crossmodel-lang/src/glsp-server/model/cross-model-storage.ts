@@ -36,7 +36,7 @@ export class CrossModelStorage implements SourceModelStorage {
          // let's check if there is an existing diagram or we will create one on the fly
          const diagramPath = document.uri.fsPath.split('.').slice(0, -1).join('.') + '.diagram.cm';
          const diagramUri = URI.file(diagramPath);
-         const diagramString = this.state.services.language.serializer.CrossModelSerializer.asDiagram(root);
+         const diagramString = this.state.services.language.serializer.Serializer.asDiagram(root);
          diagramDocument = this.state.services.shared.workspace.LangiumDocumentFactory.fromString(diagramString, diagramUri);
          // do we need to call the builder? it indexes the file but also does linking and scope computation
          // probably no risk as diagrams are self-contained and do not export any objects anyway
@@ -58,7 +58,7 @@ export class CrossModelStorage implements SourceModelStorage {
    }
 
    protected saveDocument(root: AstNode, uri: URI = root.$document!.uri): void {
-      const newContent = this.state.services.language.serializer.CrossModelSerializer.serialize(this.state.semanticRoot);
+      const newContent = this.state.services.language.serializer.Serializer.serialize(this.state.semanticRoot);
 
       // probably need to extend file service from LSP to support writing
       // this.state.services.shared.workspace.FileSystemProvider

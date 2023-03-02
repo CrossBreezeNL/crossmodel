@@ -12,6 +12,12 @@ import {
    PartialLangiumServices,
    PartialLangiumSharedServices
 } from 'langium';
+import { TextDocument } from 'vscode-languageserver-textdocument';
+import { AddedSharedModelServices, ModelServices } from '../model-server/model-module';
+import { ModelService } from '../model-server/model-service';
+import { OpenTextDocumentManager } from '../model-server/open-text-document-manager';
+import { OpenableTextDocuments } from '../model-server/openable-text-documents';
+import { DiagramSerializer } from '../model-server/serializer';
 import { ClientLogger } from './cross-model-client-logger';
 import { CrossModelModelFormatter } from './cross-model-formatter';
 import { QualifiedNameProvider } from './cross-model-naming';
@@ -20,6 +26,7 @@ import { CrossModelScopeProvider } from './cross-model-scope-provider';
 import { CrossModelSerializer } from './cross-model-serializer';
 import { CrossModelValidator, registerValidationChecks } from './cross-model-validator';
 import { CrossModelWorkspaceManager } from './cross-model-workspace-manager';
+import { CrossModelRoot } from './generated/ast';
 import { CrossModelGeneratedModule, CrossModelGeneratedSharedModule } from './generated/module';
 
 /***************************
@@ -39,11 +46,16 @@ export interface CrossModelAddedSharedServices {
 }
 
 export const CrossModelSharedServices = Symbol('CrossModelSharedServices');
-export type CrossModelSharedServices = LangiumSharedServices & CrossModelAddedSharedServices;
+export type CrossModelSharedServices = LangiumSharedServices & CrossModelAddedSharedServices & AddedSharedModelServices;
 
-export const CrossModelSharedModule: Module<CrossModelSharedServices, PartialLangiumSharedServices & CrossModelAddedSharedServices> = {
+export const CrossModelSharedModule: Module<
+   CrossModelSharedServices,
+   PartialLangiumSharedServices & CrossModelAddedSharedServices & AddedSharedModelServices
+> = {
    workspace: {
-      WorkspaceManager: services => new CrossModelWorkspaceManager(services)
+      WorkspaceManager: services => new CrossModelWorkspaceManager(services),
+      TextDocuments: () => new OpenableTextDocuments(TextDocument),
+      TextDocumentManager: services => new OpenTextDocumentManager(services)
    },
    logger: {
       ClientLogger: services => new ClientLogger(services)
@@ -61,7 +73,7 @@ export interface CrossModelModuleContext {
 /**
  * Declaration of custom services - add your own service classes here.
  */
-export interface CrossModelAddedServices {
+export interface CrossModelAddedServices extends ModelServices {
    references: {
       QualifiedNameProvider: QualifiedNameProvider;
    };
@@ -69,7 +81,7 @@ export interface CrossModelAddedServices {
       CrossModelValidator: CrossModelValidator;
    };
    serializer: {
-      CrossModelSerializer: CrossModelSerializer;
+      Serializer: DiagramSerializer<CrossModelRoot>;
    };
    /* override */ shared: CrossModelSharedServices;
 }
@@ -102,7 +114,10 @@ export function createCrossModelModule(
          Formatter: () => new CrossModelModelFormatter()
       },
       serializer: {
-         CrossModelSerializer: services => new CrossModelSerializer(services)
+         Serializer: services => new CrossModelSerializer(services)
+      },
+      model: {
+         ModelService: services => new ModelService(services, context.shared)
       },
       shared: () => context.shared
    };

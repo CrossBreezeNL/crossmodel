@@ -36,7 +36,8 @@ export class CrossModelGModelFactory implements GModelFactory {
          .addCssClasses('diagram-node', 'entity')
          .add(label)
          .layout('hbox')
-         .size(node.width, node.height)
+         .addLayoutOption('prefWidth', node.width)
+         .addLayoutOption('prefHeight', node.height)
          .position(node.x, node.y)
          .addLayoutOption('paddingLeft', 5)
          .build();

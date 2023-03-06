@@ -1013,60 +1013,60 @@
   resolved "https://registry.yarnpkg.com/@discoveryjs/json-ext/-/json-ext-0.5.7.tgz#1d572bfbbe14b7704e0ba0f39b74815b84870d70"
   integrity sha512-dBVuXR082gk3jsFp7Rd/JI4kytwGHecnCoTtXFb7DB6CNHp4rg5k1bhg0nWdLGLnOV71lmDzGQaLMy8iPLY0pw==
 
-"@eclipse-glsp/client@1.1.0-RC05":
-  version "1.1.0-RC05"
-  resolved "https://registry.yarnpkg.com/@eclipse-glsp/client/-/client-1.1.0-RC05.tgz#4215d8911a95e758ee3d533bedd3b769d56a967d"
-  integrity sha512-4lR2Y4TUbRZ7m0iopY/AiH+QkZwdXm9iryWWkdMgqK3VfptDk3eUSxkfU7xHiDL6tm+xGlJX1kuLyNuDPbQXOQ==
+"@eclipse-glsp/client@1.1.0-RC06":
+  version "1.1.0-RC06"
+  resolved "https://registry.yarnpkg.com/@eclipse-glsp/client/-/client-1.1.0-RC06.tgz#188208069802ea3dee8a77a8e92e58ca5c8fc9dd"
+  integrity sha512-NQGk9J6KGhN9hdNOMGYH11O4vHU0NkNnr/FvZQ0Ule5BEnMnKnH91KgcOpLmc1m1WnhwksWbEAqoVnGX4NdQgw==
   dependencies:
-    "@eclipse-glsp/protocol" "1.1.0-RC05"
+    "@eclipse-glsp/protocol" "1.1.0-RC06"
     autocompleter "5.1.0"
     sprotty "0.13.0-next.f4445dd.342"
 
-"@eclipse-glsp/graph@1.1.0-RC05":
-  version "1.1.0-RC05"
-  resolved "https://registry.yarnpkg.com/@eclipse-glsp/graph/-/graph-1.1.0-RC05.tgz#88e2e57e21f0c7380b4b1cfedf3d3649d6460ca4"
-  integrity sha512-MhFWoVnkqeRPBmD2Z8G2H1EJ7FlV/eSoB7OEty8TtvpvTWQWtSFSOmfi1IYyqJjXFnx+E4EWbF7SLbSSOiK/7w==
+"@eclipse-glsp/graph@1.1.0-RC06":
+  version "1.1.0-RC06"
+  resolved "https://registry.yarnpkg.com/@eclipse-glsp/graph/-/graph-1.1.0-RC06.tgz#eb9c8d7984e117de95bb2e9f130213c28744df3e"
+  integrity sha512-hStA9IV6aC9XvFEN8JtbKn09t55e5IPqvaRSOTsHgsopxgGs0QRYxCHha40QI5m/6lu2YSh52AnFK0OBjIR+eQ==
   dependencies:
-    "@eclipse-glsp/protocol" "1.1.0-RC05"
+    "@eclipse-glsp/protocol" "1.1.0-RC06"
 
-"@eclipse-glsp/layout-elk@1.1.0-RC05":
-  version "1.1.0-RC05"
-  resolved "https://registry.yarnpkg.com/@eclipse-glsp/layout-elk/-/layout-elk-1.1.0-RC05.tgz#895a9b33e73583e66fe737ce722e477f87366155"
-  integrity sha512-dk2Up8Sgc5rttq3uOMFeaecFTNcvATzvyoswQLFbx1peYH1I2sJThtTvBEn82VPHCsDLWhYNSSIneYj7+9BZEw==
+"@eclipse-glsp/layout-elk@1.1.0-RC06":
+  version "1.1.0-RC06"
+  resolved "https://registry.yarnpkg.com/@eclipse-glsp/layout-elk/-/layout-elk-1.1.0-RC06.tgz#214a634e8e6a7a9100efb7e2db600ab3297511ab"
+  integrity sha512-v/BCrUNMnpAw+KpFwWjZSDcq/VXu3DNxyQJDFZ+LrVK3eK246etcesWm5vTz1NG0/ryj4IwRtNhzqUG2xTeFsw==
   dependencies:
-    "@eclipse-glsp/server" "1.1.0-RC05"
+    "@eclipse-glsp/server" "1.1.0-RC06"
     elkjs "^0.7.1"
     sprotty-elk "0.12.0"
 
-"@eclipse-glsp/protocol@1.1.0-RC05":
-  version "1.1.0-RC05"
-  resolved "https://registry.yarnpkg.com/@eclipse-glsp/protocol/-/protocol-1.1.0-RC05.tgz#acf047aede531e7c63715fa8fe27e2d991291e04"
-  integrity sha512-vwAgq0iesj59phCvrFNX8pJgVkq9gnspUEEe/0i72MWrI1hM7svH0GX9TW6nCBOC64Z4uBqT8+ts2IjtcWyRcg==
+"@eclipse-glsp/protocol@1.1.0-RC06":
+  version "1.1.0-RC06"
+  resolved "https://registry.yarnpkg.com/@eclipse-glsp/protocol/-/protocol-1.1.0-RC06.tgz#18b2124359e40d3009a59f49a807fe1bafc8b601"
+  integrity sha512-/z6Daj17F0DL5F3C62Z9dsSVf3YiNlbBeSKQqf0mMn4y40XPKfMtKpP/76SuiGVC5yMNui/XfynWIG9YIjMUzA==
   dependencies:
     sprotty-protocol "0.13.0-next.f4445dd.342"
     uuid "7.0.3"
-    vscode-ws-jsonrpc "^2.0.1"
+    vscode-jsonrpc "^8.0.2"
 
-"@eclipse-glsp/server@1.1.0-RC05":
-  version "1.1.0-RC05"
-  resolved "https://registry.yarnpkg.com/@eclipse-glsp/server/-/server-1.1.0-RC05.tgz#1edcfa3ebcaca9afca3b56b93079a24b8fb20699"
-  integrity sha512-EfXgHtwlqpfO+JVLSnFnOftIqlSEifPR2J0BtHvA2Fjj6ftpvoxoggwnP+9inSjKlv7wxxd8Qy0ecxQnvWLVug==
+"@eclipse-glsp/server@1.1.0-RC06":
+  version "1.1.0-RC06"
+  resolved "https://registry.yarnpkg.com/@eclipse-glsp/server/-/server-1.1.0-RC06.tgz#46e6d91eaccfcf9d65634c643b0eeb2722be98c7"
+  integrity sha512-+nkrJlRdmGj3xTvSVUrdYQ/qpadPHcrsubsJxsEp1qMOpkLaW5qebEsIcCX+8Ednuqe951KUyf9EIk+Yp0J0FQ==
   dependencies:
-    "@eclipse-glsp/graph" "1.1.0-RC05"
-    "@eclipse-glsp/protocol" "1.1.0-RC05"
+    "@eclipse-glsp/graph" "1.1.0-RC06"
+    "@eclipse-glsp/protocol" "1.1.0-RC06"
     "@types/uuid" "8.3.1"
     commander "^8.3.0"
     fast-json-patch "^3.1.0"
     inversify "^5.1.1"
     winston "^3.3.3"
+    ws "^8.12.1"
 
-"@eclipse-glsp/theia-integration@1.1.0-RC05":
-  version "1.1.0-RC05"
-  resolved "https://registry.yarnpkg.com/@eclipse-glsp/theia-integration/-/theia-integration-1.1.0-RC05.tgz#6e820e5641c51451a86e2565c6fb5914c52fcd58"
-  integrity sha512-ikiozLv6MMbRpnT4ewTZftlbTAWYBvnA0n2Xfj6qbFI4xwyx9wAFbX7iKmzNkUsDRF48rMjooMe9tVwcmCv6Lw==
+"@eclipse-glsp/theia-integration@1.1.0-RC06":
+  version "1.1.0-RC06"
+  resolved "https://registry.yarnpkg.com/@eclipse-glsp/theia-integration/-/theia-integration-1.1.0-RC06.tgz#549f51c8fe4583abb6a4020c4918b4e8ac653d0d"
+  integrity sha512-REO05M8chxYUXA1qvyOn5OGZuxzL/u851TVIveynSkyrx3urbf/X0XnjgTGKVt9Wi3uE71WSYFM8Fy0WQovl5g==
   dependencies:
-    "@eclipse-glsp/client" "1.1.0-RC05"
-    vscode-jsonrpc "8.0.2"
+    "@eclipse-glsp/client" "1.1.0-RC06"
 
 "@electron/get@^1.13.0":
   version "1.14.1"
@@ -13507,13 +13507,6 @@ vscode-windows-ca-certs@^0.3.0:
   dependencies:
     node-addon-api "^3.0.2"
 
-vscode-ws-jsonrpc@^2.0.1:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/vscode-ws-jsonrpc/-/vscode-ws-jsonrpc-2.0.2.tgz#6bad2ecd654e6789eefaa6ad490d3e20dbdece86"
-  integrity sha512-gIOGdaWwKYwwqohgeRC8AtqqHSNghK8wA3oVcBi7UMAdZnRSAf8n4/Svtd+JHqGiIguYdNa/sC0s4IW3ZDF7mA==
-  dependencies:
-    vscode-jsonrpc "8.0.2"
-
 w3c-hr-time@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/w3c-hr-time/-/w3c-hr-time-1.0.2.tgz#0a89cdf5cc15822df9c360543676963e0cc308cd"
@@ -13820,6 +13813,11 @@ ws@^7.1.2, ws@^7.4.6:
   version "7.5.9"
   resolved "https://registry.yarnpkg.com/ws/-/ws-7.5.9.tgz#54fa7db29f4c7cec68b1ddd3a89de099942bb591"
   integrity sha512-F+P9Jil7UiSKSkppIiD94dN07AwvFixvLIj1Og1Rl9GGMuNipJnV9JzjD6XuqmAeiswGvUmNLjr5cFuXwNS77Q==
+
+ws@^8.12.1:
+  version "8.12.1"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-8.12.1.tgz#c51e583d79140b5e42e39be48c934131942d4a8f"
+  integrity sha512-1qo+M9Ba+xNhPB+YTWUlK6M17brTut5EXbcBaMRN5pH5dFrXz7lzz1ChFSUq3bOUl8yEvSenhHmYUNJxFzdJew==
 
 ws@~8.2.3:
   version "8.2.3"

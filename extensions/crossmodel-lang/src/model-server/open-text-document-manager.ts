@@ -24,16 +24,16 @@ export class OpenTextDocumentManager {
       this.textDocuments.onDidClose(event => this.close(event.document.uri));
    }
 
-   open(uri: string, languageId?: string): void {
+   async open(uri: string, languageId?: string): Promise<void> {
       if (this.isOpen(uri)) {
          return;
       }
       this.openDocuments.push(this.normalizedUri(uri));
-      const textDocument = this.readFromFilesystem(uri, languageId ?? this.languageId);
+      const textDocument = await this.readFromFilesystem(uri, languageId ?? this.languageId);
       this.textDocuments.notifyDidOpenTextDocument({ textDocument });
    }
 
-   close(uri: string): void {
+   async close(uri: string): Promise<void> {
       if (!this.isOpen(uri)) {
          return;
       }
@@ -41,7 +41,7 @@ export class OpenTextDocumentManager {
       this.textDocuments.notifyDidCloseTextDocument({ textDocument: TextDocumentIdentifier.create(uri) });
    }
 
-   update(uri: string, version: number, text: string): void {
+   async update(uri: string, version: number, text: string): Promise<void> {
       if (!this.isOpen(uri)) {
          throw new Error(`Document ${uri} hasn't been opened for updating yet`);
       }
@@ -51,7 +51,7 @@ export class OpenTextDocumentManager {
       });
    }
 
-   save(uri: string, text: string): void {
+   async save(uri: string, text: string): Promise<void> {
       const vscUri = URI.parse(uri);
       fs.writeFileSync(vscUri.fsPath, text);
       this.textDocuments.notifyDidSaveTextDocument({ textDocument: TextDocumentIdentifier.create(uri) });
@@ -65,7 +65,7 @@ export class OpenTextDocumentManager {
       this.openDocuments.splice(this.openDocuments.indexOf(this.normalizedUri(uri)));
    }
 
-   protected readFromFilesystem(uri: string, languageId?: string): TextDocumentItem {
+   protected async readFromFilesystem(uri: string, languageId?: string): Promise<TextDocumentItem> {
       const vscUri = URI.parse(uri);
       const content = this.fileSystemProvider.readFileSync(vscUri);
       return TextDocumentItem.create(vscUri.toString(), languageId ?? this.languageId, 1, content.toString());

@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { AnyObject } from '@eclipse-glsp/server';
+import { AnyObject, MaybePromise } from '@eclipse-glsp/server';
 import { AbstractRecordingCommand } from '@eclipse-glsp/server/lib/common/command/recording-command';
 import { Operation } from 'fast-json-patch';
 import { CrossModelState } from '../model/cross-model-state';
@@ -12,7 +12,7 @@ interface SemanticState {
 }
 
 export class CrossModelCommand extends AbstractRecordingCommand<AnyObject> {
-   constructor(protected state: CrossModelState, protected runnable: () => void) {
+   constructor(protected state: CrossModelState, protected runnable: () => MaybePromise<void>) {
       super();
    }
 
@@ -25,8 +25,8 @@ export class CrossModelCommand extends AbstractRecordingCommand<AnyObject> {
       return this.state.updateSemanticRoot(state.text);
    }
 
-   protected doExecute(): Promise<void> {
-      this.runnable();
+   protected async doExecute(): Promise<void> {
+      await this.runnable();
       return this.state.updateSemanticRoot();
    }
 }

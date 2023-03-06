@@ -35,11 +35,11 @@ export class CrossModelCreateEdgeOperationHandler extends OperationHandler imple
       return new CrossModelCommand(this.state, () => this.createEdge(operation));
    }
 
-   protected createEdge(operation: CreateEdgeOperation): void {
+   protected async createEdge(operation: CreateEdgeOperation): Promise<void> {
       const sourceNode = this.state.index.findDiagramNode(operation.sourceElementId);
       const targetNode = this.state.index.findDiagramNode(operation.targetElementId);
       if (sourceNode && targetNode) {
-         const relationship = this.createAndSaveRelationship(sourceNode, targetNode);
+         const relationship = await this.createAndSaveRelationship(sourceNode, targetNode);
          if (relationship) {
             const edge: DiagramEdge = {
                $type: 'DiagramEdge',
@@ -54,7 +54,7 @@ export class CrossModelCreateEdgeOperationHandler extends OperationHandler imple
       }
    }
 
-   protected createAndSaveRelationship(sourceNode: DiagramNode, targetNode: DiagramNode): Relationship | undefined {
+   protected async createAndSaveRelationship(sourceNode: DiagramNode, targetNode: DiagramNode): Promise<Relationship | undefined> {
       const source = sourceNode.semanticElement.$refText;
       const target = targetNode.semanticElement.$refText;
 
@@ -78,8 +78,8 @@ export class CrossModelCreateEdgeOperationHandler extends OperationHandler imple
       relationshipRoot.relationship = relationship;
       const text = this.state.semanticSerializer.serialize(relationshipRoot);
 
-      this.state.modelService.save(uri.toString(), text);
-      const root = this.state.modelService.request<CrossModelRoot>(uri.toString(), isCrossModelRoot);
+      await this.state.modelService.save(uri.toString(), text);
+      const root = await this.state.modelService.request<CrossModelRoot>(uri.toString(), isCrossModelRoot);
       return root?.relationship;
    }
 }

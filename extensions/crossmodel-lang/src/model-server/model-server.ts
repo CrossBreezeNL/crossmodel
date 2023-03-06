@@ -21,11 +21,32 @@ export class ModelServer implements Disposable {
    }
 
    protected initialize(connection: rpc.MessageConnection): void {
-      this.toDispose.push(connection.onRequest(OpenModel, uri => this.modelService.open(uri)));
-      this.toDispose.push(connection.onRequest(CloseModel, uri => this.modelService.close(uri)));
-      this.toDispose.push(connection.onRequest(RequestModel, uri => toSerializable(this.modelService.request(uri))));
-      this.toDispose.push(connection.onRequest(UpdateModel, (uri, model) => this.modelService.update(uri, model).then(() => { /* void*/})));
-      this.toDispose.push(connection.onRequest(SaveModel, (uri, model) => this.modelService.save(uri, model)));
+      this.toDispose.push(connection.onRequest(OpenModel, uri => this.openModel(uri)));
+      this.toDispose.push(connection.onRequest(CloseModel, uri => this.closeModel(uri)));
+      this.toDispose.push(connection.onRequest(RequestModel, uri => this.requestModel(uri)));
+      this.toDispose.push(connection.onRequest(UpdateModel, (uri, model) => this.updateModel(uri, model)));
+      this.toDispose.push(connection.onRequest(SaveModel, (uri, model) => this.saveModel(uri, model)));
+   }
+
+   protected async openModel(uri: string): Promise<void> {
+      await this.modelService.open(uri);
+   }
+
+   protected async closeModel(uri: string): Promise<void> {
+      await this.modelService.close(uri);
+   }
+
+   protected async requestModel(uri: string): Promise<AstNode | undefined> {
+      const root = await this.modelService.request(uri);
+      return toSerializable(root);
+   }
+
+   protected async updateModel(uri: string, model: AstNode): Promise<void> {
+      await this.modelService.update(uri, model);
+   }
+
+   protected async saveModel(uri: string, model: AstNode): Promise<void> {
+      await this.modelService.save(uri, model);
    }
 
    dispose(): void {

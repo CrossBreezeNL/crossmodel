@@ -22,17 +22,17 @@ export class ModelService {
       this.documentBuilder = shared.workspace.DocumentBuilder;
    }
 
-   open(uri: string): void {
-      this.documentManager.open(uri);
+   async open(uri: string): Promise<void> {
+      return this.documentManager.open(uri);
    }
 
-   close(uri: string): void {
-      this.documentManager.close(uri);
+   async close(uri: string): Promise<void> {
+      return this.documentManager.close(uri);
    }
 
-   request(uri: string): AstNode | undefined;
-   request<T extends AstNode>(uri: string, guard: (item: unknown) => item is T): T | undefined;
-   request<T extends AstNode>(uri: string, guard?: (item: unknown) => item is T): AstNode | T | undefined {
+   request(uri: string): Promise<AstNode | undefined>;
+   request<T extends AstNode>(uri: string, guard: (item: unknown) => item is T): Promise<T | undefined>;
+   async request<T extends AstNode>(uri: string, guard?: (item: unknown) => item is T): Promise<AstNode | T | undefined> {
       this.open(uri);
       const document = this.documents.getOrCreateDocument(URI.parse(uri));
       const root = document.parseResult.value;
@@ -41,7 +41,7 @@ export class ModelService {
    }
 
    async update<T extends AstNode>(uri: string, model: T | string): Promise<T> {
-      this.open(uri);
+      await this.open(uri);
       const document = this.documents.getOrCreateDocument(URI.parse(uri));
       const root = document.parseResult.value;
       if (!isAstNode(root)) {
@@ -52,16 +52,14 @@ export class ModelService {
       const version = document.textDocument.version + 1;
 
       TextDocument.update(document.textDocument, [{ text }], version);
-      this.documentManager.update(uri, version, text);
-
-      // do we need to await the result here?
-      this.documentBuilder.update([URI.parse(uri)], []);
+      await this.documentManager.update(uri, version, text);
+      await this.documentBuilder.update([URI.parse(uri)], []);
 
       return document.parseResult.value as T;
    }
 
-   save(uri: string, model: AstNode | string): void {
+   async save(uri: string, model: AstNode | string): Promise<void> {
       const text = typeof model === 'string' ? model : this.serializer.serialize(model);
-      this.documentManager.save(uri, text);
+      return this.documentManager.save(uri, text);
    }
 }

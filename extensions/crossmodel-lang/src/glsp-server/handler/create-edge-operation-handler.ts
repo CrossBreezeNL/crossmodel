@@ -46,8 +46,8 @@ export class CrossModelCreateEdgeOperationHandler extends OperationHandler imple
                $container: this.state.diagramRoot,
                name: relationship.name,
                semanticElement: { ref: relationship, $refText: this.state.nameProvider.getName(relationship) || relationship.name },
-               source: { ref: sourceNode, $refText: this.state.nameProvider.getName(sourceNode) || sourceNode.name },
-               target: { ref: targetNode, $refText: this.state.nameProvider.getName(targetNode) || targetNode.name }
+               source: { ref: sourceNode, $refText: this.state.nameProvider.getLocalName(sourceNode) || sourceNode.name },
+               target: { ref: targetNode, $refText: this.state.nameProvider.getLocalName(targetNode) || targetNode.name }
             };
             this.state.diagramRoot.edges.push(edge);
          }
@@ -55,8 +55,8 @@ export class CrossModelCreateEdgeOperationHandler extends OperationHandler imple
    }
 
    protected async createAndSaveRelationship(sourceNode: DiagramNode, targetNode: DiagramNode): Promise<Relationship | undefined> {
-      const source = sourceNode.semanticElement.$refText;
-      const target = targetNode.semanticElement.$refText;
+      const source = sourceNode.semanticElement.ref?.name || sourceNode.semanticElement.$refText;
+      const target = targetNode.semanticElement.ref?.name || targetNode.semanticElement.$refText;
 
       // search for unique file name for the relationship and use file base name as relationship name
       // if the user doesn't rename any files we should end up with unique names ;-)
@@ -72,8 +72,8 @@ export class CrossModelCreateEdgeOperationHandler extends OperationHandler imple
          name,
          type: '1:1',
          properties: [],
-         source: { $refText: source },
-         target: { $refText: target }
+         source: { $refText: sourceNode.semanticElement.$refText },
+         target: { $refText: targetNode.semanticElement.$refText }
       };
       relationshipRoot.relationship = relationship;
       const text = this.state.semanticSerializer.serialize(relationshipRoot);

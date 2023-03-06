@@ -47,7 +47,7 @@ async function createClientConnection(socket: net.Socket, services?: CrossModelL
       throw new Error('Cannot start model server without Langium services');
    }
 
-   const modelServer = new ModelServer(connection, services.language.model.ModelService);
+   const modelServer = new ModelServer(connection, services.shared.model.ModelService);
    connection.onDispose(() => modelServer.dispose());
    socket.on('close', () => modelServer.dispose());
 

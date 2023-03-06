@@ -1,0 +1,43 @@
+{
+	"name": "@crossbreeze/system",
+	"versions": {
+		"1.0.0": {
+			"name": "@crossbreeze/system",
+			"version": "1.0.0",
+			"dependencies": {
+				"@crossbreeze/relationships": "1.0.0"
+			},
+			"alias": "system",
+			"gitHead": "4e8796028c3ef56b5ecc5132b6cce37ac4bdb065",
+			"_id": "@crossbreeze/system@1.0.0",
+			"_nodeVersion": "16.19.1",
+			"_npmVersion": "8.19.3",
+			"dist": {
+				"integrity": "sha512-UKwkWMjOA0DPikPNNrCw8xTFns9r4+phmHX8bRW+OLlpCT8JsfsEGNY1BnsMcs+rmoelFzvtcPBuR/aQmubw4w==",
+				"shasum": "93ff2e80320125174a26cf7d09a0dcb9a856fdbc",
+				"tarball": "http://localhost:4873/@crossbreeze/system/-/@crossbreeze/system-1.0.0.tgz"
+			},
+			"contributors": []
+		}
+	},
+	"time": {
+		"modified": "2023-03-31T08:42:25.136Z",
+		"created": "2023-03-31T08:42:25.136Z",
+		"1.0.0": "2023-03-31T08:42:25.136Z"
+	},
+	"users": {},
+	"dist-tags": {
+		"latest": "1.0.0"
+	},
+	"_uplinks": {},
+	"_distfiles": {},
+	"_attachments": {
+		"system-1.0.0.tgz": {
+			"shasum": "93ff2e80320125174a26cf7d09a0dcb9a856fdbc",
+			"version": "1.0.0"
+		}
+	},
+	"_rev": "3-651ce3fc5caa95f7",
+	"_id": "@crossbreeze/system",
+	"readme": "ERROR: No README data found!"
+}

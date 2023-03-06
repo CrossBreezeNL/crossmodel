@@ -2,26 +2,38 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 import { AbstractFormatter, AstNode, Formatting } from 'langium';
-import * as ast from './generated/ast';
+
+const ROOT_KEYWORDS = ['entity', 'relationship', 'diagram'];
+const OTHER_KEYWORDS = [
+   'description',
+   'attributes',
+   'source',
+   'target',
+   'type',
+   'properties',
+   ':=',
+   'node',
+   'edge',
+   'for',
+   'x',
+   'y',
+   'width',
+   'height',
+   'source',
+   'target'
+];
 
 export class CrossModelModelFormatter extends AbstractFormatter {
    protected format(node: AstNode): void {
-      if (ast.isEntity(node)) {
-         const formatter = this.getNodeFormatter(node);
-         const bracesOpen = formatter.keyword('{');
-         const bracesClose = formatter.keyword('}');
-         formatter.interior(bracesOpen, bracesClose).prepend(Formatting.indent());
-         bracesClose.prepend(Formatting.newLine());
-      } else if (ast.isRelationship(node)) {
-         const formatter = this.getNodeFormatter(node);
-         const nodes = formatter.nodes(...node.properties);
-         nodes.prepend(Formatting.noIndent());
-      } else if (ast.isAttribute(node)) {
-         const formatter = this.getNodeFormatter(node);
-         const bracesOpen = formatter.keyword('{');
-         const bracesClose = formatter.keyword('}');
-         formatter.interior(bracesOpen, bracesClose).prepend(Formatting.indent());
-         bracesClose.prepend(Formatting.newLine());
-      }
+      const formatter = this.getNodeFormatter(node);
+      formatter.keywords(...ROOT_KEYWORDS).prepend(Formatting.noSpace({ allowLess: false, allowMore: false, priority: 1 }));
+      formatter.keywords(...OTHER_KEYWORDS).surround(Formatting.oneSpace({ allowLess: false, allowMore: false, priority: 1 }));
+      formatter
+         .interior(formatter.keyword('{'), formatter.keyword('}'))
+         .prepend(Formatting.indent({ allowLess: false, allowMore: false, priority: 1 }));
+      formatter
+         .keywords(';')
+         .prepend(Formatting.noSpace({ allowLess: false, allowMore: false, priority: 1 }))
+         .append(Formatting.newLine());
    }
 }

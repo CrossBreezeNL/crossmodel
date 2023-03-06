@@ -1,0 +1,5 @@
+relationship aToB {
+    source := entities/A;
+    target := entities/B;
+    type := 1:1;
+}

@@ -1,0 +1,40 @@
+{
+	"name": "@crossbreeze/example-library",
+	"versions": {
+		"1.0.0": {
+			"name": "@crossbreeze/example-library",
+			"version": "1.0.0",
+			"alias": "exampleLibrary",
+			"gitHead": "4e8796028c3ef56b5ecc5132b6cce37ac4bdb065",
+			"_id": "@crossbreeze/example-library@1.0.0",
+			"_nodeVersion": "16.19.1",
+			"_npmVersion": "8.19.3",
+			"dist": {
+				"integrity": "sha512-kaZMb3z3os4UPrpMcj9ZzJzkiPOG5EAkr/KQJsicQVEuHjH4p5AE5CvBWhLOBX2Ym9GFWdsKadIwzTvGcDK+DA==",
+				"shasum": "364fb0f1a0510cfb11609af5c2675a855918391c",
+				"tarball": "http://localhost:4873/@crossbreeze/example-library/-/@crossbreeze/example-library-1.0.0.tgz"
+			},
+			"contributors": []
+		}
+	},
+	"time": {
+		"modified": "2023-03-31T08:43:00.605Z",
+		"created": "2023-03-31T08:43:00.605Z",
+		"1.0.0": "2023-03-31T08:43:00.605Z"
+	},
+	"users": {},
+	"dist-tags": {
+		"latest": "1.0.0"
+	},
+	"_uplinks": {},
+	"_distfiles": {},
+	"_attachments": {
+		"example-library-1.0.0.tgz": {
+			"shasum": "364fb0f1a0510cfb11609af5c2675a855918391c",
+			"version": "1.0.0"
+		}
+	},
+	"_rev": "3-473fb6ef4301de3b",
+	"_id": "@crossbreeze/example-library",
+	"readme": "ERROR: No README data found!"
+}

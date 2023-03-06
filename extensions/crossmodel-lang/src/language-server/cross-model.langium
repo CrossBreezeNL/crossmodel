@@ -58,7 +58,7 @@ QualifiedName returns string:
     ID ('.' ID)*;
 
 hidden terminal WS: /\s+/;
-terminal ID: /[_a-zA-Z][\w_]*/;
+terminal ID: /[_a-zA-Z@][\w_\-@\/#]*/;
 terminal STRING: /"[^"]*"|'[^']*'/;
 terminal NUMBER returns number: /(-)?[0-9]+(\.[0-9]*)?/;
 

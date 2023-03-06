@@ -2,26 +2,47 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import {
-   AstNode,
-   AstNodeDescription,
-   DefaultNameProvider,
-   DefaultScopeComputation,
-   LangiumDocument,
-   PrecomputedScopes,
-   streamAllContents
-} from 'langium';
+import { AstNode, AstNodeDescription, DefaultScopeComputation, LangiumDocument, PrecomputedScopes, streamAllContents } from 'langium';
 import { CancellationToken } from 'vscode-jsonrpc';
 import { CrossModelServices } from './cross-model-module';
 import { QualifiedNameProvider } from './cross-model-naming';
+import { CrossModelPackageManager, UNKNOWN_PROJECT_ID, UNKNOWN_PROJECT_REFERENCE } from './cross-model-package-manager';
 import { isCrossModelRoot } from './generated/ast';
+
+export class PackageAstNodeDescription implements AstNodeDescription {
+   constructor(
+      public packageId: string,
+      public name: string,
+      public delegate: AstNodeDescription,
+      public node = delegate.node,
+      public nameSegment = delegate.nameSegment,
+      public selectionSegment = delegate.selectionSegment,
+      public type = delegate.type,
+      public documentUri = delegate.documentUri,
+      public path = delegate.path
+   ) {}
+}
+
+export class PackageLocalAstNodeDescription extends PackageAstNodeDescription {
+   constructor(packageName: string, name: string, delegate: AstNodeDescription) {
+      super(packageName, name, delegate);
+   }
+}
+
+export class PackageExternalAstNodeDescription extends PackageAstNodeDescription {
+   constructor(packageName: string, name: string, delegate: AstNodeDescription) {
+      super(packageName, name, delegate);
+   }
+}
 
 export class CrossModelScopeComputation extends DefaultScopeComputation {
    protected override nameProvider: QualifiedNameProvider;
+   protected packageManager: CrossModelPackageManager;
 
    constructor(services: CrossModelServices) {
       super(services);
       this.nameProvider = services.references.QualifiedNameProvider;
+      this.packageManager = services.shared.workspace.PackageManager;
    }
 
    // overridden because we use 'streamAllContents' as children retrieval instead of 'streamContents'
@@ -39,18 +60,30 @@ export class CrossModelScopeComputation extends DefaultScopeComputation {
       return super.computeExportsForNode(parentNode, document, children, cancelToken);
    }
 
-   override async computeLocalScopes(
-      document: LangiumDocument<AstNode>,
-      cancelToken?: CancellationToken | undefined
-   ): Promise<PrecomputedScopes> {
-      // use local scope to provide secondary access to globally available objects using a local name only
-      const qualifiedNameProvider = this.nameProvider;
-      try {
-         this.nameProvider = new DefaultNameProvider();
-         const result = await super.computeLocalScopes(document, cancelToken);
-         return result;
-      } finally {
-         this.nameProvider = qualifiedNameProvider;
+   protected override exportNode(node: AstNode, exports: AstNodeDescription[], document: LangiumDocument<AstNode>): void {
+      const packageInfo = this.packageManager.getPackageInfoByDocument(document);
+      const packageId = packageInfo?.id ?? UNKNOWN_PROJECT_ID;
+      const packageName = packageInfo?.referenceName ?? UNKNOWN_PROJECT_REFERENCE;
+      const packageQualifiedName = this.nameProvider.getFullyQualifiedName(node, packageName);
+
+      let description: AstNodeDescription | undefined;
+      if (packageQualifiedName) {
+         description = this.descriptions.createDescription(node, packageQualifiedName, document);
+         exports.push(new PackageExternalAstNodeDescription(packageId, packageQualifiedName, description));
+      }
+      const packageLocalName = this.nameProvider.getQualifiedName(node);
+      if (packageLocalName && description) {
+         exports.push(new PackageLocalAstNodeDescription(packageId, packageLocalName, description));
+      }
+   }
+
+   protected override processNode(node: AstNode, document: LangiumDocument, scopes: PrecomputedScopes): void {
+      const container = node.$container;
+      if (container) {
+         const name = this.nameProvider.getLocalName(node);
+         if (name) {
+            scopes.add(container, this.descriptions.createDescription(node, name, document));
+         }
       }
    }
 }

@@ -3,7 +3,7 @@
  ********************************************************************************/
 import { DefaultModelState } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
-import { NameProvider } from 'langium';
+import { QualifiedNameProvider } from '../../language-server/cross-model-naming';
 import { CrossModelRoot, SystemDiagram } from '../../language-server/generated/ast';
 import { ModelService } from '../../model-server/model-service';
 import { DiagramSerializer } from '../../model-server/serializer';
@@ -37,19 +37,19 @@ export class CrossModelState extends DefaultModelState {
    }
 
    get modelService(): ModelService {
-      return this.services.language.model.ModelService;
+      return this.services.shared.model.ModelService;
    }
 
    get semanticSerializer(): DiagramSerializer<CrossModelRoot> {
       return this.services.language.serializer.Serializer;
    }
 
-   get nameProvider(): NameProvider {
+   get nameProvider(): QualifiedNameProvider {
       return this.services.language.references.QualifiedNameProvider;
    }
 
    async updateSemanticRoot(content?: string): Promise<void> {
-      this._semanticRoot = await this.services.language.model.ModelService.update(this.semanticUri, content ?? this.semanticRoot);
+      this._semanticRoot = await this.modelService.update(this.semanticUri, content ?? this.semanticRoot);
       this.index.indexSemanticRoot(this.semanticRoot);
    }
 

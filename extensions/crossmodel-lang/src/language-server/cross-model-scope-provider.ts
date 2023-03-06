@@ -3,22 +3,42 @@
  ********************************************************************************/
 import { AstNodeDescription, DefaultScopeProvider, getDocument, ReferenceInfo, Scope, StreamScope } from 'langium';
 import { CrossModelServices } from './cross-model-module';
-import { CrossModelWorkspaceManager } from './cross-model-workspace-manager';
+import { PackageAstNodeDescription, PackageExternalAstNodeDescription } from './cross-model-scope';
 
-class WorkspaceFolderScopeProvider extends DefaultScopeProvider {
-   protected readonly workspaceManager: CrossModelWorkspaceManager;
-
-   constructor(protected services: CrossModelServices) {
+export class PackageScopeProvider extends DefaultScopeProvider {
+   constructor(protected services: CrossModelServices, protected packageManager = services.shared.workspace.PackageManager) {
       super(services);
-      this.workspaceManager = services.shared.workspace.WorkspaceManager;
+   }
+
+   protected getPackageId(description: AstNodeDescription): string {
+      return description instanceof PackageAstNodeDescription
+         ? description.packageId
+         : this.packageManager.getPackageIdByUri(description.documentUri);
    }
 
    protected override getGlobalScope(referenceType: string, context: ReferenceInfo): Scope {
-      const contextUri = getDocument(context.container).uri;
       const globalScope = super.getGlobalScope(referenceType, context);
-      const filter = (desc: AstNodeDescription): boolean => this.workspaceManager.areInSameWorkspace(desc.documentUri, contextUri);
-      return new StreamScope(globalScope.getAllElements().filter(filter));
+
+      const source = getDocument(context.container);
+      const sourcePackage = this.packageManager.getPackageIdByUri(source.uri);
+
+      const dependencyScope = new StreamScope(
+         globalScope
+            .getAllElements()
+            .filter(
+               description =>
+                  description instanceof PackageExternalAstNodeDescription &&
+                  this.packageManager.isVisible(sourcePackage, this.getPackageId(description))
+            )
+      );
+
+      const projectScope = new StreamScope(
+         globalScope.getAllElements().filter(description => sourcePackage === this.getPackageId(description)),
+         dependencyScope
+      );
+
+      return projectScope;
    }
 }
 
-export class CrossModelScopeProvider extends WorkspaceFolderScopeProvider {}
+export class CrossModelScopeProvider extends PackageScopeProvider {}

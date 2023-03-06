@@ -12,8 +12,10 @@ export class ClientLogger {
     *
     * @param message The message to show.
     */
-   error(message: string): void {
-      this.services.lsp.Connection?.console.error(message);
+   error(message?: string): void {
+      if (message) {
+         this.services.lsp.Connection?.console.error(message);
+      }
    }
 
    /**
@@ -21,8 +23,10 @@ export class ClientLogger {
     *
     * @param message The message to show.
     */
-   warn(message: string): void {
-      this.services.lsp.Connection?.console.warn(message);
+   warn(message?: string): void {
+      if (message) {
+         this.services.lsp.Connection?.console.warn(message);
+      }
    }
 
    /**
@@ -30,8 +34,10 @@ export class ClientLogger {
     *
     * @param message The message to show.
     */
-   info(message: string): void {
-      this.services.lsp.Connection?.console.info(message);
+   info(message?: string): void {
+      if (message) {
+         this.services.lsp.Connection?.console.info(message);
+      }
    }
 
    /**
@@ -39,7 +45,9 @@ export class ClientLogger {
     *
     * @param message The message to log.
     */
-   log(message: string): void {
-      this.services.lsp.Connection?.console.log(message);
+   log(message?: string): void {
+      if (message) {
+         this.services.lsp.Connection?.console.log(message);
+      }
    }
 }

@@ -2,25 +2,18 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { AstNode, DocumentBuilder, isAstNode, LangiumDefaultSharedServices, LangiumDocuments } from 'langium';
+import { AstNode, isAstNode } from 'langium';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { URI } from 'vscode-uri';
-import { AddedSharedModelServices, ModelServices } from './model-module';
-import { OpenTextDocumentManager } from './open-text-document-manager';
-import { Serializer } from './serializer';
+import { CrossModelSharedServices } from '../language-server/cross-model-module';
 
 export class ModelService {
-   protected serializer: Serializer<AstNode>;
-   protected documentManager: OpenTextDocumentManager;
-   protected documents: LangiumDocuments;
-   protected documentBuilder: DocumentBuilder;
-
-   constructor(modelServices: ModelServices, shared: AddedSharedModelServices & LangiumDefaultSharedServices) {
-      this.serializer = modelServices.serializer.Serializer;
-      this.documentManager = shared.workspace.TextDocumentManager;
-      this.documents = shared.workspace.LangiumDocuments;
-      this.documentBuilder = shared.workspace.DocumentBuilder;
-   }
+   constructor(
+      protected shared: CrossModelSharedServices,
+      protected documentManager = shared.workspace.TextDocumentManager,
+      protected documents = shared.workspace.LangiumDocuments,
+      protected documentBuilder = shared.workspace.DocumentBuilder
+   ) {}
 
    async open(uri: string): Promise<void> {
       return this.documentManager.open(uri);
@@ -48,7 +41,7 @@ export class ModelService {
          throw new Error(`No AST node to update exists in '${uri}'`);
       }
 
-      const text = typeof model === 'string' ? model : this.serializer.serialize(model);
+      const text = typeof model === 'string' ? model : this.serialize(URI.parse(uri), model);
       const version = document.textDocument.version + 1;
 
       TextDocument.update(document.textDocument, [{ text }], version);
@@ -59,7 +52,12 @@ export class ModelService {
    }
 
    async save(uri: string, model: AstNode | string): Promise<void> {
-      const text = typeof model === 'string' ? model : this.serializer.serialize(model);
+      const text = typeof model === 'string' ? model : this.serialize(URI.parse(uri), model);
       return this.documentManager.save(uri, text);
+   }
+
+   protected serialize(uri: URI, model: AstNode): string {
+      const serializer = this.shared.ServiceRegistry.getServices(uri).serializer.Serializer;
+      return serializer.serialize(model);
    }
 }

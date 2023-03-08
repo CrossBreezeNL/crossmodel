@@ -8,13 +8,14 @@
     "extensions/*"
   ],
   "scripts": {
-    "electron": "yarn --cwd applications/electron-app",
     "postinstall": "theia check:theia-version",
     "lint": "lerna run lint",
     "prepare": "lerna run prepare",
-    "rebuild:electron": "theia rebuild:electron",
-    "start:electron": "yarn rebuild:electron && yarn electron start",
+    "start:browser": "yarn theia:browser start",
+    "start:electron": "yarn theia:electron start",
     "test": "jest --config configs/jest.config.ts",
+    "theia:browser": "yarn --cwd applications/browser-app",
+    "theia:electron": "yarn --cwd applications/electron-app",
     "watch": "lerna run --parallel watch"
   },
   "devDependencies": {

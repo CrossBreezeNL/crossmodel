@@ -46,7 +46,7 @@ If you also made changes to the backend, you can close and restart the appliacti
 
 To package the application use
 
-    yarn electron package
+    yarn theia:electron package
 
 Depending on the platform, this will produce an executable or an installer for the application under `applications/electron-app/dist`.
 Details about the packaging can be configured in `applications/electron-app/electron-builder.yml`.

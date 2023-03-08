@@ -29,9 +29,9 @@
     "watch": "tsc -w"
   },
   "dependencies": {
-    "@theia/core": "^1.34.1",
-    "@theia/getting-started": "^1.34.1",
-    "@theia/workspace": "^1.34.1"
+    "@theia/core": "^1.34.2",
+    "@theia/getting-started": "^1.34.2",
+    "@theia/workspace": "^1.34.2"
   },
   "theiaExtensions": [
     {

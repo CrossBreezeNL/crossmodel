@@ -23,8 +23,7 @@ export default function createCrossModelDiagramContainer(widgetId: string): Cont
 
    overrideViewerOptions(container, {
       baseDiv: widgetId,
-      hiddenDiv: widgetId + '_hidden',
-      needsClientLayout: true
+      hiddenDiv: widgetId + '_hidden'
    });
 
    return container;

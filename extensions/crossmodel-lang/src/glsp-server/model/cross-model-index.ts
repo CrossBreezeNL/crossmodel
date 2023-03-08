@@ -40,22 +40,22 @@ export class CrossModelIndex extends GModelIndex {
    }
 
    findEntity(id: string): Entity | undefined {
-      return this.findSemanticNode(id, isEntity);
+      return this.findSemanticElement(id, isEntity);
    }
 
    findRelationship(id: string): Relationship | undefined {
-      return this.findSemanticNode(id, isRelationship);
+      return this.findSemanticElement(id, isRelationship);
    }
 
    findDiagramNode(id: string): DiagramNode | undefined {
-      return this.findSemanticNode(id, isDiagramNode);
+      return this.findSemanticElement(id, isDiagramNode);
    }
 
    findDiagramEdge(id: string): DiagramEdge | undefined {
-      return this.findSemanticNode(id, isDiagramEdge);
+      return this.findSemanticElement(id, isDiagramEdge);
    }
 
-   findSemanticNode<T extends AstNode>(id: string, guard: (item: unknown) => item is T): T | undefined {
+   findSemanticElement<T extends AstNode>(id: string, guard: (item: unknown) => item is T): T | undefined {
       const semanticNode = this.idToSemanticNode.get(id);
       return guard(semanticNode) ? semanticNode : undefined;
    }

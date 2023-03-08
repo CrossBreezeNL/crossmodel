@@ -964,7 +964,7 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
       },
       "definition": {
         "$type": "RegexToken",
-        "regex": "[0-9]+(\\\\.[0-9]*)?"
+        "regex": "(-)?[0-9]+(\\\\.[0-9]*)?"
       },
       "fragment": false,
       "hidden": false

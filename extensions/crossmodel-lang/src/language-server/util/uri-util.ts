@@ -1,8 +1,9 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
+import * as fs from 'fs';
 import * as nodePath from 'path';
-import { URI } from 'vscode-uri';
+import { URI, Utils as UriUtils } from 'vscode-uri';
 
 const posixPath = nodePath.posix || nodePath;
 
@@ -19,5 +20,25 @@ export namespace Utils {
       const [first, ...rest] = uris;
       const folder = folderProvider(first);
       return rest.every(uri => folderProvider(uri)?.fsPath === folder?.fsPath);
+   }
+
+   export function findNewUri(uri: URI): URI {
+      if (!exists(uri)) {
+         return uri;
+      }
+      let newUri = uri;
+      const dirName = UriUtils.dirname(newUri);
+      const baseName = UriUtils.basename(uri);
+      const [base, ...extensions] = baseName.split('.');
+      const extension = extensions.join('.');
+      let counter = 0;
+      do {
+         newUri = UriUtils.joinPath(dirName, base + counter++ + '.' + extension);
+      } while (exists(newUri));
+      return newUri;
+   }
+
+   export function exists(uri: URI): boolean {
+      return fs.existsSync(uri.fsPath);
    }
 }

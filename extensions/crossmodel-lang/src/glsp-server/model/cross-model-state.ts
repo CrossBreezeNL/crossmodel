@@ -3,8 +3,10 @@
  ********************************************************************************/
 import { DefaultModelState } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
-import { LangiumDocument } from 'langium';
+import { NameProvider } from 'langium';
 import { CrossModelRoot, SystemDiagram } from '../../language-server/generated/ast';
+import { ModelService } from '../../model-server/model-service';
+import { DiagramSerializer } from '../../model-server/serializer';
 import { CrossModelLSPServices } from '../integration';
 import { CrossModelIndex } from './cross-model-index';
 
@@ -13,26 +15,45 @@ export class CrossModelState extends DefaultModelState {
    @inject(CrossModelIndex) override readonly index: CrossModelIndex;
    @inject(CrossModelLSPServices) readonly services: CrossModelLSPServices;
 
-   protected _document: LangiumDocument<CrossModelRoot>;
+   protected _semanticUri: string;
+   protected _semanticRoot: CrossModelRoot;
 
-   get document(): LangiumDocument<CrossModelRoot> {
-      return this._document;
-   }
-
-   set document(document: LangiumDocument<CrossModelRoot>) {
-      this._document = document;
+   setSemanticRoot(uri: string, semanticRoot: CrossModelRoot): void {
+      this._semanticUri = uri;
+      this._semanticRoot = semanticRoot;
       this.index.indexSemanticRoot(this.semanticRoot);
    }
 
+   get semanticUri(): string {
+      return this._semanticUri;
+   }
+
    get semanticRoot(): CrossModelRoot {
-      return this.document.parseResult.value;
+      return this._semanticRoot;
    }
 
    get diagramRoot(): SystemDiagram {
       return this.semanticRoot.diagram!;
    }
 
-   get id(): string {
-      return this.document.uri.fsPath;
+   get modelService(): ModelService {
+      return this.services.language.model.ModelService;
+   }
+
+   get semanticSerializer(): DiagramSerializer<CrossModelRoot> {
+      return this.services.language.serializer.Serializer;
+   }
+
+   get nameProvider(): NameProvider {
+      return this.services.language.references.QualifiedNameProvider;
+   }
+
+   async updateSemanticRoot(content?: string): Promise<void> {
+      this._semanticRoot = await this.services.language.model.ModelService.update(this.semanticUri, content ?? this.semanticRoot);
+      this.index.indexSemanticRoot(this.semanticRoot);
+   }
+
+   semanticText(): string {
+      return this.services.language.serializer.Serializer.serialize(this.semanticRoot);
    }
 }

@@ -1,5 +1,5 @@
 {
-  "name": "crossmodel-app",
+  "name": "crossmodel-browser-app",
   "version": "0.0.0",
   "private": true,
   "description": "CrossModel Community Edition",
@@ -13,19 +13,11 @@
     "name": "CrossBreeze Team",
     "email": "team@x-breeze.com"
   },
-  "main": "scripts/electron-main.js",
   "scripts": {
     "clean": "theia clean && rimraf lib && rimraf src-gen",
-    "deploy": "rimraf dist && electron-builder -c.mac.identity=null --publish always",
-    "download:plugins": "theia download:plugins",
-    "package": "yarn package:pre && electron-builder -c.mac.identity=null --publish never && yarn package:post",
-    "package:extensions": "yarn --cwd ../../extensions/crossmodel-lang package -o ../../applications/electron-app/plugins/",
-    "package:post": "rimraf plugins/crossmodel-lang* && yarn --cwd ../../extensions/crossmodel-lang symlink",
-    "package:pre": "rimraf dist && rimraf plugins/crossmodel-lang && yarn package:extensions",
-    "package:preview": "yarn package:pre && electron-builder -c.mac.identity=null --dir && yarn package:post",
-    "prepare": "theia build --mode development && yarn download:plugins",
-    "rebuild": "theia rebuild:electron --cacheRoot ../..",
-    "start": "yarn rebuild && NODE_ENV=development theia start --plugins=local-dir:plugins",
+    "prepare": "theia build --mode development",
+    "rebuild": "theia rebuild:browser --cacheRoot ../..",
+    "start": "yarn rebuild && theia start --plugins=local-dir:plugins",
     "watch": "theia build --watch --mode development"
   },
   "dependencies": {
@@ -35,7 +27,6 @@
     "@crossbreeze/product": "0.0.0",
     "@theia/core": "^1.34.2",
     "@theia/editor": "^1.34.2",
-    "@theia/electron": "^1.34.2",
     "@theia/filesystem": "^1.34.2",
     "@theia/markers": "^1.34.2",
     "@theia/messages": "^1.34.2",
@@ -49,13 +40,11 @@
     "@theia/workspace": "^1.34.2"
   },
   "devDependencies": {
-    "@theia/cli": "^1.34.2",
-    "electron": "^15.3.5",
-    "electron-builder": "^23.6.0"
+    "@theia/cli": "^1.34.2"
   },
   "productName": "CrossModel Community Edition",
   "theia": {
-    "target": "electron",
+    "target": "browser",
     "frontend": {
       "config": {
         "applicationName": "CrossModel Community Edition",

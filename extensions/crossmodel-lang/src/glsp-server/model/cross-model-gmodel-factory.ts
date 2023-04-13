@@ -26,13 +26,14 @@ export class CrossModelGModelFactory implements GModelFactory {
    }
 
    protected createDiagramNode(node: DiagramNode): GNode {
+      const id = this.modelState.index.createId(node) ?? 'unknown';
       const label = GLabel.builder()
          .text(node.semanticElement.ref?.name || 'unresolved')
-         .id(`${node.name}_label`)
+         .id(`${id}_label`)
          .build();
 
       return GNode.builder()
-         .id(node.name)
+         .id(id)
          .addCssClasses('diagram-node', 'entity')
          .add(label)
          .layout('hbox')
@@ -44,11 +45,12 @@ export class CrossModelGModelFactory implements GModelFactory {
    }
 
    protected createDiagramEdge(edge: DiagramEdge): GEdge {
+      const id = this.modelState.index.createId(edge) ?? 'unknown';
       return GEdge.builder()
-         .id(edge.name)
+         .id(id)
          .addCssClasses('diagram-edge', 'relationship')
-         .sourceId(edge.source.ref!.name)
-         .targetId(edge.target.ref!.name)
+         .sourceId(edge.source.$refText)
+         .targetId(edge.target.$refText)
          .build();
    }
 }

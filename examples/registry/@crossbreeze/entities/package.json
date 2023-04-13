@@ -1,0 +1,40 @@
+{
+	"name": "@crossbreeze/entities",
+	"versions": {
+		"1.0.0": {
+			"name": "@crossbreeze/entities",
+			"version": "1.0.0",
+			"alias": "entities",
+			"gitHead": "4e8796028c3ef56b5ecc5132b6cce37ac4bdb065",
+			"_id": "@crossbreeze/entities@1.0.0",
+			"_nodeVersion": "16.19.1",
+			"_npmVersion": "8.19.3",
+			"dist": {
+				"integrity": "sha512-j3sLE+Pzupdmy93zYJk+XIrtetf+kdNG7/jFeUeM69CC1/HxizSn6N4uGNNhlkGsZCvkZ255mk5ZUSn0HJsqsQ==",
+				"shasum": "f7354a4bb2cd5d733f300cb74f8680f20ecd784f",
+				"tarball": "http://localhost:4873/@crossbreeze/entities/-/@crossbreeze/entities-1.0.0.tgz"
+			},
+			"contributors": []
+		}
+	},
+	"time": {
+		"modified": "2023-03-31T08:35:24.612Z",
+		"created": "2023-03-31T08:35:24.612Z",
+		"1.0.0": "2023-03-31T08:35:24.612Z"
+	},
+	"users": {},
+	"dist-tags": {
+		"latest": "1.0.0"
+	},
+	"_uplinks": {},
+	"_distfiles": {},
+	"_attachments": {
+		"entities-1.0.0.tgz": {
+			"shasum": "f7354a4bb2cd5d733f300cb74f8680f20ecd784f",
+			"version": "1.0.0"
+		}
+	},
+	"_rev": "3-4257dde6c56f0e26",
+	"_id": "@crossbreeze/entities",
+	"readme": "ERROR: No README data found!"
+}

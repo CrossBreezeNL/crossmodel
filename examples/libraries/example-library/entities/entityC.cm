@@ -1,0 +1,7 @@
+entity C {
+    description := "hello";
+    attributes {
+        name := 'A';
+    }
+}
+ 

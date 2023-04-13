@@ -1,20 +1,20 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { DefaultWorkspaceManager, interruptAndCheck, LangiumDocument } from 'langium';
+import { AstNode, DefaultWorkspaceManager, DocumentState, FileSystemNode, interruptAndCheck, LangiumDocument } from 'langium';
 import { CancellationToken, Emitter, Event, WorkspaceFolder } from 'vscode-languageserver';
-import { URI } from 'vscode-uri';
+import { URI, Utils } from 'vscode-uri';
 import { CrossModelSharedServices } from './cross-model-module';
-import { Utils } from './util/uri-util';
 
 export class CrossModelWorkspaceManager extends DefaultWorkspaceManager {
    protected onWorkspaceInitializedEmitter = new Emitter<void>();
-   protected workspaceFolders: URI[] = [];
 
    constructor(protected services: CrossModelSharedServices, protected logger = services.logger.ClientLogger) {
       super(services);
-      services.lsp.LanguageServer.onInitialize(params => {
-         this.workspaceFolders = params.workspaceFolders?.map(folder => this.getRootFolder(folder)) || [];
+      const buildListener = this.documentBuilder.onBuildPhase(DocumentState.Validated, () => {
+         this.logger.info('Workspace Initialized');
+         buildListener.dispose();
+         this.onWorkspaceInitializedEmitter.fire();
       });
    }
 
@@ -23,7 +23,8 @@ export class CrossModelWorkspaceManager extends DefaultWorkspaceManager {
    }
 
    override async initializeWorkspace(folders: WorkspaceFolder[], cancelToken = CancellationToken.None): Promise<void> {
-      // same as super implementation but we also call validation on the build and fire an event after we are done
+      // Note: same as super implementation but we also call validation on the build and fire an event after we are done
+
       const fileExtensions = this.serviceRegistry.all.flatMap(e => e.LanguageMetaData.fileExtensions);
       const documents: LangiumDocument[] = [];
       const collector = (document: LangiumDocument): void => {
@@ -44,16 +45,31 @@ export class CrossModelWorkspaceManager extends DefaultWorkspaceManager {
       // Only after creating all documents do we check whether we need to cancel the initialization
       // The document builder will later pick up on all unprocessed documents
       await interruptAndCheck(cancelToken);
+
+      // CHANGE: Use validation 'all'
       await this.documentBuilder.build(documents, { validationChecks: 'all' }, cancelToken);
-      this.logger.info('Workspace Initialized');
-      this.onWorkspaceInitializedEmitter.fire();
    }
 
-   findWorkspaceFolder(uri?: URI): URI | undefined {
-      return !uri ? undefined : this.workspaceFolders.find(folder => Utils.isChildOf(folder, uri));
+   protected override async loadAdditionalDocuments(
+      folders: WorkspaceFolder[],
+      _collector: (document: LangiumDocument<AstNode>) => void
+   ): Promise<void> {
+      return this.services.workspace.PackageManager.initialize(folders);
    }
 
-   areInSameWorkspace(...uris: URI[]): boolean {
-      return Utils.matchSameFolder(uri => this.findWorkspaceFolder(uri), ...uris);
+   protected override includeEntry(_workspaceFolder: WorkspaceFolder, entry: FileSystemNode, fileExtensions: string[]): boolean {
+      // Note: same as super implementation but we also allow 'node_modules' directories to be scanned
+      const name = Utils.basename(entry.uri);
+      if (name.startsWith('.')) {
+         return false;
+      }
+      if (entry.isDirectory) {
+         // CHANGE: Also support 'node_modules' directory
+         return name !== 'out';
+      } else if (entry.isFile) {
+         const extname = Utils.extname(entry.uri);
+         return fileExtensions.includes(extname);
+      }
+      return false;
    }
 }

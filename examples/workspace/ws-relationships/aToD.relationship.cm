@@ -1,0 +1,5 @@
+relationship aToD {
+    source := A;
+    target := entities/D;
+    type := 1:n;
+}

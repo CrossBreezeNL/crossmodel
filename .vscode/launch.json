@@ -23,6 +23,7 @@
         "--loglevel=debug",
         "--hostname=localhost",
         "--no-cluster",
+        "--root-dir=${workspaceRoot}/examples/workspace",
         "--app-project-path=${workspaceFolder}/applications/electron-app",
         "--remote-debugging-port=9222",
         "--no-app-auto-install",
@@ -48,6 +49,45 @@
       "internalConsoleOptions": "openOnSessionStart",
       "outputCapture": "std",
       "stopOnEntry": true
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch CrossModel Browser Backend",
+      "program": "${workspaceRoot}/applications/browser-app/src-gen/backend/main.js",
+      "cwd": "${workspaceFolder}/applications/browser-app",
+      "protocol": "inspector",
+      "args": [
+        "${workspaceFolder}/applications/browser-app",
+        "--debug",
+        "--loglevel=debug",
+        "--hostname=localhost",
+        "--no-cluster",
+        "--root-dir=${workspaceRoot}/examples/workspace",
+        "--app-project-path=${workspaceFolder}/applications/browser-app",
+        "--no-app-auto-install",
+        "--plugins=local-dir:${workspaceFolder}/applications/browser-app/plugins"
+      ],
+      "env": {
+        "NODE_ENV": "development",
+        "NODE_OPTIONS": "--enable-source-maps"
+      },
+      "sourceMaps": true,
+      "skipFiles": ["<node_internals>/**"],
+      "outFiles": [
+        "${workspaceFolder}/applications/electron-app/lib/**/*.js",
+        "${workspaceFolder}/applications/electron-app/src-gen/frontend/electron-main.js",
+        "${workspaceFolder}/applications/electron-app/src-gen/backend/server.js",
+        "${workspaceFolder}/applications/electron-app/src-gen/backend/main.js",
+        "${workspaceFolder}/extensions/*/out/**/*.js",
+        "${workspaceFolder}/packages/*/lib/**/*.js",
+        "${workspaceFolder}/node_modules/langium/lib/**/*.js",
+        "${workspaceFolder}/node_modules/@eclipse-glsp/*/lib/**/*.js"
+      ],
+      "smartStep": true,
+      "internalConsoleOptions": "openOnSessionStart",
+      "outputCapture": "std",
+      "stopOnEntry": false
     },
     {
       "name": "Run CrossModel Language in VS Code",

@@ -50,3 +50,24 @@ To package the application use
 
 Depending on the platform, this will produce an executable or an installer for the application under `applications/electron-app/dist`.
 Details about the packaging can be configured in `applications/electron-app/electron-builder.yml`.
+
+## Example Workspace
+
+Under `examples/workspace` we provide an example workspace with some demo packages containing entities, relationships and system diagrams.
+Each package represents a dedicated system or library and may depend on other packages.
+
+Using a known package structure - npm in our case - we can re-use large parts of the package management to download dependencies that are not locally available from an external package registry.
+In order to test this behavior, we use verdaccio as a local npm registry that provides some models that are needed by our workspace packages.
+You can start verdaccio using
+
+    yarn start:verdaccio
+
+The local npm registry will be available under `http://localhost:4873/` where we already provide four packages by default.
+
+After opening the workspace, you can install the necessary dependencies in the example workspace by opening a terminal in `examples/workspace` and execute
+
+    npm install
+
+This should download all dependencies into dedicated `node_modules` directories within the workspace.
+
+Currently there is still an issue where new files are not recognized automatically, so you need to reload your workspace once for all the dependencies to be properly recognized.

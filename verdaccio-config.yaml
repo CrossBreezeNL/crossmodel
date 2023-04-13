@@ -1,0 +1,14 @@
+storage: ./examples/registry
+uplinks:
+packages:
+   '@*/*':
+      # allow all users (including non-authenticated users) to read and
+      # publish all packages
+      access: '@all'
+      publish: '@all'
+   '**':
+      # allow all users (including non-authenticated users) to read and
+      # publish all packages
+      access: '@all'
+      publish: '@all'
+log: { type: stdout, format: pretty, level: http }

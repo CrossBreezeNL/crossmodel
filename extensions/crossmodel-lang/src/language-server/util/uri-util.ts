@@ -41,4 +41,28 @@ export namespace Utils {
    export function exists(uri: URI): boolean {
       return fs.existsSync(uri.fsPath);
    }
+
+   export function toRealURI(uri: URI): URI {
+      return URI.file(fs.realpathSync(uri.fsPath));
+   }
+
+   export function isDirectory(uri: URI): boolean | undefined {
+      try {
+         return fs.lstatSync(uri.fsPath).isDirectory();
+      } catch (error) {
+         return undefined;
+      }
+   }
+
+   export function isFile(uri: URI): boolean {
+      return !isDirectory(uri);
+   }
+
+   export function flatten(uri: URI): URI[] {
+      return isFile(uri) ? [uri] : fs.readdirSync(uri.fsPath).flatMap(child => flatten(UriUtils.resolvePath(uri, child)));
+   }
+
+   export function readFile(uri: URI): string {
+      return fs.readFileSync(uri.fsPath, 'utf8');
+   }
 }

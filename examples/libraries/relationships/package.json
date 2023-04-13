@@ -1,0 +1,8 @@
+{
+  "name": "@crossbreeze/relationships",
+  "version": "1.0.0",
+  "dependencies": {
+    "@crossbreeze/entities": "1.0.0"
+  },
+  "alias": "relationships"
+}

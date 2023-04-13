@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@crossbreeze/core": "0.0.0",
-    "@theia/core": "^1.34.2",
+    "@theia/core": "^1.34.4",
     "vscode-jsonrpc": "^8.0.2"
   },
   "theiaExtensions": [

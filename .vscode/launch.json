@@ -13,7 +13,6 @@
       "windows": {
         "name": "Launch Electron",
         "request": "launch",
-        "type": "node",
         "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron.cmd"
       },
       "cwd": "${workspaceFolder}/applications/electron-app",

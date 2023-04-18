@@ -67,6 +67,7 @@ module.exports = {
         'no-null/no-null': 'error',
         // chai friendly
         'no-unused-expressions': 'off',
-        'chai-friendly/no-unused-expressions': 'error'
+        'chai-friendly/no-unused-expressions': 'error',
+        'react/react-in-jsx-scope': 'off'
     }
 };

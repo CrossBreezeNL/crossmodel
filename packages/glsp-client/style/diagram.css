@@ -2,6 +2,50 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-.entity > .sprotty-node {
-   fill: #5c87bd;
+:root {
+    --sprotty-background: var(--theia-layout-color3);
+    --sprotty-edge: var(--theia-editor-foreground);
+    --sprotty-border: var(--theia-editor-foreground);
+}
+
+/* Standard sprotty */
+.sprotty {
+    height: 100%;
+}
+
+.sprotty-graph .sprotty-node {
+    fill: inherit;
+}
+
+.sprotty-graph {
+    font-size: 15pt;
+    height: 100%;
+    background: var(--sprotty-background);
+}
+
+/* Nodes */
+.diagram-node {
+    fill: #fffcdf;
+    stroke: black;
+    filter: url(#dropShadow);
+}
+
+.entity-header {
+    font-weight: bold;
+}
+
+.diagram-node > .sprotty-node:not(.selected) {
+    stroke-width: 1px;
+}
+
+.header-container-diagram-node {
+    stroke: 1;
+}
+
+.sprotty-node.mouseover:not(.selected) {
+    stroke-width: 3px;
+}
+
+.sprotty-node.selected {
+    stroke-width: 5px;
 }

@@ -5,8 +5,10 @@ import { ArgsUtil, GCompartment, GLabel, GNode, GNodeBuilder } from '@eclipse-gl
 import { DiagramNode } from '../../../language-server/generated/ast';
 
 export class GEntityNode extends GNode {
+   override type = 'node:entity';
+
    static override builder(): GEntityNodeBuilder {
-      return new GEntityNodeBuilder(GEntityNode);
+      return new GEntityNodeBuilder(GEntityNode).type('node:entity');
    }
 }
 
@@ -27,12 +29,12 @@ export class GEntityNodeBuilder extends GNodeBuilder {
       const label = GCompartment.builder()
          .layout('hbox')
          .addLayoutOption('hAlign', 'center')
-         .addLayoutOption('paddingBottom', 0)
          .addCssClass('header-container-diagram-node')
          .add(
             GLabel.builder()
                .text(entityRef?.name || 'unresolved')
                .id(`${this.proxy.id}_label`)
+               .addCssClass('entity-header')
                .build()
          )
          .build();
@@ -52,7 +54,8 @@ export class GEntityNodeBuilder extends GNodeBuilder {
             const attributeCompartment = GCompartment.builder()
                .addCssClass('attribute-compartment')
                .layout('hbox')
-               .addLayoutOption('paddingBottom', 0);
+               .addLayoutOption('paddingBottom', 3)
+               .addLayoutOption('paddingTop', 3);
 
             attributeCompartment.add(GLabel.builder().text(attribute.name).addCssClass('attribute').build());
             attributeCompartment.add(GLabel.builder().text(' : ').build());

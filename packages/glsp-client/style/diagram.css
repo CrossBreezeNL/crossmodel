@@ -27,6 +27,11 @@
 .diagram-node {
    fill: #fffcdf;
    stroke: black;
+   filter: url(#dropShadow);
+}
+
+.entity-header {
+   font-weight: bold;
 }
 
 .diagram-node > .sprotty-node:not(.selected) {

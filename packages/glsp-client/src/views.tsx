@@ -22,7 +22,7 @@ export class EntityNodeView extends RectangularNodeView {
                         <feDropShadow dx='0.5' dy='0.5' stdDeviation='0.4' />
                     </filter>
                 </defs>
-                <rect x={0} y={0} rx={6} ry={6} width={Math.max(0, node.bounds.width)} height={Math.max(0, node.bounds.height)} />
+                <rect x={0} y={0} rx={6} width={Math.max(0, node.bounds.width)} height={Math.max(0, node.bounds.height)} />
 
                 {/* The renderChildren function will render SVG objects for the children of the node object. */}
                 {/* TODO: Check with ES how to fix the mentioned problem below. */}

@@ -6,6 +6,7 @@ import { injectable } from 'inversify';
 import { VNode } from 'snabbdom';
 import { RenderingContext, svg, RectangularNodeView } from 'sprotty/lib';
 import { EntityNode } from './model';
+import { ReactNode } from '@theia/core/shared/react';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const JSX = { createElement: svg };
@@ -26,7 +27,7 @@ export class EntityNodeView extends RectangularNodeView {
 
                 {/* The renderChildren function will render SVG objects for the children of the node object. */}
                 {/* TODO: Check with ES how to fix the mentioned problem below. */}
-                {context.renderChildren(node)}
+                {context.renderChildren(node) as ReactNode}
 
                 {node.children[1] && node.children[1].children.length > 0 ? <path d={rhombStr}></path> : ''}
             </g>

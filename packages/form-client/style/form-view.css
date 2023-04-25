@@ -31,3 +31,7 @@
     resize: none;
     margin-bottom: 5px;
 }
+
+.form-editor-attributes-tab {
+    padding: 0 10px;
+}

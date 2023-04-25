@@ -8,7 +8,7 @@ import URI from '@theia/core/lib/common/uri';
 import { inject, injectable, postConstruct } from '@theia/core/shared/inversify';
 import * as React from '@theia/core/shared/react';
 import { CrossModelRoot, FormEditorService, Relationship } from '../common/form-client-protocol';
-import { EntityElement } from './react-components/EntityElement';
+import { EntityForm } from './react-components/entity-components/EntityElement';
 
 import '../../style/form-view.css';
 
@@ -41,6 +41,8 @@ export class FormEditorWidget extends ReactWidget implements NavigatableWidget, 
 
     @postConstruct()
     init(): void {
+        this.updateModel = this.updateModel.bind(this);
+
         this.id = this.options.id;
         this.title.label = this.labelProvider.getName(this.getResourceUri());
         this.title.iconClass = this.labelProvider.getIcon(this.getResourceUri());
@@ -81,7 +83,7 @@ export class FormEditorWidget extends ReactWidget implements NavigatableWidget, 
         }
 
         if (this.model?.entity) {
-            return <EntityElement model={this.model} />;
+            return <EntityForm model={this.model} updateModel={this.updateModel} />;
         } else if (this.model?.relationship) {
             return this.renderRelationship(this.model.relationship);
         } else {

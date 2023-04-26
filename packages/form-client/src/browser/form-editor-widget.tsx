@@ -8,7 +8,7 @@ import URI from '@theia/core/lib/common/uri';
 import { inject, injectable, postConstruct } from '@theia/core/shared/inversify';
 import * as React from '@theia/core/shared/react';
 import { CrossModelRoot, FormEditorService, Relationship } from '../common/form-client-protocol';
-import { EntityForm } from './react-components/entity-components/EntityElement';
+import { EntityForm } from './react-components/entity-components/EntityForm';
 
 import '../../style/form-view.css';
 
@@ -148,6 +148,7 @@ export class FormEditorWidget extends ReactWidget implements NavigatableWidget, 
         if (this.model === undefined) {
             throw new Error('Cannot save undefined model');
         }
+
         await this.formEditorService.save(this.getResourceUri().toString(), this.model);
         this.setDirty(false);
     }

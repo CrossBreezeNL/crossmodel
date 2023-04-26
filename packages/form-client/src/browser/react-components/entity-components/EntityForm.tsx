@@ -32,9 +32,15 @@ export function EntityForm(props: ModelProps): React.ReactElement {
             </div>
             <Tabs defaultIndex={1}>
                 <TabList>
-                    <Tab>General</Tab>
-                    <Tab>Attributes</Tab>
-                    <Tab>Mapping</Tab>
+                    <Tab>
+                        <h3>General</h3>
+                    </Tab>
+                    <Tab>
+                        <h3>Attributes</h3>
+                    </Tab>
+                    <Tab>
+                        <h3>Mapping</h3>
+                    </Tab>
                 </TabList>
 
                 <ModelContext.Provider value={model}>

@@ -9,6 +9,8 @@ import * as path from 'path';
 
 @injectable()
 export class CMEnvVariableServer extends EnvVariablesServerImpl {
+    // do not use the default configuration directory of Theia (<home>/.theia) but instead use our own
+    // to avoid any conflicts and allow for easier customizations
     protected readonly _configDirUri: string = FileUri.create(path.join(homedir(), '.crossmodel')).toString(true);
 
     override async getConfigDirUri(): Promise<string> {

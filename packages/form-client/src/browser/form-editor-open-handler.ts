@@ -12,7 +12,7 @@ import { FormEditorWidget } from './form-editor-widget';
 export class FormEditorOpenHandler extends NavigatableWidgetOpenHandler<FormEditorWidget> {
    static ID = 'form-editor-opener';
 
-   readonly id = FormEditorOpenHandler.ID;
+   readonly id = FormEditorOpenHandler.ID; // must match the id of the widget factory
    readonly label = nls.localize('form-client/form-editor', 'Form Editor');
 
    canHandle(uri: URI, options?: WidgetOpenerOptions): MaybePromise<number> {
@@ -21,5 +21,6 @@ export class FormEditorOpenHandler extends NavigatableWidgetOpenHandler<FormEdit
 }
 
 export function createFormEditorId(uri: URI, counter?: number): string {
+   // ensure we create a unique ID
    return FormEditorOpenHandler.ID + `:${uri.toString()}` + (counter !== undefined ? `:${counter}` : '');
 }

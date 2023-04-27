@@ -50,6 +50,7 @@ function createClientOptions(context: vscode.ExtensionContext): LanguageClientOp
    const crossModelWatcher = vscode.workspace.createFileSystemWatcher('**/*.cm');
    context.subscriptions.push(crossModelWatcher);
 
+   // watch changes to package.json as it contains the dependencies between our systems
    const packageWatcher = vscode.workspace.createFileSystemWatcher('**/package.json');
    context.subscriptions.push(packageWatcher);
 

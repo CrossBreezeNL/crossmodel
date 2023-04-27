@@ -23,6 +23,7 @@ export class CrossModelDeleteOperationHandler extends OperationHandler {
    protected deleteElements(operation: DeleteElementOperation): void {
       for (const elementId of operation.elementIds) {
          const element = this.state.index.findSemanticElement(elementId, isDiagramElement);
+         // simply remove any diagram nodes or edges from the diagram
          if (isDiagramNode(element)) {
             this.state.diagramRoot.nodes.forEach((node, idx) => {
                if (node === element) {

@@ -10,6 +10,10 @@ import { DiagramSerializer } from '../../model-server/serializer';
 import { CrossModelLSPServices } from '../integration';
 import { CrossModelIndex } from './cross-model-index';
 
+/**
+ * Custom model state that does not only keep track of the GModel root but also the semantic root.
+ * It also provides convenience methods for accessing specific language services.
+ */
 @injectable()
 export class CrossModelState extends DefaultModelState {
    @inject(CrossModelIndex) override readonly index: CrossModelIndex;
@@ -53,6 +57,7 @@ export class CrossModelState extends DefaultModelState {
       this.index.indexSemanticRoot(this.semanticRoot);
    }
 
+   /** Textual representation of the current semantic root. */
    semanticText(): string {
       return this.services.language.serializer.Serializer.serialize(this.semanticRoot);
    }

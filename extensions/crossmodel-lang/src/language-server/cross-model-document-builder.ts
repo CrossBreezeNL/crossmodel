@@ -6,6 +6,9 @@ import { CancellationToken } from 'vscode-languageclient';
 import { URI, Utils as UriUtils } from 'vscode-uri';
 import { Utils } from './util/uri-util';
 
+/**
+ * A document builder that can also handle directories by flattening out directories to an array of file URIs.
+ */
 export class CrossModelDocumentBuilder extends DefaultDocumentBuilder {
    override update(changed: URI[], deleted: URI[], cancelToken?: CancellationToken | undefined): Promise<void> {
       return super.update(

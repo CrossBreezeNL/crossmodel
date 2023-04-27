@@ -10,7 +10,10 @@ import { URI, Utils as UriUtils } from 'vscode-uri';
 import { CrossModelSharedServices } from './cross-model-module';
 import { Utils } from './util/uri-util';
 
+/** Constant for representing an unknown project ID. */
 export const UNKNOWN_PROJECT_ID = 'unknown';
+
+/** Constant for representing an unknown project reference. */
 export const UNKNOWN_PROJECT_REFERENCE = 'unknown';
 
 export function isPackageUri(uri: URI): boolean {
@@ -21,10 +24,24 @@ export function isPackageLockUri(uri: URI): boolean {
    return UriUtils.basename(uri).endsWith('package-lock.json');
 }
 
+/**
+ * Creates a unique id for the given data.
+ *
+ * @param name package name
+ * @param version version
+ * @returns unique id
+ */
 export function createPackageId(name?: string, version = '0.0.0'): string {
    return name === undefined ? UNKNOWN_PROJECT_ID : name + '@' + version;
 }
 
+/**
+ * Creates the package reference name for the given package. This name is used to export the nodes in this package and
+ * thus will be used in the references and serialization.
+ *
+ * @param packageJson package.json data
+ * @returns package reference name
+ */
 export function createPackageReferenceName(packageJson?: PackageJson): string {
    // we prefer the our custom-introduced alias if it is specified, otherwise we will fall back on the package name
    // we do not care about the package version as we do not allow to install multiple versions of the same package
@@ -37,21 +54,33 @@ export function isUnknownPackage(packageId: string): boolean {
    return packageId === UNKNOWN_PROJECT_ID;
 }
 
+/**
+ * Information derived from the package.json containing all data necessary within the crossmodel system.
+ */
 export class PackageInfo {
    constructor(
+      /** URI of the 'package.json' file. */
       readonly uri: URI,
+      /** Data parsed from the 'package.json' file. */
       readonly packageJson?: PackageJson,
+      /** URI of the directory in which the 'package.json' file is located. */
       readonly directory: URI = UriUtils.dirname(uri),
+      /** Identifier for the package. */
       readonly id = createPackageId(packageJson?.name, packageJson?.version),
+      /** Package name used in references and serialization. */
       readonly referenceName = createPackageReferenceName(packageJson),
-      readonly dependencies = Object.entries(packageJson?.dependencies || {}).map(dep => createPackageId(dep[0], dep[1]))
+      /** A list of all direct dependencies of this package. */
+      readonly dependencies = Object.entries(packageJson?.dependencies || {}).map(dep => createPackageId(dep[0], dep[1])),
+      /** True if this is an unknown package, not having a name.  */
+      readonly isUnknown = isUnknownPackage(id)
    ) {}
-
-   isUnknown(): boolean {
-      return isUnknownPackage(this.id);
-   }
 }
 
+/**
+ * A manager that builds up a system of packages on top of a given workspace.
+ * Directories with a 'package.json' file represent a closed system that can only reference itself.
+ * However, dependencies may be explicitly given as part of the 'package.json' in which case other systems may become visible/referencable.
+ */
 export class CrossModelPackageManager {
    protected uriToPackage = new Map<string, PackageInfo>();
    protected idToPackage = new MultiMap<string, PackageInfo>();
@@ -68,6 +97,10 @@ export class CrossModelPackageManager {
       this.documentBuilder.onBuildPhase(DocumentState.Parsed, (docs, token) => this.documentParsed(docs, token));
    }
 
+   /**
+    * Initializes this package manager for the given folders by parsing all package.json files available and
+    * building up the dependencies between the packages.
+    */
    async initialize(folders: WorkspaceFolder[]): Promise<void> {
       const initializations: Promise<void>[] = [];
       for (const folder of folders) {
@@ -99,6 +132,7 @@ export class CrossModelPackageManager {
    }
 
    getPackageInfoByDocument(doc: LangiumDocument): PackageInfo | undefined {
+      // during document parsing we store the package URI in the document
       const packageUri = (doc as any)['packageUri'] as URI | undefined;
       return this.getPackageInfoByURI(packageUri ?? doc.uri);
    }
@@ -108,11 +142,13 @@ export class CrossModelPackageManager {
          return;
       }
 
+      // see if we have a hit directly on a 'package.json' (faster)
       const packageInfo = this.uriToPackage.get(uri.toString());
       if (packageInfo) {
          return packageInfo;
       }
 
+      // find closest package info based on the given URI
       // we prefer longer path names as we are deeper in the nested hierarchy
       const packageInfos = [...this.uriToPackage.values()]
          .filter(info => Utils.isChildOf(info.directory, uri))
@@ -122,6 +158,7 @@ export class CrossModelPackageManager {
    }
 
    isVisible(sourcePackageId: string, targetPackageId: string): boolean {
+      // an unknown package cannot see anything
       return !isUnknownPackage(sourcePackageId) && this.getVisiblePackageIds(sourcePackageId).includes(targetPackageId);
    }
 
@@ -130,6 +167,7 @@ export class CrossModelPackageManager {
    }
 
    protected getVisiblePackageIds(sourcePackage: string, includeSource = false, visited: string[] = []): string[] {
+      // recursively get all visible package ids by going down the package dependencies starting from the source package
       if (visited.includes(sourcePackage)) {
          return [];
       }
@@ -172,7 +210,7 @@ export class CrossModelPackageManager {
 
    protected addPackage(uri: URI, packageJson: PackageJson): string[] {
       const packageInfo = new PackageInfo(uri, packageJson);
-      if (!packageInfo.isUnknown()) {
+      if (!packageInfo.isUnknown) {
          this.uriToPackage.set(packageInfo.uri.toString(), packageInfo);
 
          // remove existing entry if there is already one for this package
@@ -194,7 +232,7 @@ export class CrossModelPackageManager {
 
    protected deletePackage(uri: URI): string[] {
       const packageInfo = this.uriToPackage.get(uri.toString());
-      if (packageInfo && !packageInfo?.isUnknown()) {
+      if (packageInfo && !packageInfo?.isUnknown) {
          this.uriToPackage.delete(uri.toString());
          this.idToPackage.delete(packageInfo.id, packageInfo);
          return [packageInfo.id];

@@ -7,6 +7,9 @@ import { injectable } from '@theia/core/shared/inversify';
 import * as os from 'os';
 import * as path from 'path';
 
+/**
+ * Custom icon contribution to work around a lack of support for window icons (shown in task bar) on Linux.
+ */
 @injectable()
 export class IconContribution implements ElectronMainApplicationContribution {
     onStart(application: ElectronMainApplication): void {

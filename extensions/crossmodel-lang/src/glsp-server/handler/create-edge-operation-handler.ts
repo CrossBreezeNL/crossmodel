@@ -14,7 +14,7 @@ import {
 } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
 import { URI, Utils as UriUtils } from 'vscode-uri';
-import { CrossModelRoot, DiagramEdge, DiagramNode, isCrossModelRoot, Relationship } from '../../language-server/generated/ast';
+import { CrossModelRoot, DiagramEdge, DiagramNode, Relationship, isCrossModelRoot } from '../../language-server/generated/ast';
 import { Utils } from '../../language-server/util/uri-util';
 import { CrossModelState } from '../model/cross-model-state';
 import { CrossModelCommand } from './cross-model-command';
@@ -28,6 +28,7 @@ export class CrossModelCreateEdgeOperationHandler extends OperationHandler imple
    @inject(CrossModelState) protected state: CrossModelState;
 
    getTriggerActions(): (TriggerEdgeCreationAction | TriggerNodeCreationAction)[] {
+      // return trigger actions that are shown in the tool palette on the client
       return this.elementTypeIds.map(typeId => TriggerEdgeCreationAction.create(typeId));
    }
 
@@ -39,6 +40,7 @@ export class CrossModelCreateEdgeOperationHandler extends OperationHandler imple
       const sourceNode = this.state.index.findDiagramNode(operation.sourceElementId);
       const targetNode = this.state.index.findDiagramNode(operation.targetElementId);
       if (sourceNode && targetNode) {
+         // before we can create a digram edge, we need to create the corresponding relationship that it is based on
          const relationship = await this.createAndSaveRelationship(sourceNode, targetNode);
          if (relationship) {
             const edge: DiagramEdge = {
@@ -54,6 +56,9 @@ export class CrossModelCreateEdgeOperationHandler extends OperationHandler imple
       }
    }
 
+   /**
+    * Creates a new relationship and stores it on a file on the file system.
+    */
    protected async createAndSaveRelationship(sourceNode: DiagramNode, targetNode: DiagramNode): Promise<Relationship | undefined> {
       const source = sourceNode.semanticElement.ref?.name || sourceNode.semanticElement.$refText;
       const target = targetNode.semanticElement.ref?.name || targetNode.semanticElement.$refText;
@@ -65,6 +70,7 @@ export class CrossModelCreateEdgeOperationHandler extends OperationHandler imple
       const uri = Utils.findNewUri(targetUri);
       const name = UriUtils.basename(uri).split('.')[0];
 
+      // create relationship, serialize and re-read to ensure everything is up to date and linked properly
       const relationshipRoot: CrossModelRoot = { $type: 'CrossModelRoot' };
       const relationship: Relationship = {
          $type: 'Relationship',

@@ -11,22 +11,29 @@ interface SemanticState {
    text: string;
 }
 
+/**
+ * A custom recording command that tracks updates during exection through a textual semantic state.
+ * Tracking updates ensures that we have proper undo/redo support
+ */
 export class CrossModelCommand extends AbstractRecordingCommand<AnyObject> {
    constructor(protected state: CrossModelState, protected runnable: () => MaybePromise<void>) {
       super();
    }
 
    protected getJsonObject(): SemanticState {
+      // we always use the whole serialized state of an object, basically replacing the complete root model
       return { text: this.state.semanticText() };
    }
 
    protected override async applyPatch(state: SemanticState, patch: Operation[]): Promise<void> {
       super.applyPatch(state, patch);
+      // the undo/redo probably made some changes to the semantic model so we restore the stored state and re-index before the next command
       return this.state.updateSemanticRoot(state.text);
    }
 
    protected async doExecute(): Promise<void> {
       await this.runnable();
+      // the command probably made some changes to the semantic model so we re-index before the next command
       return this.state.updateSemanticRoot();
    }
 }

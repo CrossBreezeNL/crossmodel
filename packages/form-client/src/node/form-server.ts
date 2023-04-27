@@ -6,13 +6,20 @@ import * as net from 'net';
 import * as rpc from 'vscode-jsonrpc/node';
 import { CrossModelRoot, FormEditorClient, FormEditorService } from '../common/form-client-protocol';
 
+// socket connection, must match the one in model-server/launch.ts
 const SOCKET_OPTIONS = { port: 5999, host: 'localhost' };
+
+// RPC-protocol used to communicate with the RPC model server
+// In the long term it would be great if this definition could be shared between the server and the client instead of duplicated
 const OpenModel = new rpc.RequestType1<string, void, void>('server/open');
 const CloseModel = new rpc.RequestType1<string, void, void>('server/close');
 const RequestModel = new rpc.RequestType1<string, CrossModelRoot | undefined, void>('server/request');
 const UpdateModel = new rpc.RequestType2<string, CrossModelRoot, void, void>('server/update');
 const SaveModel = new rpc.RequestType2<string, CrossModelRoot, void, void>('server/save');
 
+/**
+ * Backend service implementation that mainly forwards all requests from the Theia frontend to the model server exposed on a given socket.
+ */
 @injectable()
 export class FormEditorServiceImpl implements FormEditorService {
    protected initialized = false;
@@ -21,6 +28,7 @@ export class FormEditorServiceImpl implements FormEditorService {
 
    async initialize(): Promise<void> {
       if (this.initialized) {
+         // ensure we only initialize RPC connection once
          return;
       }
       const socket = new net.Socket();

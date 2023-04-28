@@ -4,6 +4,9 @@
 
 import { CrossModelSharedServices } from './cross-model-module';
 
+/**
+ * Centralized logger.
+ */
 export class ClientLogger {
    constructor(protected services: CrossModelSharedServices) {}
 

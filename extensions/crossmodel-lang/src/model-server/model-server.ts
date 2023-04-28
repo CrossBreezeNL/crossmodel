@@ -13,6 +13,10 @@ const RequestModel = new rpc.RequestType1<string, AstNode | undefined, void>('se
 const UpdateModel = new rpc.RequestType2<string, AstNode, void, void>('server/update');
 const SaveModel = new rpc.RequestType2<string, AstNode, void, void>('server/save');
 
+/**
+ * The model server handles request messages on the RPC connection and ensures that any return value
+ * can be sent to the client by ensuring proper serialization of semantic models.
+ */
 export class ModelServer implements Disposable {
    protected toDispose: Disposable[] = [];
 
@@ -54,10 +58,21 @@ export class ModelServer implements Disposable {
    }
 }
 
+/**
+ * Cleans the semantic object of any property that cannot be serialized as a String and thus cannot be sent to the client
+ * over the RPC connection.
+ *
+ * @param obj semantic object
+ * @returns serializable semantic object
+ */
 export function toSerializable<T extends object>(obj?: T): T | undefined {
    if (!obj) {
       return;
    }
+   // We remove all $<property> from the semantic object with the exception of type
+   // they are added by Langium but have no additional value on the client side
+   // Furtermore we ensure that for references we use their string representation ($refText)
+   // instead of their real value to avoid sending whole serialized object graphs
    return <T>Object.entries(obj)
       .filter(([key, value]) => !key.startsWith('$') || key === '$type')
       .reduce((acc, [key, value]) => ({ ...acc, [key]: cleanValue(value) }), {});

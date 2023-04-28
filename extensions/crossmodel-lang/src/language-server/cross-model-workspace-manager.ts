@@ -6,6 +6,12 @@ import { CancellationToken, Emitter, Event, WorkspaceFolder } from 'vscode-langu
 import { URI, Utils } from 'vscode-uri';
 import { CrossModelSharedServices } from './cross-model-module';
 
+/**
+ * A cusotm workspace manager that:
+ * - fires an event when the workspace is initialized (we use this for starting LSP-dependent servers)
+ * - sets up a package-system on top of the workspace folders (including the 'node_modules' folder)
+ * - validates all documents after workspace initialization
+ */
 export class CrossModelWorkspaceManager extends DefaultWorkspaceManager {
    protected onWorkspaceInitializedEmitter = new Emitter<void>();
 
@@ -24,6 +30,7 @@ export class CrossModelWorkspaceManager extends DefaultWorkspaceManager {
 
    override async initializeWorkspace(folders: WorkspaceFolder[], cancelToken = CancellationToken.None): Promise<void> {
       // Note: same as super implementation but we also call validation on the build and fire an event after we are done
+      // so that any errors are shown even without modifying any documents
 
       const fileExtensions = this.serviceRegistry.all.flatMap(e => e.LanguageMetaData.fileExtensions);
       const documents: LangiumDocument[] = [];
@@ -54,6 +61,7 @@ export class CrossModelWorkspaceManager extends DefaultWorkspaceManager {
       folders: WorkspaceFolder[],
       _collector: (document: LangiumDocument<AstNode>) => void
    ): Promise<void> {
+      // build up package-system based on the workspace
       return this.services.workspace.PackageManager.initialize(folders);
    }
 

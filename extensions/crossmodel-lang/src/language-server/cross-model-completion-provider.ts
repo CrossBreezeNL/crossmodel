@@ -6,6 +6,9 @@ import { CrossReference } from 'langium/lib/grammar/generated/ast';
 import { CrossModelServices } from './cross-model-module';
 import { PackageExternalAstNodeDescription } from './cross-model-scope';
 
+/**
+ * Custom completion provider that only shows the short options to the user if a longer, fully-qualified version is also available.
+ */
 export class CrossModelCompletionProvider extends DefaultCompletionProvider {
    protected packageId?: string;
 

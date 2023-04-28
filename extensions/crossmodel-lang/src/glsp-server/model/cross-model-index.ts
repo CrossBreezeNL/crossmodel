@@ -9,14 +9,17 @@ import {
    DiagramEdge,
    DiagramNode,
    Entity,
+   Relationship,
    isDiagramEdge,
    isDiagramNode,
    isEntity,
-   isRelationship,
-   Relationship
+   isRelationship
 } from '../../language-server/generated/ast';
 import { CrossModelLSPServices } from '../integration';
 
+/**
+ * Custom model index that not only indexes the GModel elements but also the semantic elements (AstNodes) they represent.
+ */
 @injectable()
 export class CrossModelIndex extends GModelIndex {
    @inject(CrossModelLSPServices) services: CrossModelLSPServices;

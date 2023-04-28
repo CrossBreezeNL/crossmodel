@@ -20,6 +20,7 @@ export class CrossModelChangeBoundsOperationHandler extends OperationHandler {
       operation.newBounds.forEach(elementAndBounds => {
          const node = this.state.index.findDiagramNode(elementAndBounds.elementId);
          if (node) {
+            // we store the given bounds directly in our diagram node
             node.x = elementAndBounds.newPosition?.x || node.x;
             node.y = elementAndBounds.newPosition?.y || node.y;
             node.width = elementAndBounds.newSize.width;

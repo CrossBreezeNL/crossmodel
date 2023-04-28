@@ -10,9 +10,9 @@ import {
    Logger,
    MaybePromise,
    RequestModelAction,
+   SOURCE_URI_ARG,
    SaveModelAction,
-   SourceModelStorage,
-   SOURCE_URI_ARG
+   SourceModelStorage
 } from '@eclipse-glsp/server';
 import { inject, injectable, postConstruct } from 'inversify';
 import { findRootNode, streamReferences } from 'langium';
@@ -20,6 +20,11 @@ import { URI } from 'vscode-uri';
 import { isCrossModelRoot } from '../../language-server/generated/ast';
 import { CrossModelState } from './cross-model-state';
 
+/**
+ * Model storage implementation that loads the model through the ModelService extension in our language services.
+ * This way we ensure that during loading we get the latest up-to-date version from the central language storage and
+ * any saved changes are properly synced back to it.
+ */
 @injectable()
 export class CrossModelStorage implements SourceModelStorage, ClientSessionListener {
    @inject(Logger) protected logger: Logger;
@@ -32,7 +37,7 @@ export class CrossModelStorage implements SourceModelStorage, ClientSessionListe
    }
 
    async loadSourceModel(action: RequestModelAction): Promise<void> {
-      // load semantic model
+      // load semantic model from document in language model service
       const sourceUri = this.getSourceUri(action);
       const rootUri = URI.file(sourceUri).toString();
       const root = await this.state.modelService.request(rootUri, isCrossModelRoot);
@@ -55,6 +60,7 @@ export class CrossModelStorage implements SourceModelStorage, ClientSessionListe
    }
 
    sessionDisposed(_clientSession: ClientSession): void {
+      // close loaded document for modification
       this.state.modelService.close(this.state.semanticUri);
    }
 

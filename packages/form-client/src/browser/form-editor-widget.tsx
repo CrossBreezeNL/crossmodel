@@ -3,7 +3,7 @@
  ********************************************************************************/
 
 import { CommandService, Emitter, Event } from '@theia/core';
-import { LabelProvider, NavigatableWidget, NavigatableWidgetOptions, ReactWidget, Saveable, SaveOptions } from '@theia/core/lib/browser';
+import { LabelProvider, NavigatableWidget, NavigatableWidgetOptions, ReactWidget, SaveOptions, Saveable } from '@theia/core/lib/browser';
 import URI from '@theia/core/lib/common/uri';
 import { inject, injectable, postConstruct } from '@theia/core/shared/inversify';
 import * as React from '@theia/core/shared/react';
@@ -12,13 +12,6 @@ import { CrossModelRoot, Entity, FormEditorService, Relationship } from '../comm
 export const FormEditorWidgetOptions = Symbol('FormEditorWidgetOptions');
 export interface FormEditorWidgetOptions extends NavigatableWidgetOptions {
    id: string;
-}
-
-export interface ProjectSettings {
-   hardware: string;
-   serialPrinting: string;
-   name?: string;
-   url?: string;
 }
 
 @injectable()

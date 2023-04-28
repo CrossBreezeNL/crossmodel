@@ -2,7 +2,8 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { AstNode, isAstNode } from 'langium';
+import { AstNode, DocumentState, isAstNode } from 'langium';
+import { Disposable } from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { URI } from 'vscode-uri';
 import { CrossModelSharedServices } from '../language-server/cross-model-module';
@@ -85,6 +86,15 @@ export class ModelService {
       await this.documentBuilder.update([URI.parse(uri)], []);
 
       return document.parseResult.value as T;
+   }
+
+   onUpdate<T extends AstNode>(uri: string, listener: (model: T) => void): Disposable {
+      return this.documentBuilder.onBuildPhase(DocumentState.Validated, (allChangedDocuments, _token) => {
+         const changedDocument = allChangedDocuments.find(document => document.uri.toString() === uri);
+         if (changedDocument) {
+            listener(changedDocument.parseResult.value as T);
+         }
+      });
    }
 
    /**

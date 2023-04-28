@@ -11,7 +11,8 @@ import { FormEditorOpenHandler, createFormEditorId } from './form-editor-open-ha
 import { FormEditorWidget, FormEditorWidgetOptions } from './form-editor-widget';
 
 export default new ContainerModule(bind => {
-   bind(FormEditorClient).to(FormEditorClientImpl).inSingletonScope();
+   bind(FormEditorClientImpl).toSelf().inSingletonScope();
+   bind(FormEditorClient).toService(FormEditorClientImpl);
    bind(FormEditorService)
       .toDynamicValue(ctx => {
          // establish the proxy-based connection to the Theia backend service with out client implementation

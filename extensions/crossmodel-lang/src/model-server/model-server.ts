@@ -12,6 +12,7 @@ const CloseModel = new rpc.RequestType1<string, void, void>('server/close');
 const RequestModel = new rpc.RequestType1<string, AstNode | undefined, void>('server/request');
 const UpdateModel = new rpc.RequestType2<string, AstNode, void, void>('server/update');
 const SaveModel = new rpc.RequestType2<string, AstNode, void, void>('server/save');
+const OnUpdate = new rpc.NotificationType2<string, AstNode>('server/onUpdate');
 
 /**
  * The model server handles request messages on the RPC connection and ensures that any return value
@@ -34,6 +35,9 @@ export class ModelServer implements Disposable {
 
    protected async openModel(uri: string): Promise<void> {
       await this.modelService.open(uri);
+      this.modelService.onUpdate(uri, newModel => {
+         this.connection.sendNotification(OnUpdate, uri, toSerializable(newModel));
+      });
    }
 
    protected async closeModel(uri: string): Promise<void> {

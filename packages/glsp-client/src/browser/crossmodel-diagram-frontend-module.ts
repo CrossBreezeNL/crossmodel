@@ -16,6 +16,7 @@ export class CrossModelDiagramModule extends GLSPTheiaFrontendModule {
    }
 
    override bindGLSPClientContribution(context: ContainerContext): void {
+      // override client contribution to delay Theia frontend-backend connection for GLSP (see comments in contribution)
       context.bind(CrossModelClientContribution).toSelf().inSingletonScope();
       context.bind(GLSPClientContribution).toService(CrossModelClientContribution);
    }

@@ -22,6 +22,9 @@ import { CrossModelState } from '../model/cross-model-state';
 import { CrossModelStorage } from '../model/cross-model-storage';
 import { CrossModelDiagramConfiguration } from './cross-model-diagram-configuration';
 
+/**
+ * Provides configuration about our crossmodel diagrams.
+ */
 @injectable()
 export class CrossModelDiagramModule extends DiagramModule {
    readonly diagramType = 'crossmodel-diagram';
@@ -36,9 +39,9 @@ export class CrossModelDiagramModule extends DiagramModule {
 
    protected override configureOperationHandlers(binding: InstanceMultiBinding<OperationHandlerConstructor>): void {
       super.configureOperationHandlers(binding);
-      binding.add(CrossModelChangeBoundsOperationHandler);
-      binding.add(CrossModelCreateEdgeOperationHandler);
-      binding.add(CrossModelDeleteOperationHandler);
+      binding.add(CrossModelChangeBoundsOperationHandler); // move + resize behavior
+      binding.add(CrossModelCreateEdgeOperationHandler); // create 1:1 relationship
+      binding.add(CrossModelDeleteOperationHandler); // delete elements
    }
 
    protected override bindGModelIndex(): BindingTarget<GModelIndex> {

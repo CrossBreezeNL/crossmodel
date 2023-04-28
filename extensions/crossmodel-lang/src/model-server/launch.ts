@@ -11,7 +11,13 @@ const JSON_SERVER_HOST = 'localhost';
 
 const currentConnections: rpc.MessageConnection[] = [];
 
-export function startJsonServer(services?: CrossModelLSPServices): Promise<void> {
+/**
+ * Creates a socket-based RCP model server that acts as a facade to the Langium-based semantic model index (documents).
+ *
+ * @param services language services
+ * @returns a promise that is resolved as soon as the server is shut down or rejects if an error occurs
+ */
+export function startModelServer(services?: CrossModelLSPServices): Promise<void> {
    const netServer = net.createServer(socket => createClientConnection(socket, services));
    netServer.listen(JSON_SERVER_PORT, JSON_SERVER_HOST);
    netServer.on('listening', () => {
@@ -37,6 +43,13 @@ export function startJsonServer(services?: CrossModelLSPServices): Promise<void>
    });
 }
 
+/**
+ * Create a new connection for an incoming client on the given socket. Each client gets their own connection and model server instance.
+ *
+ * @param socket socket connection
+ * @param services language services
+ * @returns a promise that is resolved as soon as the connection is closed or rejects if an error occurs
+ */
 async function createClientConnection(socket: net.Socket, services?: CrossModelLSPServices): Promise<void> {
    console.info(`Starting model server connection for client: '${socket.localAddress}'`);
    const connection = createConnection(socket);
@@ -57,10 +70,21 @@ async function createClientConnection(socket: net.Socket, services?: CrossModelL
    });
 }
 
+/**
+ * Creates an RPC-message connection for the given socket.
+ *
+ * @param socket socket
+ * @returns message connection
+ */
 function createConnection(socket: net.Socket): rpc.MessageConnection {
    return rpc.createMessageConnection(new rpc.SocketMessageReader(socket), new rpc.SocketMessageWriter(socket), console);
 }
 
+/**
+ * Closes the server.
+ *
+ * @param netServer server to be closed
+ */
 function close(netServer: net.Server): void {
    currentConnections.forEach(connection => connection.dispose());
    netServer.close();

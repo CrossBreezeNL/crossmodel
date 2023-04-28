@@ -9,6 +9,7 @@ import { inject, injectable, postConstruct } from '@theia/core/shared/inversify'
 import * as React from '@theia/core/shared/react';
 import { CrossModelRoot, FormEditorService, Relationship } from '../common/form-client-protocol';
 import { EntityForm } from './react-components/entity-components/EntityForm';
+import { FormEditorClientImpl } from './form-client';
 
 import '../../style/form-view.css';
 
@@ -28,6 +29,7 @@ export class FormEditorWidget extends ReactWidget implements NavigatableWidget, 
     @inject(LabelProvider) protected labelProvider: LabelProvider;
     @inject(FormEditorService) private readonly formEditorService: FormEditorService;
     @inject(CommandService) protected commandService: CommandService;
+    @inject(FormEditorClientImpl) protected formClient: FormEditorClientImpl;
 
     protected model: CrossModelRoot | undefined = undefined;
     protected error: string | undefined = undefined;
@@ -41,6 +43,13 @@ export class FormEditorWidget extends ReactWidget implements NavigatableWidget, 
         this.title.iconClass = this.labelProvider.getIcon(this.getResourceUri());
         this.title.closable = true;
         this.loadModel();
+
+        this.formClient.onUpdate(document => {
+            if (document.uri === this.getResourceUri().toString()) {
+                this.model = document.model;
+                this.update();
+            }
+        });
     }
 
     protected async loadModel(): Promise<void> {

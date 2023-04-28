@@ -16,6 +16,7 @@ const CloseModel = new rpc.RequestType1<string, void, void>('server/close');
 const RequestModel = new rpc.RequestType1<string, CrossModelRoot | undefined, void>('server/request');
 const UpdateModel = new rpc.RequestType2<string, CrossModelRoot, void, void>('server/update');
 const SaveModel = new rpc.RequestType2<string, CrossModelRoot, void, void>('server/save');
+const OnUpdate = new rpc.NotificationType2<string, CrossModelRoot>('server/onUpdate');
 
 /**
  * Backend service implementation that mainly forwards all requests from the Theia frontend to the model server exposed on a given socket.
@@ -41,6 +42,10 @@ export class FormEditorServiceImpl implements FormEditorService {
 
       socket.connect(SOCKET_OPTIONS);
       this.connection.listen();
+
+      this.connection.onNotification(OnUpdate, (uri, model) => {
+         this.client?.updateModel(uri, model);
+      });
       this.initialized = true;
    }
 

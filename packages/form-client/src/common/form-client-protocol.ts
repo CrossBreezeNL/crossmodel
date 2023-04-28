@@ -61,4 +61,5 @@ export interface FormEditorService extends JsonRpcServer<FormEditorClient> {
 export const FormEditorClient = Symbol('FormEditorClient');
 export interface FormEditorClient {
    getName(): Promise<string>;
+   updateModel(uri: string, model: CrossModelRoot): Promise<void>;
 }

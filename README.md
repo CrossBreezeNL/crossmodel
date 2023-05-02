@@ -101,3 +101,9 @@ The repository itself contains the following components structured as follows:
         ├── glsp-client          # Diagram configuration and widget using the GLSP server
         └── product              # Application-level modifications
 ```
+
+## Used libraries and license
+
+-   mui-x : MUI X is open core—base components are MIT-licensed, while more advanced features require a Pro or Premium commercial license. We are
+    currently only using core-base
+-   react-tabs: MIT

@@ -3,7 +3,7 @@
  ********************************************************************************/
 
 import * as React from '@theia/core/shared/react';
-import { ModelContext } from './EntityContext';
+import { ModelContext } from '../ModelContext';
 import { DataGrid, GridCellParams, GridColDef, GridRowsProp } from '@mui/x-data-grid';
 import { Attribute } from '../../../common/form-client-protocol';
 import { Checkbox, FormControl, MenuItem, Select } from '@mui/material';
@@ -87,16 +87,16 @@ function CheckboxCell(params: GridCellParams): React.ReactElement {
     return <Checkbox checked={Boolean(params.value)} />;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function stringifyCircular(obj: any): string {
-    const cache: any[] = [];
-    return JSON.stringify(obj, (key, value) => {
-        if (typeof value === 'object' && value !== undefined) {
-            if (cache.includes(value)) {
-                return;
-            }
-            cache.push(value);
-        }
-        return value;
-    });
-}
+// // eslint-disable-next-line @typescript-eslint/no-unused-vars
+// function stringifyCircular(obj: any): string {
+//     const cache: any[] = [];
+//     return JSON.stringify(obj, (key, value) => {
+//         if (typeof value === 'object' && value !== undefined) {
+//             if (cache.includes(value)) {
+//                 return;
+//             }
+//             cache.push(value);
+//         }
+//         return value;
+//     });
+// }

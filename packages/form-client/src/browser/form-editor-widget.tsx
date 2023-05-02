@@ -7,10 +7,10 @@ import { LabelProvider, NavigatableWidget, NavigatableWidgetOptions, ReactWidget
 import URI from '@theia/core/lib/common/uri';
 import { inject, injectable, postConstruct } from '@theia/core/shared/inversify';
 import * as React from '@theia/core/shared/react';
-import { CrossModelRoot, FormEditorService, Relationship } from '../common/form-client-protocol';
-import { EntityForm } from './react-components/entity-components/EntityForm';
+import { CrossModelRoot, FormEditorService } from '../common/form-client-protocol';
 import { FormEditorClientImpl } from './form-client';
 
+import { App } from './react-components/App';
 import '../../style/form-view.css';
 
 export const FormEditorWidgetOptions = Symbol('FormEditorWidgetOptions');
@@ -36,20 +36,15 @@ export class FormEditorWidget extends ReactWidget implements NavigatableWidget, 
 
     @postConstruct()
     init(): void {
-        this.updateModel = this.updateModel.bind(this);
-
+        // Widget options
         this.id = this.options.id;
         this.title.label = this.labelProvider.getName(this.getResourceUri());
         this.title.iconClass = this.labelProvider.getIcon(this.getResourceUri());
         this.title.closable = true;
-        this.loadModel();
 
-        this.formClient.onUpdate(document => {
-            if (document.uri === this.getResourceUri().toString()) {
-                this.model = document.model;
-                this.update();
-            }
-        });
+        this.updateModel = this.updateModel.bind(this);
+        this.getResourceUri = this.getResourceUri.bind(this);
+        this.loadModel();
     }
 
     protected async loadModel(): Promise<void> {
@@ -67,69 +62,45 @@ export class FormEditorWidget extends ReactWidget implements NavigatableWidget, 
         }
     }
 
+    async save(options?: SaveOptions | undefined): Promise<void> {
+        if (this.model === undefined) {
+            throw new Error('Cannot save undefined model');
+        }
+
+        this.setDirty(false);
+        await this.formEditorService.save(this.getResourceUri().toString(), this.model);
+    }
+
+    protected async updateModel(model: CrossModelRoot): Promise<void> {
+        this.setDirty(true);
+        this.model = model;
+
+        await this.formEditorService.update(this.getResourceUri().toString(), this.model!);
+    }
+
     override close(): void {
         this.formEditorService.close(this.getResourceUri().toString());
         super.close();
     }
 
-    render(): React.ReactNode {
-        if (!this.model && this.error === undefined) {
-            return <div className='form-editor loading'></div>;
-        }
-        if (!this.model && this.error !== undefined) {
-            return (
-                <div className='form-editor error'>
-                    <p>{this.error}</p>
-                </div>
-            );
+    setDirty(dirty: boolean): void {
+        if (dirty === this.dirty) {
+            return;
         }
 
-        if (this.model?.entity) {
-            return <EntityForm model={this.model} updateModel={this.updateModel} />;
-        } else if (this.model?.relationship) {
-            return this.renderRelationship(this.model.relationship);
-        } else {
-            return (
-                <div className='form-editor error'>
-                    <p>Unknown model element</p>
-                </div>
-            );
-        }
+        this.dirty = dirty;
+        this.onDirtyChangedEmitter.fire();
     }
 
-    renderRelationship(relationship: Relationship): React.ReactNode {
-        return (
-            <div className='form-editor'>
-                <div className='header'>
-                    <h1>
-                        <span className='label'>Relationship&nbsp;</span>
-                        <span className='value'>{relationship.name}</span>
-                    </h1>
-                </div>
-                <div>
-                    Source:
-                    <input
-                        className='theia-input'
-                        value={relationship.source}
-                        onChange={e => {
-                            relationship.source = e.target.value;
-                            this.updateModel(e);
-                        }}
-                    />
-                </div>
-                <div>
-                    Target:
-                    <input
-                        className='theia-input'
-                        value={relationship.target}
-                        onChange={e => {
-                            relationship.target = e.target.value;
-                            this.updateModel(e);
-                        }}
-                    />
-                </div>
-            </div>
-        );
+    render(): React.ReactNode {
+        const props = {
+            model: this.model,
+            updateModel: this.updateModel,
+            getResourceUri: this.getResourceUri,
+            formClient: this.formClient
+        };
+
+        return <App {...props} />;
     }
 
     getResourceUri(): URI {
@@ -138,28 +109,5 @@ export class FormEditorWidget extends ReactWidget implements NavigatableWidget, 
 
     createMoveToUri(resourceUri: URI): URI | undefined {
         return undefined;
-    }
-
-    protected async updateModel(event: React.ChangeEvent<HTMLInputElement>): Promise<void> {
-        this.setDirty(true);
-        this.update();
-        await this.formEditorService.update(this.getResourceUri().toString(), this.model!);
-    }
-
-    async save(options?: SaveOptions | undefined): Promise<void> {
-        if (this.model === undefined) {
-            throw new Error('Cannot save undefined model');
-        }
-
-        await this.formEditorService.save(this.getResourceUri().toString(), this.model);
-        this.setDirty(false);
-    }
-
-    setDirty(dirty: boolean): void {
-        if (dirty === this.dirty) {
-            return;
-        }
-        this.dirty = dirty;
-        this.onDirtyChangedEmitter.fire();
     }
 }

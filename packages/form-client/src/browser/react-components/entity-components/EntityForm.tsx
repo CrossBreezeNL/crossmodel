@@ -3,12 +3,13 @@
  ********************************************************************************/
 
 import * as React from '@theia/core/shared/react';
-import { CrossModelRoot } from '../../../common/form-client-protocol';
+import { CrossModelRoot, FormEditorClient } from '../../../common/form-client-protocol';
 import { Tab, TabList, TabPanel, Tabs } from 'react-tabs';
 
 import 'react-tabs/style/react-tabs.css';
-import { ModelContext, ModelDispatchContext, ModelReducer, UpdateModelContext } from './EntityContext';
+import { ModelContext, ModelDispatchContext, ModelReducer } from '../ModelContext';
 import { EntityAttributesTab } from './EntityAttributesTab';
+import { FormEditorClientImpl } from '../../form-client';
 
 export interface ModelProps {
     model: CrossModelRoot;
@@ -30,32 +31,30 @@ export function EntityForm(props: ModelProps): React.ReactElement {
                     <span className='value'>{model.entity.name}</span>
                 </h1>
             </div>
-            <Tabs defaultIndex={1}>
+            <Tabs>
                 <TabList>
                     <Tab>
                         <h3>General</h3>
                     </Tab>
-                    <Tab>
+                    {/* <Tab>
                         <h3>Attributes</h3>
                     </Tab>
                     <Tab>
                         <h3>Mapping</h3>
-                    </Tab>
+                    </Tab> */}
                 </TabList>
 
                 <ModelContext.Provider value={model}>
                     <ModelDispatchContext.Provider value={dispatch}>
-                        <UpdateModelContext.Provider value={props.updateModel}>
-                            <TabPanel>
-                                <GeneralTab />
-                            </TabPanel>
-                            <TabPanel>
+                        <TabPanel>
+                            <GeneralTab />
+                        </TabPanel>
+                        {/* <TabPanel>
                                 <EntityAttributesTab />
                             </TabPanel>
                             <TabPanel>
                                 <MappingsTab />
-                            </TabPanel>
-                        </UpdateModelContext.Provider>
+                            </TabPanel> */}
                     </ModelDispatchContext.Provider>
                 </ModelContext.Provider>
             </Tabs>
@@ -65,8 +64,6 @@ export function EntityForm(props: ModelProps): React.ReactElement {
 
 function GeneralTab(props: any): React.ReactElement {
     const model = React.useContext(ModelContext);
-    const dispatch = React.useContext(ModelDispatchContext);
-    const updateModel = React.useContext(UpdateModelContext);
 
     if (model.entity === undefined) {
         return <></>;
@@ -76,14 +73,7 @@ function GeneralTab(props: any): React.ReactElement {
         <form className='form-editor-general'>
             <div>
                 <label>Name:</label>
-                <ControlledInput
-                    className='theia-input'
-                    value={model.entity.name}
-                    onChange={(e: any) => {
-                        dispatch({ type: 'change-name', name: e.target.value });
-                        updateModel(model);
-                    }}
-                />
+                <ControlledInput className='theia-input' value={model.entity.name} />
             </div>
 
             <div>
@@ -99,15 +89,7 @@ function GeneralTab(props: any): React.ReactElement {
 
             <div>
                 <label>Description:</label>
-                <ControlledTextArea
-                    className='theia-input'
-                    value={model.entity.description}
-                    rows={4}
-                    onChange={(e: any) => {
-                        dispatch({ type: 'change-description', description: e.target.value });
-                        updateModel(model);
-                    }}
-                />
+                <ControlledTextArea className='theia-input' value={model.entity.description} rows={4} />
             </div>
         </form>
     );

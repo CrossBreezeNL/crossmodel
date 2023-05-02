@@ -97,6 +97,10 @@ export class ModelService {
         });
     }
 
+    onSave<T extends AstNode>(uri: string, listener: (model: T) => void): Disposable {
+        return this.documentManager.onSave(uri, listener);
+    }
+
     /**
      * Overrides the document with the given URI with the given semantic model or text.
      *

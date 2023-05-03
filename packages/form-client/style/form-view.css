@@ -35,3 +35,7 @@
 .form-editor-attributes-tab {
     padding: 0 10px;
 }
+
+.react-tabs__tab > h3 {
+    margin: 5px;
+}

@@ -24,6 +24,7 @@ export class FormEditorWidget extends ReactWidget implements NavigatableWidget, 
     autoSave: 'off' | 'afterDelay' | 'onFocusChange' | 'onWindowChange';
     public readonly onDirtyChangedEmitter = new Emitter<void>();
     onDirtyChanged: Event<void> = this.onDirtyChangedEmitter.event;
+    saveUpdate = false;
 
     @inject(FormEditorWidgetOptions) protected options: FormEditorWidgetOptions;
     @inject(LabelProvider) protected labelProvider: LabelProvider;
@@ -68,10 +69,17 @@ export class FormEditorWidget extends ReactWidget implements NavigatableWidget, 
         }
 
         this.setDirty(false);
+        this.saveUpdate = true;
+
         await this.formEditorService.save(this.getResourceUri().toString(), this.model);
     }
 
     protected async updateModel(model: CrossModelRoot): Promise<void> {
+        if (this.saveUpdate) {
+            this.saveUpdate = false;
+            return;
+        }
+
         this.setDirty(true);
         this.model = model;
 

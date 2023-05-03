@@ -6,6 +6,8 @@ import * as React from '@theia/core/shared/react';
 import { CrossModelRoot } from '../../common/form-client-protocol';
 import { FormEditorClientImpl } from '../form-client';
 import URI from '@theia/core/lib/common/uri';
+import { ModelReducer, ModelProvider } from './ModelContext';
+import { EntityForm } from './entity-components/EntityForm';
 
 interface AppProps {
     updateModel: (model: CrossModelRoot) => void;
@@ -15,40 +17,37 @@ interface AppProps {
 }
 
 export function App(props: AppProps): React.ReactElement {
-    const [model, setModel] = React.useState(props.model);
+    const [model, dispatch] = React.useReducer(ModelReducer, props.model as CrossModelRoot);
 
-    function handleChange(event: React.ChangeEvent<HTMLInputElement>): void {
-        const newModel: CrossModelRoot | undefined = structuredClone(props.model);
-
-        if (!newModel || !newModel.entity) {
-            return;
-        }
-
-        newModel.entity.name = event.target.value;
-        props.updateModel(structuredClone(newModel));
-        setModel(newModel);
-    }
-
+    // Subscribing to the updates made to the model by a different editor
     React.useEffect(() => {
         props.formClient.onUpdate(document => {
             if (document.uri === props.getResourceUri().toString()) {
-                setModel(document.model);
+                dispatch({ type: 'model:update', model: document.model });
             }
         });
-    }, [props, model]);
+    }, [props]);
+
+    // This effect gets triggered when the model gets updated, it will pass the new model
+    // to the Form-widget and that will pass it to the server to update
+    React.useEffect(() => {
+        props.updateModel(structuredClone(model));
+    }, [model, props]);
+
+    let render = undefined;
 
     // Rendering logic
     if (!model) {
-        return <div>loading</div>;
+        render = <div>loading</div>;
     } else if (model.entity) {
-        return (
-            <div>
-                <h1>{model.entity?.name}</h1>
-
-                <input type='text' value={model.entity?.name} onChange={handleChange} />
-            </div>
-        );
+        render = <EntityForm />;
     }
 
-    return <></>;
+    return (
+        <div className='form-editor'>
+            <ModelProvider model={model} dispatch={dispatch}>
+                {render ? render : <></>}
+            </ModelProvider>
+        </div>
+    );
 }

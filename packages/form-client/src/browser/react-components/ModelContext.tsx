@@ -3,6 +3,7 @@
  ********************************************************************************/
 import * as React from '@theia/core/shared/react';
 import { CrossModelRoot } from '../../common/form-client-protocol';
+import _ = require('lodash');
 
 interface ModelProviderProps {
     model: CrossModelRoot;
@@ -27,7 +28,7 @@ export function ModelReducer(model: CrossModelRoot, action: any): CrossModelRoot
     }
 
     // You have to make a copy, otherwise it does not work. Why??
-    model = structuredClone(model);
+    model = _.cloneDeep(model);
 
     switch (action.type) {
         case 'model:update':

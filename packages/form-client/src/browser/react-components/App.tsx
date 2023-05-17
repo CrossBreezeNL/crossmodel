@@ -8,6 +8,7 @@ import { FormEditorClientImpl } from '../form-client';
 import URI from '@theia/core/lib/common/uri';
 import { ModelReducer, ModelProvider } from './ModelContext';
 import { EntityForm } from './entity-components/EntityForm';
+import _ = require('lodash');
 
 interface AppProps {
     updateModel: (model: CrossModelRoot) => void;
@@ -31,7 +32,7 @@ export function App(props: AppProps): React.ReactElement {
     // This effect gets triggered when the model gets updated, it will pass the new model
     // to the Form-widget and that will pass it to the server to update
     React.useEffect(() => {
-        props.updateModel(structuredClone(model));
+        props.updateModel(_.cloneDeep(model));
     }, [model, props]);
 
     let render = undefined;

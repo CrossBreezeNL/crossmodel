@@ -7,8 +7,6 @@ import { Tab, TabList, TabPanel, Tabs } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import { ModelContext } from '../ModelContext';
 import { GeneralTab } from './tabs/EntityGeneralTab';
-import { EntityAttributesTab } from './tabs/EntityAttributesTab';
-import { MappingsTab } from './tabs/EntityMappingsTab';
 
 export interface ModelProps {}
 
@@ -27,28 +25,24 @@ export function EntityForm(props: ModelProps): React.ReactElement {
                     <span className='value'>{model.entity.name}</span>
                 </h1>
             </div>
-            <Tabs defaultIndex={1}>
+            <Tabs>
                 <TabList>
                     <Tab>
                         <h3>General</h3>
                     </Tab>
-                    <Tab>
+                    {/* <Tab>
                         <h3>Attributes</h3>
                     </Tab>
-                    <Tab>
-                        <h3>Mapping</h3>
-                    </Tab>
+                    */}
                 </TabList>
 
                 <TabPanel>
                     <GeneralTab />
                 </TabPanel>
-                <TabPanel>
+                {/* <TabPanel>
                     <EntityAttributesTab />
                 </TabPanel>
-                <TabPanel>
-                    <MappingsTab />
-                </TabPanel>
+                */}
             </Tabs>
         </>
     );

@@ -69,20 +69,21 @@ export class FormEditorWidget extends ReactWidget implements NavigatableWidget, 
         }
 
         this.setDirty(false);
+        // When the model on the model-server is updated we will get a notification that the model has been saved.
+        // This variable lets us know that we were the ones that saved the model
         this.saveUpdate = true;
 
         await this.formEditorService.save(this.getResourceUri().toString(), this.model);
     }
 
     protected async updateModel(model: CrossModelRoot): Promise<void> {
+        // If we were the ones that send the save request, we do not want to update the model again
         if (this.saveUpdate) {
             this.saveUpdate = false;
             return;
         }
 
-        this.setDirty(true);
         this.model = model;
-
         await this.formEditorService.update(this.getResourceUri().toString(), this.model!);
     }
 

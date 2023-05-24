@@ -32,17 +32,6 @@ export function GeneralTab(props: GeneralTabProps): React.ReactElement {
             </div>
 
             <div>
-                <label>Stereotype:</label>
-                <input
-                    className='theia-input'
-                    onChange={(e: any) => {
-                        // props.entity.description = e.target.value;
-                        // props.updateModel(e);
-                    }}
-                />
-            </div>
-
-            <div>
                 <label>Description:</label>
                 <textarea
                     className='theia-input'

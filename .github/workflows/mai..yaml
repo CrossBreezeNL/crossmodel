@@ -1,0 +1,69 @@
+name: Run CrossModel
+
+on:
+    push:
+        branches:
+            - 'CI/CD-pipeline'
+    pull_request:
+        branches:
+            - 'CI/CD-pipeline'
+
+jobs:
+    build:
+        runs-on: windows-2019
+        steps:
+            - name: check out # is needed to read the files on the root folder of the repo
+              uses: actions/checkout@v3
+
+            - name: Set up Node js to use version 16.14.0
+              uses: actions/setup-node@v2
+              with:
+                  node-version: '16.14.0'
+
+            - name: Node version
+              uses: Amadevus/pwsh-script@v2.0.3
+              with:
+                  # PowerShell script to execute in Actions-hydrated context
+                  script: |
+                      node -v | Write-Host
+
+            - name: Setup Python to use version 3.7.8
+              uses: actions/setup-python@v4.6.1
+              with:
+                  # Version range or exact version of Python or PyPy to use, using SemVer's version range syntax. Reads from .python-version if unset.
+                  python-version: 3.7.8
+
+            - name: Python version
+              uses: Amadevus/pwsh-script@v2.0.3
+              with:
+                  # PowerShell script to execute in Actions-hydrated context
+                  script: |
+                      python --version | Write-Host
+
+            - name: Set up yarn to use version 1.22.18
+              uses: Amadevus/pwsh-script@v2.0.3
+              with:
+                  # PowerShell script to execute in Actions-hydrated context
+                  script: |
+                      yarn policies set-version 1.22.18
+
+            - name: Yarn version
+              uses: Amadevus/pwsh-script@v2.0.3
+              with:
+                  # PowerShell script to execute in Actions-hydrated context
+                  script: |
+                      yarn --version | Write-Host
+
+            - name: Yarn build
+              uses: Amadevus/pwsh-script@v2.0.3
+              with:
+                  # PowerShell script to execute in Actions-hydrated context
+                  script: |
+                      yarn
+
+            - name: Yarn start browser
+              uses: Amadevus/pwsh-script@v2.0.3
+              with:
+                  # PowerShell script to execute in Actions-hydrated context
+                  script: |
+                      yarn start:browser

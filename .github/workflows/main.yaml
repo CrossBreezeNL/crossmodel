@@ -61,11 +61,5 @@ jobs:
                   script: |
                       yarn
 
-            - name: Vscode plugin release action
-              # You may pin to the exact commit or the version.
-              # uses: JCofman/vscodeaction@611fec1de63d45fef75ab4f28e00021af09f67d1
-              uses: JCofman/vscodeaction@v3.0.0
-              with:
-                  # PowerShell script to execute in Actions-hydrated context
-                  script: |
-                      yarn start:browser
+            - name: Yarn start browser
+              run:  yarn start:browser

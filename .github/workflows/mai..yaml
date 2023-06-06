@@ -61,8 +61,10 @@ jobs:
                   script: |
                       yarn
 
-            - name: Yarn start browser
-              uses: Amadevus/pwsh-script@v2.0.3
+            - name: Vscode plugin release action
+              # You may pin to the exact commit or the version.
+              # uses: JCofman/vscodeaction@611fec1de63d45fef75ab4f28e00021af09f67d1
+              uses: JCofman/vscodeaction@v3.0.0
               with:
                   # PowerShell script to execute in Actions-hydrated context
                   script: |

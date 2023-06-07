@@ -10,7 +10,7 @@ on:
 
 jobs:
     build:
-        runs-on: windows-2019
+        runs-on: ubuntu-latest
         steps:
             - name: check out # is needed to read the files on the root folder of the repo
               uses: actions/checkout@v3
@@ -26,19 +26,12 @@ jobs:
                   # PowerShell script to execute in Actions-hydrated context
                   script: |
                       node -v | Write-Host
-                      
-            - name: Python version
-              uses: Amadevus/pwsh-script@v2.0.3
-              with:
-                  # PowerShell script to execute in Actions-hydrated context
-                  script: |
-                      python --version | Write-Host
 
-            - name: Setup Python to use version 3.7.8
+            - name: Setup Python to use version 3.7.9
               uses: actions/setup-python@v4.6.1
               with:
                   # Version range or exact version of Python or PyPy to use, using SemVer's version range syntax. Reads from .python-version if unset.
-                  python-version: 3.7.8
+                  python-version: 3.7.9
 
             - name: Python version
               uses: Amadevus/pwsh-script@v2.0.3

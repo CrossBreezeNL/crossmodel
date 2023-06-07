@@ -10,7 +10,7 @@ on:
 
 jobs:
     build:
-        runs-on: ubuntu-latest
+        runs-on: windows-2019
         steps:
             - name: check out # is needed to read the files on the root folder of the repo
               uses: actions/checkout@v3

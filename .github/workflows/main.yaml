@@ -61,5 +61,12 @@ jobs:
                   script: |
                       yarn
 
-            - name: Yarn start browser
+            - id: s1
+              name: Yarn start browser
               run:  yarn start:browser
+            - id: s2
+              if: steps.s1.conclusion == 'failure'
+              run: build
+            - id: s3
+              if: steps.s2.conclusion == 'success'
+              run: ...

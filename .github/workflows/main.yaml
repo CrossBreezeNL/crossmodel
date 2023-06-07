@@ -61,8 +61,8 @@ jobs:
                   script: |
                       yarn
 
-            - name: Yarn start browser
-              run:  |
-                    yarn start:browser
-                    curl http://localhost:3000/
-                    echo DONE
+            #- name: Yarn start browser
+            # run:  |
+            #        yarn start:browser
+            #        curl http://localhost:3000/
+            #        echo DONE

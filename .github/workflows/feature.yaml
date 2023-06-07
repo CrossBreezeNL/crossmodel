@@ -1,0 +1,16 @@
+name: feature
+
+on:
+    push:
+        branches:
+            - 'CI/CD-pipeline'
+
+jobs:
+  build:
+    runs-on: windows-2019 # is needed because the Setup Python task does not work with ubuntu
+    steps:
+    # Checkout the code.
+    - name: check out # is needed to read the files on the root folder of the repo
+      uses: actions/checkout@v3
+    # Use the build-addin action.
+    - uses: ./.github/actions/build-addin

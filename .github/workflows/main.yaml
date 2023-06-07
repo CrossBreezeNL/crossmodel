@@ -28,7 +28,7 @@ jobs:
                       node -v | Write-Host
 
             - name: Setup Python to use version 3.7.8
-              uses: actions/setup-python@v4.6.1
+              uses: actions/setup-python@v3.1.4
               with:
                   # Version range or exact version of Python or PyPy to use, using SemVer's version range syntax. Reads from .python-version if unset.
                   python-version: 3.7.8

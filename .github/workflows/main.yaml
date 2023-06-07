@@ -10,7 +10,7 @@ on:
 
 jobs:
     build:
-        runs-on: ubuntu-latest
+        runs-on: windows-2019
         steps:
             - name: check out # is needed to read the files on the root folder of the repo
               uses: actions/checkout@v3
@@ -28,7 +28,7 @@ jobs:
                       node -v | Write-Host
 
             - name: Setup Python to use version 3.7.8
-              uses: actions/setup-python@v3.1.4
+              uses: actions/setup-python@v4.6.1
               with:
                   # Version range or exact version of Python or PyPy to use, using SemVer's version range syntax. Reads from .python-version if unset.
                   python-version: 3.7.8

@@ -6,7 +6,7 @@ runs: # windows-2019 # is needed because the Setup Python task does not work wit
   using: "composite"
   steps:
     - name: Set up Node js to use version 16.14.0
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v2.5.2
       with:
           node-version: '16.14.0'
 

@@ -3,7 +3,7 @@ name: feature
 on:
     push:
         branches:
-            - 'CI/CD-pipeline'
+            - feature/*
 
 jobs:
   build:

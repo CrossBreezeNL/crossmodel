@@ -44,21 +44,18 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot>, Diagram
         return `entity ${entity.name} {
     description := "${entity.description}";
     attributes {
-${this.serializeAttributes(entity.attributes as unknown as Record<string, Attribute>)}
-    }
+${this.serializeAttributes(entity.attributes as Array<Attribute>)}    }
 }`;
     }
 
-    private serializeAttributes(attributes: Record<string, Attribute> | undefined): string {
+    private serializeAttributes(attributes: Array<Attribute> | undefined): string {
         let result = '';
 
-        for (const key in attributes) {
-            if (attributes.hasOwnProperty.call(attributes, key)) {
-                const attribute = attributes[key];
+        if (attributes) {
+            for (const [, attribute] of Object.entries(attributes)) {
                 result += `\t\t${attribute.name} := '${attribute.value}';\n`;
             }
         }
-        result += '';
 
         return result;
     }

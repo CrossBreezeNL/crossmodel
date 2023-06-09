@@ -1,55 +1,54 @@
 name: build
-description: 'Build the CrossModel.'
-
+description: 'Build CrossModel'
 
 runs: # windows-2019 # is needed because the Setup Python task does not work with ubuntu
-  using: "composite"
+  using: 'composite'
   steps:
     - name: Set up Node js to use version 16.14.0
       uses: actions/setup-node@v3.6.0
       with:
-          node-version: '16.14.0'
+        node-version: '16.14.0'
 
     - name: Node version
       uses: Amadevus/pwsh-script@v2.0.3
       with:
-          # PowerShell script to execute in Actions-hydrated context
-          script: |
-              node -v | Write-Host
+        # PowerShell script to execute in Actions-hydrated context
+        script: |
+          node -v | Write-Host
 
     - name: Setup Python to use version 3.7.9
       uses: actions/setup-python@v4.6.1
       with:
-          # Version range or exact version of Python or PyPy to use, using SemVer's version range syntax. Reads from .python-version if unset.
-          python-version: 3.7.9
+        # Version range or exact version of Python or PyPy to use, using SemVer's version range syntax. Reads from .python-version if unset.
+        python-version: 3.7.9
 
     - name: Python version
       uses: Amadevus/pwsh-script@v2.0.3
       with:
-          # PowerShell script to execute in Actions-hydrated context
-          script: |
-              python --version | Write-Host
+        # PowerShell script to execute in Actions-hydrated context
+        script: |
+          python --version | Write-Host
 
     - name: Set up yarn to use version 1.22.18
       uses: Amadevus/pwsh-script@v2.0.3
       with:
-          # PowerShell script to execute in Actions-hydrated context
-          script: |
-              yarn policies set-version 1.22.18
+        # PowerShell script to execute in Actions-hydrated context
+        script: |
+          yarn policies set-version 1.22.18
 
     - name: Yarn version
       uses: Amadevus/pwsh-script@v2.0.3
       with:
-          # PowerShell script to execute in Actions-hydrated context
-          script: |
-              yarn --version | Write-Host
+        # PowerShell script to execute in Actions-hydrated context
+        script: |
+          yarn --version | Write-Host
 
     - name: Yarn build
       uses: Amadevus/pwsh-script@v2.0.3
       with:
-          # PowerShell script to execute in Actions-hydrated context
-          script: |
-              yarn
+        # PowerShell script to execute in Actions-hydrated context
+        script: |
+          yarn
 
     #- name: Yarn start browser
     # run:  |

@@ -5,15 +5,36 @@ import * as React from '@theia/core/shared/react';
 import { CrossModelRoot } from '../../common/form-client-protocol';
 import _ = require('lodash');
 
+/**
+ * Represents the properties required by the ModelProvider component.
+ */
 interface ModelProviderProps {
+    /**
+     * The model object that will be provided to the child components.
+     */
     model: CrossModelRoot;
+    /**
+     * The dispatch function for updating the model using the ModelReducer.
+     */
     dispatch: React.Dispatch<React.ReducerAction<typeof ModelReducer>>;
+    /**
+     * The child component(s) to be rendered within the ModelProvider. These are automatically included when
+     * passing props.
+     */
     children: React.ReactElement;
 }
 
 export const ModelContext = React.createContext({} as CrossModelRoot);
 export const ModelDispatchContext = React.createContext({});
 
+/**
+ * Based on the following implementation: https://react.dev/learn/scaling-up-with-reducer-and-context
+ *
+ * Provides the model and dispatch contexts to its children components.
+ *
+ * @param props ModelProviderProps
+ * @returns JSX element
+ */
 export function ModelProvider(props: ModelProviderProps): React.ReactElement {
     return (
         <ModelContext.Provider value={props.model}>
@@ -31,8 +52,11 @@ export function ModelReducer(model: CrossModelRoot, action: any): CrossModelRoot
     model = _.cloneDeep(model);
 
     switch (action.type) {
+        // Update the entire model
         case 'model:update':
             return action.model;
+
+        // Change the name of the entity-model
         case 'entity:change-name':
             if (!model.entity) {
                 throw Error('model.entity undefined');
@@ -42,6 +66,8 @@ export function ModelReducer(model: CrossModelRoot, action: any): CrossModelRoot
 
             model.entity.name = action.name;
             return model;
+
+        // Change the name of the entity-model
         case 'entity:change-description':
             if (!model.entity) {
                 throw Error('Model.entity undefined');
@@ -52,6 +78,7 @@ export function ModelReducer(model: CrossModelRoot, action: any): CrossModelRoot
             model.entity.description = action.description;
             return model;
 
+        // Change the datatype of one of entity attributes
         case 'entity:attribute:change-datatype':
             if (!model.entity) {
                 throw Error('Model.entity undefined');
@@ -63,6 +90,7 @@ export function ModelReducer(model: CrossModelRoot, action: any): CrossModelRoot
 
             return model;
 
+        // Change the name of one of entity attributes
         case 'entity:attribute:change-name':
             if (!model.entity) {
                 throw Error('Model.entity undefined');

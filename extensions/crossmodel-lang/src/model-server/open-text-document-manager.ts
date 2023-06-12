@@ -33,10 +33,19 @@ export class OpenTextDocumentManager {
         this.textDocuments.onDidClose(event => this.close(event.document.uri));
     }
 
+    /**
+     * Subscribe to the onsave of the textdocuments.
+     *
+     * @param uri Uri of the document to listen to. The callback only gets called when this URI and the URI of the saved document
+     * are equal.
+     * @param listener Callback to be called
+     * @returns Disposable object
+     */
     onSave<T extends AstNode>(uri: string, listener: (model: T) => void): Disposable {
         return this.textDocuments.onDidSave(e => {
             const documentURI = URI.parse(e.document.uri);
 
+            // Check if the uri of the saved document and the uri of the listener are equal.
             if (e.document.uri === uri && documentURI !== undefined && this.langiumDocs.hasDocument(documentURI)) {
                 const document = this.langiumDocs.getOrCreateDocument(documentURI);
                 const root = document.parseResult.value;

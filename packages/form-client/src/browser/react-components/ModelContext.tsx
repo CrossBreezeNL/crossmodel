@@ -48,7 +48,8 @@ export function ModelReducer(model: CrossModelRoot, action: any): CrossModelRoot
         throw Error('Model error: model.entity undefined');
     }
 
-    // You have to make a copy, otherwise it does not work. Why??
+    // You have to make a copy. When changing the model itself, react wont update correctly.
+    // https://react.dev/learn/updating-objects-in-state
     model = _.cloneDeep(model);
 
     switch (action.type) {

@@ -19,7 +19,7 @@ import { Checkbox, FormControl, MenuItem, Select, SelectChangeEvent } from '@mui
 import { ModelContext, ModelDispatchContext, ModelReducer } from '../../ModelContext';
 import { Attribute, CrossModelRoot } from '../../../../common/form-client-protocol';
 
-export function EntityAttributesTab(props: any): React.ReactElement {
+export function EntityAttributesTab(): React.ReactElement {
     // Context variables to handle model state.
     const model = React.useContext(ModelContext) as CrossModelRoot;
     const dispatch = React.useContext(ModelDispatchContext) as React.Dispatch<React.ReducerAction<typeof ModelReducer>>;

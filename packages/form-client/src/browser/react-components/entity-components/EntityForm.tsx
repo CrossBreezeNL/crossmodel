@@ -14,7 +14,17 @@ export function EntityForm(props: ModelProps): React.ReactElement {
     const model = React.useContext(ModelContext);
 
     if (!model.entity) {
-        return <></>;
+        return (
+            <div
+                style={{
+                    backgroundColor: 'red',
+                    color: 'white',
+                    padding: '10px'
+                }}
+            >
+                This is not an entity model!
+            </div>
+        );
     }
 
     return (
@@ -39,10 +49,6 @@ export function EntityForm(props: ModelProps): React.ReactElement {
                 <TabPanel>
                     <GeneralTab />
                 </TabPanel>
-                {/* <TabPanel>
-                    <EntityAttributesTab />
-                </TabPanel>
-                */}
             </Tabs>
         </>
     );

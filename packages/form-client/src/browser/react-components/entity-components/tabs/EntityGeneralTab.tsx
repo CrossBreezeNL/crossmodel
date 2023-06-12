@@ -12,9 +12,19 @@ export function GeneralTab(props: GeneralTabProps): React.ReactElement {
     const model = React.useContext(ModelContext) as CrossModelRoot;
     const dispatch = React.useContext(ModelDispatchContext) as React.Dispatch<React.ReducerAction<typeof ModelReducer>>;
 
-    // Check if model initalized. Has to be here otherwise the compiler complains.
+    // Check if model initialized. Has to be here otherwise the compiler complains.
     if (model.entity === undefined) {
-        return <></>;
+        return (
+            <div
+                style={{
+                    backgroundColor: 'red',
+                    color: 'white',
+                    padding: '10px'
+                }}
+            >
+                Model not initialized!
+            </div>
+        );
     }
 
     return (

@@ -42,12 +42,24 @@ export function App(props: AppProps): React.ReactElement {
         render = <div>loading</div>;
     } else if (model.entity) {
         render = <EntityForm />;
+    } else {
+        render = (
+            <div
+                style={{
+                    backgroundColor: 'red',
+                    color: 'white',
+                    padding: '10px'
+                }}
+            >
+                Model not loaded!
+            </div>
+        );
     }
 
     return (
         <div className='form-editor'>
             <ModelProvider model={model} dispatch={dispatch}>
-                {render ? render : <></>}
+                {render}
             </ModelProvider>
         </div>
     );

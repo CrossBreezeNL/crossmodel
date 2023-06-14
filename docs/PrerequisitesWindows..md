@@ -36,8 +36,8 @@ irm get.scoop.sh | iex
 Open a new PowerShell window (this is needed after installing scoop) and execute the following commands:
 
 ```powershell
-scoop install python
-scoop install yarn
+scoop install python@3.11.4
+scoop install yarn@1.22.19
 scoop install nvm
 nvm install 16.20.0
 npm config set msvs_version 2022 --global

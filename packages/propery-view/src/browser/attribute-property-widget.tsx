@@ -14,7 +14,7 @@ export class AttributeWidget extends ReactWidget implements PropertyViewContentW
     static readonly ID = 'attribute-property-view';
     static readonly LABEL = 'Attribute Information';
 
-    protected currentNode: Object | undefined;
+    protected currentNode: object | undefined;
 
     constructor() {
         super();
@@ -25,7 +25,7 @@ export class AttributeWidget extends ReactWidget implements PropertyViewContentW
         this.node.tabIndex = 0;
     }
 
-    updatePropertyViewContent(propertyDataService?: PropertyDataService, selection?: Object | undefined): void {
+    updatePropertyViewContent(propertyDataService?: PropertyDataService, selection?: object | undefined): void {
         if (propertyDataService) {
             propertyDataService.providePropertyData(selection).then(nodeInfo => (this.currentNode = nodeInfo));
         }
@@ -50,19 +50,19 @@ export class AttributePropertyWidgetProvider extends DefaultPropertyViewWidgetPr
         this.attributeWidget = new AttributeWidget();
     }
 
-    override canHandle(selection: Object | undefined): number {
-        if (selection && (selection as any).hasOwnProperty('additionalSelectionData')) {
+    override canHandle(selection: object | undefined): number {
+        if (selection && Object.hasOwnProperty.call(selection, 'additionalSelectionData')) {
             delete (selection as any).additionalSelectionData;
         }
 
         return isSprottySelection(selection) ? 1 : 0;
     }
 
-    override provideWidget(selection: Object | undefined): Promise<AttributeWidget> {
+    override provideWidget(selection: object | undefined): Promise<AttributeWidget> {
         return Promise.resolve(this.attributeWidget);
     }
 
-    override updateContentWidget(selection: Object | undefined): void {
+    override updateContentWidget(selection: object | undefined): void {
         this.getPropertyDataService(selection).then(service => this.attributeWidget.updatePropertyViewContent(service, selection));
     }
 }

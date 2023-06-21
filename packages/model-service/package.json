@@ -1,8 +1,8 @@
 {
-  "name": "@crossbreeze/property-view",
+  "name": "@crossbreeze/model-service",
   "version": "1.0.0",
   "private": true,
-  "description": "Property view for crossmodel",
+  "description": "Model service to talk to the back-end server from the front-end via a JSON-rpc connection",
   "keywords": [
     "theia-extension"
   ],
@@ -16,11 +16,10 @@
     "name": "CrossBreeze Team",
     "email": "team@x-breeze.com"
   },
-  "main": "index.js",
   "files": [
     "lib",
     "src",
-    "resources"
+    "style"
   ],
   "scripts": {
     "build": "tsc -b",
@@ -30,15 +29,12 @@
     "watch": "tsc -w"
   },
   "dependencies": {
-    "@crossbreeze/model-service": "^1.0.0",
-    "@theia/core": "^1.34.4",
-    "@theia/filesystem": "^1.34.4",
-    "@theia/property-view": "^1.34.4"
+    "@theia/core": "^1.34.4"
   },
   "theiaExtensions": [
     {
-      "frontend": "lib/browser/pv-frontend-module",
-      "backend": "lib/node/pv-backend-module"
+      "frontend": "lib/browser/form-client-frontend-module",
+      "backend": "lib/node/form-client-backend-module"
     }
   ]
 }

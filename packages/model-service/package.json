@@ -16,6 +16,8 @@
     "name": "CrossBreeze Team",
     "email": "team@x-breeze.com"
   },
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
   "files": [
     "lib",
     "src",
@@ -33,8 +35,8 @@
   },
   "theiaExtensions": [
     {
-      "frontend": "lib/browser/form-client-frontend-module",
-      "backend": "lib/node/form-client-backend-module"
+      "frontend": "lib/browser/model-service-frontend-module",
+      "backend": "lib/node/model-service-backend-module"
     }
   ]
 }

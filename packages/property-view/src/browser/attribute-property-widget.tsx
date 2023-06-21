@@ -9,6 +9,7 @@ import { DefaultPropertyViewWidgetProvider } from '@theia/property-view/lib/brow
 import * as React from '@theia/core/shared/react';
 import { injectable } from '@theia/core/shared/inversify';
 import { isSprottySelection } from '@eclipse-glsp/theia-integration';
+import { TheiaGLSPSelection } from '../common/attribute-data-service';
 
 export class AttributeWidget extends ReactWidget implements PropertyViewContentWidget {
     static readonly ID = 'attribute-property-view';
@@ -50,8 +51,8 @@ export class AttributePropertyWidgetProvider extends DefaultPropertyViewWidgetPr
         this.attributeWidget = new AttributeWidget();
     }
 
-    override canHandle(selection: object | undefined): number {
-        if (selection && Object.hasOwnProperty.call(selection, 'additionalSelectionData')) {
+    override canHandle(selection: TheiaGLSPSelection | undefined): number {
+        if (selection) {
             delete (selection as any).additionalSelectionData;
         }
 

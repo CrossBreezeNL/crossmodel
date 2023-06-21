@@ -5,15 +5,9 @@
 import { inject, injectable } from '@theia/core/shared/inversify';
 import { PropertyDataService } from '@theia/property-view/lib/browser/property-data-service';
 import { isSprottySelection } from '@eclipse-glsp/theia-integration';
-import { AttributePropertyServer } from '../node/property-server';
+import { ModelService } from '@crossbreeze/model-service';
 
-export interface AttributePropertyObject {
-    id: string;
-    uri: string;
-    nobe: Nobe;
-}
-
-export interface NobeSelection {
+export interface TheiaGLSPSelection {
     selectedElementsIDs: Array<string>;
     widgetId: string;
     sourceUri: string;
@@ -22,12 +16,12 @@ export interface NobeSelection {
 
 @injectable()
 export class AttributeDataService implements PropertyDataService {
-    id = 'attributes-info';
-    label = 'AttributeDataService';
+    id = 'property-view-data-service';
+    label = 'Property view data service';
 
-    @inject(AttributePropertyServer) protected attributeServer: AttributePropertyServer;
+    @inject(ModelService) protected modelService: ModelService;
 
-    canHandleSelection(selection: NobeSelection | undefined): number {
+    canHandleSelection(selection: TheiaGLSPSelection | undefined): number {
         if (selection) {
             delete selection.additionalSelectionData;
         }
@@ -35,7 +29,7 @@ export class AttributeDataService implements PropertyDataService {
         return isSprottySelection(selection) ? 1 : 0;
     }
 
-    async providePropertyData(selection: NobeSelection | undefined): Promise<Object | undefined> {
+    async providePropertyData(selection: TheiaGLSPSelection | undefined): Promise<Object | undefined> {
         if (selection) {
             delete selection.additionalSelectionData;
         } else {

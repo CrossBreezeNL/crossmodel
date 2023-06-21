@@ -8,6 +8,7 @@
     "extensions/*"
   ],
   "scripts": {
+    "clean": "lerna run clean && rimraf node_modules",
     "postinstall": "theia check:theia-version",
     "lint": "lerna run lint",
     "prepare": "lerna run prepare",

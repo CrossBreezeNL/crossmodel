@@ -1,0 +1,43 @@
+{
+  "name": "@crossbreeze/property-view",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Property view for crossmodel",
+  "keywords": [
+    "theia-extension"
+  ],
+  "homepage": "https://github.com/CrossBreezeNL/CrossModel",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CrossBreezeNL/CrossModel"
+  },
+  "license": "UNLICENSED",
+  "author": {
+    "name": "CrossBreeze Team",
+    "email": "team@x-breeze.com"
+  },
+  "main": "index.js",
+  "files": [
+    "lib",
+    "src",
+    "resources"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rimraf lib && rimraf tsconfig.tsbuildinfo",
+    "lint": "eslint -c ../../.eslintrc.js --ext .ts,.tsx ./src",
+    "prepare": "yarn clean && yarn build",
+    "watch": "tsc -w"
+  },
+  "dependencies": {
+    "@theia/core": "^1.34.4",
+    "@theia/filesystem": "^1.34.4",
+    "@theia/property-view": "^1.34.4"
+  },
+  "theiaExtensions": [
+    {
+      "frontend": "lib/browser/pv-frontend-module",
+      "backend": "lib/node/pv-backend-module"
+    }
+  ]
+}

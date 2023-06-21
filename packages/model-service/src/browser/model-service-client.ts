@@ -4,7 +4,7 @@
 
 import { Emitter } from '@theia/core';
 import { injectable } from '@theia/core/shared/inversify';
-import { CrossModelRoot, FormEditorClient } from '../common/form-client-protocol';
+import { CrossModelRoot, ModelServiceClient } from '../common/model-service-protocol';
 
 export interface ModelDocument {
     uri: string;
@@ -12,12 +12,12 @@ export interface ModelDocument {
 }
 
 @injectable()
-export class FormEditorClientImpl implements FormEditorClient {
+export class ModelServiceClientImpl implements ModelServiceClient {
     protected onUpdateEmitter = new Emitter<ModelDocument>();
     onUpdate = this.onUpdateEmitter.event;
 
     async getName(): Promise<string> {
-        return 'Client';
+        return 'ModelServiceClient';
     }
 
     async updateModel(uri: string, model: CrossModelRoot): Promise<void> {

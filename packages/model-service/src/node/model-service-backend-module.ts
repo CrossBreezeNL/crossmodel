@@ -4,17 +4,17 @@
 
 import { ConnectionHandler, JsonRpcConnectionHandler } from '@theia/core';
 import { ContainerModule } from '@theia/core/shared/inversify';
-import { FORM_EDITOR_SERVICE_PATH, FormEditorClient, FormEditorService } from '../common/form-client-protocol';
-import { FormEditorServiceImpl } from './model-service-server';
+import { MODEL_SERVICE_PATH, ModelService, ModelServiceClient } from '../common/model-service-protocol';
+import { ModelServiceImpl } from './model-service';
 
 export default new ContainerModule(bind => {
-    bind(FormEditorService).to(FormEditorServiceImpl).inSingletonScope();
+    bind(ModelService).to(ModelServiceImpl).inSingletonScope();
     bind(ConnectionHandler)
         .toDynamicValue(
             ctx =>
-                new JsonRpcConnectionHandler<FormEditorClient>(FORM_EDITOR_SERVICE_PATH, client => {
+                new JsonRpcConnectionHandler<ModelServiceClient>(MODEL_SERVICE_PATH, client => {
                     // get the proxy client representing the frontend client and fulfill connection proxy with our service implementation
-                    const server = ctx.container.get<FormEditorServiceImpl>(FormEditorService);
+                    const server = ctx.container.get<ModelServiceImpl>(ModelService);
                     server.setClient(client);
                     client.onDidCloseConnection(() => server.dispose());
                     return server;

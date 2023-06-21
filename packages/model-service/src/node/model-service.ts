@@ -4,7 +4,7 @@
 import { injectable } from '@theia/core/shared/inversify';
 import * as net from 'net';
 import * as rpc from 'vscode-jsonrpc/node';
-import { CrossModelRoot, FormEditorClient, FormEditorService } from '../common/form-client-protocol';
+import { CrossModelRoot, ModelService, ModelServiceClient } from '../common/model-service-protocol';
 
 // socket connection, must match the one in model-server/launch.ts
 const SOCKET_OPTIONS = { port: 5999, host: 'localhost' };
@@ -22,31 +22,35 @@ const OnSave = new rpc.NotificationType2<string, CrossModelRoot>('server/onSave'
  * Backend service implementation that mainly forwards all requests from the Theia frontend to the model server exposed on a given socket.
  */
 @injectable()
-export class FormEditorServiceImpl implements FormEditorService {
+export class ModelServiceImpl implements ModelService {
     protected initialized = false;
     protected connection: rpc.MessageConnection;
-    protected client?: FormEditorClient;
+    protected client?: ModelServiceClient;
 
     async initialize(): Promise<void> {
+        // ensure we only initialize RPC connection once
         if (this.initialized) {
-            // ensure we only initialize RPC connection once
             return;
         }
+
+        // Set up the connection to the model server
         const socket = new net.Socket();
         const reader = new rpc.SocketMessageReader(socket);
         const writer = new rpc.SocketMessageWriter(socket);
         this.connection = rpc.createMessageConnection(reader, writer);
 
+        // on close
         this.connection.onClose(() => (this.initialized = false));
         socket.on('close', () => (this.initialized = false));
 
+        // Make connection.
         socket.connect(SOCKET_OPTIONS);
         this.connection.listen();
 
-        this.connection.onNotification(OnSave, (uri, model) => {
-            this.client?.updateModel(uri, model);
-        });
+        // Set up listeners
+        this.setUpListeners();
 
+        // When everything is successfull, the model service is initialized
         this.initialized = true;
     }
 
@@ -79,7 +83,13 @@ export class FormEditorServiceImpl implements FormEditorService {
         // do nothing
     }
 
-    setClient(client: FormEditorClient): void {
+    setClient(client: ModelServiceClient): void {
         this.client = client;
+    }
+
+    setUpListeners(): void {
+        this.connection.onNotification(OnSave, (uri, model) => {
+            this.client?.updateModel(uri, model);
+        });
     }
 }

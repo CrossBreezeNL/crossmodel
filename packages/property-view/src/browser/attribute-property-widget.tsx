@@ -8,8 +8,7 @@ import { PropertyViewContentWidget } from '@theia/property-view/lib/browser/prop
 import { DefaultPropertyViewWidgetProvider } from '@theia/property-view/lib/browser/property-view-widget-provider';
 import * as React from '@theia/core/shared/react';
 import { injectable } from '@theia/core/shared/inversify';
-import { isSprottySelection } from '@eclipse-glsp/theia-integration';
-import { TheiaGLSPSelection } from '../common/attribute-data-service';
+import { GlspSelection, isGlspSelection } from '@eclipse-glsp/theia-integration';
 
 export class AttributeWidget extends ReactWidget implements PropertyViewContentWidget {
     static readonly ID = 'attribute-property-view';
@@ -26,7 +25,7 @@ export class AttributeWidget extends ReactWidget implements PropertyViewContentW
         this.node.tabIndex = 0;
     }
 
-    updatePropertyViewContent(propertyDataService?: PropertyDataService, selection?: object | undefined): void {
+    updatePropertyViewContent(propertyDataService?: PropertyDataService, selection?: GlspSelection | undefined): void {
         if (propertyDataService) {
             propertyDataService.providePropertyData(selection).then(nodeInfo => (this.currentNode = nodeInfo));
         }
@@ -51,19 +50,15 @@ export class AttributePropertyWidgetProvider extends DefaultPropertyViewWidgetPr
         this.attributeWidget = new AttributeWidget();
     }
 
-    override canHandle(selection: TheiaGLSPSelection | undefined): number {
-        if (selection) {
-            delete (selection as any).additionalSelectionData;
-        }
-
-        return isSprottySelection(selection) ? 1 : 0;
+    override canHandle(selection: GlspSelection | undefined): number {
+        return isGlspSelection(selection) ? 1 : 0;
     }
 
-    override provideWidget(selection: object | undefined): Promise<AttributeWidget> {
+    override provideWidget(selection: GlspSelection | undefined): Promise<AttributeWidget> {
         return Promise.resolve(this.attributeWidget);
     }
 
-    override updateContentWidget(selection: object | undefined): void {
+    override updateContentWidget(selection: GlspSelection | undefined): void {
         this.getPropertyDataService(selection).then(service => this.attributeWidget.updatePropertyViewContent(service, selection));
     }
 }

@@ -4,15 +4,8 @@
 
 import { inject, injectable } from '@theia/core/shared/inversify';
 import { PropertyDataService } from '@theia/property-view/lib/browser/property-data-service';
-import { isSprottySelection } from '@eclipse-glsp/theia-integration';
-import { ModelService } from '@crossbreeze/model-service';
-
-export interface TheiaGLSPSelection {
-    selectedElementsIDs: Array<string>;
-    widgetId: string;
-    sourceUri: string;
-    additionalSelectionData?: string;
-}
+import { GlspSelection, isGlspSelection } from '@eclipse-glsp/theia-integration';
+import { CrossModelRoot, ModelService } from '@crossbreeze/model-service';
 
 @injectable()
 export class AttributeDataService implements PropertyDataService {
@@ -21,25 +14,47 @@ export class AttributeDataService implements PropertyDataService {
 
     @inject(ModelService) protected modelService: ModelService;
 
-    canHandleSelection(selection: TheiaGLSPSelection | undefined): number {
-        if (selection) {
-            delete selection.additionalSelectionData;
-        }
-
-        return isSprottySelection(selection) ? 1 : 0;
+    canHandleSelection(selection: GlspSelection | undefined): number {
+        return isGlspSelection(selection) ? 1 : 0;
     }
 
-    async providePropertyData(selection: TheiaGLSPSelection | undefined): Promise<Object | undefined> {
-        if (selection) {
-            delete selection.additionalSelectionData;
-        } else {
-            return Promise.reject();
-        }
-
-        if (isSprottySelection(selection)) {
-            const result = this.attributeServer.getNobe(selection.selectedElementsIDs[0]);
-
-            return Promise.resolve(result);
+    async providePropertyData(selection: GlspSelection | undefined): Promise<CrossModelRoot | undefined> {
+        if (isGlspSelection(selection)) {
+            return Promise.resolve({
+                $type: 'CrossModelRoot',
+                entity: {
+                    $type: 'Entity',
+                    name: 'Order',
+                    description: 'Orders geplaatst door de klant',
+                    attributes: [
+                        {
+                            $type: 'Attribute',
+                            name: 'werk',
+                            value: 'Float'
+                        },
+                        {
+                            $type: 'Attribute',
+                            name: 'test49999912somsdit',
+                            value: 'Char'
+                        },
+                        {
+                            $type: 'Attribute',
+                            name: 'wat111234',
+                            value: 'Varchar'
+                        },
+                        {
+                            $type: 'Attribute',
+                            name: 'hall1123',
+                            value: 'Integer'
+                        },
+                        {
+                            $type: 'Attribute',
+                            name: 'ditwerktdusnietaltijd',
+                            value: 'test1234'
+                        }
+                    ]
+                }
+            });
         } else {
             return Promise.reject();
         }

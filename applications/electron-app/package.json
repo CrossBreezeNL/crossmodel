@@ -32,7 +32,9 @@
     "@crossbreeze/core": "0.0.0",
     "@crossbreeze/form-client": "0.0.0",
     "@crossbreeze/glsp-client": "0.0.0",
+    "@crossbreeze/model-service": "^1.0.0",
     "@crossbreeze/product": "0.0.0",
+    "@crossbreeze/property-view": "^1.0.0",
     "@theia/core": "^1.34.4",
     "@theia/editor": "^1.34.4",
     "@theia/electron": "^1.34.4",
@@ -50,7 +52,7 @@
   },
   "devDependencies": {
     "@theia/cli": "^1.34.4",
-    "electron": "^15.3.5",
+    "electron": "^23.2.4",
     "electron-builder": "^23.6.0"
   },
   "productName": "CrossModel Community Edition",

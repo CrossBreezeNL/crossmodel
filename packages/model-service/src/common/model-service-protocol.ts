@@ -18,6 +18,10 @@ export interface CrossModelRoot {
     relationship?: Relationship;
 }
 
+export function isCrossModelRoot(model?: any): model is CrossModelRoot {
+    return !!model && model.$type === 'CrossModelRoot';
+}
+
 export interface Relationship {
     readonly $type: 'Relationship';
     name: string;

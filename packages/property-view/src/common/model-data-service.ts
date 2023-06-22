@@ -8,9 +8,9 @@ import { GlspSelection, isGlspSelection } from '@eclipse-glsp/theia-integration'
 import { CrossModelRoot, ModelService } from '@crossbreeze/model-service';
 
 @injectable()
-export class AttributeDataService implements PropertyDataService {
-    id = 'property-view-data-service';
-    label = 'Property view data service';
+export class ModelDataService implements PropertyDataService {
+    id = 'model-property-data-service';
+    label = 'Model property data service';
 
     @inject(ModelService) protected modelService: ModelService;
 

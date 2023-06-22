@@ -4,13 +4,14 @@
 
 import { ContainerModule } from '@theia/core/shared/inversify';
 import { PropertyViewWidgetProvider } from '@theia/property-view/lib/browser/property-view-widget-provider';
-import { AttributePropertyWidgetProvider } from './attribute-property-widget';
+import { ModelPropertyWidgetProvider } from './model-property-widget-provider';
 import { PropertyDataService } from '@theia/property-view/lib/browser/property-data-service';
-import { AttributeDataService } from '../common/attribute-data-service';
+import { ModelDataService } from '../common/model-data-service';
+import '../../src/style/property-view.css';
 
 export default new ContainerModule((bind, _unbind, _isBound, rebind) => {
     // To make the property widget working
-    bind(AttributeDataService).toSelf().inSingletonScope();
-    bind(PropertyDataService).toService(AttributeDataService);
-    bind(PropertyViewWidgetProvider).to(AttributePropertyWidgetProvider).inSingletonScope();
+    bind(ModelDataService).toSelf().inSingletonScope();
+    bind(PropertyDataService).toService(ModelDataService);
+    bind(PropertyViewWidgetProvider).to(ModelPropertyWidgetProvider).inSingletonScope();
 });

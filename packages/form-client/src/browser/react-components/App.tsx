@@ -3,8 +3,7 @@
  ********************************************************************************/
 
 import * as React from '@theia/core/shared/react';
-import { CrossModelRoot } from '../../common/form-client-protocol';
-import { FormEditorClientImpl } from '../form-client';
+import { CrossModelRoot, ModelServiceClientImpl } from '@crossbreeze/model-service';
 import URI from '@theia/core/lib/common/uri';
 import { ModelReducer, ModelProvider } from './ModelContext';
 import { EntityForm } from './entity-components/EntityForm';
@@ -14,7 +13,7 @@ interface AppProps {
     updateModel: (model: CrossModelRoot) => void;
     model: CrossModelRoot | undefined;
     getResourceUri: () => URI;
-    formClient: FormEditorClientImpl;
+    formClient: ModelServiceClientImpl;
 }
 
 export function App(props: AppProps): React.ReactElement {

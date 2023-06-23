@@ -17,7 +17,7 @@ import {
 } from '@mui/x-data-grid';
 import { Checkbox, FormControl, MenuItem, Select, SelectChangeEvent } from '@mui/material';
 import { ModelContext, ModelDispatchContext, ModelReducer } from '../../ModelContext';
-import { Attribute, CrossModelRoot } from '../../../../common/form-client-protocol';
+import { Attribute, CrossModelRoot } from '@crossbreeze/model-service';
 
 export function EntityAttributesTab(): React.ReactElement {
     // Context variables to handle model state.

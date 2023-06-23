@@ -7,11 +7,10 @@ import { LabelProvider, NavigatableWidget, NavigatableWidgetOptions, ReactWidget
 import URI from '@theia/core/lib/common/uri';
 import { inject, injectable, postConstruct } from '@theia/core/shared/inversify';
 import * as React from '@theia/core/shared/react';
-import { CrossModelRoot, FormEditorService } from '../common/form-client-protocol';
-import { FormEditorClientImpl } from './form-client';
 
 import { App } from './react-components/App';
 import '../../style/form-view.css';
+import { CrossModelRoot, ModelService, ModelServiceClientImpl } from '@crossbreeze/model-service';
 
 export const FormEditorWidgetOptions = Symbol('FormEditorWidgetOptions');
 export interface FormEditorWidgetOptions extends NavigatableWidgetOptions {
@@ -28,9 +27,9 @@ export class FormEditorWidget extends ReactWidget implements NavigatableWidget, 
 
     @inject(FormEditorWidgetOptions) protected options: FormEditorWidgetOptions;
     @inject(LabelProvider) protected labelProvider: LabelProvider;
-    @inject(FormEditorService) private readonly formEditorService: FormEditorService;
+    @inject(ModelService) private readonly modelService: ModelService;
     @inject(CommandService) protected commandService: CommandService;
-    @inject(FormEditorClientImpl) protected formClient: FormEditorClientImpl;
+    @inject(ModelServiceClientImpl) protected formClient: ModelServiceClientImpl;
 
     protected model: CrossModelRoot | undefined = undefined;
     protected error: string | undefined = undefined;
@@ -51,8 +50,8 @@ export class FormEditorWidget extends ReactWidget implements NavigatableWidget, 
     protected async loadModel(): Promise<void> {
         try {
             const uri = this.getResourceUri().toString();
-            await this.formEditorService.open(uri);
-            const model = await this.formEditorService.request(uri);
+            await this.modelService.open(uri);
+            const model = await this.modelService.request(uri);
             if (model) {
                 this.model = model;
             }
@@ -73,7 +72,7 @@ export class FormEditorWidget extends ReactWidget implements NavigatableWidget, 
         // This variable lets us know that we were the ones that saved the model
         this.saveUpdate = true;
 
-        await this.formEditorService.save(this.getResourceUri().toString(), this.model);
+        await this.modelService.save(this.getResourceUri().toString(), this.model);
     }
 
     protected async updateModel(model: CrossModelRoot): Promise<void> {
@@ -84,11 +83,11 @@ export class FormEditorWidget extends ReactWidget implements NavigatableWidget, 
         }
 
         this.model = model;
-        await this.formEditorService.update(this.getResourceUri().toString(), this.model!);
+        await this.modelService.update(this.getResourceUri().toString(), this.model!);
     }
 
     override close(): void {
-        this.formEditorService.close(this.getResourceUri().toString());
+        this.modelService.close(this.getResourceUri().toString());
         super.close();
     }
 

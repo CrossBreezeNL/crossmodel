@@ -50,19 +50,29 @@ export interface Attribute {
     value: number | string;
 }
 
+export interface DiagramNodeEntity {
+    uri: string;
+    model: CrossModelRoot;
+}
+
+export function isDiagramNodeEntity(model?: any): model is DiagramNodeEntity {
+    return !!model && model.uri && model.model && isCrossModelRoot(model.model);
+}
+
 /**
  * Protocol used by the Theia frontend-backend communication
  */
-export const ModelService = Symbol('FormEditorService');
+export const ModelService = Symbol('ModelService');
 export interface ModelService extends JsonRpcServer<ModelServiceClient> {
     open(uri: string): Promise<void>;
     close(uri: string): Promise<void>;
     request(uri: string): Promise<CrossModelRoot | undefined>;
+    requestDiagramNodeEntityModel(uri: string, id: string): Promise<DiagramNodeEntity | undefined>;
     update(uri: string, model: CrossModelRoot): Promise<void>;
     save(uri: string, model: CrossModelRoot): Promise<void>;
 }
 
-export const ModelServiceClient = Symbol('FormEditorClient');
+export const ModelServiceClient = Symbol('ModelServiceClient');
 export interface ModelServiceClient {
     getName(): Promise<string>;
     updateModel(uri: string, model: CrossModelRoot): Promise<void>;

@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "@crossbreeze/core": "0.0.0",
+    "@crossbreeze/model-service": "^1.0.0",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@mui/material": "^5.13.5",

@@ -3,7 +3,7 @@
  ********************************************************************************/
 import * as React from '@theia/core/shared/react';
 import { CrossModelRoot } from '@crossbreeze/model-service';
-import _ = require('lodash');
+import * as _ from 'lodash';
 
 /**
  * Represents the properties required by the ModelProvider component.

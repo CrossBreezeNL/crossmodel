@@ -3,6 +3,7 @@
  ********************************************************************************/
 
 import { AstNode, isReference } from 'langium';
+import { CrossModelRoot, DiagramNode, Entity } from '../language-server/generated/ast';
 import { Disposable } from 'vscode-jsonrpc';
 import * as rpc from 'vscode-jsonrpc/node';
 import { ModelService } from './model-service';
@@ -10,6 +11,7 @@ import { ModelService } from './model-service';
 const OpenModel = new rpc.RequestType1<string, void, void>('server/open');
 const CloseModel = new rpc.RequestType1<string, void, void>('server/close');
 const RequestModel = new rpc.RequestType1<string, AstNode | undefined, void>('server/request');
+const RequestModelDiagramNode = new rpc.RequestType2<string, string, DiagramNodeEntity | undefined, void>('server/requestModelDiagramNode');
 const UpdateModel = new rpc.RequestType2<string, AstNode, void, void>('server/update');
 const SaveModel = new rpc.RequestType2<string, AstNode, void, void>('server/save');
 const OnSave = new rpc.NotificationType2<string, AstNode>('server/onSave');
@@ -29,8 +31,59 @@ export class ModelServer implements Disposable {
         this.toDispose.push(connection.onRequest(OpenModel, uri => this.openModel(uri)));
         this.toDispose.push(connection.onRequest(CloseModel, uri => this.closeModel(uri)));
         this.toDispose.push(connection.onRequest(RequestModel, uri => this.requestModel(uri)));
+        this.toDispose.push(connection.onRequest(RequestModelDiagramNode, (uri, id) => this.requestModelDiagramNode(uri, id)));
         this.toDispose.push(connection.onRequest(UpdateModel, (uri, model) => this.updateModel(uri, model)));
         this.toDispose.push(connection.onRequest(SaveModel, (uri, model) => this.saveModel(uri, model)));
+    }
+
+    /**
+     * Returns the entity model of the selected node in the diagram.
+     *
+     * @param uri The uri of the opened diagram
+     * @param id The id of the selected node
+     * @returns {
+     *  uri: of the entity model
+     *  entity: model of the entity
+     * }
+     */
+    async requestModelDiagramNode(uri: string, id: string): Promise<DiagramNodeEntity | undefined> {
+        const root = (await this.modelService.request(uri)) as CrossModelRoot;
+        let diagramNode: DiagramNode | undefined = undefined;
+
+        if (!root || !root.diagram) {
+            throw new Error('Something went wrong loading the diagram');
+        }
+
+        for (const node of root.diagram.nodes) {
+            if (node.name === id) {
+                if (diagramNode) {
+                    throw new Error('Multiple nodes with the same name');
+                }
+
+                diagramNode = node;
+            }
+        }
+
+        if (!diagramNode) {
+            throw new Error('No node found with the given id');
+        }
+
+        const ref: Entity | undefined = diagramNode.semanticElement.ref;
+
+        if (!ref || !ref.$container.$document) {
+            throw new Error('No node found with the given id');
+        }
+
+        const entityUri = ref.$container.$document.uri.toString();
+        const serializedEntity: CrossModelRoot | undefined = toSerializable({
+            $type: 'CrossModelRoot',
+            entity: diagramNode.semanticElement.ref
+        });
+
+        return {
+            uri: entityUri,
+            model: serializedEntity
+        };
     }
 
     protected async openModel(uri: string): Promise<void> {
@@ -97,4 +150,9 @@ function resolvedValue(value: any): any {
         return value.$refText;
     }
     return value;
+}
+
+interface DiagramNodeEntity {
+    uri: string;
+    model: CrossModelRoot | undefined;
 }

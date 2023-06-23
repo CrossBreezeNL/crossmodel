@@ -4,7 +4,7 @@
 import { injectable } from '@theia/core/shared/inversify';
 import * as net from 'net';
 import * as rpc from 'vscode-jsonrpc/node';
-import { CrossModelRoot, ModelService, ModelServiceClient } from '../common/model-service-protocol';
+import { CrossModelRoot, DiagramNodeEntity, ModelService, ModelServiceClient } from '../common/model-service-protocol';
 
 // socket connection, must match the one in model-server/launch.ts
 const SOCKET_OPTIONS = { port: 5999, host: 'localhost' };
@@ -14,6 +14,7 @@ const SOCKET_OPTIONS = { port: 5999, host: 'localhost' };
 const OpenModel = new rpc.RequestType1<string, void, void>('server/open');
 const CloseModel = new rpc.RequestType1<string, void, void>('server/close');
 const RequestModel = new rpc.RequestType1<string, CrossModelRoot | undefined, void>('server/request');
+const RequestModelDiagramNode = new rpc.RequestType2<string, string, DiagramNodeEntity | undefined, void>('server/requestModelDiagramNode');
 const UpdateModel = new rpc.RequestType2<string, CrossModelRoot, void, void>('server/update');
 const SaveModel = new rpc.RequestType2<string, CrossModelRoot, void, void>('server/save');
 const OnSave = new rpc.NotificationType2<string, CrossModelRoot>('server/onSave');
@@ -67,6 +68,11 @@ export class ModelServiceImpl implements ModelService {
     async request(uri: string): Promise<CrossModelRoot | undefined> {
         await this.initialize();
         return this.connection.sendRequest(RequestModel, uri);
+    }
+
+    async requestDiagramNodeEntityModel(uri: string, id: string): Promise<DiagramNodeEntity | undefined> {
+        await this.initialize();
+        return this.connection.sendRequest(RequestModelDiagramNode, uri, id);
     }
 
     async update(uri: string, model: CrossModelRoot): Promise<void> {

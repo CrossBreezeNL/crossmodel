@@ -3,8 +3,8 @@
  ********************************************************************************/
 
 import * as React from '@theia/core/shared/react';
-import { ErrorView } from './ErrorView';
-import { EntityPropertyView } from './EntityPropertyView';
+import { ErrorView } from './views/ErrorView';
+import { EntityPropertyView } from './views/EntityPropertyView';
 
 export function App(props: any): React.ReactElement {
     let content = <></>;

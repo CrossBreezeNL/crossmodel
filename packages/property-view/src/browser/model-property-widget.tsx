@@ -9,13 +9,14 @@ import * as React from '@theia/core/shared/react';
 
 import { GlspSelection } from '@eclipse-glsp/theia-integration';
 import { App } from './react-components/App';
-import { CrossModelRoot, isCrossModelRoot } from '@crossbreeze/model-service';
+import { CrossModelRoot, isDiagramNodeEntity } from '@crossbreeze/model-service';
 
 export class ModelPropertyWidget extends ReactWidget implements PropertyViewContentWidget {
     static readonly ID = 'attribute-property-view';
     static readonly LABEL = 'Model property widget';
 
     protected model: CrossModelRoot | undefined;
+    protected uri: string;
 
     constructor() {
         super();
@@ -28,14 +29,20 @@ export class ModelPropertyWidget extends ReactWidget implements PropertyViewCont
 
     updatePropertyViewContent(propertyDataService?: PropertyDataService, selection?: GlspSelection | undefined): void {
         if (propertyDataService) {
-            propertyDataService.providePropertyData(selection).then(selectionData => {
-                if (isCrossModelRoot(selectionData)) {
-                    this.model = selectionData;
-                }
-            });
-        }
+            propertyDataService.providePropertyData(selection).then(
+                selectionData => {
+                    if (isDiagramNodeEntity(selectionData)) {
+                        this.model = selectionData.model;
+                        this.uri = selectionData.uri;
 
-        this.update();
+                        this.update();
+                    }
+                },
+                error => {
+                    this.model = undefined;
+                }
+            );
+        }
     }
 
     protected render(): React.ReactNode {

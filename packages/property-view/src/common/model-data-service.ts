@@ -10,7 +10,7 @@ import { DiagramNodeEntity, ModelService } from '@crossbreeze/model-service';
 @injectable()
 export class ModelDataService implements PropertyDataService {
     id = 'model-property-data-service';
-    label = 'Model property data service';
+    label = 'ModelPropertyDataService';
     currentUri: string;
 
     @inject(ModelService) protected modelService: ModelService;

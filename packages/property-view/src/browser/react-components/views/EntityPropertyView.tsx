@@ -13,34 +13,51 @@ import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
 import { CrossModelRoot } from '@crossbreeze/model-service';
 import * as React from '@theia/core/shared/react';
 import { ErrorView } from './ErrorView';
+import { ModelContext, ModelDispatchContext, ModelReducer } from '../ModelContext';
 
 export interface EntityPropertyViewProps extends React.HTMLProps<HTMLDivElement> {
     model: CrossModelRoot;
 }
 
 export function EntityPropertyView(props: EntityPropertyViewProps): React.ReactElement {
-    if (!props.model.entity) {
+    const model = React.useContext(ModelContext) as CrossModelRoot;
+    const dispatch = React.useContext(ModelDispatchContext) as React.Dispatch<React.ReducerAction<typeof ModelReducer>>;
+
+    if (!model || !model.entity) {
         return <ErrorView errorMessage='Something went wrong loading the model!' />;
     }
 
     return (
         <div className='property-view-entity'>
-            <h2>Entity: {props.model.entity.name}</h2>
+            <h2>Entity: {model.entity.name}</h2>
 
             <Accordion defaultExpanded={true}>
                 <AccordionSummary aria-controls='general-info-content' className='property-accordion'>
-                    {' '}
-                    General information{' '}
+                    General information
                 </AccordionSummary>
                 <AccordionDetails className='property-entity-general'>
                     <div>
                         <label>Name:</label>
-                        <input value={props.model.entity.name} className={'theia-input'} />
+                        <input
+                            // TODO, add debounce
+                            className='theia-input'
+                            value={model.entity.name}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                dispatch({ type: 'entity:change-name', name: e.target.value ? e.target.value : '' });
+                            }}
+                        />
                     </div>
 
                     <div>
                         <label>Description:</label>
-                        <textarea rows={4} value={props.model.entity.description} className={'theia-input'} />
+                        <textarea
+                            className='theia-input'
+                            value={model.entity.description}
+                            rows={4}
+                            onChange={(e: any) => {
+                                dispatch({ type: 'entity:change-description', description: e.target.value });
+                            }}
+                        />
                     </div>
                 </AccordionDetails>
             </Accordion>

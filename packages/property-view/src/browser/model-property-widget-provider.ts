@@ -11,6 +11,8 @@ import { ModelPropertyWidget } from './model-property-widget';
 export class ModelPropertyWidgetProvider extends DefaultPropertyViewWidgetProvider {
     override readonly id = 'model-property-widget-provider';
     override readonly label = 'Model Property Widget Provider';
+    currentUri = '';
+    currentNode = '';
 
     private attributeWidget: ModelPropertyWidget;
 
@@ -20,7 +22,7 @@ export class ModelPropertyWidgetProvider extends DefaultPropertyViewWidgetProvid
     }
 
     override canHandle(selection: GlspSelection | undefined): number {
-        return isGlspSelection(selection) ? 1 : 0;
+        return isGlspSelection(selection) ? 100 : 0;
     }
 
     override provideWidget(selection: GlspSelection | undefined): Promise<ModelPropertyWidget> {
@@ -28,6 +30,11 @@ export class ModelPropertyWidgetProvider extends DefaultPropertyViewWidgetProvid
     }
 
     override updateContentWidget(selection: GlspSelection | undefined): void {
-        this.getPropertyDataService(selection).then(service => this.attributeWidget.updatePropertyViewContent(service, selection));
+        if (selection?.sourceUri && (selection?.sourceUri !== this.currentUri || selection.selectedElementsIDs[0] !== this.currentNode)) {
+            this.currentUri = selection?.sourceUri;
+            this.currentNode = selection.selectedElementsIDs[0];
+
+            this.getPropertyDataService(selection).then(service => this.attributeWidget.updatePropertyViewContent(service, selection));
+        }
     }
 }

@@ -10,6 +10,10 @@ import { isExternalDescriptionForLocalPackage } from '../../language-server/cros
 import { createNodeToEntityReference } from '../../language-server/util/ast-util';
 import { CrossModelState } from '../model/cross-model-state';
 
+/**
+ * An action provider for the command palette (Ctrl+Space) to allow adding entities to an existing diagram.
+ * Each action will trigger a 'AddEntityOperation' for the specific entity.
+ */
 @injectable()
 export class CrossModelAddEntityActionProvider implements ContextActionsProvider {
    contextId = 'command-palette';

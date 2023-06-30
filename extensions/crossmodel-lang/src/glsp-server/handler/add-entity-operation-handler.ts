@@ -11,6 +11,9 @@ import { findAvailableNodeName } from '../../language-server/util/name-util';
 import { CrossModelState } from '../model/cross-model-state';
 import { CrossModelCommand } from './cross-model-command';
 
+/**
+ * An operation handler for the 'AddEntityOperation' that resolves the referenced entity by name and places it in a new node on the diagram.
+ */
 @injectable()
 export class CrossModelAddEntityOperationHandler extends OperationHandler {
    override operationType = AddEntityOperation.KIND;

@@ -9,6 +9,9 @@ import { DiagramWidget, DiagramWidgetOptions } from 'sprotty-theia';
 import { CrossModelDiagramLanguage } from '../common/crossmodel-diagram-language';
 import { CrossModelDiagramWidget } from './crossmodel-diagram-widget';
 
+/**
+ * Customization of the default diagram manager to plug in our custom widget implementation (CrossModelDiagramWidget).
+ */
 @injectable()
 export class CrossModelDiagramManager extends GLSPDiagramManager {
    override get fileExtensions(): string[] {

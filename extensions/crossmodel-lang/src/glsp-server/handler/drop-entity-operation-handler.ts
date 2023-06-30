@@ -11,6 +11,11 @@ import { findAvailableNodeName } from '../../language-server/util/name-util';
 import { CrossModelState } from '../model/cross-model-state';
 import { CrossModelCommand } from './cross-model-command';
 
+/**
+ * An operation handler for the 'DropEntityOperation' that finds an entity for each of the given file URIs and
+ * creates a new node on the diagram for each of the found entities. If multiple entities are placed on the diagram
+ * their position is shifted by (10,10) so they do not fully overlap.
+ */
 @injectable()
 export class CrossModelDropEntityOperationHandler extends OperationHandler {
    override operationType = DropEntityOperation.KIND;

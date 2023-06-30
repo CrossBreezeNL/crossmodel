@@ -3,19 +3,24 @@
  ********************************************************************************/
 import {
    BindingTarget,
+   ContextActionsProvider,
    DiagramConfiguration,
    DiagramModule,
    GModelFactory,
    GModelIndex,
    InstanceMultiBinding,
    ModelState,
+   MultiBinding,
    OperationHandlerConstructor,
    SourceModelStorage
 } from '@eclipse-glsp/server';
 import { injectable } from 'inversify';
+import { CrossModelAddEntityActionProvider } from '../command-palette/add-entity-action-provider';
+import { CrossModelAddEntityOperationHandler } from '../handler/add-entity-operation-handler';
 import { CrossModelChangeBoundsOperationHandler } from '../handler/change-bounds-operation-handler';
 import { CrossModelCreateEdgeOperationHandler } from '../handler/create-edge-operation-handler';
 import { CrossModelDeleteOperationHandler } from '../handler/delete-operation-handler';
+import { CrossModelDropEntityOperationHandler } from '../handler/drop-entity-operation-handler';
 import { CrossModelGModelFactory } from '../model/cross-model-gmodel-factory';
 import { CrossModelIndex } from '../model/cross-model-index';
 import { CrossModelState } from '../model/cross-model-state';
@@ -42,6 +47,13 @@ export class CrossModelDiagramModule extends DiagramModule {
       binding.add(CrossModelChangeBoundsOperationHandler); // move + resize behavior
       binding.add(CrossModelCreateEdgeOperationHandler); // create 1:1 relationship
       binding.add(CrossModelDeleteOperationHandler); // delete elements
+      binding.add(CrossModelDropEntityOperationHandler);
+      binding.add(CrossModelAddEntityOperationHandler);
+   }
+
+   protected override configureContextActionProviders(binding: MultiBinding<ContextActionsProvider>): void {
+      super.configureContextActionProviders(binding);
+      binding.add(CrossModelAddEntityActionProvider);
    }
 
    protected override bindGModelIndex(): BindingTarget<GModelIndex> {

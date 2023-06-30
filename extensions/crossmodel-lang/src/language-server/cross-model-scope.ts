@@ -44,6 +44,10 @@ export class PackageExternalAstNodeDescription extends PackageAstNodeDescription
    }
 }
 
+export function isExternalDescriptionForLocalPackage(description: AstNodeDescription, packageId?: string): boolean {
+   return packageId !== undefined && description instanceof PackageExternalAstNodeDescription && description.packageId === packageId;
+}
+
 /**
  * A scope computer that performs the following customizations:
  * - Avoid exporting any nodes from diagrams, they are self-contained and do not need to be externally accessible.

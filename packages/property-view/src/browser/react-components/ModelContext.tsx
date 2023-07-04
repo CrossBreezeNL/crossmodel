@@ -66,6 +66,9 @@ export function ModelReducer(model: CrossModelRoot, action: any): CrossModelRoot
             }
 
             model.entity.name = action.name;
+
+            console.log('test', model);
+
             return model;
 
         // Change the name of the entity-model
@@ -108,7 +111,49 @@ export function ModelReducer(model: CrossModelRoot, action: any): CrossModelRoot
                 throw Error('Model.entity undefined');
             }
 
-            console.log('test1234', model);
+            model.entity.attributes.push({
+                $type: 'Attribute',
+                name: `empty_attribute${model.entity.attributes.length}`,
+                value: 'Float'
+            });
+
+            return model;
+        case 'entity:attribute:move-attribute-up':
+            if (!model.entity) {
+                throw Error('Model.entity undefined');
+            } else if (action.id === undefined) {
+                throw Error('action.id or name is undefined');
+            }
+
+            if (action.id > 0) {
+                const temp = model.entity.attributes[action.id - 1];
+                model.entity.attributes[action.id - 1] = model.entity.attributes[action.id];
+                model.entity.attributes[action.id] = temp;
+            }
+
+            return model;
+        case 'entity:attribute:move-attribute-down':
+            if (!model.entity) {
+                throw Error('Model.entity undefined');
+            } else if (action.id === undefined) {
+                throw Error('action.id or name is undefined');
+            }
+
+            if (action.id < model.entity.attributes.length - 1) {
+                const temp = model.entity.attributes[action.id + 1];
+                model.entity.attributes[action.id + 1] = model.entity.attributes[action.id];
+                model.entity.attributes[action.id] = temp;
+            }
+
+            return model;
+        case 'entity:attribute:delete-attribute':
+            if (!model.entity) {
+                throw Error('Model.entity undefined');
+            } else if (action.id === undefined) {
+                throw Error('action.id or name is undefined');
+            }
+
+            model.entity.attributes.splice(action.id);
 
             return model;
 

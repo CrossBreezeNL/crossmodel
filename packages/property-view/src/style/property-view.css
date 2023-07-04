@@ -1,3 +1,7 @@
+#property-view {
+    overflow-y: auto;
+}
+
 .property-view-entity > h2 {
     margin: 10px;
 }

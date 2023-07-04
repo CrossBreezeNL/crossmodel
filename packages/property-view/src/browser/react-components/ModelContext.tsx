@@ -103,6 +103,15 @@ export function ModelReducer(model: CrossModelRoot, action: any): CrossModelRoot
 
             return model;
 
+        case 'entity:attribute:add-empty':
+            if (!model.entity) {
+                throw Error('Model.entity undefined');
+            }
+
+            console.log('test1234', model);
+
+            return model;
+
         default: {
             throw Error('Unknown ModelReducer action');
         }

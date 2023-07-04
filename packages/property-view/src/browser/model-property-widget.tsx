@@ -2,7 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { Message, ReactWidget, SaveOptions, Saveable } from '@theia/core/lib/browser';
+import { Message, ReactWidget } from '@theia/core/lib/browser';
 import { PropertyDataService } from '@theia/property-view/lib/browser/property-data-service';
 import { PropertyViewContentWidget } from '@theia/property-view/lib/browser/property-view-content-widget';
 import * as React from '@theia/core/shared/react';
@@ -10,15 +10,8 @@ import * as React from '@theia/core/shared/react';
 import { GlspSelection } from '@eclipse-glsp/theia-integration';
 import { App } from './react-components/App';
 import { CrossModelRoot, isDiagramNodeEntity } from '@crossbreeze/model-service';
-import { Emitter, Event } from '@theia/core';
 
-export class ModelPropertyWidget extends ReactWidget implements PropertyViewContentWidget, Saveable {
-    dirty = true;
-    autoSave: 'off' | 'afterDelay' | 'onFocusChange' | 'onWindowChange';
-    public readonly onDirtyChangedEmitter = new Emitter<void>();
-    onDirtyChanged: Event<void> = this.onDirtyChangedEmitter.event;
-    saveUpdate = false;
-
+export class ModelPropertyWidget extends ReactWidget implements PropertyViewContentWidget {
     static readonly ID = 'attribute-property-view';
     static readonly LABEL = 'Model property widget';
 
@@ -32,10 +25,6 @@ export class ModelPropertyWidget extends ReactWidget implements PropertyViewCont
         this.title.caption = ModelPropertyWidget.LABEL;
         this.title.closable = false;
         this.node.tabIndex = 0;
-    }
-
-    async save(options?: SaveOptions | undefined): Promise<void> {
-        console.log('test1234');
     }
 
     updatePropertyViewContent(propertyDataService?: PropertyDataService, selection?: GlspSelection | undefined): void {
@@ -57,8 +46,6 @@ export class ModelPropertyWidget extends ReactWidget implements PropertyViewCont
     }
 
     protected render(): React.ReactNode {
-        console.log(this.isVisible);
-
         return <App model={this.model} />;
     }
 

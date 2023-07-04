@@ -138,7 +138,13 @@ export function toSerializable<T extends object>(obj?: T): T | undefined {
 }
 
 function cleanValue(value: any): any {
-    return isContainedObject(value) ? toSerializable(value) : resolvedValue(value);
+    if (Array.isArray(value)) {
+        return value.map(cleanValue);
+    } else if (isContainedObject(value)) {
+        return toSerializable(value);
+    } else {
+        return resolvedValue(value);
+    }
 }
 
 function isContainedObject(value: any): boolean {

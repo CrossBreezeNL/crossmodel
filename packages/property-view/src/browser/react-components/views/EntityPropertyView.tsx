@@ -9,13 +9,17 @@ import { ErrorView } from './ErrorView';
 import { ModelContext, ModelDispatchContext, ModelReducer } from '../ModelContext';
 import { Accordion, AccordionDetails, AccordionSummary, SaveButton } from './styled-elements';
 import { EntityPropertyAttributes } from './EntityPropertyAttributeGrid';
+import SaveModelContext from '../SaveModelContext';
 
-export interface EntityPropertyViewProps extends React.HTMLProps<HTMLDivElement> {
-    model: CrossModelRoot;
-}
+export interface EntityPropertyViewProps extends React.HTMLProps<HTMLDivElement> {}
 
 export function EntityPropertyView(props: EntityPropertyViewProps): React.ReactElement {
     const model = React.useContext(ModelContext) as CrossModelRoot;
+    const saveModel = React.useContext(SaveModelContext);
+
+    const onSaveButtonClick = (): void => {
+        saveModel();
+    };
 
     if (!model || !model.entity) {
         return <ErrorView errorMessage='Something went wrong loading the model!' />;
@@ -26,7 +30,7 @@ export function EntityPropertyView(props: EntityPropertyViewProps): React.ReactE
             <h2>Entity: {model.entity.name}</h2>
             <EntityPropertyGeneral />
             <EntityPropertyAttributes />
-            <SaveButton> Save :P </SaveButton>
+            <SaveButton onClick={onSaveButtonClick}> Save </SaveButton>
         </div>
     );
 }

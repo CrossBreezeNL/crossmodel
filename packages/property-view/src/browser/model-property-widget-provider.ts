@@ -3,9 +3,10 @@
  ********************************************************************************/
 
 import { DefaultPropertyViewWidgetProvider } from '@theia/property-view/lib/browser/property-view-widget-provider';
-import { injectable } from '@theia/core/shared/inversify';
+import { inject, injectable } from '@theia/core/shared/inversify';
 import { GlspSelection, isGlspSelection } from '@eclipse-glsp/theia-integration';
 import { ModelPropertyWidget } from './model-property-widget';
+import { ModelService } from '@crossbreeze/model-service';
 
 @injectable()
 export class ModelPropertyWidgetProvider extends DefaultPropertyViewWidgetProvider {
@@ -14,11 +15,12 @@ export class ModelPropertyWidgetProvider extends DefaultPropertyViewWidgetProvid
     currentUri = '';
     currentNode = '';
 
-    private attributeWidget: ModelPropertyWidget;
+    @inject(ModelPropertyWidget) protected modelPropertyWidget: ModelPropertyWidget;
+    @inject(ModelService) protected modelService: ModelService;
 
     constructor() {
         super();
-        this.attributeWidget = new ModelPropertyWidget();
+        this.modelPropertyWidget = new ModelPropertyWidget();
     }
 
     override canHandle(selection: GlspSelection | undefined): number {
@@ -26,7 +28,7 @@ export class ModelPropertyWidgetProvider extends DefaultPropertyViewWidgetProvid
     }
 
     override provideWidget(selection: GlspSelection | undefined): Promise<ModelPropertyWidget> {
-        return Promise.resolve(this.attributeWidget);
+        return Promise.resolve(this.modelPropertyWidget);
     }
 
     override updateContentWidget(selection: GlspSelection | undefined): void {
@@ -34,7 +36,7 @@ export class ModelPropertyWidgetProvider extends DefaultPropertyViewWidgetProvid
             this.currentUri = selection?.sourceUri;
             this.currentNode = selection.selectedElementsIDs[0];
 
-            this.getPropertyDataService(selection).then(service => this.attributeWidget.updatePropertyViewContent(service, selection));
+            this.getPropertyDataService(selection).then(service => this.modelPropertyWidget.updatePropertyViewContent(service, selection));
         }
     }
 }

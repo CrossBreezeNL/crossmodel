@@ -109,6 +109,9 @@ export class ModelServer implements Disposable {
     }
 
     protected async saveModel(uri: string, model: AstNode): Promise<void> {
+        console.log(uri);
+        console.log(model);
+
         await this.modelService.save(uri, model);
     }
 

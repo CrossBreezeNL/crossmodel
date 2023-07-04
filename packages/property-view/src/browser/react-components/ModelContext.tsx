@@ -67,8 +67,6 @@ export function ModelReducer(model: CrossModelRoot, action: any): CrossModelRoot
 
             model.entity.name = action.name;
 
-            console.log('test', model);
-
             return model;
 
         // Change the name of the entity-model

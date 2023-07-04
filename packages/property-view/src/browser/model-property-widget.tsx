@@ -8,12 +8,16 @@ import { PropertyViewContentWidget } from '@theia/property-view/lib/browser/prop
 import * as React from '@theia/core/shared/react';
 
 import { GlspSelection } from '@eclipse-glsp/theia-integration';
+import { CrossModelRoot, ModelService, isDiagramNodeEntity } from '@crossbreeze/model-service';
+import { inject, injectable } from '@theia/core/shared/inversify';
 import { App } from './react-components/App';
-import { CrossModelRoot, isDiagramNodeEntity } from '@crossbreeze/model-service';
 
+@injectable()
 export class ModelPropertyWidget extends ReactWidget implements PropertyViewContentWidget {
     static readonly ID = 'attribute-property-view';
     static readonly LABEL = 'Model property widget';
+
+    @inject(ModelService) protected modelService: ModelService;
 
     protected model: CrossModelRoot | undefined;
     protected uri: string;
@@ -25,6 +29,9 @@ export class ModelPropertyWidget extends ReactWidget implements PropertyViewCont
         this.title.caption = ModelPropertyWidget.LABEL;
         this.title.closable = false;
         this.node.tabIndex = 0;
+
+        this.saveModel = this.saveModel.bind(this);
+        this.updateModel = this.updateModel.bind(this);
     }
 
     updatePropertyViewContent(propertyDataService?: PropertyDataService, selection?: GlspSelection | undefined): void {
@@ -45,8 +52,26 @@ export class ModelPropertyWidget extends ReactWidget implements PropertyViewCont
         }
     }
 
+    async saveModel(): Promise<void> {
+        if (this.model === undefined || this.uri === undefined) {
+            throw new Error('Cannot save undefined model');
+        }
+
+        await this.modelService.save(this.uri, this.model);
+    }
+
+    protected async updateModel(model: CrossModelRoot): Promise<void> {
+        this.model = model;
+    }
+
     protected render(): React.ReactNode {
-        return <App model={this.model} />;
+        const props = {
+            model: this.model,
+            saveModel: this.saveModel,
+            updateModel: this.updateModel
+        };
+
+        return <App {...props} />;
     }
 
     protected override onActivateRequest(msg: Message): void {

@@ -4,7 +4,8 @@
 
 import { Emitter } from '@theia/core';
 import { injectable } from '@theia/core/shared/inversify';
-import { CrossModelRoot, FormEditorClient } from '../common/form-client-protocol';
+import { FormEditorClient } from '../common/form-client-protocol';
+import { CrossModelRoot } from '@crossbreeze/protocol';
 
 export interface ModelDocument {
     uri: string;

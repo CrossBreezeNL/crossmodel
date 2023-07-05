@@ -3,7 +3,7 @@
  ********************************************************************************/
 
 import * as React from '@theia/core/shared/react';
-import { CrossModelRoot } from '../../common/form-client-protocol';
+import { CrossModelRoot } from '@crossbreeze/protocol';
 import { FormEditorClientImpl } from '../form-client';
 import URI from '@theia/core/lib/common/uri';
 import { ModelReducer, ModelProvider } from './ModelContext';

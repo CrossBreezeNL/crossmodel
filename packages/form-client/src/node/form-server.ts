@@ -6,7 +6,7 @@ import * as net from 'net';
 import * as rpc from 'vscode-jsonrpc/node';
 import { FormEditorClient, FormEditorService } from '../common/form-client-protocol';
 
-import { CloseModel, CrossModelRoot, OpenModel, RequestModel, SaveModel, UpdateModel } from '@crossbreeze/protocol';
+import { CloseModel, CrossModelRoot, OpenModel, RequestModel, SaveModel, UpdateModel, OnSave } from '@crossbreeze/protocol';
 
 // socket connection, must match the one in model-server/launch.ts
 const SOCKET_OPTIONS = { port: 5999, host: 'localhost' };

@@ -2,7 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { CloseModel, CrossModelRoot, OpenModel, RequestModel, SaveModel, UpdateModel } from '@crossbreeze/protocol';
+import { CloseModel, CrossModelRoot, OpenModel, RequestModel, SaveModel, UpdateModel, OnSave } from '@crossbreeze/protocol';
 import { AstNode, isReference } from 'langium';
 import { Disposable } from 'vscode-jsonrpc';
 import * as rpc from 'vscode-jsonrpc/node';
@@ -33,7 +33,7 @@ export class ModelServer implements Disposable {
 
         this.modelService.onSave(uri, newModel => {
             // TODO: Research if this also has to be closed after the document closes
-            this.connection.sendNotification(OnSave, uri, toSerializable(newModel));
+            this.connection.sendNotification(OnSave, uri, toSerializable(newModel as CrossModelRoot));
         });
     }
 

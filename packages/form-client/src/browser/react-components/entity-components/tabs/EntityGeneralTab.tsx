@@ -3,7 +3,7 @@
  ********************************************************************************/
 import * as React from '@theia/core/shared/react';
 import { ModelContext, ModelDispatchContext, ModelReducer } from '../../ModelContext';
-import { CrossModelRoot } from '../../../../common/form-client-protocol';
+import { CrossModelRoot } from '@crossbreeze/protocol';
 
 interface GeneralTabProps {}
 

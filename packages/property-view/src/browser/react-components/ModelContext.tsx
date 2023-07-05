@@ -2,7 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 import * as React from '@theia/core/shared/react';
-import { CrossModelRoot } from '@crossbreeze/model-service';
+import { CrossModelRoot } from '@crossbreeze/protocol';
 import * as _ from 'lodash';
 
 /**

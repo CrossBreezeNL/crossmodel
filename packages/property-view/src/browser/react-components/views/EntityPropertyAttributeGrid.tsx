@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { CrossModelRoot, Attribute } from '@crossbreeze/model-service';
+import { CrossModelRoot, Attribute } from '@crossbreeze/protocol';
 import * as React from '@theia/core/shared/react';
 import {
     DataGrid,

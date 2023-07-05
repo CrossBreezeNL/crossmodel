@@ -4,7 +4,7 @@
 
 import * as React from '@theia/core/shared/react';
 import { ErrorView } from './views/ErrorView';
-import { CrossModelRoot } from '@crossbreeze/model-service';
+import { CrossModelRoot } from '@crossbreeze/protocol';
 import { ModelProvider, ModelReducer } from './ModelContext';
 import { EntityPropertyView } from './views/EntityPropertyView';
 import SaveModelContext from './SaveModelContext';

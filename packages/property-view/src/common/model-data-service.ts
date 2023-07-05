@@ -5,8 +5,8 @@
 import { inject, injectable } from '@theia/core/shared/inversify';
 import { PropertyDataService } from '@theia/property-view/lib/browser/property-data-service';
 import { GlspSelection, isGlspSelection } from '@eclipse-glsp/theia-integration';
-import { DiagramNodeEntity, ModelService } from '@crossbreeze/model-service';
-
+import { DiagramNodeEntity } from '@crossbreeze/protocol';
+import { ModelService } from '@crossbreeze/model-service';
 @injectable()
 export class ModelDataService implements PropertyDataService {
     id = 'model-property-data-service';

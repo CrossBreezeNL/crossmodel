@@ -8,7 +8,7 @@
     "strictNullChecks": true,
     "noImplicitOverride": true,
     "noEmitOnError": false,
-    "noUnusedLocals": false,
+    "noUnusedLocals": true,
     "noImplicitReturns": true,
     "strict": true,
     "incremental": true,

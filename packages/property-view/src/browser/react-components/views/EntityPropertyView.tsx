@@ -3,7 +3,7 @@
  ********************************************************************************/
 
 // other
-import { CrossModelRoot } from '@crossbreeze/model-service';
+import { CrossModelRoot } from '@crossbreeze/protocol';
 import * as React from '@theia/core/shared/react';
 import { ErrorView } from './ErrorView';
 import { ModelContext, ModelDispatchContext, ModelReducer } from '../ModelContext';

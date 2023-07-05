@@ -8,7 +8,8 @@ import { PropertyViewContentWidget } from '@theia/property-view/lib/browser/prop
 import * as React from '@theia/core/shared/react';
 
 import { GlspSelection } from '@eclipse-glsp/theia-integration';
-import { CrossModelRoot, ModelService, isDiagramNodeEntity } from '@crossbreeze/model-service';
+import { ModelService } from '@crossbreeze/model-service';
+import { CrossModelRoot, isDiagramNodeEntity } from '@crossbreeze/protocol';
 import { inject, injectable } from '@theia/core/shared/inversify';
 import { App } from './react-components/App';
 

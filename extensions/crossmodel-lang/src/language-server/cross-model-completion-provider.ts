@@ -4,7 +4,7 @@
 import { AstNodeDescription, CompletionAcceptor, CompletionContext, DefaultCompletionProvider, MaybePromise, NextFeature } from 'langium';
 import { CrossReference } from 'langium/lib/grammar/generated/ast';
 import { CrossModelServices } from './cross-model-module';
-import { PackageExternalAstNodeDescription } from './cross-model-scope';
+import { isExternalDescriptionForLocalPackage } from './cross-model-scope';
 
 /**
  * Custom completion provider that only shows the short options to the user if a longer, fully-qualified version is also available.
@@ -32,9 +32,6 @@ export class CrossModelCompletionProvider extends DefaultCompletionProvider {
    protected override filterCrossReference(description: AstNodeDescription): boolean {
       // we want to keep fully qualified names in the scope so we can do proper linking
       // but want to hide it from the user for local options, i.e., if we are in the same project we can skip the project name
-      if (this.packageId && description instanceof PackageExternalAstNodeDescription && description.packageId === this.packageId) {
-         return false;
-      }
-      return super.filterCrossReference(description);
+      return !isExternalDescriptionForLocalPackage(description, this.packageId) && super.filterCrossReference(description);
    }
 }

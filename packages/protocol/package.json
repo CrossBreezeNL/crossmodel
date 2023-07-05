@@ -1,0 +1,34 @@
+{
+  "name": "@crossbreeze/protocol",
+  "version": "0.0.0",
+  "private": true,
+  "description": "CrossModel Protocol Extensions between Server and Client",
+  "homepage": "https://github.com/CrossBreezeNL/CrossModel",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CrossBreezeNL/CrossModel"
+  },
+  "license": "UNLICENSED",
+  "author": {
+    "name": "CrossBreeze Team",
+    "email": "team@x-breeze.com"
+  },
+  "main": "lib/index",
+  "types": "lib/index",
+  "files": [
+    "lib",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rimraf lib && rimraf tsconfig.tsbuildinfo",
+    "lint": "eslint -c ../../.eslintrc.js --ext .ts,.tsx ./src",
+    "prepare": "yarn clean && yarn build",
+    "watch": "tsc -w"
+  },
+  "dependencies": {
+    "@eclipse-glsp/protocol": "1.1.0-RC06",
+    "vscode-jsonrpc": "^8.0.2",
+    "langium": "^1.1.0"
+  }
+}

@@ -89,7 +89,7 @@
     "*"
   ],
   "dependencies": {
-    "@crossbreeze/protocol": "0.0.0",
+    "@crossbreeze/protocol": "^0.0.0",
     "@eclipse-glsp/layout-elk": "1.1.0-RC06",
     "@eclipse-glsp/server": "1.1.0-RC06",
     "chalk": "^4.1.2",

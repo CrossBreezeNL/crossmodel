@@ -2,9 +2,18 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { CloseModel, OnSave, OpenModel, RequestModel, RequestModelDiagramNode, SaveModel, UpdateModel } from '@crossbreeze/protocol';
+import {
+    CloseModel,
+    OnSave,
+    OpenModel,
+    RequestModel,
+    RequestModelDiagramNode,
+    SaveModel,
+    UpdateModel,
+    CrossModelRoot
+} from '@crossbreeze/protocol';
 import { AstNode, isReference } from 'langium';
-import { DiagramNode, Entity, isCrossModelRoot, CrossModelRoot } from '../language-server/generated/ast';
+import { DiagramNode, Entity, isCrossModelRoot, CrossModelRoot as CrossModelRootAst } from '../language-server/generated/ast';
 import { Disposable } from 'vscode-jsonrpc';
 import * as rpc from 'vscode-jsonrpc/node';
 
@@ -41,7 +50,7 @@ export class ModelServer implements Disposable {
      * }
      */
     async requestModelDiagramNode(uri: string, id: string): Promise<DiagramNodeEntity | undefined> {
-        const root = (await this.modelService.request(uri)) as CrossModelRoot;
+        const root = (await this.modelService.request(uri)) as CrossModelRootAst;
         let diagramNode: DiagramNode | undefined = undefined;
 
         if (!root || !root.diagram) {
@@ -85,7 +94,7 @@ export class ModelServer implements Disposable {
 
         this.modelService.onSave(uri, newModel => {
             // TODO: Research if this also has to be closed after the document closes
-            this.connection.sendNotification(OnSave, uri, toSerializable(newModel));
+            this.connection.sendNotification(OnSave, uri, toSerializable(newModel) as CrossModelRoot);
         });
     }
 

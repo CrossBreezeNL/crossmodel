@@ -8,10 +8,7 @@ import {
     GridCellParams,
     GridColDef,
     GridRowsProp,
-    GridCellEditStopParams,
-    GridEventListener,
-    MuiEvent,
-    MuiBaseEvent,
+    GridRowModel,
     GridToolbarContainer,
     GridActionsCellItem,
     GridRowId
@@ -31,17 +28,16 @@ export function EntityPropertyAttributes(): React.ReactElement {
     const dispatch = React.useContext(ModelDispatchContext) as React.Dispatch<React.ReducerAction<typeof ModelReducer>>;
 
     // Callback for when the user stops editing a cell.
-    const handleCellEdited: GridEventListener<'cellEditStop'> = (params: GridCellEditStopParams, event: MuiEvent<MuiBaseEvent>) => {
-        // Have to cast it to React.ChangeEvent<HTMLInputElement>, otherwise the compiler does not stop complaining about types.
-        const reactEvent = event as React.ChangeEvent<HTMLInputElement>;
-
-        if (params.field === 'name') {
+    const handleRowUpdate = (updatedRow: GridRowModel, originalRow: GridRowModel): GridRowModel => {
+        if (updatedRow.name !== originalRow.name) {
             dispatch({
                 type: 'entity:attribute:change-name',
-                id: params.id,
-                name: reactEvent.target.value ? reactEvent.target.value : ''
+                id: updatedRow.id,
+                name: updatedRow.name
             });
         }
+
+        return updatedRow;
     };
 
     const handleClick = (): void => {
@@ -136,7 +132,6 @@ export function EntityPropertyAttributes(): React.ReactElement {
                 <DataGrid
                     rows={rows}
                     columns={columns}
-                    onCellEditStop={handleCellEdited}
                     // Toolbar
                     slots={{ toolbar: EditToolbar }}
                     slotProps={{ toolbar: { handleClick: handleClick } }}
@@ -145,6 +140,7 @@ export function EntityPropertyAttributes(): React.ReactElement {
                     initialState={{
                         pagination: { paginationModel: { pageSize: 8 } }
                     }}
+                    processRowUpdate={handleRowUpdate}
                 />
             </AccordionDetails>
         </Accordion>

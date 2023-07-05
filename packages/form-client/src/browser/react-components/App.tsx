@@ -3,7 +3,8 @@
  ********************************************************************************/
 
 import * as React from '@theia/core/shared/react';
-import { CrossModelRoot, ModelServiceClientImpl } from '@crossbreeze/model-service';
+import { ModelServiceClientImpl } from '@crossbreeze/model-service';
+import { CrossModelRoot } from '@crossbreeze/protocol';
 import URI from '@theia/core/lib/common/uri';
 import { ModelReducer, ModelProvider } from './ModelContext';
 import { EntityForm } from './entity-components/EntityForm';

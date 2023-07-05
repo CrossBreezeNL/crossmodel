@@ -4,7 +4,7 @@
 
 import { ConnectionHandler, JsonRpcConnectionHandler } from '@theia/core';
 import { ContainerModule } from '@theia/core/shared/inversify';
-import { MODEL_SERVICE_PATH, ModelService, ModelServiceClient } from '../common/model-service-protocol';
+import { MODEL_SERVICE_PATH, ModelService, ModelServiceClient } from '../common/model-service-rpc';
 import { ModelServiceImpl } from './model-service';
 
 export default new ContainerModule(bind => {

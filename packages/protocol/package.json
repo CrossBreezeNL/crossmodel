@@ -1,11 +1,8 @@
 {
-  "name": "@crossbreeze/model-service",
-  "version": "1.0.0",
+  "name": "@crossbreeze/protocol",
+  "version": "0.0.0",
   "private": true,
-  "description": "Model service to talk to the back-end server from the front-end via a JSON-rpc connection",
-  "keywords": [
-    "theia-extension"
-  ],
+  "description": "CrossModel Protocol Extensions between Server and Client",
   "homepage": "https://github.com/CrossBreezeNL/CrossModel",
   "repository": {
     "type": "git",
@@ -20,8 +17,7 @@
   "types": "lib/index",
   "files": [
     "lib",
-    "src",
-    "style"
+    "src"
   ],
   "scripts": {
     "build": "tsc -b",
@@ -31,13 +27,8 @@
     "watch": "tsc -w"
   },
   "dependencies": {
-    "@crossbreeze/protocol": "^0.0.0",
-    "@theia/core": "^1.34.4"
-  },
-  "theiaExtensions": [
-    {
-      "frontend": "lib/browser/model-service-frontend-module",
-      "backend": "lib/node/model-service-backend-module"
-    }
-  ]
+    "@eclipse-glsp/protocol": "1.1.0-RC06",
+    "vscode-jsonrpc": "^8.0.2",
+    "langium": "^1.1.0"
+  }
 }

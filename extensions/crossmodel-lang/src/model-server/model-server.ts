@@ -2,19 +2,13 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
+import { CloseModel, OnSave, OpenModel, RequestModel, RequestModelDiagramNode, SaveModel, UpdateModel } from '@crossbreeze/protocol';
 import { AstNode, isReference } from 'langium';
-import { CrossModelRoot, DiagramNode, Entity } from '../language-server/generated/ast';
+import { DiagramNode, Entity, isCrossModelRoot, CrossModelRoot } from '../language-server/generated/ast';
 import { Disposable } from 'vscode-jsonrpc';
 import * as rpc from 'vscode-jsonrpc/node';
-import { ModelService } from './model-service';
 
-const OpenModel = new rpc.RequestType1<string, void, void>('server/open');
-const CloseModel = new rpc.RequestType1<string, void, void>('server/close');
-const RequestModel = new rpc.RequestType1<string, AstNode | undefined, void>('server/request');
-const RequestModelDiagramNode = new rpc.RequestType2<string, string, DiagramNodeEntity | undefined, void>('server/requestModelDiagramNode');
-const UpdateModel = new rpc.RequestType2<string, AstNode, void, void>('server/update');
-const SaveModel = new rpc.RequestType2<string, AstNode, void, void>('server/save');
-const OnSave = new rpc.NotificationType2<string, AstNode>('server/onSave');
+import { ModelService } from './model-service';
 
 /**
  * The model server handles request messages on the RPC connection and ensures that any return value
@@ -99,9 +93,9 @@ export class ModelServer implements Disposable {
         await this.modelService.close(uri);
     }
 
-    protected async requestModel(uri: string): Promise<AstNode | undefined> {
-        const root = await this.modelService.request(uri);
-        return toSerializable(root);
+    protected async requestModel(uri: string): Promise<CrossModelRoot | undefined> {
+        const root = await this.modelService.request(uri, isCrossModelRoot);
+        return toSerializable(root) as CrossModelRoot;
     }
 
     protected async updateModel(uri: string, model: AstNode): Promise<void> {

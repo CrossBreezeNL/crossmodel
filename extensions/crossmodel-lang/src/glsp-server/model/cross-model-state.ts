@@ -3,6 +3,7 @@
  ********************************************************************************/
 import { DefaultModelState } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
+import { URI } from 'vscode-uri';
 import { QualifiedNameProvider } from '../../language-server/cross-model-naming';
 import { CrossModelRoot, SystemDiagram } from '../../language-server/generated/ast';
 import { ModelService } from '../../model-server/model-service';
@@ -21,10 +22,12 @@ export class CrossModelState extends DefaultModelState {
 
    protected _semanticUri: string;
    protected _semanticRoot: CrossModelRoot;
+   protected _packageId: string;
 
    setSemanticRoot(uri: string, semanticRoot: CrossModelRoot): void {
       this._semanticUri = uri;
       this._semanticRoot = semanticRoot;
+      this._packageId = this.services.shared.workspace.PackageManager.getPackageIdByUri(URI.parse(uri));
       this.index.indexSemanticRoot(this.semanticRoot);
    }
 
@@ -34,6 +37,10 @@ export class CrossModelState extends DefaultModelState {
 
    get semanticRoot(): CrossModelRoot {
       return this._semanticRoot;
+   }
+
+   get packageId(): string {
+      return this._packageId;
    }
 
    get diagramRoot(): SystemDiagram {

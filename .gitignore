@@ -7,6 +7,7 @@ lib
 tsconfig.tsbuildinfo
 src-gen
 gen-webpack.config.js
+gen-webpack.node.config.js
 out
 plugins
 bin

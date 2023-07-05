@@ -4,7 +4,8 @@
 
 import { Emitter } from '@theia/core';
 import { injectable } from '@theia/core/shared/inversify';
-import { CrossModelRoot, ModelServiceClient } from '../common/model-service-protocol';
+import { ModelServiceClient } from '../common/model-service-rpc';
+import { CrossModelRoot } from '@crossbreeze/protocol';
 
 export interface ModelDocument {
     uri: string;

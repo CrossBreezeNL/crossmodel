@@ -44,7 +44,7 @@ export class CrossModelCreateEdgeOperationHandler extends OperationHandler imple
          const relationship = await this.createAndSaveRelationship(sourceNode, targetNode);
          if (relationship) {
             const edge: DiagramEdge = {
-               $type: 'DiagramEdge',
+               $type: DiagramEdge,
                $container: this.state.diagramRoot,
                name: relationship.name,
                semanticElement: { ref: relationship, $refText: this.state.nameProvider.getName(relationship) || relationship.name },
@@ -73,7 +73,7 @@ export class CrossModelCreateEdgeOperationHandler extends OperationHandler imple
       // create relationship, serialize and re-read to ensure everything is up to date and linked properly
       const relationshipRoot: CrossModelRoot = { $type: 'CrossModelRoot' };
       const relationship: Relationship = {
-         $type: 'Relationship',
+         $type: Relationship,
          $container: relationshipRoot,
          name,
          type: '1:1',

@@ -4,7 +4,7 @@
 
 import { WebSocketConnectionProvider } from '@theia/core/lib/browser';
 import { ContainerModule } from '@theia/core/shared/inversify';
-import { MODEL_SERVICE_PATH, ModelServiceClient, ModelService } from '../common/model-service-protocol';
+import { MODEL_SERVICE_PATH, ModelServiceClient, ModelService } from '../common/model-service-rpc';
 import { ModelServiceClientImpl } from './model-service-client';
 
 export default new ContainerModule(bind => {

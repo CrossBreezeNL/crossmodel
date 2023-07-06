@@ -20,7 +20,6 @@ export class ModelPropertyWidgetProvider extends DefaultPropertyViewWidgetProvid
 
     constructor() {
         super();
-        this.modelPropertyWidget = new ModelPropertyWidget();
     }
 
     override canHandle(selection: GlspSelection | undefined): number {

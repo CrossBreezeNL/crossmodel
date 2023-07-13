@@ -13,14 +13,15 @@ export const FORM_EDITOR_SERVICE_PATH = '/services/withClient';
  */
 export const FormEditorService = Symbol('FormEditorService');
 export interface FormEditorService extends JsonRpcServer<FormEditorClient> {
-   open(uri: string): Promise<void>;
-   close(uri: string): Promise<void>;
-   request(uri: string): Promise<CrossModelRoot | undefined>;
-   update(uri: string, model: CrossModelRoot): Promise<void>;
-   save(uri: string, model: CrossModelRoot): Promise<void>;
+    open(uri: string): Promise<void>;
+    close(uri: string): Promise<void>;
+    request(uri: string): Promise<CrossModelRoot | undefined>;
+    update(uri: string, model: CrossModelRoot): Promise<void>;
+    save(uri: string, model: CrossModelRoot): Promise<void>;
 }
 
 export const FormEditorClient = Symbol('FormEditorClient');
 export interface FormEditorClient {
-   getName(): Promise<string>;
+    getName(): Promise<string>;
+    updateModel(uri: string, model: CrossModelRoot): Promise<void>;
 }

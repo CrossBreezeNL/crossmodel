@@ -2,174 +2,122 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { CrossModelRoot, Entity, Relationship } from '@crossbreeze/protocol';
+import { CrossModelRoot } from '@crossbreeze/protocol';
 import { CommandService, Emitter, Event } from '@theia/core';
 import { LabelProvider, NavigatableWidget, NavigatableWidgetOptions, ReactWidget, SaveOptions, Saveable } from '@theia/core/lib/browser';
 import URI from '@theia/core/lib/common/uri';
 import { inject, injectable, postConstruct } from '@theia/core/shared/inversify';
 import * as React from '@theia/core/shared/react';
 import { FormEditorService } from '../common/form-client-protocol';
+import { FormEditorClientImpl } from './form-client';
+
+import { App } from './react-components/App';
+import '../../style/form-view.css';
 
 export const FormEditorWidgetOptions = Symbol('FormEditorWidgetOptions');
 export interface FormEditorWidgetOptions extends NavigatableWidgetOptions {
-   id: string;
+    id: string;
 }
 
 @injectable()
 export class FormEditorWidget extends ReactWidget implements NavigatableWidget, Saveable {
-   dirty = false;
-   autoSave: 'off' | 'afterDelay' | 'onFocusChange' | 'onWindowChange';
-   public readonly onDirtyChangedEmitter = new Emitter<void>();
-   onDirtyChanged: Event<void> = this.onDirtyChangedEmitter.event;
+    dirty = false;
+    autoSave: 'off' | 'afterDelay' | 'onFocusChange' | 'onWindowChange';
+    public readonly onDirtyChangedEmitter = new Emitter<void>();
+    onDirtyChanged: Event<void> = this.onDirtyChangedEmitter.event;
+    saveUpdate = false;
 
-   @inject(FormEditorWidgetOptions) protected options: FormEditorWidgetOptions;
-   @inject(LabelProvider) protected labelProvider: LabelProvider;
-   @inject(FormEditorService) private readonly formEditorService: FormEditorService;
-   @inject(CommandService) protected commandService: CommandService;
+    @inject(FormEditorWidgetOptions) protected options: FormEditorWidgetOptions;
+    @inject(LabelProvider) protected labelProvider: LabelProvider;
+    @inject(FormEditorService) private readonly formEditorService: FormEditorService;
+    @inject(CommandService) protected commandService: CommandService;
+    @inject(FormEditorClientImpl) protected formClient: FormEditorClientImpl;
 
-   protected model: CrossModelRoot | undefined = undefined;
-   protected error: string | undefined = undefined;
+    protected model: CrossModelRoot | undefined = undefined;
+    protected error: string | undefined = undefined;
 
-   @postConstruct()
-   init(): void {
-      this.id = this.options.id;
-      this.title.label = this.labelProvider.getName(this.getResourceUri());
-      this.title.iconClass = this.labelProvider.getIcon(this.getResourceUri());
-      this.title.closable = true;
-      this.loadModel();
-   }
+    @postConstruct()
+    init(): void {
+        // Widget options
+        this.id = this.options.id;
+        this.title.label = this.labelProvider.getName(this.getResourceUri());
+        this.title.iconClass = this.labelProvider.getIcon(this.getResourceUri());
+        this.title.closable = true;
 
-   protected async loadModel(): Promise<void> {
-      try {
-         const uri = this.getResourceUri().toString();
-         await this.formEditorService.open(uri);
-         const model = await this.formEditorService.request(uri);
-         if (model) {
-            this.model = model;
-         }
-      } catch (error: any) {
-         this.error = error;
-      } finally {
-         this.update();
-      }
-   }
+        this.updateModel = this.updateModel.bind(this);
+        this.getResourceUri = this.getResourceUri.bind(this);
+        this.loadModel();
+    }
 
-   override close(): void {
-      this.formEditorService.close(this.getResourceUri().toString());
-      super.close();
-   }
+    protected async loadModel(): Promise<void> {
+        try {
+            const uri = this.getResourceUri().toString();
+            await this.formEditorService.open(uri);
+            const model = await this.formEditorService.request(uri);
+            if (model) {
+                this.model = model;
+            }
+        } catch (error: any) {
+            this.error = error;
+        } finally {
+            this.update();
+        }
+    }
 
-   render(): React.ReactNode {
-      if (!this.model && this.error === undefined) {
-         return <div className='form-editor loading'></div>;
-      }
-      if (!this.model && this.error !== undefined) {
-         return (
-            <div className='form-editor error'>
-               <p>{this.error}</p>
-            </div>
-         );
-      }
+    async save(options?: SaveOptions | undefined): Promise<void> {
+        if (this.model === undefined) {
+            throw new Error('Cannot save undefined model');
+        }
 
-      if (this.model?.entity) {
-         return this.renderEntity(this.model.entity);
-      } else if (this.model?.relationship) {
-         return this.renderRelationship(this.model.relationship);
-      } else {
-         return (
-            <div className='form-editor error'>
-               <p>Unknown model element</p>
-            </div>
-         );
-      }
-   }
+        this.setDirty(false);
+        // When the model on the model-server is updated we will get a notification that the model has been saved.
+        // This variable lets us know that we were the ones that saved the model
+        this.saveUpdate = true;
 
-   renderRelationship(relationship: Relationship): React.ReactNode {
-      return (
-         <div className='form-editor'>
-            <div className='header'>
-               <h1>
-                  <span className='label'>Relationship&nbsp;</span>
-                  <span className='value'>{relationship.name}</span>
-               </h1>
-            </div>
-            <div>
-               Source:
-               <input
-                  className='theia-input'
-                  value={relationship.source}
-                  onChange={e => {
-                     relationship.source = e.target.value;
-                     this.updateModel(e);
-                  }}
-               />
-            </div>
-            <div>
-               Target:
-               <input
-                  className='theia-input'
-                  value={relationship.target}
-                  onChange={e => {
-                     relationship.target = e.target.value;
-                     this.updateModel(e);
-                  }}
-               />
-            </div>
-         </div>
-      );
-   }
+        await this.formEditorService.save(this.getResourceUri().toString(), this.model);
+    }
 
-   renderEntity(entity: Entity): React.ReactNode {
-      return (
-         <div className='form-editor'>
-            <div className='header'>
-               <h1>
-                  <span className='label'>Entity&nbsp;</span>
-                  <span className='value'>{entity.name}</span>
-               </h1>
-            </div>
-            <div>
-               Description:
-               <input
-                  className='theia-input'
-                  value={entity.description}
-                  onChange={e => {
-                     entity.description = e.target.value;
-                     this.updateModel(e);
-                  }}
-               />
-            </div>
-         </div>
-      );
-   }
+    protected async updateModel(model: CrossModelRoot): Promise<void> {
+        // If we were the ones that send the save request, we do not want to update the model again
+        if (this.saveUpdate) {
+            this.saveUpdate = false;
+            return;
+        }
 
-   getResourceUri(): URI {
-      return new URI(this.options.uri);
-   }
+        this.model = model;
+        await this.formEditorService.update(this.getResourceUri().toString(), this.model!);
+    }
 
-   createMoveToUri(resourceUri: URI): URI | undefined {
-      return undefined;
-   }
+    override close(): void {
+        this.formEditorService.close(this.getResourceUri().toString());
+        super.close();
+    }
 
-   protected async updateModel(event: React.ChangeEvent<HTMLInputElement>): Promise<void> {
-      this.setDirty(true);
-      this.update();
-      await this.formEditorService.update(this.getResourceUri().toString(), this.model!);
-   }
+    setDirty(dirty: boolean): void {
+        if (dirty === this.dirty) {
+            return;
+        }
 
-   async save(options?: SaveOptions | undefined): Promise<void> {
-      if (this.model === undefined) {
-         throw new Error('Cannot save undefined model');
-      }
-      await this.formEditorService.save(this.getResourceUri().toString(), this.model);
-      this.setDirty(false);
-   }
+        this.dirty = dirty;
+        this.onDirtyChangedEmitter.fire();
+    }
 
-   setDirty(dirty: boolean): void {
-      if (dirty === this.dirty) {
-         return;
-      }
-      this.dirty = dirty;
-      this.onDirtyChangedEmitter.fire();
-   }
+    render(): React.ReactNode {
+        const props = {
+            model: this.model,
+            updateModel: this.updateModel,
+            getResourceUri: this.getResourceUri,
+            formClient: this.formClient
+        };
+
+        return <App {...props} />;
+    }
+
+    getResourceUri(): URI {
+        return new URI(this.options.uri);
+    }
+
+    createMoveToUri(resourceUri: URI): URI | undefined {
+        return undefined;
+    }
 }

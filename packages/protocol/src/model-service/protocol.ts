@@ -8,37 +8,37 @@ import * as rpc from 'vscode-jsonrpc/node';
  */
 
 export interface CrossModelRoot {
-   readonly $type: 'CrossModelRoot';
-   entity?: Entity;
-   relationship?: Relationship;
+    readonly $type: 'CrossModelRoot';
+    entity?: Entity;
+    relationship?: Relationship;
 }
 
 export interface Relationship {
-   readonly $type: 'Relationship';
-   name: string;
-   properties: Array<Property>;
-   source: string;
-   target: string;
-   type: '1:1' | '1:n' | 'n:1' | 'n:m';
+    readonly $type: 'Relationship';
+    name: string;
+    properties: Array<Property>;
+    source: string;
+    target: string;
+    type: '1:1' | '1:n' | 'n:1' | 'n:m';
 }
 
 export interface Property {
-   readonly $type: 'Property';
-   key: string;
-   value: number | string;
+    readonly $type: 'Property';
+    key: string;
+    value: number | string;
 }
 
 export interface Entity {
-   readonly $type: 'Entity';
-   name: string;
-   description: string;
-   attributes: Array<Attribute>;
+    readonly $type: 'Entity';
+    name: string;
+    description: string;
+    attributes: Array<Attribute>;
 }
 
 export interface Attribute {
-   readonly $type: 'Attribute';
-   name: string;
-   value: number | string;
+    readonly $type: 'Attribute';
+    name: string;
+    value: number | string;
 }
 
 export const OpenModel = new rpc.RequestType1<string, void, void>('server/open');
@@ -46,3 +46,4 @@ export const CloseModel = new rpc.RequestType1<string, void, void>('server/close
 export const RequestModel = new rpc.RequestType1<string, CrossModelRoot | undefined, void>('server/request');
 export const UpdateModel = new rpc.RequestType2<string, CrossModelRoot, void, void>('server/update');
 export const SaveModel = new rpc.RequestType2<string, CrossModelRoot, void, void>('server/save');
+export const OnSave = new rpc.NotificationType2<string, CrossModelRoot>('server/onSave');

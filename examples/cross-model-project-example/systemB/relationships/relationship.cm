@@ -1,0 +1,5 @@
+relationship aToB {
+    source := A;
+    target := C; 
+    type := n:m;
+}

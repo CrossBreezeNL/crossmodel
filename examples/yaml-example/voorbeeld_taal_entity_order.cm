@@ -1,0 +1,21 @@
+entity: 
+    id: 'Order'
+    attributes:
+        - id : 'Id'
+          name: 'Id'
+          datatype: 'int'
+        - id: 'OrderDate'
+          name: 'OrderDate'
+          datatype: 'datetime'
+        - id: 'OrderNumber'
+          name: 'OrderNumber'
+          datatype: 'varchar'
+        - id: 'CustomerId'
+          name: 'CustomerId'
+          datatype: 'int'
+        - id: 'TotalAmount'
+          name: 'TotalAmount'
+          datatype: 'Float'
+    name: 'Customer orders'
+    description: 'Order placed by a customer in the Customer table.'
+    

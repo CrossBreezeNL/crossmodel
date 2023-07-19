@@ -1,0 +1,19 @@
+diagram:
+    id: "Systemdiagram1"
+    nodes:
+      - id: 'CustomerNode'
+        for: 'Customer'
+        x: 100
+        y: 100
+        height: 100
+        width: 100
+      - id: 'OrderNode'
+        for: 'Order'
+        x: 100
+        y: 100
+        height: 100
+        width: 100
+    edges:  
+      - id: 'OrderCustomerEdge' 
+        for: 'Order_Customer' 
+

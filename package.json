@@ -17,7 +17,8 @@
     "test": "vitest --config configs/vitest.config.ts",
     "theia:browser": "yarn --cwd applications/browser-app",
     "theia:electron": "yarn --cwd applications/electron-app",
-    "watch": "lerna run --parallel watch"
+    "watch": "lerna run --parallel watch",
+    "clean": "lerna run clean && rimraf node_modules"
   },
   "devDependencies": {
     "@testing-library/react": "^11.2.7",

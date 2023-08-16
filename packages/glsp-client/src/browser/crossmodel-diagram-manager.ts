@@ -2,10 +2,9 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 import { configureServerActions } from '@eclipse-glsp/client';
-import { GLSPDiagramManager } from '@eclipse-glsp/theia-integration';
+import { GLSPDiagramManager, GLSPDiagramWidget, GLSPDiagramWidgetOptions } from '@eclipse-glsp/theia-integration';
 
 import { injectable } from '@theia/core/shared/inversify';
-import { DiagramWidget, DiagramWidgetOptions } from 'sprotty-theia';
 import { CrossModelDiagramLanguage } from '../common/crossmodel-diagram-language';
 import { CrossModelDiagramWidget } from './crossmodel-diagram-widget';
 
@@ -26,9 +25,9 @@ export class CrossModelDiagramManager extends GLSPDiagramManager {
       return CrossModelDiagramLanguage.label;
    }
 
-   override async createWidget(options?: any): Promise<DiagramWidget> {
+   override async createWidget(options?: any): Promise<GLSPDiagramWidget> {
       // same as super class but with custom widget implementation
-      if (DiagramWidgetOptions.is(options)) {
+      if (GLSPDiagramWidgetOptions.is(options)) {
          const clientId = this.createClientId();
          const widgetId = this.createWidgetId(options);
          const config = this.getDiagramConfiguration(options);

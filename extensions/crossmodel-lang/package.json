@@ -90,8 +90,8 @@
   ],
   "dependencies": {
     "@crossbreeze/protocol": "0.0.0",
-    "@eclipse-glsp/layout-elk": "1.1.0-RC06",
-    "@eclipse-glsp/server": "1.1.0-RC06",
+    "@eclipse-glsp/layout-elk": "1.1.0-RC10",
+    "@eclipse-glsp/server": "1.1.0-RC10",
     "chalk": "^4.1.2",
     "chevrotain": "^10.4.1",
     "commander": "^8.0.0",

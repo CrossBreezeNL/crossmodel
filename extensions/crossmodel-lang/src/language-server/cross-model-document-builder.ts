@@ -20,7 +20,7 @@ export class CrossModelDocumentBuilder extends DefaultDocumentBuilder {
 
    protected flattenAndAdaptURI(uri: URI): URI[] {
       try {
-         return Utils.flatten(Utils.toRealURI(uri));
+         return Utils.flatten(Utils.toRealURIorUndefined(uri));
       } catch (error) {
          return [uri];
       }

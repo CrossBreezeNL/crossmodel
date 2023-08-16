@@ -1,5 +1,5 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-export * from './cm-env-variable-server';
-export * from './integration-util';
+
+export const MODELSERVER_PORT_FILE = '.modelserver.port';

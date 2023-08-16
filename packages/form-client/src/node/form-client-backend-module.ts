@@ -3,12 +3,14 @@
  ********************************************************************************/
 
 import { ConnectionHandler, JsonRpcConnectionHandler } from '@theia/core';
+import { BackendApplicationContribution } from '@theia/core/lib/node/backend-application';
 import { ContainerModule } from '@theia/core/shared/inversify';
 import { FORM_EDITOR_SERVICE_PATH, FormEditorClient, FormEditorService } from '../common/form-client-protocol';
 import { FormEditorServiceImpl } from './form-server';
 
 export default new ContainerModule(bind => {
    bind(FormEditorService).to(FormEditorServiceImpl).inSingletonScope();
+   bind(BackendApplicationContribution).toService(FormEditorService);
    bind(ConnectionHandler)
       .toDynamicValue(
          ctx =>

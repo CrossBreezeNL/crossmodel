@@ -21,4 +21,3 @@ entity:
         - id: 'Phone'
           name: 'Phone'
           datatype: 'varchar'
-

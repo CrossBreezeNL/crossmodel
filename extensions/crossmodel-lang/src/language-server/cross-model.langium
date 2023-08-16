@@ -1,66 +1,141 @@
 grammar CrossModel
 
 entry CrossModelRoot:
-    (entity=Entity | relationship=Relationship | diagram=SystemDiagram);
+    (entity=Entity | 
+    relationship=Relationship | 
+    diagram=SystemDiagram)?;
 
+// Entity definition 
 Entity:
-    'entity' name=ID '{'
-        'description' ':=' description=STRING ';'
-        ('attributes' '{' (attributes+=Attribute + ';')* '}' )?
-    '}'
-    ;
+    'entity' ':'
+    (
+        INDENT
+            EntityFields*
+        DEDENT
+    )*
+;
 
-Attribute:
-    name=ID ':=' value=(STRING | NUMBER);
+EntityFields infers Entity:
+    (
+        'id' ':' name=STRING |
+        'description' ':' description=STRING |
+        'attributes' ':' EntityAttributes
+    )
+;
 
+EntityAttributes infers Entity:
+    INDENT 
+        (attributes+=EntityAttribute)*     
+    DEDENT;
+
+EntityAttribute:
+    '-' EntityAttributeFields*
+;
+
+EntityAttributeFields infers EntityAttribute:
+    (
+        'id' ':' name=STRING |
+        'name' ':'  name_val=STRING |
+        'datatype' ':' datatype=STRING |
+        'description' ':' description=STRING
+    );
+
+// Relationship defintion
 Relationship:
-    'relationship' name=ID '{'
-        'source' ':=' source=[Entity:QualifiedName] ('with' sourceAttribute=[Attribute:QualifiedName])? ';'
-        'target' ':=' target=[Entity:QualifiedName] ('with' targetAttribute=[Attribute:QualifiedName])? ';'
-        'type' ':=' type=RelationshipType ';'
-        ('properties' '{' (properties+=Property + ';')* '}' )?
-    '}'
-    ;
+    'relationship' ':' 
+    (
+        INDENT
+            RelationshipFields*
+        DEDENT
+    )*
+;
 
-Property:
-    key=ID ':=' value=(STRING | NUMBER);
+RelationshipFields infers Relationship:
+    (
+        'id' ':' name=STRING |
+        'name' ':'  name_val=STRING |
+        'description' ':' description=STRING |
+        'parent' ':' parent=[Entity:QualifiedName] |
+        'child' ':' child=[Entity:QualifiedName] |
+        'type' ':' type=RelationshipType 
+    )
+;
 
 RelationshipType returns string:
-    '1:1' | '1:n' | 'n:1' | 'n:m';
+    '1:1' | '1:n' | 'n:1' | 'n:m'
+;
 
-
+// Diagram defintion
 SystemDiagram:
-    'diagram' '{'
-        (nodes+=DiagramNode ';')*
-        (edges+=DiagramEdge ';')*
-    '}'
-    ;
+    'diagram' ':' 
+    (
+        INDENT
+            SystemDiagramFields*
+        DEDENT
+    )*
+;
+
+SystemDiagramFields infers SystemDiagram:
+    (
+        'nodes' ':' SystemDiagramNodes |
+        'edges' ':' SystemDiagramEdge |
+        'id' ':' name=STRING |
+        'description' ':' description=STRING 
+    )
+;
+
+SystemDiagramNodes infers SystemDiagram:
+    INDENT 
+        (nodes+=DiagramNode)*     
+    DEDENT
+;
 
 DiagramNode:
-    'node' name=ID 'for' semanticElement=[Entity:QualifiedName] '{'
-        'x' ':=' x=NUMBER ';'
-        'y' ':=' y=NUMBER ';'
-        'width' ':=' width=NUMBER ';'
-        'height' ':=' height=NUMBER ';'
-    '}'
-    ;
+    '-' DiagramNodeFields*
+;
+
+DiagramNodeFields infers DiagramNode:
+    'id' ':' name=STRING | 
+    'for' ':' for=[Entity:QualifiedName] |
+    'x' ':' x=NUMBER | 
+    'y' ':' y=NUMBER |
+    'width' ':' width=NUMBER |
+    'height' ':' height=NUMBER |
+    'name' ':'  name_val=STRING |
+    'description' ':' description=STRING
+;
+
+SystemDiagramEdge infers SystemDiagram:
+    INDENT 
+        (edges+=DiagramEdge)*     
+    DEDENT
+;
 
 DiagramEdge:
-    'edge' name=ID 'for' semanticElement=[Relationship:QualifiedName] '{'
-        'source' ':=' source=[DiagramNode:QualifiedName] ';'
-        'target' ':=' target=[DiagramNode:QualifiedName] ';'
-        // for non-straight connections we also need to save routing points
-    '}'
-    ;
+    '-' DiagramEdgeFields*
+;
 
+DiagramEdgeFields infers DiagramEdge:
+    (
+        'for' ':' for=[Relationship:QualifiedName] |
+        'id' ':' name=STRING
+    )
+;
 
+// Identification
 QualifiedName returns string:
-    ID ('.' ID)*;
+    STRING ('.' STRING)*;
 
-hidden terminal WS: /\s+/;
-terminal ID: /[_a-zA-Z@][\w_\-@\/#]*/;
+// Scalar values
 terminal STRING: /"[^"]*"|'[^']*'/;
 terminal NUMBER returns number: /(-)?[0-9]+(\.[0-9]*)?/;
 
-hidden terminal ML_COMMENT: /\/\*[\s\S]*?\*\//;
-hidden terminal SL_COMMENT: /\/\/[^\n\r]*/;
+// Misc
+hidden terminal SL_COMMENT: /#[^\n\r]*/;
+
+// Terminals to get the indentation working
+hidden terminal NEWLINE: 'this_string_does_not_matter_newline#$%^&*((';
+terminal DEDENT: 'this_string_does_not_matter_dedent#$%^&*((';
+terminal INDENT: 'this_string_does_not_matter_indent#$%^&*((';
+hidden terminal SPACES: 'this_string_does_not_matter_spaces#$%^&*((';
+

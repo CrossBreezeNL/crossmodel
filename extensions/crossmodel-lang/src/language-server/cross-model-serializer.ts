@@ -2,160 +2,106 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { isReference, Reference } from 'langium';
-import { DiagramSerializer, Serializer } from '../model-server/serializer';
+import { AstNode, isReference } from 'langium';
+import { Serializer } from '../model-server/serializer';
 import { CrossModelServices } from './cross-model-module';
-import {
-    Attribute,
-    CrossModelRoot,
-    DiagramEdge,
-    DiagramNode,
-    Entity,
-    isCrossModelRoot,
-    isEntity,
-    isSystemDiagram,
-    Property,
-    Relationship,
-    SystemDiagram
-} from './generated/ast';
+import { CrossModelRoot } from './generated/ast';
 
 /**
  * Hand-written AST serializer as there is currently no out-of-the box serializer from Langium, but it is on the roadmap.
  * cf. https://github.com/langium/langium/discussions/683
  * cf. https://github.com/langium/langium/discussions/863
  */
-export class CrossModelSerializer implements Serializer<CrossModelRoot>, DiagramSerializer<CrossModelRoot> {
+export class CrossModelSerializer implements Serializer<CrossModelRoot> {
     constructor(protected services: CrossModelServices, protected refNameProvider = services.references.QualifiedNameProvider) {}
 
     serialize(root: CrossModelRoot): string {
+        let newRoot: AstNode | undefined = this.toSerializableObject(root);
+
+        let startKey;
+
         if (root.entity) {
-            return this.serializeEntity(root.entity);
-        }
-        if (root.relationship) {
-            return this.serializeRelationship(root.relationship);
-        }
-        if (root.diagram) {
-            return this.serializeDiagram(root.diagram);
-        }
-        return '';
-    }
-
-    protected serializeEntity(entity: Entity): string {
-        return `entity ${entity.name} {
-    description := "${entity.description}";
-    attributes {
-${this.serializeAttributes(entity.attributes as Array<Attribute>)}    }
-}`;
-    }
-
-    private serializeAttributes(attributes: Array<Attribute> | undefined): string {
-        let result = '';
-
-        if (attributes) {
-            for (const [, attribute] of Object.entries(attributes)) {
-                result += `\t\t${attribute.name} := '${attribute.value}';\n`;
-            }
+            startKey = 'entity';
+            newRoot = root.entity;
+        } else if (root.diagram) {
+            startKey = 'diagram';
+            newRoot = root.diagram;
+        } else if (root.relationship) {
+            startKey = 'relationship';
+            newRoot = root.diagram;
+        } else {
+            return '';
         }
 
-        return result;
+        return startKey + ':' + '\n    ' + this.serializeValue(newRoot, 0);
     }
 
-    protected serializeRelationship(relationship: Relationship): string {
-        return `relationship ${relationship.name} {
-         source := ${this.serializeReference(relationship.source)}${
-            relationship.sourceAttribute ? ' with ' + this.serializeReference(relationship.sourceAttribute) : ''
-        };
-         target := ${this.serializeReference(relationship.target)}${
-            relationship.targetAttribute ? ' with ' + this.serializeReference(relationship.targetAttribute) : ''
-        };
-         type := ${relationship.type};
-         properties {
-            ${this.serializeProperties(relationship.properties)}
-         }
-      }`;
-    }
-
-    private serializeProperties(properties: Property[] | undefined): string {
-        return properties && Array.isArray(properties)
-            ? properties.map(property => `${property.key} := ${property.value}`).join(';\n')
-            : '';
-    }
-
-    protected serializeReference(reference: Reference | string | undefined): string {
-        if (reference === undefined) {
-            return '<unknown>';
+    private serializeValue(value: any, indentationLevel: number): string {
+        if (typeof value === 'object' && value !== undefined) {
+            return this.serializeObject(value, indentationLevel + 4);
+        } else if (Array.isArray(value)) {
+            return this.serializeArray(value, indentationLevel + 4);
+        } else {
+            return JSON.stringify(value);
         }
-        return isReference(reference) ? reference.$refText : reference;
     }
 
-    protected serializeDiagram(diagram: SystemDiagram): string {
-        return `diagram {
-         ${diagram.nodes.map(node => this.serializeDiagramNode(node)).join('\n')}
-         ${diagram.edges.map(edge => this.serializeDiagramEdge(edge)).join('\n')}
-      }`;
+    private serializeObject(obj: Record<string, any>, indentationLevel: number): string {
+        const indentation = ' '.repeat(indentationLevel);
+
+        const serializedProperties = Object.entries(obj).map(([key, value]) => {
+            const serializedValue = this.serializeValue(value, indentationLevel);
+            return `${indentation}${key}: ${serializedValue}`;
+        });
+
+        return serializedProperties.join(',\n') + '\n';
     }
 
-    protected serializeDiagramNode(node: DiagramNode): string {
-        return `node ${node.name} for ${node.semanticElement.$refText} {
-         x := ${node.x};
-         y := ${node.y};
-         width := ${node.width};
-         height := ${node.height};
-      };`;
+    private serializeArray(arr: any[], indentationLevel: number): string {
+        let serializedItems = arr.map(item => this.serializeValue(item, indentationLevel)).join('\n');
+        serializedItems = this.changeCharInString(serializedItems, indentationLevel - 2, '-');
+
+        return serializedItems + '\n';
     }
 
-    protected serializeDiagramEdge(edge: DiagramEdge): string {
-        return `edge ${edge.name} for ${edge.semanticElement.$refText} {
-         source := ${edge.source.$refText};
-         target := ${edge.target.$refText};
-      };`;
-    }
-
-    asDiagram(element: SystemDiagram | Entity | Relationship | CrossModelRoot): string {
-        if (isCrossModelRoot(element)) {
-            return element.entity
-                ? this.asDiagram(element.entity)
-                : element.relationship
-                ? this.asDiagram(element.relationship)
-                : element.diagram
-                ? this.asDiagram(element.diagram)
-                : 'diagram { }';
+    private changeCharInString(inputString: string, indexToChange: number, newChar: any): string {
+        if (indexToChange < 0 || indexToChange >= inputString.length) {
+            throw Error('invalid');
         }
-        if (isSystemDiagram(element)) {
-            return this.serializeDiagram(element);
-        }
-        if (isEntity(element)) {
-            return `diagram {
-            ${this.asDiagramNode(element)};
-         }`;
-        }
-        if (!element.source.ref || !element.target.ref) {
-            return 'diagram { }';
-        }
-        return `diagram {
-         ${this.asDiagramNode(element.source.ref)};
-         ${this.asDiagramNode(element.target.ref)};
-         ${this.asDiagramEdge(element)}
-      }`;
+
+        const modifiedString = inputString.slice(0, indexToChange) + newChar + inputString.slice(indexToChange + 1);
+        return modifiedString;
     }
 
-    protected toDiagramName(element: Entity | Relationship): string {
-        return isEntity(element) ? element.name + '_node' : element.name + '_edge';
+    /**
+     * Cleans the semantic object of any property that cannot be serialized as a String and thus cannot be sent to the client
+     * over the RPC connection.
+     *
+     * @param obj semantic object
+     * @returns serializable semantic object
+     */
+    toSerializableObject<T extends object>(obj?: T): T | undefined {
+        if (!obj) {
+            return;
+        }
+
+        return <T>Object.entries(obj)
+            .filter(([key, value]) => !key.startsWith('$'))
+            .reduce((acc, [key, value]) => ({ ...acc, [key]: this.cleanValue(value) }), {});
     }
 
-    protected asDiagramNode(entity: Entity): string {
-        return `node ${this.toDiagramName(entity)} for ${this.refNameProvider.getName(entity)} {
-         x := 0;
-         y := 0;
-         width := 100;
-         height := 100;
-      }`;
+    cleanValue(value: any): any {
+        return this.isContainedObject(value) ? this.toSerializableObject(value) : this.resolvedValue(value);
     }
 
-    protected asDiagramEdge(relationship: Relationship): string {
-        return `edge ${this.toDiagramName(relationship)} for ${this.refNameProvider.getName(relationship)} {
-         source := ${this.toDiagramName(relationship.source.ref!)};
-         target := ${this.toDiagramName(relationship.target.ref!)};
-      }`;
+    isContainedObject(value: any): boolean {
+        return value === Object(value) && !isReference(value);
+    }
+
+    resolvedValue(value: any): any {
+        if (isReference(value)) {
+            return value.$refText;
+        }
+        return value;
     }
 }

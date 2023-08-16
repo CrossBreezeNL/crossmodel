@@ -16,4 +16,6 @@ diagram:
     edges:  
       - id: 'OrderCustomerEdge' 
         for: 'Order_Customer' 
+    description: "This is also a test"
+    description: "This should be the description"
 

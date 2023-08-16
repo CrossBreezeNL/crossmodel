@@ -1,5 +1,6 @@
 entity: 
     id: 'Order'
+    description: 'Order placed by a customer in the Customer table.'
     attributes:
         - id : 'Id'
           name: 'Id'
@@ -16,6 +17,3 @@ entity:
         - id: 'TotalAmount'
           name: 'TotalAmount'
           datatype: 'Float'
-    name: 'Customer orders'
-    description: 'Order placed by a customer in the Customer table.'
-    

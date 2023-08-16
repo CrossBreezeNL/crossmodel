@@ -86,7 +86,7 @@
     ]
   },
   "activationEvents": [
-    "*"
+    "onLanguage:cross-model"
   ],
   "dependencies": {
     "@crossbreeze/protocol": "0.0.0",

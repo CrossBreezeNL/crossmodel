@@ -8,17 +8,17 @@
     "extensions/*"
   ],
   "scripts": {
+    "clean": "lerna run clean && rimraf node_modules",
     "postinstall": "theia check:theia-version",
     "lint": "lerna run lint",
     "prepare": "lerna run prepare",
     "start:browser": "yarn theia:browser start",
     "start:electron": "yarn theia:electron start",
     "start:verdaccio": "yarn verdaccio --config verdaccio-config.yaml",
-    "test": "vitest --config configs/vitest.config.ts",
+    "test": "lerna run test && vitest --config configs/vitest.config.ts",
     "theia:browser": "yarn --cwd applications/browser-app",
     "theia:electron": "yarn --cwd applications/electron-app",
-    "watch": "lerna run --parallel watch",
-    "clean": "lerna run clean && rimraf node_modules"
+    "watch": "lerna run --parallel watch"
   },
   "devDependencies": {
     "@testing-library/react": "^11.2.7",

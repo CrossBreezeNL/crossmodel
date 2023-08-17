@@ -61,6 +61,7 @@ export interface Entity extends AstNode {
     attributes: Array<EntityAttribute>
     description?: string
     name?: string
+    name_val?: string
 }
 
 export const Entity = 'Entity';
@@ -107,6 +108,7 @@ export interface SystemDiagram extends AstNode {
     description?: string
     edges: Array<DiagramEdge>
     name?: string
+    name_val?: string
     nodes: Array<DiagramNode>
 }
 

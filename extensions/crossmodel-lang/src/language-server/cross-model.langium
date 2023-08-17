@@ -18,6 +18,7 @@ Entity:
 EntityFields infers Entity:
     (
         'id' ':' name=STRING |
+        'name' ':'  name_val=STRING |
         'description' ':' description=STRING |
         'attributes' ':' EntityAttributes
     )
@@ -80,7 +81,8 @@ SystemDiagramFields infers SystemDiagram:
         'nodes' ':' SystemDiagramNodes |
         'edges' ':' SystemDiagramEdge |
         'id' ':' name=STRING |
-        'description' ':' description=STRING 
+        'description' ':' description=STRING |
+        'name' ':'  name_val=STRING
     )
 ;
 

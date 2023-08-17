@@ -87,7 +87,7 @@ export function ModelReducer(model: CrossModelRoot, action: any): CrossModelRoot
                 throw Error('action.id or dataType is undefined');
             }
 
-            model.entity.attributes[action.id].value = action.dataType;
+            model.entity.attributes[action.id].datatype = action.dataType;
 
             return model;
 

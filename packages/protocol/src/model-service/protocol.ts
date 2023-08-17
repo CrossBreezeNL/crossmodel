@@ -13,33 +13,36 @@ export interface CrossModelRoot {
     relationship?: Relationship;
 }
 
-export interface Relationship {
-    readonly $type: 'Relationship';
-    name: string;
-    properties: Array<Property>;
-    source: string;
-    target: string;
-    type: '1:1' | '1:n' | 'n:1' | 'n:m';
-}
-
-export interface Property {
-    readonly $type: 'Property';
-    key: string;
-    value: number | string;
-}
-
 export interface Entity {
+    readonly $container: CrossModelRoot;
     readonly $type: 'Entity';
-    name: string;
-    description: string;
-    attributes: Array<Attribute>;
+    attributes: Array<EntityAttribute>;
+    description?: string;
+    name?: string;
+    name_val?: string;
 }
 
-export interface Attribute {
-    readonly $type: 'Attribute';
-    name: string;
-    value: number | string;
+export interface EntityAttribute {
+    readonly $container: Entity;
+    readonly $type: 'EntityAttribute';
+    datatype?: string;
+    description?: string;
+    name?: string;
+    name_val?: string;
 }
+
+export interface Relationship {
+    readonly $container: CrossModelRoot;
+    readonly $type: 'Relationship';
+    child?: string;
+    description?: string;
+    name?: string;
+    name_val?: string;
+    parent?: string;
+    type?: RelationshipType;
+}
+
+export type RelationshipType = '1:1' | '1:n' | 'n:1' | 'n:m';
 
 export const OpenModel = new rpc.RequestType1<string, void, void>('server/open');
 export const CloseModel = new rpc.RequestType1<string, void, void>('server/close');

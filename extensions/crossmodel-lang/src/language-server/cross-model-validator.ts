@@ -26,14 +26,12 @@ export function registerValidationChecks(services: CrossModelServices): void {
  */
 export class CrossModelValidator {
     checkSystemDiagramHasNecessaryFields(system: SystemDiagram, accept: ValidationAcceptor): void {
-        console.log('test', system);
         if (!system.name) {
             accept('error', 'Systemdiagram missing id field', { node: system, property: 'name' });
         }
     }
 
     checkEntityHasNecessaryFields(entity: Entity, accept: ValidationAcceptor): void {
-        console.log('test', entity);
         if (!entity.name) {
             accept('error', 'Entity missing id field', { node: entity, property: 'name' });
         }

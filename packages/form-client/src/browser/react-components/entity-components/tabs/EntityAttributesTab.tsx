@@ -17,7 +17,7 @@ import {
 } from '@mui/x-data-grid';
 import { Checkbox, FormControl, MenuItem, Select, SelectChangeEvent } from '@mui/material';
 import { ModelContext, ModelDispatchContext, ModelReducer } from '../../ModelContext';
-import { Attribute, CrossModelRoot } from '@crossbreeze/protocol';
+import { EntityAttribute, CrossModelRoot } from '@crossbreeze/protocol';
 
 export function EntityAttributesTab(): React.ReactElement {
     // Context variables to handle model state.
@@ -118,19 +118,19 @@ function CheckboxCell(params: GridCellParams): React.ReactElement {
     return <Checkbox checked={Boolean(params.value)} />;
 }
 
-function createRows(attributes: Array<Attribute>): GridRowsProp {
+function createRows(attributes: Array<EntityAttribute>): GridRowsProp {
     const rows: any = [];
 
     for (const key in attributes) {
         if (attributes.hasOwnProperty.call(attributes, key)) {
-            const item: Attribute = attributes[key];
+            const item: EntityAttribute = attributes[key];
 
             rows.push({
                 id: parseInt(key, 10),
                 name: item.name,
                 key: false,
                 required: false,
-                value: item.value,
+                datatype: item.datatype,
                 length: undefined,
                 scale: undefined,
                 precision: undefined,

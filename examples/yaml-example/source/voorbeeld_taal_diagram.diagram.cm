@@ -1,21 +1,19 @@
 diagram:
     id: "Systemdiagram1"
+    edges:
+      - id: "OrderCustomerEdge"
+        for: "Order_Customer"
     nodes:
-      - id: 'CustomerNode'
-        for: 'Customer'
-        x: 100
-        y: 100
-        height: 100
-        width: 100
-      - id: 'OrderNode'
-        for: 'Order'
-        x: 100
-        y: 100
-        height: 100
-        width: 100
-    edges:  
-      - id: 'OrderCustomerEdge' 
-        for: 'Order_Customer' 
-    description: "This is also a test"
+      - id: "CustomerNode"
+        for: "Customer"
+        x: 90
+        y: 107
+        height: 151
+        width: 122.22364807128906
+      - id: "OrderNode"
+        for: "Order"
+        x: 358
+        y: 112
+        height: 132
+        width: 139.6079559326172
     description: "This should be the description"
-

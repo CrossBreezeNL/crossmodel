@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { GEdge, GGraph, GLabel, GModelFactory, GNode } from '@eclipse-glsp/server';
+import { GEdge, GGraph, GModelFactory, GNode } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
 import { DiagramEdge, DiagramNode } from '../../language-server/generated/ast';
 import { CrossModelState } from './cross-model-state';
@@ -26,10 +26,10 @@ export class CrossModelGModelFactory implements GModelFactory {
 
     protected createGraph(): GGraph | undefined {
         const diagramRoot = this.modelState.diagramRoot;
-
         const graphBuilder = GGraph.builder().id(this.modelState.semanticUri);
+
         diagramRoot.nodes.map(node => this.createDiagramNode(node)).forEach(node => graphBuilder.add(node));
-        // diagramRoot.edges.map(edge => this.createDiagramEdge(edge)).forEach(edge => graphBuilder.add(edge));
+        diagramRoot.edges.map(edge => this.createDiagramEdge(edge, diagramRoot.nodes)).forEach(edge => graphBuilder.add(edge));
 
         return graphBuilder.build();
     }
@@ -41,16 +41,20 @@ export class CrossModelGModelFactory implements GModelFactory {
         return GEntityNode.builder().id(id).addNode(node).build();
     }
 
-    protected createDiagramEdge(edge: DiagramEdge): GEdge {
+    protected createDiagramEdge(edge: DiagramEdge, diagramNodes: DiagramNode[]): GEdge {
         const id = this.modelState.index.createId(edge) ?? 'unknown';
+
         const parentRef = edge.for?.ref?.parent?.$refText;
         const childRef = edge.for?.ref?.child?.$refText;
+
+        const parentDiagramNode = diagramNodes.find(item => item.for?.ref?.name === parentRef)?.name;
+        const childDiagramNode = diagramNodes.find(item => item.for?.ref?.name === childRef)?.name;
 
         return GEdge.builder()
             .id(id)
             .addCssClasses('diagram-edge', 'relationship')
-            .sourceId(parentRef || '')
-            .targetId(childRef || '')
+            .sourceId(parentDiagramNode || '')
+            .targetId(childDiagramNode || '')
             .build();
     }
 }

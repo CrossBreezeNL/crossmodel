@@ -5,8 +5,8 @@
 import { describe, expect, test } from '@jest/globals';
 import { EmptyFileSystem, isReference } from 'langium';
 
-import { parseDocument } from './utils/utils';
-import { relationship1, relationship2 } from './utils/test-documents/relationship/index';
+import { parseDocument } from './test-utils/utils';
+import { relationship1, relationship2 } from './test-utils/test-documents/relationship/index';
 
 import { CrossModelRoot } from '../../src/language-server/generated/ast';
 import { createCrossModelServices } from '../../src/language-server/cross-model-module';

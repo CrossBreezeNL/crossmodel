@@ -5,10 +5,10 @@
 import { describe, expect, test, beforeAll } from '@jest/globals';
 
 import { Grammar } from 'langium';
-import { ExampleGrammarWithIndent } from '../utils/example-grammar';
+import { ExampleGrammarWithIndent } from '../test-utils/example-grammar';
 import { TokenType } from 'chevrotain';
 
-import { ExampleGrammarWithNoIndent } from '../utils/example-grammar-no-indent';
+import { ExampleGrammarWithNoIndent } from '../test-utils/example-grammar-no-indent';
 import { DEDENT, INDENT, NEWLINE, SPACES } from '../../../src/language-server/lexer/cross-model-indentation-tokens';
 import { CrossModelTokenBuilder } from '../../../src/language-server/lexer/cross-model-token-generator';
 

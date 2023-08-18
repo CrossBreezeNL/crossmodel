@@ -5,8 +5,8 @@
 import { describe, expect, test } from '@jest/globals';
 import { EmptyFileSystem } from 'langium';
 
-import { parseDocument } from './utils/utils';
-import { entity1, entity2, entity3, entity4 } from './utils/test-documents/entity/index';
+import { parseDocument } from './test-utils/utils';
+import { entity1, entity2, entity3, entity4 } from './test-utils/test-documents/entity/index';
 
 import { CrossModelRoot } from '../../src/language-server/generated/ast';
 import { createCrossModelServices } from '../../src/language-server/cross-model-module';

@@ -2,10 +2,10 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { AstNode, isReference } from 'langium';
+import { isReference } from 'langium';
 import { Serializer } from '../model-server/serializer';
 import { CrossModelServices } from './cross-model-module';
-import { CrossModelRoot } from './generated/ast';
+import { CrossModelRoot, Entity, Relationship, SystemDiagram } from './generated/ast';
 
 /**
  * Hand-written AST serializer as there is currently no out-of-the box serializer from Langium, but it is on the roadmap.
@@ -16,31 +16,15 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot> {
     constructor(protected services: CrossModelServices, protected refNameProvider = services.references.QualifiedNameProvider) {}
 
     serialize(root: CrossModelRoot): string {
-        let newRoot: AstNode | undefined = this.toSerializableObject(root);
-
-        let startKey;
-
-        if (root.entity) {
-            startKey = 'entity';
-            newRoot = root.entity;
-        } else if (root.diagram) {
-            startKey = 'diagram';
-            newRoot = root.diagram;
-        } else if (root.relationship) {
-            startKey = 'relationship';
-            newRoot = root.diagram;
-        } else {
-            return '';
-        }
-
-        return startKey + ':' + '\n    ' + this.serializeValue(newRoot, 0);
+        const newRoot: CrossModelRoot | Entity | Relationship | SystemDiagram = this.toSerializableObject(root);
+        return this.serializeValue(newRoot, -4);
     }
 
     private serializeValue(value: any, indentationLevel: number): string {
-        if (typeof value === 'object' && value !== undefined) {
+        if (Array.isArray(value)) {
+            return this.serializeArray(value, indentationLevel);
+        } else if (typeof value === 'object' && value !== undefined) {
             return this.serializeObject(value, indentationLevel + 4);
-        } else if (Array.isArray(value)) {
-            return this.serializeArray(value, indentationLevel + 4);
         } else {
             return JSON.stringify(value);
         }
@@ -49,19 +33,37 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot> {
     private serializeObject(obj: Record<string, any>, indentationLevel: number): string {
         const indentation = ' '.repeat(indentationLevel);
 
-        const serializedProperties = Object.entries(obj).map(([key, value]) => {
-            const serializedValue = this.serializeValue(value, indentationLevel);
-            return `${indentation}${key}: ${serializedValue}`;
-        });
+        const serializedProperties = Object.entries(obj)
+            .map(([key, value]) => {
+                if (Array.isArray(value) && value.length === 0) {
+                    return;
+                }
 
-        return serializedProperties.join(',\n') + '\n';
+                const serializedValue = this.serializeValue(value, indentationLevel);
+
+                if (key === 'name_val') {
+                    key = 'name';
+                } else if (key === 'name') {
+                    key = 'id';
+                }
+
+                if (typeof value === 'object') {
+                    return `${indentation}${key}:\n${serializedValue}`;
+                } else {
+                    return `${indentation}${key}: ${serializedValue}`;
+                }
+            })
+            .filter(item => item !== undefined);
+
+        return serializedProperties.join('\n');
     }
 
     private serializeArray(arr: any[], indentationLevel: number): string {
-        let serializedItems = arr.map(item => this.serializeValue(item, indentationLevel)).join('\n');
-        serializedItems = this.changeCharInString(serializedItems, indentationLevel - 2, '-');
-
-        return serializedItems + '\n';
+        const serializedItems = arr
+            .map(item => this.serializeValue(item, indentationLevel))
+            .map(item => this.changeCharInString(item, indentationLevel + 2, '-'))
+            .join('\n');
+        return serializedItems;
     }
 
     private changeCharInString(inputString: string, indexToChange: number, newChar: any): string {
@@ -80,18 +82,20 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot> {
      * @param obj semantic object
      * @returns serializable semantic object
      */
-    toSerializableObject<T extends object>(obj?: T): T | undefined {
-        if (!obj) {
-            return;
-        }
-
+    toSerializableObject<T extends object>(obj: T): T {
         return <T>Object.entries(obj)
             .filter(([key, value]) => !key.startsWith('$'))
             .reduce((acc, [key, value]) => ({ ...acc, [key]: this.cleanValue(value) }), {});
     }
 
     cleanValue(value: any): any {
-        return this.isContainedObject(value) ? this.toSerializableObject(value) : this.resolvedValue(value);
+        if (Array.isArray(value)) {
+            return value.map(item => this.cleanValue(item));
+        } else if (this.isContainedObject(value)) {
+            return this.toSerializableObject(value);
+        } else {
+            return this.resolvedValue(value);
+        }
     }
 
     isContainedObject(value: any): boolean {

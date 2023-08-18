@@ -15,7 +15,6 @@
     "start:browser": "yarn theia:browser start",
     "start:electron": "yarn theia:electron start",
     "start:verdaccio": "yarn verdaccio --config verdaccio-config.yaml",
-    "test": "lerna run test && vitest --config configs/vitest.config.ts",
     "theia:browser": "yarn --cwd applications/browser-app",
     "theia:electron": "yarn --cwd applications/electron-app",
     "watch": "lerna run --parallel watch"

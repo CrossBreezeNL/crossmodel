@@ -39,6 +39,7 @@ export class CrossModelCreateEdgeOperationHandler extends OperationHandler imple
     protected async createEdge(operation: CreateEdgeOperation): Promise<void> {
         const sourceNode = this.state.index.findDiagramNode(operation.sourceElementId);
         const targetNode = this.state.index.findDiagramNode(operation.targetElementId);
+
         if (sourceNode && targetNode) {
             // before we can create a digram edge, we need to create the corresponding relationship that it is based on
             const relationship = await this.createAndSaveRelationship(sourceNode, targetNode);

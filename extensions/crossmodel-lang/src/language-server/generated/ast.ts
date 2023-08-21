@@ -8,8 +8,6 @@ import { AstNode, AbstractAstReflection, Reference, ReferenceInfo, TypeMetaData 
 
 export type QualifiedName = string;
 
-export type RelationshipType = '1:1' | '1:n' | 'n:1' | 'n:m';
-
 export interface CrossModelRoot extends AstNode {
     readonly $type: 'CrossModelRoot';
     diagram?: SystemDiagram
@@ -93,7 +91,7 @@ export interface Relationship extends AstNode {
     name?: string
     name_val?: string
     parent?: Reference<Entity>
-    type?: RelationshipType
+    type?: string
 }
 
 export const Relationship = 'Relationship';

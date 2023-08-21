@@ -29,6 +29,7 @@ export class CrossModelAddEntityOperationHandler extends OperationHandler {
         const refInfo = createNodeToEntityReference(container);
         const scope = this.state.services.language.references.ScopeProvider.getScope(refInfo);
         const entityDescription = scope.getElement(operation.entityName);
+
         if (entityDescription) {
             // create node for entity
             const node: DiagramNode = {

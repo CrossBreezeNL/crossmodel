@@ -58,12 +58,8 @@ RelationshipFields infers Relationship:
         'description' ':' description=STRING |
         'parent' ':' parent=[Entity:QualifiedName] |
         'child' ':' child=[Entity:QualifiedName] |
-        'type' ':' type=RelationshipType 
+        'type' ':' type=STRING
     )
-;
-
-RelationshipType returns string:
-    '1:1' | '1:n' | 'n:1' | 'n:m'
 ;
 
 // Diagram defintion

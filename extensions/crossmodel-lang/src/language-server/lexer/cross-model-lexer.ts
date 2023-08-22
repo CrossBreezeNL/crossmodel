@@ -2,11 +2,11 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
+import { createTokenInstance } from 'chevrotain';
 import { DefaultLexer, LexerResult } from 'langium';
 import { indentStack } from './cross-model-indent-stack';
-import { IndentationError } from './cross-model-lexer-error';
-import { createTokenInstance } from 'chevrotain';
 import { DEDENT, NAMES } from './cross-model-indentation-tokens';
+import { IndentationError } from './cross-model-lexer-error';
 
 /**
  * Custom CrossModelLexer to get indentation working.
@@ -70,14 +70,21 @@ export class CrossModelLexer extends DefaultLexer {
      */
     private createTrailingDedentTokens(text: string, lexingResult: LexerResult): void {
         // These are there to put the error warning in the right place in the editor
-        const newlines = text.split(/\r\n|\r|\n/).length;
-        let match = text.match(/.*$/)?.length;
-        match = match ? match - 1 : 0;
+        const lines = text.split(/\r\n|\r|\n/);
+        const lastLine = lines[lines.length - 1];
 
-        // add remaining Outdents
-        while (indentStack.length() > 1) {
-            lexingResult.tokens.push(createTokenInstance(DEDENT, NAMES.DEDENT, text.length, text.length, newlines, newlines, match, match));
-            indentStack.pop();
+        // add remaining dedents
+        while (indentStack.pop()) {
+            // chevrotrain uses 1-based indices for tokens which Langium transforms into 0-based indices by deducting 1
+            // see for instance https://github.com/eclipse-langium/langium/blob/eea5bc2/packages/langium/src/utils/cst-util.ts#L49
+            const startOffset = text.length || 1;
+            const endOffset = text.length || 1;
+            const startLine = lines.length || 1;
+            const endLine = lines.length || 1;
+            const startColumn = lastLine?.length || 0 + 1;
+            const endColumn = lastLine?.length || 0; // for some reason end-column uses the correct index
+            const lineToken = createTokenInstance(DEDENT, NAMES.DEDENT, startOffset, endOffset, startLine, endLine, startColumn, endColumn);
+            lexingResult.tokens.push(lineToken);
         }
     }
 }

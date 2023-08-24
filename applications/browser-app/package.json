@@ -50,7 +50,10 @@
       "config": {
         "applicationName": "CrossModel Community Edition",
         "preferences": {
-          "security.workspace.trust.enabled": false
+          "security.workspace.trust.enabled": false,
+          "files.associations": {
+            "*.port": "ignore"
+          }
         }
       }
     },

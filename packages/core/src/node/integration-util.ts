@@ -5,7 +5,15 @@
 import { Deferred } from '@theia/core/lib/common/promise-util';
 import * as fs from 'fs';
 
-export function waitForTemporaryFileContent(file: string, timeout = 500, tries = -1): Promise<string> {
+/**
+ * Waits for a file to be created and deletes it as soon as it reads it.
+ *
+ * @param file file we want to read
+ * @param timeout timeout between read attempts
+ * @param attempts maximum number of attempts we try to read the file, -1 means infinite tries
+ * @returns the content of the temporary file as string
+ */
+export function waitForTemporaryFileContent(file: string, timeout = 500, attempts = -1): Promise<string> {
    const pendingContent = new Deferred<string>();
    let counter = 0;
    const tryReadingFile = (): void => {
@@ -16,7 +24,7 @@ export function waitForTemporaryFileContent(file: string, timeout = 500, tries =
             pendingContent.resolve(content);
          } catch (error) {
             counter++;
-            if (tries >= 0 && counter > tries) {
+            if (attempts >= 0 && counter > attempts) {
                pendingContent.reject(error);
             } else {
                tryReadingFile();

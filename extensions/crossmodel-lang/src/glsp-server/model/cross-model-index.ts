@@ -4,6 +4,7 @@
 import { GModelIndex } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
 import { AstNode, streamAst } from 'langium';
+import { CrossModelLSPServices } from '../../integration';
 import {
    CrossModelRoot,
    DiagramEdge,
@@ -15,7 +16,6 @@ import {
    isEntity,
    isRelationship
 } from '../../language-server/generated/ast';
-import { CrossModelLSPServices } from '../integration';
 
 /**
  * Custom model index that not only indexes the GModel elements but also the semantic elements (AstNodes) they represent.

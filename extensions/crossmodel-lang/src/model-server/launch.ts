@@ -4,7 +4,8 @@
 import { MODELSERVER_PORT_FILE } from '@crossbreeze/protocol';
 import * as net from 'net';
 import * as rpc from 'vscode-jsonrpc/node';
-import { CrossModelLSPServices, writePortFileToWorkspace } from '../glsp-server/integration';
+import { URI } from 'vscode-uri';
+import { CrossModelLSPServices, writePortFileToWorkspace } from '../integration';
 import { ModelServer } from './model-server';
 
 const currentConnections: rpc.MessageConnection[] = [];
@@ -15,7 +16,7 @@ const currentConnections: rpc.MessageConnection[] = [];
  * @param services language services
  * @returns a promise that is resolved as soon as the server is shut down or rejects if an error occurs
  */
-export function startModelServer(services: CrossModelLSPServices): Promise<void> {
+export function startModelServer(services: CrossModelLSPServices, workspaceFolder: URI): Promise<void> {
    const netServer = net.createServer(socket => createClientConnection(socket, services));
    netServer.listen(0);
    netServer.on('listening', () => {
@@ -30,7 +31,9 @@ export function startModelServer(services: CrossModelLSPServices): Promise<void>
          return;
       }
       console.log(`[ModelServer] Ready to accept new client requests on port: ${addressInfo.port}`);
-      writePortFileToWorkspace(MODELSERVER_PORT_FILE, addressInfo);
+
+      // write dynamically assigned port to workspace folder to let clients know we are ready to accept connections
+      writePortFileToWorkspace(workspaceFolder, MODELSERVER_PORT_FILE, addressInfo);
    });
    netServer.on('error', err => {
       console.error('[ModelServer] Error: ', err);

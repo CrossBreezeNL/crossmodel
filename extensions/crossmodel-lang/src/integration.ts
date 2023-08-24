@@ -1,10 +1,12 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
+import { PORT_FOLDER } from '@crossbreeze/protocol';
 import * as fs from 'fs';
 import { AddressInfo } from 'net';
 import { join } from 'path';
-import { CrossModelServices, CrossModelSharedServices } from '../language-server/cross-model-module';
+import { URI } from 'vscode-uri';
+import { CrossModelServices, CrossModelSharedServices } from './language-server/cross-model-module';
 
 /**
  * Language services required in GLSP.
@@ -17,9 +19,11 @@ export interface CrossModelLSPServices {
    language: CrossModelServices;
 }
 
-export function writePortFileToWorkspace(fileName: string, address: AddressInfo | string | null): void {
-   if (process.env.WORKSPACE_PATH && address && !(typeof address === 'string')) {
-      fs.writeFileSync(join(process.env.WORKSPACE_PATH, fileName), address.port.toString());
+export function writePortFileToWorkspace(workspace: URI, fileName: string, address: AddressInfo | string | null): void {
+   if (address && !(typeof address === 'string')) {
+      const portFolder = join(workspace.fsPath, PORT_FOLDER);
+      fs.mkdirSync(portFolder, { recursive: true });
+      fs.writeFileSync(join(portFolder, fileName), address.port.toString());
    } else {
       console.error(
          'Could not write file ' + fileName + ' to workspace as no workspace is set or no port was provided.',

@@ -31,3 +31,8 @@
     resize: none;
     margin-bottom: 5px;
 }
+
+.entity-attribute-error-row {
+    border: 1px solid rgba(237, 67, 55, 1);
+    box-shadow: 0 0 6px rgba(237, 67, 55, 1);
+}

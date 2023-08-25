@@ -11,7 +11,9 @@ import {
     GridRowModel,
     GridToolbarContainer,
     GridActionsCellItem,
-    GridRowId
+    GridRowId,
+    MuiEvent,
+    GridCellEditStopParams
 } from '@mui/x-data-grid';
 import { FormControl, MenuItem, Select, SelectChangeEvent } from '@mui/material';
 import { ModelContext, ModelDispatchContext, ModelReducer } from '../ModelContext';
@@ -26,10 +28,16 @@ export function EntityPropertyAttributes(): React.ReactElement {
     // Context variables to handle model state.
     const model = React.useContext(ModelContext) as CrossModelRoot;
     const dispatch = React.useContext(ModelDispatchContext) as React.Dispatch<React.ReducerAction<typeof ModelReducer>>;
+    const [errorRow, setErrorRow] = React.useState(undefined);
 
     // Callback for when the user stops editing a cell.
     const handleRowUpdate = (updatedRow: GridRowModel, originalRow: GridRowModel): GridRowModel => {
         if (updatedRow.name !== originalRow.name) {
+            if (!updatedRow.name) {
+                setErrorRow(originalRow.id);
+                throw new Error();
+            }
+
             dispatch({
                 type: 'entity:attribute:change-name',
                 id: updatedRow.id,
@@ -37,7 +45,12 @@ export function EntityPropertyAttributes(): React.ReactElement {
             });
         }
 
+        setErrorRow(undefined);
         return updatedRow;
+    };
+
+    const handleOnCellEditStop = (params: GridCellEditStopParams, event: MuiEvent): void => {
+        setErrorRow(undefined);
     };
 
     const handleClick = (): void => {
@@ -141,6 +154,8 @@ export function EntityPropertyAttributes(): React.ReactElement {
                         pagination: { paginationModel: { pageSize: 8 } }
                     }}
                     processRowUpdate={handleRowUpdate}
+                    onCellEditStop={handleOnCellEditStop}
+                    getRowClassName={params => (params.row.id === errorRow ? 'entity-attribute-error-row' : '')}
                 />
             </AccordionDetails>
         </Accordion>

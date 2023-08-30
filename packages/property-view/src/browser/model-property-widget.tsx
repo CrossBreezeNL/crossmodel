@@ -7,10 +7,12 @@ import { PropertyDataService } from '@theia/property-view/lib/browser/property-d
 import { PropertyViewContentWidget } from '@theia/property-view/lib/browser/property-view-content-widget';
 import * as React from '@theia/core/shared/react';
 
-import { GlspSelection } from '@eclipse-glsp/theia-integration';
+import { GlspSelection, GLSPDiagramWidget } from '@eclipse-glsp/theia-integration';
 import { ModelService } from '@crossbreeze/model-service';
-import { CrossModelRoot, isDiagramNodeEntity } from '@crossbreeze/protocol';
+import { CrossModelRoot, UpdateClientAction, isDiagramNodeEntity } from '@crossbreeze/protocol';
 import { inject, injectable } from '@theia/core/shared/inversify';
+import { IActionDispatcher } from '@eclipse-glsp/client';
+import { ApplicationShell } from '@theia/core/lib/browser/shell/application-shell';
 import { App } from './react-components/App';
 
 @injectable()
@@ -19,6 +21,7 @@ export class ModelPropertyWidget extends ReactWidget implements PropertyViewCont
     static readonly LABEL = 'Model property widget';
 
     @inject(ModelService) protected modelService: ModelService;
+    @inject(ApplicationShell) protected shell: ApplicationShell;
 
     protected model: CrossModelRoot | undefined;
     protected uri: string;
@@ -59,6 +62,7 @@ export class ModelPropertyWidget extends ReactWidget implements PropertyViewCont
         }
 
         await this.modelService.save(this.uri, this.model);
+        this.actionDispatcher?.dispatch(UpdateClientAction.create());
     }
 
     protected async updateModel(model: CrossModelRoot): Promise<void> {
@@ -78,5 +82,23 @@ export class ModelPropertyWidget extends ReactWidget implements PropertyViewCont
     protected override onActivateRequest(msg: Message): void {
         super.onActivateRequest(msg);
         this.node.focus();
+    }
+
+    protected getDiagramWidget(): GLSPDiagramWidget | undefined {
+        for (const widget of this.shell.widgets) {
+            if (widget instanceof GLSPDiagramWidget) {
+                return widget;
+            }
+        }
+        return undefined;
+    }
+
+    protected get actionDispatcher(): IActionDispatcher | undefined {
+        const widget = this.getDiagramWidget();
+
+        if (widget instanceof GLSPDiagramWidget) {
+            return widget.actionDispatcher;
+        }
+        return undefined;
     }
 }

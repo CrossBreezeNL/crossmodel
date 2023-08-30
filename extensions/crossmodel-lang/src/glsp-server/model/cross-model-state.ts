@@ -4,11 +4,11 @@
 import { DefaultModelState } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
 import { URI } from 'vscode-uri';
+import { CrossModelLSPServices } from '../../integration';
 import { QualifiedNameProvider } from '../../language-server/cross-model-naming';
 import { CrossModelRoot, SystemDiagram } from '../../language-server/generated/ast';
 import { ModelService } from '../../model-server/model-service';
 import { DiagramSerializer } from '../../model-server/serializer';
-import { CrossModelLSPServices } from '../integration';
 import { CrossModelIndex } from './cross-model-index';
 
 /**

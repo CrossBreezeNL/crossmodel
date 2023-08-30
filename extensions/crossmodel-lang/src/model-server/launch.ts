@@ -1,13 +1,12 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
+import { MODELSERVER_PORT_FILE } from '@crossbreeze/protocol';
 import * as net from 'net';
 import * as rpc from 'vscode-jsonrpc/node';
-import { CrossModelLSPServices } from '../glsp-server/integration';
+import { URI } from 'vscode-uri';
+import { CrossModelLSPServices, writePortFileToWorkspace } from '../integration';
 import { ModelServer } from './model-server';
-
-const JSON_SERVER_PORT = 5999;
-const JSON_SERVER_HOST = 'localhost';
 
 const currentConnections: rpc.MessageConnection[] = [];
 
@@ -17,24 +16,27 @@ const currentConnections: rpc.MessageConnection[] = [];
  * @param services language services
  * @returns a promise that is resolved as soon as the server is shut down or rejects if an error occurs
  */
-export function startModelServer(services?: CrossModelLSPServices): Promise<void> {
+export function startModelServer(services: CrossModelLSPServices, workspaceFolder: URI): Promise<void> {
    const netServer = net.createServer(socket => createClientConnection(socket, services));
-   netServer.listen(JSON_SERVER_PORT, JSON_SERVER_HOST);
+   netServer.listen(0);
    netServer.on('listening', () => {
       const addressInfo = netServer.address();
       if (!addressInfo) {
-         console.error('Could not resolve JSON Server address info. Shutting down.');
+         console.error('[ModelServer] Could not resolve address info. Shutting down.');
          close(netServer);
          return;
       } else if (typeof addressInfo === 'string') {
-         console.error(`JSON Server is unexpectedly listening to pipe or domain socket "${addressInfo}". Shutting down.`);
+         console.error(`[ModelServer] Unexpectedly listening to pipe or domain socket "${addressInfo}". Shutting down.`);
          close(netServer);
          return;
       }
-      console.log(`The JSON server is ready to accept new client requests on port: ${addressInfo.port}`);
+      console.log(`[ModelServer] Ready to accept new client requests on port: ${addressInfo.port}`);
+
+      // write dynamically assigned port to workspace folder to let clients know we are ready to accept connections
+      writePortFileToWorkspace(workspaceFolder, MODELSERVER_PORT_FILE, addressInfo);
    });
    netServer.on('error', err => {
-      console.error('JSON server experienced error', err);
+      console.error('[ModelServer] Error: ', err);
       close(netServer);
    });
    return new Promise((resolve, reject) => {
@@ -50,19 +52,17 @@ export function startModelServer(services?: CrossModelLSPServices): Promise<void
  * @param services language services
  * @returns a promise that is resolved as soon as the connection is closed or rejects if an error occurs
  */
-async function createClientConnection(socket: net.Socket, services?: CrossModelLSPServices): Promise<void> {
-   console.info(`Starting model server connection for client: '${socket.localAddress}'`);
+async function createClientConnection(socket: net.Socket, services: CrossModelLSPServices): Promise<void> {
+   console.info(`[ModelServer] Starting model server connection for client: '${socket.localAddress}'`);
    const connection = createConnection(socket);
-   connection.listen();
    currentConnections.push(connection);
-
-   if (!services) {
-      throw new Error('Cannot start model server without Langium services');
-   }
 
    const modelServer = new ModelServer(connection, services.shared.model.ModelService);
    connection.onDispose(() => modelServer.dispose());
    socket.on('close', () => modelServer.dispose());
+
+   connection.listen();
+   console.info(`[ModelServer] Connecting to client: '${socket.localAddress}'`);
 
    return new Promise((resolve, rejects) => {
       connection.onClose(() => resolve(undefined));

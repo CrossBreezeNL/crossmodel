@@ -2,9 +2,14 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { ContainerContext, GLSPClientContribution, GLSPTheiaFrontendModule, registerDiagramManager } from '@eclipse-glsp/theia-integration';
+import {
+   ContainerContext,
+   DiagramConfiguration,
+   GLSPClientContribution,
+   GLSPTheiaFrontendModule,
+   registerDiagramManager
+} from '@eclipse-glsp/theia-integration';
 
-import { DiagramConfiguration } from 'sprotty-theia';
 import { CrossModelDiagramLanguage } from '../common/crossmodel-diagram-language';
 import { CrossModelClientContribution } from './crossmodel-client-contribution';
 import { CrossModelDiagramConfiguration } from './crossmodel-diagram-configuration';

@@ -1,78 +1,124 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { injectable } from '@theia/core/shared/inversify';
+import { inject, injectable } from '@theia/core/shared/inversify';
 import * as net from 'net';
 import * as rpc from 'vscode-jsonrpc/node';
 import { FormEditorClient, FormEditorService } from '../common/form-client-protocol';
 
-import { CloseModel, CrossModelRoot, OpenModel, RequestModel, SaveModel, UpdateModel, OnSave } from '@crossbreeze/protocol';
-
-// socket connection, must match the one in model-server/launch.ts
-const SOCKET_OPTIONS = { port: 5999, host: 'localhost' };
+import { waitForTemporaryFileContent } from '@crossbreeze/core/lib/node';
+import {
+    CloseModel,
+    CrossModelRoot,
+    MODELSERVER_PORT_FILE,
+    OnSave,
+    OpenModel,
+    PORT_FOLDER,
+    RequestModel,
+    SaveModel,
+    UpdateModel
+} from '@crossbreeze/protocol';
+import { URI } from '@theia/core';
+import { Deferred } from '@theia/core/lib/common/promise-util';
+import { BackendApplicationContribution } from '@theia/core/lib/node/backend-application';
+import { WorkspaceServer } from '@theia/workspace/lib/common';
 
 /**
  * Backend service implementation that mainly forwards all requests from the Theia frontend to the model server exposed on a given socket.
  */
 @injectable()
-export class FormEditorServiceImpl implements FormEditorService {
-    protected initialized = false;
+export class FormEditorServiceImpl implements FormEditorService, BackendApplicationContribution {
+    protected initialized?: Deferred<void>;
     protected connection: rpc.MessageConnection;
     protected client?: FormEditorClient;
 
-    async initialize(): Promise<void> {
+    @inject(WorkspaceServer) protected workspaceServer: WorkspaceServer;
+
+    initialize(): void {
+        // try to connect to server as early as possible and not only on first request
+        this.initializeServer();
+    }
+
+    protected initializeServer(): Promise<void> {
         if (this.initialized) {
-            // ensure we only initialize RPC connection once
-            return;
+            return this.initialized.promise;
         }
+        const initialized = new Deferred<void>();
+        this.initialized = initialized;
+        this.waitForPort()
+            .then(port => this.connectToServer(port))
+            .catch(err => initialized.reject(err))
+            .then(() => initialized.resolve())
+            .catch(err => initialized.reject(err));
+        return initialized.promise;
+    }
+
+    protected async connectToServer(port: number): Promise<void> {
+        const connected = new Deferred<void>();
         const socket = new net.Socket();
         const reader = new rpc.SocketMessageReader(socket);
         const writer = new rpc.SocketMessageWriter(socket);
         this.connection = rpc.createMessageConnection(reader, writer);
 
-        this.connection.onClose(() => (this.initialized = false));
-        socket.on('close', () => (this.initialized = false));
-
-        socket.connect(SOCKET_OPTIONS);
+        this.connection.onClose(() => connected.reject('No connection to ModelServer.'));
+        socket.on('close', () => connected.reject('No connection to ModelServer'));
+        socket.on('ready', () => connected.resolve());
+        socket.connect({ port });
         this.connection.listen();
 
-        this.connection.onNotification(OnSave, (uri, model) => {
+        this.connection.onNotification(OnSave, (uri: string, model: CrossModelRoot) => {
             this.client?.updateModel(uri, model);
         });
+        return connected.promise;
+    }
 
-        this.initialized = true;
+    async waitForPort(): Promise<number> {
+        // the automatically assigned port is written by the server to a specific file location
+        // we wait for that file to be available and read the port number out of it
+        // that way we can ensure that the server is ready to accept our connection
+        const workspace = await this.workspaceServer.getMostRecentlyUsedWorkspace();
+        if (!workspace) {
+            throw new Error('No workspace set.');
+        }
+        const portFile = new URI(workspace).path.join(PORT_FOLDER, MODELSERVER_PORT_FILE).fsPath();
+        const port = await waitForTemporaryFileContent(portFile);
+        return Number.parseInt(port, 10);
     }
 
     async open(uri: string): Promise<void> {
-        await this.initialize();
+        await this.initializeServer();
         await this.connection.sendRequest(OpenModel, uri);
     }
 
     async close(uri: string): Promise<void> {
-        await this.initialize();
+        await this.initializeServer();
         await this.connection.sendRequest(CloseModel, uri);
     }
 
     async request(uri: string): Promise<CrossModelRoot | undefined> {
-        await this.initialize();
+        await this.initializeServer();
         return this.connection.sendRequest(RequestModel, uri);
     }
 
     async update(uri: string, model: CrossModelRoot): Promise<void> {
-        await this.initialize();
+        await this.initializeServer();
         return this.connection.sendRequest(UpdateModel, uri, model);
     }
 
     async save(uri: string, model: CrossModelRoot): Promise<void> {
-        await this.initialize();
+        await this.initializeServer();
         return this.connection.sendRequest(SaveModel, uri, model);
     }
 
     dispose(): void {
-        // do nothing
+        if (this.initialized) {
+            this.initialized.resolve();
+            this.initialized = undefined;
+        }
     }
 
     setClient(client: FormEditorClient): void {
+        this.dispose();
         this.client = client;
     }
 }

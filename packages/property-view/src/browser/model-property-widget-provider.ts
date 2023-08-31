@@ -2,11 +2,11 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { DefaultPropertyViewWidgetProvider } from '@theia/property-view/lib/browser/property-view-widget-provider';
+import { ModelService } from '@crossbreeze/model-service/lib/common';
+import { GlspSelection } from '@eclipse-glsp/theia-integration';
 import { inject, injectable } from '@theia/core/shared/inversify';
-import { GlspSelection, isGlspSelection } from '@eclipse-glsp/theia-integration';
+import { DefaultPropertyViewWidgetProvider } from '@theia/property-view/lib/browser/property-view-widget-provider';
 import { ModelPropertyWidget } from './model-property-widget';
-import { ModelService } from '@crossbreeze/model-service';
 
 @injectable()
 export class ModelPropertyWidgetProvider extends DefaultPropertyViewWidgetProvider {
@@ -23,19 +23,18 @@ export class ModelPropertyWidgetProvider extends DefaultPropertyViewWidgetProvid
     }
 
     override canHandle(selection: GlspSelection | undefined): number {
-        return isGlspSelection(selection) ? 100 : 0;
+        // issue with how selection is determined, if the additionalSelectionData is empty we simply delete the property
+        if (selection && 'additionalSelectionData' in selection && !selection.additionalSelectionData) {
+            delete selection['additionalSelectionData'];
+        }
+        return GlspSelection.is(selection) ? 100 : 0;
     }
 
-    override provideWidget(selection: GlspSelection | undefined): Promise<ModelPropertyWidget> {
-        return Promise.resolve(this.modelPropertyWidget);
+    override async provideWidget(_selection: GlspSelection | undefined): Promise<ModelPropertyWidget> {
+        return this.modelPropertyWidget;
     }
 
     override updateContentWidget(selection: GlspSelection | undefined): void {
-        if (selection?.sourceUri && (selection?.sourceUri !== this.currentUri || selection.selectedElementsIDs[0] !== this.currentNode)) {
-            this.currentUri = selection?.sourceUri;
-            this.currentNode = selection.selectedElementsIDs[0];
-
-            this.getPropertyDataService(selection).then(service => this.modelPropertyWidget.updatePropertyViewContent(service, selection));
-        }
+        this.getPropertyDataService(selection).then(service => this.modelPropertyWidget.updatePropertyViewContent(service, selection));
     }
 }

@@ -1,22 +1,21 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
+import { UpdateClientOperation } from '@crossbreeze/protocol';
+import { Command, OperationHandler } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
-import { Action, ActionHandler, GModelFactory, GModelSerializer, MaybePromise, ModelSubmissionHandler } from '@eclipse-glsp/server';
-import { UpdateClientAction } from '@crossbreeze/protocol';
 import { CrossModelState } from '../model/cross-model-state';
+import { CrossModelCommand } from './cross-model-command';
 
 @injectable()
-export class CrossModelUpdateClientActionHandler implements ActionHandler {
-    actionKinds = [UpdateClientAction.KIND];
+export class CrossModelUpdateClientOperationHandler extends OperationHandler {
+    override operationType = UpdateClientOperation.KIND;
 
     @inject(CrossModelState) protected state: CrossModelState;
-    @inject(GModelSerializer) serializer: GModelSerializer;
-    @inject(GModelFactory) gmodelFactory: GModelFactory;
-    @inject(ModelSubmissionHandler) protected submissionHandler: ModelSubmissionHandler;
 
-    execute(action: UpdateClientAction): MaybePromise<Action[]> {
-        const result = this.submissionHandler.submitModel();
-        return result;
+    createCommand(_operation: UpdateClientOperation): Command {
+        return new CrossModelCommand(this.state, () => {
+            /* do nothing, just trigger update*/
+        });
     }
 }

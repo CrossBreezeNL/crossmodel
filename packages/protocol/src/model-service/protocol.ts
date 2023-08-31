@@ -60,6 +60,6 @@ export const RequestModel = new rpc.RequestType1<string, CrossModelRoot | undefi
 export const RequestModelDiagramNode = new rpc.RequestType2<string, string, DiagramNodeEntity | undefined, void>(
     'server/requestModelDiagramNode'
 );
-export const UpdateModel = new rpc.RequestType2<string, CrossModelRoot, void, void>('server/update');
+export const UpdateModel = new rpc.RequestType2<string, CrossModelRoot, CrossModelRoot, void>('server/update');
 export const SaveModel = new rpc.RequestType2<string, CrossModelRoot, void, void>('server/save');
 export const OnSave = new rpc.NotificationType2<string, CrossModelRoot>('server/onSave');

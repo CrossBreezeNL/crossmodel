@@ -13,18 +13,18 @@ import { CrossModelSharedServices } from './cross-model-module';
  * - validates all documents after workspace initialization
  */
 export class CrossModelWorkspaceManager extends DefaultWorkspaceManager {
-   protected onWorkspaceInitializedEmitter = new Emitter<void>();
+   protected onWorkspaceInitializedEmitter = new Emitter<URI[]>();
 
    constructor(protected services: CrossModelSharedServices, protected logger = services.logger.ClientLogger) {
       super(services);
       const buildListener = this.documentBuilder.onBuildPhase(DocumentState.Validated, () => {
          this.logger.info('Workspace Initialized');
          buildListener.dispose();
-         this.onWorkspaceInitializedEmitter.fire();
+         this.onWorkspaceInitializedEmitter.fire((this.folders || []).map(folder => this.getRootFolder(folder)));
       });
    }
 
-   get onWorkspaceInitialized(): Event<void> {
+   get onWorkspaceInitialized(): Event<URI[]> {
       return this.onWorkspaceInitializedEmitter.event;
    }
 

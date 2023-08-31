@@ -2,11 +2,11 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import * as React from '@theia/core/shared/react';
-import { ModelServiceClientImpl } from '@crossbreeze/model-service';
+import { ModelServiceClientImpl } from '@crossbreeze/model-service/lib/browser';
 import { CrossModelRoot } from '@crossbreeze/protocol';
 import URI from '@theia/core/lib/common/uri';
-import { ModelReducer, ModelProvider } from './ModelContext';
+import * as React from '@theia/core/shared/react';
+import { ModelProvider, ModelReducer } from './ModelContext';
 import { EntityForm } from './entity-components/EntityForm';
 import _ = require('lodash');
 

@@ -4,18 +4,18 @@
 
 import {
     CloseModel,
+    CrossModelRoot,
     OnSave,
     OpenModel,
     RequestModel,
     RequestModelDiagramNode,
     SaveModel,
-    UpdateModel,
-    CrossModelRoot
+    UpdateModel
 } from '@crossbreeze/protocol';
 import { AstNode, isReference } from 'langium';
-import { DiagramNode, Entity, isCrossModelRoot, CrossModelRoot as CrossModelRootAst } from '../language-server/generated/ast';
 import { Disposable } from 'vscode-jsonrpc';
 import * as rpc from 'vscode-jsonrpc/node';
+import { CrossModelRoot as CrossModelRootAst, DiagramNode, Entity, isCrossModelRoot } from '../language-server/generated/ast';
 
 import { ModelService } from './model-service';
 
@@ -107,8 +107,9 @@ export class ModelServer implements Disposable {
         return toSerializable(root) as CrossModelRoot;
     }
 
-    protected async updateModel(uri: string, model: AstNode): Promise<void> {
-        await this.modelService.update(uri, model);
+    protected async updateModel(uri: string, model: CrossModelRoot): Promise<CrossModelRoot> {
+        const updated = await this.modelService.update(uri, model);
+        return toSerializable(updated) as CrossModelRoot;
     }
 
     protected async saveModel(uri: string, model: AstNode): Promise<void> {

@@ -2,6 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
+import { ModelServiceClientImpl } from '@crossbreeze/model-service/lib/browser';
 import { CrossModelRoot } from '@crossbreeze/protocol';
 import { CommandService, Emitter, Event } from '@theia/core';
 import { LabelProvider, NavigatableWidget, NavigatableWidgetOptions, ReactWidget, SaveOptions, Saveable } from '@theia/core/lib/browser';
@@ -9,9 +10,9 @@ import URI from '@theia/core/lib/common/uri';
 import { inject, injectable, postConstruct } from '@theia/core/shared/inversify';
 import * as React from '@theia/core/shared/react';
 
-import { App } from './react-components/App';
+import { ModelService } from '@crossbreeze/model-service/lib/common';
 import '../../style/form-view.css';
-import { ModelService, ModelServiceClientImpl } from '@crossbreeze/model-service';
+import { App } from './react-components/App';
 
 export const FormEditorWidgetOptions = Symbol('FormEditorWidgetOptions');
 export interface FormEditorWidgetOptions extends NavigatableWidgetOptions {

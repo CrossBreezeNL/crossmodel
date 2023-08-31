@@ -3,16 +3,16 @@
  ********************************************************************************/
 
 import { Message, ReactWidget } from '@theia/core/lib/browser';
+import * as React from '@theia/core/shared/react';
 import { PropertyDataService } from '@theia/property-view/lib/browser/property-data-service';
 import { PropertyViewContentWidget } from '@theia/property-view/lib/browser/property-view-content-widget';
-import * as React from '@theia/core/shared/react';
 
-import { GlspSelection, GLSPDiagramWidget } from '@eclipse-glsp/theia-integration';
-import { ModelService } from '@crossbreeze/model-service';
-import { CrossModelRoot, UpdateClientAction, isDiagramNodeEntity } from '@crossbreeze/protocol';
-import { inject, injectable } from '@theia/core/shared/inversify';
+import { ModelService } from '@crossbreeze/model-service/lib/common';
+import { CrossModelRoot, UpdateClientOperation, isDiagramNodeEntity } from '@crossbreeze/protocol';
 import { IActionDispatcher } from '@eclipse-glsp/client';
+import { GLSPDiagramWidget, GlspSelection } from '@eclipse-glsp/theia-integration';
 import { ApplicationShell } from '@theia/core/lib/browser/shell/application-shell';
+import { inject, injectable } from '@theia/core/shared/inversify';
 import { App } from './react-components/App';
 
 @injectable()
@@ -61,8 +61,9 @@ export class ModelPropertyWidget extends ReactWidget implements PropertyViewCont
             throw new Error('Cannot save undefined model');
         }
 
-        await this.modelService.save(this.uri, this.model);
-        this.actionDispatcher?.dispatch(UpdateClientAction.create());
+        const updated = await this.modelService.update(this.uri, this.model);
+        await this.modelService.save(this.uri, updated);
+        this.actionDispatcher?.dispatch(UpdateClientOperation.create());
     }
 
     protected async updateModel(model: CrossModelRoot): Promise<void> {

@@ -30,9 +30,9 @@ const { shared, CrossModel } = createCrossModelServices({ connection, ...NodeFil
 // Start the language server with the shared services
 startLanguageServer(shared);
 
-shared.workspace.WorkspaceManager.onWorkspaceInitialized(() => {
+shared.workspace.WorkspaceManager.onWorkspaceInitialized(workspaceFolders => {
    // Start the graphical language server with the shared services
-   startGLSPServer({ shared, language: CrossModel });
+   startGLSPServer({ shared, language: CrossModel }, workspaceFolders[0]);
    // Start the JSON server with the shared services
-   startModelServer({ shared, language: CrossModel });
+   startModelServer({ shared, language: CrossModel }, workspaceFolders[0]);
 });

@@ -2,8 +2,8 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { JsonRpcServer } from '@theia/core';
 import { CrossModelRoot, DiagramNodeEntity } from '@crossbreeze/protocol';
+import { JsonRpcServer } from '@theia/core';
 
 /** Path used to communicate between the Theia frontend and backend */
 export const MODEL_SERVICE_PATH = '/services/model-service';
@@ -17,7 +17,7 @@ export interface ModelService extends JsonRpcServer<ModelServiceClient> {
     close(uri: string): Promise<void>;
     request(uri: string): Promise<CrossModelRoot | undefined>;
     requestDiagramNodeEntityModel(uri: string, id: string): Promise<DiagramNodeEntity | undefined>;
-    update(uri: string, model: CrossModelRoot): Promise<void>;
+    update(uri: string, model: CrossModelRoot): Promise<CrossModelRoot>;
     save(uri: string, model: CrossModelRoot): Promise<void>;
 }
 

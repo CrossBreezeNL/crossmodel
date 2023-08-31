@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { Action, Operation, Point, hasArrayProp, hasObjectProp, hasStringProp } from '@eclipse-glsp/protocol';
+import { Operation, Point, hasArrayProp, hasObjectProp, hasStringProp } from '@eclipse-glsp/protocol';
 
 export interface DropEntityOperation extends Operation {
     kind: typeof DropEntityOperation.KIND;
@@ -55,21 +55,22 @@ export namespace AddEntityOperation {
     }
 }
 
-// -------------------------UpdateClientAction---------------------------------
-export interface UpdateClientAction extends Action {
-    kind: typeof UpdateClientAction.KIND;
+// -------------------------UpdateClientOperation---------------------------------
+export interface UpdateClientOperation extends Operation {
+    kind: typeof UpdateClientOperation.KIND;
 }
 
-export namespace UpdateClientAction {
-    export const KIND = 'crossModelUpdateClientAction';
+export namespace UpdateClientOperation {
+    export const KIND = 'crossModelUpdateClientOperation';
 
     export function is(object: any): object is DropEntityOperation {
         return Operation.hasKind(object, KIND);
     }
 
-    export function create(): UpdateClientAction {
+    export function create(): UpdateClientOperation {
         return {
-            kind: KIND
+            kind: KIND,
+            isOperation: true
         };
     }
 }

@@ -46,8 +46,8 @@
   },
   "theiaExtensions": [
     {
-      "frontend": "lib/browser/pv-frontend-module",
-      "backend": "lib/node/pv-backend-module"
+      "frontend": "lib/browser/property-view-frontend-module",
+      "backend": "lib/node/property-view-backend-module"
     }
   ]
 }

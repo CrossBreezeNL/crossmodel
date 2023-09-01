@@ -38,22 +38,22 @@ export class ModelPropertyWidget extends ReactWidget implements PropertyViewCont
         this.updateModel = this.updateModel.bind(this);
     }
 
-    updatePropertyViewContent(propertyDataService?: PropertyDataService, selection?: GlspSelection | undefined): void {
-        if (propertyDataService) {
-            propertyDataService.providePropertyData(selection).then(
-                selectionData => {
-                    if (isDiagramNodeEntity(selectionData)) {
-                        this.model = selectionData.model;
-                        this.uri = selectionData.uri;
+    async updatePropertyViewContent(propertyDataService?: PropertyDataService, selection?: GlspSelection | undefined): Promise<void> {
+        this.model = undefined;
 
-                        this.update();
-                    }
-                },
-                error => {
-                    this.model = undefined;
+        if (propertyDataService) {
+            try {
+                const selectionData = await propertyDataService.providePropertyData(selection);
+                if (isDiagramNodeEntity(selectionData)) {
+                    this.model = selectionData.model;
+                    this.uri = selectionData.uri;
                 }
-            );
+            } catch (error) {
+                this.model = undefined;
+            }
         }
+
+        this.update();
     }
 
     async saveModel(): Promise<void> {
@@ -71,13 +71,15 @@ export class ModelPropertyWidget extends ReactWidget implements PropertyViewCont
     }
 
     protected render(): React.ReactNode {
-        const props = {
-            model: this.model,
-            saveModel: this.saveModel,
-            updateModel: this.updateModel
-        };
+        if (this.model) {
+            const props = {
+                model: this.model,
+                saveModel: this.saveModel,
+                updateModel: this.updateModel
+            };
 
-        return <App {...props} />;
+            return <App {...props} />;
+        }
     }
 
     protected override onActivateRequest(msg: Message): void {

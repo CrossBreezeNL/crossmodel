@@ -3,7 +3,8 @@
  ********************************************************************************/
 
 import { CrossModelRoot, DiagramNodeEntity } from '@crossbreeze/protocol';
-import { JsonRpcServer } from '@theia/core';
+import { JsonRpcServer, Event } from '@theia/core';
+import { ModelDocument } from '../browser';
 
 /** Path used to communicate between the Theia frontend and backend */
 export const MODEL_SERVICE_PATH = '/services/model-service';
@@ -25,4 +26,5 @@ export const ModelServiceClient = Symbol('ModelServiceClient');
 export interface ModelServiceClient {
     getName(): Promise<string>;
     updateModel(uri: string, model: CrossModelRoot): Promise<void>;
+    onUpdate: Event<ModelDocument>;
 }

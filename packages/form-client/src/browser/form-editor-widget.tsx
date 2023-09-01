@@ -2,7 +2,6 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { ModelServiceClientImpl } from '@crossbreeze/model-service/lib/browser';
 import { CrossModelRoot } from '@crossbreeze/protocol';
 import { CommandService, Emitter, Event } from '@theia/core';
 import { LabelProvider, NavigatableWidget, NavigatableWidgetOptions, ReactWidget, SaveOptions, Saveable } from '@theia/core/lib/browser';
@@ -10,7 +9,7 @@ import URI from '@theia/core/lib/common/uri';
 import { inject, injectable, postConstruct } from '@theia/core/shared/inversify';
 import * as React from '@theia/core/shared/react';
 
-import { ModelService } from '@crossbreeze/model-service/lib/common';
+import { ModelService, ModelServiceClient } from '@crossbreeze/model-service/lib/common';
 import '../../style/form-view.css';
 import { App } from './react-components/App';
 
@@ -31,7 +30,7 @@ export class FormEditorWidget extends ReactWidget implements NavigatableWidget, 
     @inject(LabelProvider) protected labelProvider: LabelProvider;
     @inject(ModelService) private readonly modelService: ModelService;
     @inject(CommandService) protected commandService: CommandService;
-    @inject(ModelServiceClientImpl) protected formClient: ModelServiceClientImpl;
+    @inject(ModelServiceClient) protected formClient: ModelServiceClient;
 
     protected model: CrossModelRoot | undefined = undefined;
     protected error: string | undefined = undefined;

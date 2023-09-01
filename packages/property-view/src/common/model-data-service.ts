@@ -40,10 +40,10 @@ export class ModelDataService implements PropertyDataService {
                     await this.modelService.open(this.currentUri);
                 }
 
-                return Promise.resolve(entity);
+                return entity;
             }
         }
 
-        return Promise.reject();
+        return undefined;
     }
 }

@@ -30,7 +30,7 @@ export function App(props: AppProperty): React.ReactElement {
     let content = <></>;
 
     if (!model) {
-        return <ErrorView errorMessage='No model given to the property view!' />;
+        return <></>;
     }
 
     if (model.entity) {
@@ -42,7 +42,7 @@ export function App(props: AppProperty): React.ReactElement {
     return (
         <SaveModelContext.Provider value={props.saveModel}>
             <ModelProvider model={model} dispatch={dispatch}>
-                <>{content}</>
+                {content}
             </ModelProvider>
         </SaveModelContext.Provider>
     );

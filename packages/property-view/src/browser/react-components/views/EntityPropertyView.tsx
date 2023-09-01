@@ -60,6 +60,7 @@ function EntityPropertyGeneral(props: EntityPropertyGeneralProps): React.ReactEl
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             dispatch({ type: 'entity:change-name', name: e.target.value ? e.target.value : '' });
                         }}
+                        readOnly
                     />
                 </div>
 

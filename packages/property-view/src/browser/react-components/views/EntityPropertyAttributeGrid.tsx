@@ -102,7 +102,6 @@ export function EntityPropertyAttributes(): React.ReactElement {
         {
             field: 'value',
             headerName: 'Data type',
-            editable: true,
             minWidth: 120,
             renderCell: (params: GridCellParams) => <CustomSelect {...params} onChange={dataTypeChangedDispatch} />
         },

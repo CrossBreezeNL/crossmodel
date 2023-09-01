@@ -80,6 +80,8 @@ export class ModelPropertyWidget extends ReactWidget implements PropertyViewCont
 
             return <App {...props} />;
         }
+
+        return <></>;
     }
 
     protected override onActivateRequest(msg: Message): void {

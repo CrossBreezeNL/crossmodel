@@ -124,7 +124,7 @@
           "${workspaceRoot}/node_modules/jest/bin/jest.js",
           "--runInBand",
           "--config=extensions/crossmodel-lang/jest.config.js",
-          "--testPathPattern=extensions/crossmodel-lang/test/language-server/serializer/cross-model-serializer.test.ts"
+          "--testPathPattern=extensions/crossmodel-lang/test/language-server/util/name-util.test.ts"
         ],
         "console": "integratedTerminal",
         "internalConsoleOptions": "neverOpen"

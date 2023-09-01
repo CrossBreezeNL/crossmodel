@@ -106,6 +106,8 @@ The repository itself contains the following components structured as follows:
 
 ## Used libraries and license
 
--   mui-x : MUI X is open core—base components are MIT-licensed, while more advanced features require a Pro or Premium commercial license. We are
-    currently only using core-base
+-   mui-x : MUI X is open core—base components are MIT-licensed, while more advanced features require a Pro or Premium commercial license. We are currently only using core-base
 -   react-tabs: MIT
+-   chevotain: This library is a dependency of langium. To get the Yaml language working in crossmodel an example implementation of the python language of chevrotrain has been used. This example has been modified to make it work for the yaml language.
+    -   https://github.com/Chevrotain/chevrotain
+    -   example that has been used: https://github.com/Chevrotain/chevrotain/tree/master/examples/lexer/python_indentation

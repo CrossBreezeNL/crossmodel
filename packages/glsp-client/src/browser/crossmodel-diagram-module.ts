@@ -2,13 +2,14 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 import {
+    ConsoleLogger,
+    ContainerConfiguration,
+    LogLevel,
+    TYPES,
     configureDefaultModelElements,
     configureModelElement,
-    ConsoleLogger,
-    createDiagramContainer,
-    LogLevel,
-    overrideViewerOptions,
-    TYPES
+    initializeDiagramContainer,
+    overrideViewerOptions
 } from '@eclipse-glsp/client';
 import { Container, ContainerModule } from '@theia/core/shared/inversify';
 import { EntityNode } from './model';
@@ -30,17 +31,15 @@ const crossModelDiagramModule = new ContainerModule((bind, unbind, isBound, rebi
     configureModelElement(context, 'node:entity', EntityNode, EntityNodeView);
 });
 
-export default function createCrossModelDiagramContainer(widgetId: string): Container {
-    // create the default diagram container with all default modules and add our own customizations
-    const container = createDiagramContainer(crossModelDiagramModule);
-
-    // The GLSP diagram widget will create Div elements with unique IDs as specified in the viewer options
-    // Sprotty is using that same element to render the model
-    // So we should make sure that they are truly unique by using the widget id that we already have
+export function initializeCrossModelDiagramContainer(
+    container: Container,
+    widgetId: string,
+    ...containerConfiguration: ContainerConfiguration
+): Container {
+    initializeDiagramContainer(container, crossModelDiagramModule, ...containerConfiguration);
     overrideViewerOptions(container, {
         baseDiv: widgetId,
         hiddenDiv: widgetId + '_hidden'
     });
-
     return container;
 }

@@ -13,8 +13,11 @@ export interface CrossModelRoot {
     relationship?: Relationship;
 }
 
+export function isCrossModelRoot(model?: any): model is CrossModelRoot {
+    return !!model && model.$type === 'CrossModelRoot';
+}
+
 export interface Entity {
-    readonly $container: CrossModelRoot;
     readonly $type: 'Entity';
     attributes: Array<EntityAttribute>;
     description?: string;
@@ -23,7 +26,6 @@ export interface Entity {
 }
 
 export interface EntityAttribute {
-    readonly $container: Entity;
     readonly $type: 'EntityAttribute';
     datatype?: string;
     description?: string;
@@ -32,21 +34,30 @@ export interface EntityAttribute {
 }
 
 export interface Relationship {
-    readonly $container: CrossModelRoot;
     readonly $type: 'Relationship';
     child?: string;
     description?: string;
     name?: string;
     name_val?: string;
     parent?: string;
-    type?: RelationshipType;
+    type?: string;
 }
 
-export type RelationshipType = '1:1' | '1:n' | 'n:1' | 'n:m';
+export interface DiagramNodeEntity {
+    uri: string;
+    model: CrossModelRoot;
+}
+
+export function isDiagramNodeEntity(model?: any): model is DiagramNodeEntity {
+    return !!model && model.uri && model.model && isCrossModelRoot(model.model);
+}
 
 export const OpenModel = new rpc.RequestType1<string, void, void>('server/open');
 export const CloseModel = new rpc.RequestType1<string, void, void>('server/close');
 export const RequestModel = new rpc.RequestType1<string, CrossModelRoot | undefined, void>('server/request');
-export const UpdateModel = new rpc.RequestType2<string, CrossModelRoot, void, void>('server/update');
+export const RequestModelDiagramNode = new rpc.RequestType2<string, string, DiagramNodeEntity | undefined, void>(
+    'server/requestModelDiagramNode'
+);
+export const UpdateModel = new rpc.RequestType2<string, CrossModelRoot, CrossModelRoot, void>('server/update');
 export const SaveModel = new rpc.RequestType2<string, CrossModelRoot, void, void>('server/save');
 export const OnSave = new rpc.NotificationType2<string, CrossModelRoot>('server/onSave');

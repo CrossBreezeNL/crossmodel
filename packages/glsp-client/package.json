@@ -31,7 +31,7 @@
   "dependencies": {
     "@crossbreeze/core": "0.0.0",
     "@crossbreeze/protocol": "0.0.0",
-    "@eclipse-glsp/theia-integration": "1.1.0-RC06",
+    "@eclipse-glsp/theia-integration": "1.1.0-RC10",
     "@theia/core": "^1.34.4",
     "@theia/filesystem": "^1.34.4",
     "@theia/markers": "^1.34.4",
@@ -39,8 +39,7 @@
     "@theia/outline-view": "^1.34.4",
     "@theia/output": "^1.34.4",
     "@theia/preferences": "^1.34.4",
-    "@theia/task": "^1.34.4",
-    "sprotty-theia": "0.13.0-next.9cbedec"
+    "@theia/task": "^1.34.4"
   },
   "theiaExtensions": [
     {

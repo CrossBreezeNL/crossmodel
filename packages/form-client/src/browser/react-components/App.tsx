@@ -2,19 +2,19 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import * as React from '@theia/core/shared/react';
 import { CrossModelRoot } from '@crossbreeze/protocol';
-import { FormEditorClientImpl } from '../form-client';
 import URI from '@theia/core/lib/common/uri';
-import { ModelReducer, ModelProvider } from './ModelContext';
+import * as React from '@theia/core/shared/react';
+import { ModelProvider, ModelReducer } from './ModelContext';
 import { EntityForm } from './entity-components/EntityForm';
 import _ = require('lodash');
+import { ModelServiceClient } from '@crossbreeze/model-service/lib/common';
 
 interface AppProps {
     updateModel: (model: CrossModelRoot) => void;
     model: CrossModelRoot | undefined;
     getResourceUri: () => URI;
-    formClient: FormEditorClientImpl;
+    formClient: ModelServiceClient;
 }
 
 export function App(props: AppProps): React.ReactElement {

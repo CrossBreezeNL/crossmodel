@@ -9,6 +9,7 @@ import { Utils } from './util/uri-util';
 export class CrossModelLangiumDocuments extends DefaultLangiumDocuments {
    override getOrCreateDocument(uri: URI): any {
       // only create documents for actual language files but not for package.json
-      return isPackageUri(uri) ? undefined : super.getOrCreateDocument(Utils.toRealURI(uri));
+      const realUri = isPackageUri(uri) ? undefined : Utils.toRealURIorUndefined(uri);
+      return realUri ? super.getOrCreateDocument(realUri) : undefined;
    }
 }

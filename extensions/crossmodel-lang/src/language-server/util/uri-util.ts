@@ -79,6 +79,20 @@ export namespace Utils {
    }
 
    /**
+    * Creates an absolute, canonicalized URI for the given URI if possible. If not possible, undefined is returned.
+    *
+    * @param uri URI
+    * @returns absolute, canonicalized URI or undefined
+    */
+   export function toRealURIorUndefined(uri: URI): URI | undefined {
+      try {
+         return toRealURI(uri);
+      } catch (error) {
+         return undefined;
+      }
+   }
+
+   /**
     * Return true if the given URI represents a directory.
     *
     * @param uri URI
@@ -109,7 +123,10 @@ export namespace Utils {
     * @param uri URI
     * @returns an array of all file URIs contained in the given URI.
     */
-   export function flatten(uri: URI): URI[] {
+   export function flatten(uri?: URI): URI[] {
+      if (!uri) {
+         return [];
+      }
       return isFile(uri) ? [uri] : fs.readdirSync(uri.fsPath).flatMap(child => flatten(UriUtils.resolvePath(uri, child)));
    }
 

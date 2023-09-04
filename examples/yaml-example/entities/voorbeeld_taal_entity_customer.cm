@@ -1,23 +1,23 @@
-entity: 
-    id: 'Customer'
-    name: 'Customer'
-    description: 'A customer with whom a transaction has been made.'
+entity:
+    id: "Customer"
     attributes:
-        - id: 'Id'
-          name: 'Id'
-          datatype: 'int'
-        - id: 'FirstName'
-          name: 'FirstName'
-          datatype: 'varchar'
-        - id: 'LastName'
-          name: 'LastName'
-          datatype: 'varchar'
-        - id: 'City' 
-          name: 'City'
-          datatype: 'varchar'
-        - id: 'Country'
-          name: 'Country'
-          datatype: 'varchar'
-        - id: 'Phone'
-          name: 'Phone'
-          datatype: 'varchar'
+      - id: "Id"
+        name: "Id"
+        datatype: "Integer"
+      - id: "FirstName"
+        name: "FirstName"
+        datatype: "Varchar"
+      - id: "LastName"
+        name: "LastName"
+        datatype: "Varchar"
+      - id: "City"
+        name: "City"
+        datatype: "Varchar"
+      - id: "Country"
+        name: "Country"
+        datatype: "Varchar"
+      - id: "Phone"
+        name: "Phone"
+        datatype: "Varchar"
+    name: "Customer"
+    description: "A customer with whom a transaction has been made."

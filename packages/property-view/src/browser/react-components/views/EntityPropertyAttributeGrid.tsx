@@ -13,7 +13,10 @@ import {
     GridActionsCellItem,
     GridRowId,
     MuiEvent,
-    GridCellEditStopParams
+    GridCellEditStopParams,
+    GridCellEditStartParams,
+    useGridApiRef,
+    GridCellModes
 } from '@mui/x-data-grid';
 import { FormControl, MenuItem, Select, SelectChangeEvent } from '@mui/material';
 import { ModelContext, ModelDispatchContext, ModelReducer } from '../ModelContext';
@@ -26,16 +29,18 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 
 export function EntityPropertyAttributes(): React.ReactElement {
     // Context variables to handle model state.
+    const apiRef = useGridApiRef();
     const model = React.useContext(ModelContext) as CrossModelRoot;
     const dispatch = React.useContext(ModelDispatchContext) as React.Dispatch<React.ReducerAction<typeof ModelReducer>>;
     const [errorRow, setErrorRow] = React.useState(undefined);
+    const [currentEdit, setCurrentEdit] = React.useState({} as CurrentEdit);
 
     // Callback for when the user stops editing a cell.
     const handleRowUpdate = (updatedRow: GridRowModel, originalRow: GridRowModel): GridRowModel => {
         if (updatedRow.name !== originalRow.name) {
             if (!updatedRow.name) {
                 setErrorRow(originalRow.id);
-                throw new Error();
+                throw new Error('Name can not be empty');
             }
 
             dispatch({
@@ -51,6 +56,23 @@ export function EntityPropertyAttributes(): React.ReactElement {
 
     const handleOnCellEditStop = (params: GridCellEditStopParams, event: MuiEvent): void => {
         setErrorRow(undefined);
+    };
+
+    const handleOnCellEditStart = (params: GridCellEditStartParams, event: MuiEvent): void => {
+        if (currentEdit.row_id && currentEdit.field) {
+            if (apiRef.current.getCellMode(currentEdit.row_id, currentEdit.field) === GridCellModes.Edit) {
+                apiRef.current.stopCellEditMode({
+                    id: currentEdit.row_id,
+                    field: currentEdit.field,
+                    ignoreModifications: true // will also discard the changes made
+                });
+            }
+        }
+
+        setCurrentEdit({
+            row_id: params.id as number,
+            field: params.field
+        });
     };
 
     const handleClick = (): void => {
@@ -87,6 +109,10 @@ export function EntityPropertyAttributes(): React.ReactElement {
             type: 'entity:attribute:delete-attribute',
             id: id
         });
+    };
+
+    const handleRowUpdateError = (error: Error) => () => {
+        console.log(error.message);
     };
 
     // Check if model initalized. Has to be here otherwise the compiler complains.
@@ -150,11 +176,19 @@ export function EntityPropertyAttributes(): React.ReactElement {
                     // page sizes
                     pageSizeOptions={[8, 16, 24]}
                     initialState={{
-                        pagination: { paginationModel: { pageSize: 8 } }
+                        pagination: { paginationModel: { pageSize: 8 } },
+                        columns: {
+                            columnVisibilityModel: {
+                                id: false
+                            }
+                        }
                     }}
                     processRowUpdate={handleRowUpdate}
+                    onProcessRowUpdateError={handleRowUpdateError}
                     onCellEditStop={handleOnCellEditStop}
+                    onCellEditStart={handleOnCellEditStart}
                     getRowClassName={params => (params.row.id === errorRow ? 'entity-attribute-error-row' : '')}
+                    apiRef={apiRef}
                 />
             </AccordionDetails>
         </Accordion>
@@ -207,4 +241,9 @@ function createRows(attributes: Array<Attribute>): GridRowsProp {
     }));
 
     return rows;
+}
+
+interface CurrentEdit {
+    row_id?: number;
+    field?: string;
 }

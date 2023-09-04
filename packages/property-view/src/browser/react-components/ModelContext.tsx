@@ -151,7 +151,7 @@ export function ModelReducer(model: CrossModelRoot, action: any): CrossModelRoot
                 throw Error('action.id or name is undefined');
             }
 
-            model.entity.attributes.splice(action.id);
+            model.entity.attributes.splice(action.id, 1);
 
             return model;
 

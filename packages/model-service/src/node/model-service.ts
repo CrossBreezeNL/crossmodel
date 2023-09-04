@@ -1,36 +1,37 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { inject, injectable } from '@theia/core/shared/inversify';
-import * as net from 'net';
-import * as rpc from 'vscode-jsonrpc/node';
-import { FormEditorClient, FormEditorService } from '../common/form-client-protocol';
-
 import { waitForTemporaryFileContent } from '@crossbreeze/core/lib/node';
 import {
     CloseModel,
     CrossModelRoot,
+    DiagramNodeEntity,
     MODELSERVER_PORT_FILE,
     OnSave,
     OpenModel,
     PORT_FOLDER,
     RequestModel,
+    RequestModelDiagramNode,
     SaveModel,
     UpdateModel
 } from '@crossbreeze/protocol';
 import { URI } from '@theia/core';
 import { Deferred } from '@theia/core/lib/common/promise-util';
 import { BackendApplicationContribution } from '@theia/core/lib/node/backend-application';
+import { inject, injectable } from '@theia/core/shared/inversify';
 import { WorkspaceServer } from '@theia/workspace/lib/common';
+import * as net from 'net';
+import * as rpc from 'vscode-jsonrpc/node';
+import { ModelService, ModelServiceClient } from '../common/model-service-rpc';
 
 /**
  * Backend service implementation that mainly forwards all requests from the Theia frontend to the model server exposed on a given socket.
  */
 @injectable()
-export class FormEditorServiceImpl implements FormEditorService, BackendApplicationContribution {
+export class ModelServiceImpl implements ModelService, BackendApplicationContribution {
     protected initialized?: Deferred<void>;
     protected connection: rpc.MessageConnection;
-    protected client?: FormEditorClient;
+    protected client?: ModelServiceClient;
 
     @inject(WorkspaceServer) protected workspaceServer: WorkspaceServer;
 
@@ -100,7 +101,7 @@ export class FormEditorServiceImpl implements FormEditorService, BackendApplicat
         return this.connection.sendRequest(RequestModel, uri);
     }
 
-    async update(uri: string, model: CrossModelRoot): Promise<void> {
+    async update(uri: string, model: CrossModelRoot): Promise<CrossModelRoot> {
         await this.initializeServer();
         return this.connection.sendRequest(UpdateModel, uri, model);
     }
@@ -117,8 +118,21 @@ export class FormEditorServiceImpl implements FormEditorService, BackendApplicat
         }
     }
 
-    setClient(client: FormEditorClient): void {
-        this.dispose();
+    async requestDiagramNodeEntityModel(uri: string, id: string): Promise<DiagramNodeEntity | undefined> {
+        await this.initializeServer();
+        return this.connection.sendRequest(RequestModelDiagramNode, uri, id);
+    }
+
+    setUpListeners(): void {
+        this.connection.onNotification(OnSave, (uri, model) => {
+            this.client?.updateModel(uri, model);
+        });
+    }
+
+    setClient(client: ModelServiceClient): void {
+        if (this.client) {
+            this.dispose();
+        }
         this.client = client;
     }
 }

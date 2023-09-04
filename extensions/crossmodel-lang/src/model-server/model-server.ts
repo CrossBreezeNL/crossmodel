@@ -2,11 +2,21 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { CloseModel, CrossModelRoot, OpenModel, RequestModel, SaveModel, UpdateModel, OnSave } from '@crossbreeze/protocol';
+import {
+    CloseModel,
+    CrossModelRoot,
+    OnSave,
+    OpenModel,
+    RequestModel,
+    RequestModelDiagramNode,
+    SaveModel,
+    UpdateModel
+} from '@crossbreeze/protocol';
 import { AstNode, isReference } from 'langium';
 import { Disposable } from 'vscode-jsonrpc';
 import * as rpc from 'vscode-jsonrpc/node';
-import { isCrossModelRoot } from '../language-server/generated/ast';
+import { CrossModelRoot as CrossModelRootAst, DiagramNode, Entity, isCrossModelRoot } from '../language-server/generated/ast';
+
 import { ModelService } from './model-service';
 
 /**
@@ -24,8 +34,59 @@ export class ModelServer implements Disposable {
         this.toDispose.push(connection.onRequest(OpenModel, uri => this.openModel(uri)));
         this.toDispose.push(connection.onRequest(CloseModel, uri => this.closeModel(uri)));
         this.toDispose.push(connection.onRequest(RequestModel, uri => this.requestModel(uri)));
+        this.toDispose.push(connection.onRequest(RequestModelDiagramNode, (uri, id) => this.requestModelDiagramNode(uri, id)));
         this.toDispose.push(connection.onRequest(UpdateModel, (uri, model) => this.updateModel(uri, model)));
         this.toDispose.push(connection.onRequest(SaveModel, (uri, model) => this.saveModel(uri, model)));
+    }
+
+    /**
+     * Returns the entity model of the selected node in the diagram.
+     *
+     * @param uri The uri of the opened diagram
+     * @param id The id of the selected node
+     * @returns {
+     *  uri: of the entity model
+     *  entity: model of the entity
+     * }
+     */
+    async requestModelDiagramNode(uri: string, id: string): Promise<DiagramNodeEntity | undefined> {
+        const root = (await this.modelService.request(uri)) as CrossModelRootAst;
+        let diagramNode: DiagramNode | undefined = undefined;
+
+        if (!root || !root.diagram) {
+            throw new Error('Something went wrong loading the diagram');
+        }
+
+        for (const node of root.diagram.nodes) {
+            if (node.name === id) {
+                if (diagramNode) {
+                    throw new Error('Multiple nodes with the same name');
+                }
+
+                diagramNode = node;
+            }
+        }
+
+        if (!diagramNode) {
+            throw new Error('No node found with the given id');
+        }
+
+        const ref: Entity | undefined = diagramNode.semanticElement.ref;
+
+        if (!ref || !ref.$container.$document) {
+            throw new Error('No node found with the given id');
+        }
+
+        const entityUri = ref.$container.$document.uri.toString();
+        const serializedEntity: CrossModelRoot | undefined = toSerializable({
+            $type: 'CrossModelRoot',
+            entity: diagramNode.semanticElement.ref
+        });
+
+        return {
+            uri: entityUri,
+            model: serializedEntity
+        };
     }
 
     protected async openModel(uri: string): Promise<void> {
@@ -33,7 +94,7 @@ export class ModelServer implements Disposable {
 
         this.modelService.onSave(uri, newModel => {
             // TODO: Research if this also has to be closed after the document closes
-            this.connection.sendNotification(OnSave, uri, toSerializable(newModel as CrossModelRoot));
+            this.connection.sendNotification(OnSave, uri, toSerializable(newModel) as CrossModelRoot);
         });
     }
 
@@ -46,8 +107,9 @@ export class ModelServer implements Disposable {
         return toSerializable(root) as CrossModelRoot;
     }
 
-    protected async updateModel(uri: string, model: AstNode): Promise<void> {
-        await this.modelService.update(uri, model);
+    protected async updateModel(uri: string, model: CrossModelRoot): Promise<CrossModelRoot> {
+        const updated = await this.modelService.update(uri, model);
+        return toSerializable(updated) as CrossModelRoot;
     }
 
     protected async saveModel(uri: string, model: AstNode): Promise<void> {
@@ -80,7 +142,13 @@ export function toSerializable<T extends object>(obj?: T): T | undefined {
 }
 
 function cleanValue(value: any): any {
-    return isContainedObject(value) ? toSerializable(value) : resolvedValue(value);
+    if (Array.isArray(value)) {
+        return value.map(cleanValue);
+    } else if (isContainedObject(value)) {
+        return toSerializable(value);
+    } else {
+        return resolvedValue(value);
+    }
 }
 
 function isContainedObject(value: any): boolean {
@@ -92,4 +160,9 @@ function resolvedValue(value: any): any {
         return value.$refText;
     }
     return value;
+}
+
+interface DiagramNodeEntity {
+    uri: string;
+    model: CrossModelRoot | undefined;
 }

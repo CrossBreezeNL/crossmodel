@@ -1,0 +1,38 @@
+#property-view {
+    overflow-y: auto;
+}
+
+.property-view-entity > h2 {
+    margin: 10px;
+}
+
+.property-entity-general {
+    display: table;
+    width: 100%;
+}
+
+.property-entity-general > div {
+    display: table-row;
+}
+
+.property-entity-general label {
+    display: table-cell;
+    padding-right: 10px;
+    vertical-align: top;
+    width: 50px;
+    margin-bottom: 5px;
+}
+
+.property-entity-general input,
+.property-entity-general textarea {
+    display: table-cell;
+    width: 80%;
+    border: gray 1px solid;
+    resize: none;
+    margin-bottom: 5px;
+}
+
+.entity-attribute-error-row {
+    border: 1px solid rgba(237, 67, 55, 1);
+    box-shadow: 0 0 6px rgba(237, 67, 55, 1);
+}

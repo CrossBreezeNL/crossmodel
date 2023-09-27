@@ -8,15 +8,16 @@ The testing framework for this project is Jest. The dev NPM packages are _jest_ 
 
 Run this command in your terminal: `yarn`
 
-It is really recommended to run the Jest tests using the VS Code extension: _Jest_ by publisher Orta. With these extensions, tests will automatically run when updated and it is very easy to run the tests from the VS Code GUI (using the button immediately left of the test in question).
+It is recommended to run the Jest tests using the VS Code extension: [_Jest_](https://marketplace.visualstudio.com/items?itemName=Orta.vscode-jest). With this extension, tests will automatically run when updated and it is very easy to run the tests from the VS Code GUI (using the button immediately left of the test in question).
 
 ## Writing tests
 
-Unit tests can be placed in the same directory as the TypeScript files they test. It is also possible to add them to the `crossmodel/tests/` directory. Functional and integration tests using _Cucumber_ will be located in the `crossmodel/tests/` directory as well.
+Unit tests can be placed in the same directory as the TypeScript files they test. It is also possible to add them to the `crossmodel/tests/` directory. Functional and integration tests are located in the `crossmodel/tests/` directory as well.
 
 Unit test files should have the structure `*.test.ts` as their filename, for clarity in the project structure and to allow Jest to run your TypeScript tests[^1]. Consider using the inbuilt assert functions of Jest, such as:  
-`expect(sum(5, 25)).toEqual(30)` and `expect(results_arr.length).toBeGreaterThan(2)` . See all the methods available on `expect()`.
-To run a test with multiple times with different variable values, use `test.each()`. The first parameter is an array of objects or arrays containing the values.
+`expect(sum(5, 25)).toEqual(30)` and `expect(results_arr.length).toBeGreaterThan(2)` . See all the methods available on [`expect()`](https://jestjs.io/docs/expect).
+
+To run a test multiple times with different variable values, use `test.each()`. The first parameter is an array of objects or arrays containing the values. See the example below:
 
     test.each([{path: 'C:/Users/MariekeBartels/Documents/GitHub/crossmodel/package.json', isDir: false},
         {path: __dirname, isDir: true}, {path: process.cwd(), isDir: true}
@@ -34,13 +35,11 @@ To run a test with multiple times with different variable values, use `test.each
 
 ## Running tests
 
-Test can be run by using the following command in the root directory
+Test can be run by using the following command in the root directory or in the sub-directory where the tests are located you want to run.
 
 ```cmd
     yarn test
 ```
-
-or using it in the sub-directory the user wants the tests to run
 
 ### Debugging test
 

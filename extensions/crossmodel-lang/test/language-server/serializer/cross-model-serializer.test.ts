@@ -2,13 +2,13 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { describe, test, beforeAll, expect } from '@jest/globals';
+import { beforeAll, describe, expect, test } from '@jest/globals';
 import { EmptyFileSystem, Reference } from 'langium';
 
+import _ from 'lodash';
 import { createCrossModelServices } from '../../../src/language-server/cross-model-module';
 import { CrossModelSerializer } from '../../../src/language-server/cross-model-serializer';
 import { CrossModelRoot, Entity, Relationship } from '../../../src/language-server/generated/ast';
-import _ from 'lodash';
 
 const services = createCrossModelServices({ ...EmptyFileSystem }).CrossModel;
 
@@ -193,7 +193,7 @@ describe('CrossModelLexer', () => {
                     y: 101,
                     width: 102,
                     height: 102,
-                    for: ref1,
+                    entity: ref1,
                     name: 'Node1',
                     name_val: 'Node 1'
                 },
@@ -204,7 +204,7 @@ describe('CrossModelLexer', () => {
                     y: 101,
                     width: 102,
                     height: 102,
-                    for: ref2,
+                    entity: ref2,
                     name: 'Node2',
                     name_val: 'Node 2'
                 }
@@ -214,7 +214,7 @@ describe('CrossModelLexer', () => {
                 {
                     $container: crossModelRoot.diagram,
                     $type: 'DiagramEdge',
-                    for: ref3,
+                    relationship: ref3,
                     name: 'Edge1'
                 }
             ];
@@ -228,53 +228,54 @@ describe('CrossModelLexer', () => {
 });
 
 const expected_result = `entity:
-    description: "Test description"
     id: "test id"
     name: "test Name"
+    description: "Test description"
     attributes:
       - id: "Attribute 1"
         datatype: "Datatype Attribute 1"
       - id: "Attribute 2"
         datatype: "Datatype Attribute 2"`;
 const expected_result2 = `entity:
-    description: "Test description"
     id: "test id"
-    name: "test Name"`;
+    name: "test Name"
+    description: "Test description"`;
 const expected_result3 = `entity:
+    id: "test id"
+    name: "test Name"
     description: "Test description"
     attributes:
       - id: "Attribute 1"
         datatype: "Datatype Attribute 1"
       - id: "Attribute 2"
-        datatype: "Datatype Attribute 2"
-    id: "test id"
-    name: "test Name"`;
+        datatype: "Datatype Attribute 2"`;
+
 const expected_result4 = `relationship:
-    description: "Test description"
     id: "test id"
     name: "test Name"
+    description: "Test description"
     parent: "Ref1"
     child: "Ref2"
     type: "n:m"`;
 const expected_result5 = `diagram:
-    description: "Test description"
     id: "test id"
     name: "test Name"
+    description: "Test description"
     nodes:
-      - x: 100
-        y: 101
-        width: 102
-        height: 102
-        for: "Ref1"
-        id: "Node1"
+      - id: "Node1"
         name: "Node 1"
-      - x: 100
+        entity: "Ref1"
+        x: 100
         y: 101
         width: 102
         height: 102
-        for: "Ref2"
-        id: "Node2"
+      - id: "Node2"
         name: "Node 2"
+        entity: "Ref2"
+        x: 100
+        y: 101
+        width: 102
+        height: 102
     edges:
-      - for: "Ref3"
-        id: "Edge1"`;
+      - id: "Edge1"
+        relationship: "Ref3"`;

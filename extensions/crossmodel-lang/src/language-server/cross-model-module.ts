@@ -28,6 +28,7 @@ import { CrossModelCompletionProvider } from './cross-model-completion-provider'
 import { CrossModelDocumentBuilder } from './cross-model-document-builder';
 import { CrossModelModelFormatter } from './cross-model-formatter';
 import { CrossModelLangiumDocuments } from './cross-model-langium-documents';
+import { CrossModelLanguageServer } from './cross-model-language-server';
 import { QualifiedNameProvider } from './cross-model-naming';
 import { CrossModelPackageManager } from './cross-model-package-manager';
 import { CrossModelScopeComputation } from './cross-model-scope';
@@ -36,8 +37,8 @@ import { CrossModelSerializer } from './cross-model-serializer';
 import { CrossModelValidator, registerValidationChecks } from './cross-model-validator';
 import { CrossModelWorkspaceManager } from './cross-model-workspace-manager';
 import { CrossModelGeneratedModule, CrossModelGeneratedSharedModule } from './generated/module';
-import { CrossModelTokenBuilder } from './lexer/cross-model-token-generator';
 import { CrossModelLexer } from './lexer/cross-model-lexer';
+import { CrossModelTokenBuilder } from './lexer/cross-model-token-generator';
 
 /***************************
  * Shared Module
@@ -100,6 +101,9 @@ export const CrossModelSharedModule: Module<
     },
     logger: {
         ClientLogger: services => new ClientLogger(services)
+    },
+    lsp: {
+        LanguageServer: services => new CrossModelLanguageServer(services)
     },
     model: {
         ModelService: services => new ModelService(services)

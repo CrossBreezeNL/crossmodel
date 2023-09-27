@@ -39,8 +39,10 @@ export function isCrossModelRoot(item: unknown): item is CrossModelRoot {
 export interface DiagramEdge extends AstNode {
     readonly $container: SystemDiagram;
     readonly $type: 'DiagramEdge';
-    for?: Reference<Relationship>
     name?: string
+    relationship?: Reference<Relationship>
+    sourceNode?: Reference<DiagramNode>
+    targetNode?: Reference<DiagramNode>
 }
 
 export const DiagramEdge = 'DiagramEdge';
@@ -53,7 +55,7 @@ export interface DiagramNode extends AstNode {
     readonly $container: SystemDiagram;
     readonly $type: 'DiagramNode';
     description?: string
-    for?: Reference<Entity>
+    entity?: Reference<Entity>
     height?: number
     name?: string
     name_val?: string
@@ -158,10 +160,14 @@ export class CrossModelAstReflection extends AbstractAstReflection {
     getReferenceType(refInfo: ReferenceInfo): string {
         const referenceId = `${refInfo.container.$type}:${refInfo.property}`;
         switch (referenceId) {
-            case 'DiagramEdge:for': {
+            case 'DiagramEdge:relationship': {
                 return Relationship;
             }
-            case 'DiagramNode:for':
+            case 'DiagramEdge:sourceNode':
+            case 'DiagramEdge:targetNode': {
+                return DiagramNode;
+            }
+            case 'DiagramNode:entity':
             case 'Relationship:child':
             case 'Relationship:parent': {
                 return Entity;

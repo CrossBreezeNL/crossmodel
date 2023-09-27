@@ -953,7 +953,7 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
             "elements": [
               {
                 "$type": "Keyword",
-                "value": "for"
+                "value": "entity"
               },
               {
                 "$type": "Keyword",
@@ -961,7 +961,7 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
               },
               {
                 "$type": "Assignment",
-                "feature": "for",
+                "feature": "entity",
                 "operator": "=",
                 "terminal": {
                   "$type": "CrossReference",
@@ -1227,7 +1227,7 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
             "elements": [
               {
                 "$type": "Keyword",
-                "value": "for"
+                "value": "relationship"
               },
               {
                 "$type": "Keyword",
@@ -1235,12 +1235,76 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
               },
               {
                 "$type": "Assignment",
-                "feature": "for",
+                "feature": "relationship",
                 "operator": "=",
                 "terminal": {
                   "$type": "CrossReference",
                   "type": {
                     "$ref": "#/rules@6"
+                  },
+                  "terminal": {
+                    "$type": "RuleCall",
+                    "rule": {
+                      "$ref": "#/rules@16"
+                    },
+                    "arguments": []
+                  },
+                  "deprecatedSyntax": false
+                }
+              }
+            ]
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": "sourceNode"
+              },
+              {
+                "$type": "Keyword",
+                "value": ":"
+              },
+              {
+                "$type": "Assignment",
+                "feature": "sourceNode",
+                "operator": "=",
+                "terminal": {
+                  "$type": "CrossReference",
+                  "type": {
+                    "$ref": "#/rules@11"
+                  },
+                  "terminal": {
+                    "$type": "RuleCall",
+                    "rule": {
+                      "$ref": "#/rules@16"
+                    },
+                    "arguments": []
+                  },
+                  "deprecatedSyntax": false
+                }
+              }
+            ]
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": "targetNode"
+              },
+              {
+                "$type": "Keyword",
+                "value": ":"
+              },
+              {
+                "$type": "Assignment",
+                "feature": "targetNode",
+                "operator": "=",
+                "terminal": {
+                  "$type": "CrossReference",
+                  "type": {
+                    "$ref": "#/rules@11"
                   },
                   "terminal": {
                     "$type": "RuleCall",

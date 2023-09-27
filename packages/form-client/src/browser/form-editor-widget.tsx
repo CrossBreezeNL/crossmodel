@@ -2,16 +2,17 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
+import { ModelService, ModelServiceClient } from '@crossbreeze/model-service/lib/common';
 import { CrossModelRoot } from '@crossbreeze/protocol';
 import { CommandService, Emitter, Event } from '@theia/core';
 import { LabelProvider, NavigatableWidget, NavigatableWidgetOptions, ReactWidget, SaveOptions, Saveable } from '@theia/core/lib/browser';
 import URI from '@theia/core/lib/common/uri';
 import { inject, injectable, postConstruct } from '@theia/core/shared/inversify';
 import * as React from '@theia/core/shared/react';
-
-import { ModelService, ModelServiceClient } from '@crossbreeze/model-service/lib/common';
 import '../../style/form-view.css';
 import { App } from './react-components/App';
+import debounce = require('p-debounce');
+import deepEqual = require('fast-deep-equal');
 
 export const FormEditorWidgetOptions = Symbol('FormEditorWidgetOptions');
 export interface FormEditorWidgetOptions extends NavigatableWidgetOptions {
@@ -24,7 +25,6 @@ export class FormEditorWidget extends ReactWidget implements NavigatableWidget, 
     autoSave: 'off' | 'afterDelay' | 'onFocusChange' | 'onWindowChange';
     public readonly onDirtyChangedEmitter = new Emitter<void>();
     onDirtyChanged: Event<void> = this.onDirtyChangedEmitter.event;
-    saveUpdate = false;
 
     @inject(FormEditorWidgetOptions) protected options: FormEditorWidgetOptions;
     @inject(LabelProvider) protected labelProvider: LabelProvider;
@@ -32,7 +32,7 @@ export class FormEditorWidget extends ReactWidget implements NavigatableWidget, 
     @inject(CommandService) protected commandService: CommandService;
     @inject(ModelServiceClient) protected formClient: ModelServiceClient;
 
-    protected model: CrossModelRoot | undefined = undefined;
+    protected syncedModel: CrossModelRoot | undefined = undefined;
     protected error: string | undefined = undefined;
 
     @postConstruct()
@@ -46,6 +46,12 @@ export class FormEditorWidget extends ReactWidget implements NavigatableWidget, 
         this.updateModel = this.updateModel.bind(this);
         this.getResourceUri = this.getResourceUri.bind(this);
         this.loadModel();
+
+        this.formClient.onUpdate(document => {
+            if (document.uri === this.getResourceUri().toString()) {
+                this.modelUpdated(document.model);
+            }
+        });
     }
 
     protected async loadModel(): Promise<void> {
@@ -54,7 +60,7 @@ export class FormEditorWidget extends ReactWidget implements NavigatableWidget, 
             await this.modelService.open(uri);
             const model = await this.modelService.request(uri);
             if (model) {
-                this.model = model;
+                this.syncedModel = model;
             }
         } catch (error: any) {
             this.error = error;
@@ -64,27 +70,26 @@ export class FormEditorWidget extends ReactWidget implements NavigatableWidget, 
     }
 
     async save(options?: SaveOptions | undefined): Promise<void> {
-        if (this.model === undefined) {
+        if (this.syncedModel === undefined) {
             throw new Error('Cannot save undefined model');
         }
 
         this.setDirty(false);
-        // When the model on the model-server is updated we will get a notification that the model has been saved.
-        // This variable lets us know that we were the ones that saved the model
-        this.saveUpdate = true;
-
-        await this.modelService.save(this.getResourceUri().toString(), this.model);
+        await this.modelService.save(this.getResourceUri().toString(), this.syncedModel);
     }
 
-    protected async updateModel(model: CrossModelRoot): Promise<void> {
-        // If we were the ones that send the save request, we do not want to update the model again
-        if (this.saveUpdate) {
-            this.saveUpdate = false;
-            return;
+    protected updateModel = debounce((model: CrossModelRoot) => {
+        if (!deepEqual(this.syncedModel, model)) {
+            this.syncedModel = model;
+            this.modelService.update(this.getResourceUri().toString(), model);
         }
+    }, 200);
 
-        this.model = model;
-        await this.modelService.update(this.getResourceUri().toString(), this.model!);
+    protected modelUpdated(model: CrossModelRoot): void {
+        if (!deepEqual(this.syncedModel, model)) {
+            this.syncedModel = model;
+            this.update();
+        }
     }
 
     override close(): void {
@@ -103,7 +108,7 @@ export class FormEditorWidget extends ReactWidget implements NavigatableWidget, 
 
     render(): React.ReactNode {
         const props = {
-            model: this.model,
+            model: this.syncedModel,
             updateModel: this.updateModel,
             getResourceUri: this.getResourceUri,
             formClient: this.formClient

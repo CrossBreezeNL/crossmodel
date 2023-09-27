@@ -36,7 +36,7 @@ export class CrossModelAddEntityOperationHandler extends OperationHandler {
                 $type: DiagramNode,
                 $container: container,
                 name: findAvailableNodeName(container, entityDescription.name + 'Node'),
-                for: {
+                entity: {
                     $refText: entityDescription.name,
                     ref: entityDescription.node as Entity | undefined
                 },

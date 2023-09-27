@@ -48,7 +48,9 @@ export class CrossModelCreateEdgeOperationHandler extends OperationHandler imple
                     $type: DiagramEdge,
                     $container: this.state.diagramRoot,
                     name: relationship.name,
-                    for: { ref: relationship, $refText: this.state.nameProvider.getName(relationship) || relationship.name || '' }
+                    relationship: { ref: relationship, $refText: this.state.nameProvider.getName(relationship) || relationship.name || '' },
+                    sourceNode: { ref: sourceNode, $refText: this.state.nameProvider.getLocalName(sourceNode) || sourceNode.name || '' },
+                    targetNode: { ref: targetNode, $refText: this.state.nameProvider.getLocalName(targetNode) || targetNode.name || '' }
                 };
                 this.state.diagramRoot.edges.push(edge);
             }
@@ -59,8 +61,8 @@ export class CrossModelCreateEdgeOperationHandler extends OperationHandler imple
      * Creates a new relationship and stores it on a file on the file system.
      */
     protected async createAndSaveRelationship(sourceNode: DiagramNode, targetNode: DiagramNode): Promise<Relationship | undefined> {
-        const source = sourceNode.for?.ref?.name || sourceNode.for?.$refText;
-        const target = targetNode.for?.ref?.name || targetNode.for?.$refText;
+        const source = sourceNode.entity?.ref?.name || sourceNode.entity?.$refText;
+        const target = targetNode.entity?.ref?.name || targetNode.entity?.$refText;
 
         // search for unique file name for the relationship and use file base name as relationship name
         // if the user doesn't rename any files we should end up with unique names ;-)
@@ -76,8 +78,8 @@ export class CrossModelCreateEdgeOperationHandler extends OperationHandler imple
             $container: relationshipRoot,
             name,
             type: '1:1',
-            parent: { $refText: sourceNode.for?.$refText || '' },
-            child: { $refText: targetNode.for?.$refText || '' }
+            parent: { $refText: sourceNode.entity?.$refText || '' },
+            child: { $refText: targetNode.entity?.$refText || '' }
         };
         relationshipRoot.relationship = relationship;
         const text = this.state.semanticSerializer.serialize(relationshipRoot);

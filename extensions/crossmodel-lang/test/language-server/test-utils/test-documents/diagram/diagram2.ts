@@ -5,7 +5,7 @@ export const diagram2 = `diagram:
     id: "Systemdiagram1"
     nodes:
       - id: 'CustomerNode'
-        for: 'Customer'
+        entity: 'Customer'
         x: 100
         y: 100
         height: 100

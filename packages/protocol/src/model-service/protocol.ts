@@ -61,3 +61,4 @@ export const RequestModelDiagramNode = new rpc.RequestType2<string, string, Diag
 export const UpdateModel = new rpc.RequestType2<string, CrossModelRoot, CrossModelRoot, void>('server/update');
 export const SaveModel = new rpc.RequestType2<string, CrossModelRoot, void, void>('server/save');
 export const OnSave = new rpc.NotificationType2<string, CrossModelRoot>('server/onSave');
+export const OnUpdated = new rpc.NotificationType2<string, CrossModelRoot>('server/onUpdated');

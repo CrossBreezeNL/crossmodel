@@ -5,10 +5,10 @@ export const diagram6 = `diagram:
     id: "Systemdiagram1"
     edges:  
         - id: 'OrderCustomerEdge' 
-          for: 'Order_Customer'
+          relationship: 'Order_Customer'
     nodes:
         - id: 'CustomerNode'
-          for: 'Customer'
+          entity: 'Customer'
           x: 100
           y: 100
           height: 100

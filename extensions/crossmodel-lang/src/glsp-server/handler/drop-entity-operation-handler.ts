@@ -38,7 +38,7 @@ export class CrossModelDropEntityOperationHandler extends OperationHandler {
                     $type: DiagramNode,
                     $container: container,
                     name: findAvailableNodeName(container, root.entity.name + 'Node'),
-                    for: {
+                    entity: {
                         $refText: this.state.nameProvider.getFullyQualifiedName(root.entity) || root.entity.name || '',
                         ref: root.entity
                     },

@@ -8,6 +8,7 @@ import {
     DiagramNodeEntity,
     MODELSERVER_PORT_FILE,
     OnSave,
+    OnUpdated,
     OpenModel,
     PORT_FOLDER,
     RequestModel,
@@ -67,9 +68,7 @@ export class ModelServiceImpl implements ModelService, BackendApplicationContrib
         socket.connect({ port });
         this.connection.listen();
 
-        this.connection.onNotification(OnSave, (uri: string, model: CrossModelRoot) => {
-            this.client?.updateModel(uri, model);
-        });
+        this.setUpListeners();
         return connected.promise;
     }
 
@@ -125,6 +124,9 @@ export class ModelServiceImpl implements ModelService, BackendApplicationContrib
 
     setUpListeners(): void {
         this.connection.onNotification(OnSave, (uri, model) => {
+            this.client?.updateModel(uri, model);
+        });
+        this.connection.onNotification(OnUpdated, (uri, model) => {
             this.client?.updateModel(uri, model);
         });
     }

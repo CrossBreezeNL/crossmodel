@@ -22,7 +22,7 @@
         "--loglevel=debug",
         "--hostname=localhost",
         "--no-cluster",
-        "--root-dir=${workspaceRoot}/examples/workspace",
+        "--root-dir=${workspaceRoot}/examples/yaml-example",
         "--app-project-path=${workspaceFolder}/applications/electron-app",
         "--remote-debugging-port=9222",
         "--no-app-auto-install",
@@ -116,18 +116,18 @@
       ]
     },
     {
-        "name": "Debug Jest Tests",
-        "type": "node",
-        "request": "launch",
-        "runtimeArgs": [
-          "--inspect-brk",
-          "${workspaceRoot}/node_modules/jest/bin/jest.js",
-          "--runInBand",
-          "--config=extensions/crossmodel-lang/jest.config.js",
-          "--testPathPattern=extensions/crossmodel-lang/test/language-server/util/name-util.test.ts"
-        ],
-        "console": "integratedTerminal",
-        "internalConsoleOptions": "neverOpen"
-      }
+      "name": "Debug Jest Tests",
+      "type": "node",
+      "request": "launch",
+      "runtimeArgs": [
+        "--inspect-brk",
+        "${workspaceRoot}/node_modules/jest/bin/jest.js",
+        "--runInBand",
+        "--config=extensions/crossmodel-lang/jest.config.js",
+        "--testPathPattern=extensions/crossmodel-lang/test/language-server/util/name-util.test.ts"
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    }
   ]
 }

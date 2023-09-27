@@ -7,10 +7,10 @@ export const diagram5 = `diagram:
     description: "This is a basic diagram with nodes and edges"
     edges:  
         - id: 'OrderCustomerEdge' 
-          for: 'Order_Customer'
+          relationship: 'Order_Customer'
     nodes:
         - id: 'CustomerNode'
-          for: 'Customer'
+          entity: 'Customer'
           x: 100
           y: 100
           height: 100

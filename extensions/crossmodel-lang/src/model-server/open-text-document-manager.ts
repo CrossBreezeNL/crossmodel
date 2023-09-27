@@ -4,12 +4,12 @@
 
 import * as fs from 'fs';
 import { AstNode, FileSystemProvider, LangiumDefaultSharedServices, LangiumDocuments } from 'langium';
+import { Disposable } from 'vscode-languageserver';
 import { TextDocumentIdentifier, TextDocumentItem, VersionedTextDocumentIdentifier } from 'vscode-languageserver-protocol';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { URI } from 'vscode-uri';
 import { AddedSharedModelServices } from './model-module';
 import { OpenableTextDocuments } from './openable-text-documents';
-import { Disposable } from 'vscode-languageserver';
 
 /**
  * A manager class that suppors handling documents with a simple open-update-save/close lifecycle.
@@ -62,7 +62,7 @@ export class OpenTextDocumentManager {
         }
         this.openDocuments.push(this.normalizedUri(uri));
         const textDocument = await this.readFromFilesystem(uri, languageId);
-        this.textDocuments.notifyDidOpenTextDocument({ textDocument });
+        this.textDocuments.notifyDidOpenTextDocument({ textDocument }, false);
     }
 
     async close(uri: string): Promise<void> {
@@ -86,11 +86,15 @@ export class OpenTextDocumentManager {
     async save(uri: string, text: string): Promise<void> {
         const vscUri = URI.parse(uri);
         fs.writeFileSync(vscUri.fsPath, text);
-        this.textDocuments.notifyDidSaveTextDocument({ textDocument: TextDocumentIdentifier.create(uri) });
+        this.textDocuments.notifyDidSaveTextDocument({ textDocument: TextDocumentIdentifier.create(uri), text });
     }
 
-    protected isOpen(uri: string): boolean {
+    isOpen(uri: string): boolean {
         return this.openDocuments.includes(this.normalizedUri(uri));
+    }
+
+    isOpenInTextEditor(uri: string): boolean {
+        return this.textDocuments.isOpenInTextEditor(this.normalizedUri(uri));
     }
 
     protected removeFromOpenedDocuments(uri: string): void {

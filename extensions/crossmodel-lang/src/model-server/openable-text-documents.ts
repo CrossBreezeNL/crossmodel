@@ -10,7 +10,6 @@ import {
    DidOpenTextDocumentParams,
    DidSaveTextDocumentParams,
    Disposable,
-   DocumentUri,
    Emitter,
    HandlerResult,
    RequestHandler,
@@ -22,6 +21,9 @@ import {
    TextEdit,
    WillSaveTextDocumentParams
 } from 'vscode-languageserver';
+import { TextDocument } from 'vscode-languageserver-textdocument';
+
+const OPENED_IN_TEXT_EDITOR_PROP = '_openedInTextEditor';
 
 /**
  * This subclass of `TextDocuments` is actually entirely equivalent to `TextDocuments` but opens up
@@ -31,7 +33,7 @@ import {
  * langium/src/workspace/documents.ts:222 which relies on _syncedDocuments to be open
  * vscode-languageserver/lib/common/textDocuments.js:119
  */
-export class OpenableTextDocuments<T extends { uri: DocumentUri }> extends TextDocuments<T> {
+export class OpenableTextDocuments<T extends TextDocument> extends TextDocuments<T> {
    public constructor(protected configuration: TextDocumentsConfiguration<T>) {
       super(configuration);
    }
@@ -117,6 +119,10 @@ export class OpenableTextDocuments<T extends { uri: DocumentUri }> extends TextD
 
       let syncedDocument = this.__syncedDocuments.get(td.uri);
       if (syncedDocument !== undefined) {
+         if (syncedDocument.version >= td.version) {
+            console.log(`Skip update of document ${td.uri} as local version is newer (${syncedDocument.version} >= ${td.version})`);
+            return;
+         }
          syncedDocument = this.configuration.update(syncedDocument, changes, version);
          this.__syncedDocuments.set(td.uri, syncedDocument);
          this.__onDidChangeContent.fire(Object.freeze({ document: syncedDocument }));
@@ -157,12 +163,25 @@ export class OpenableTextDocuments<T extends { uri: DocumentUri }> extends TextD
       }
    }
 
-   public notifyDidOpenTextDocument(event: DidOpenTextDocumentParams): void {
+   public notifyDidOpenTextDocument(event: DidOpenTextDocumentParams, openedInTextEditor = true): void {
       const td = event.textDocument;
       const document = this.configuration.create(td.uri, td.languageId, td.version, td.text);
+      const wasOpenInTextEditor = this.isOpenInTextEditor(td.uri);
       this.__syncedDocuments.set(td.uri, document);
+      this.markOpenInTextEditor(td.uri, wasOpenInTextEditor || openedInTextEditor);
       const toFire = Object.freeze({ document });
       this.__onDidOpen.fire(toFire);
       this.__onDidChangeContent.fire(toFire);
    }
+
+   isOpenInTextEditor(uri: string): boolean {
+      return !!(this.__syncedDocuments.get(uri) as any | undefined)?.[OPENED_IN_TEXT_EDITOR_PROP];
+  }
+
+  protected markOpenInTextEditor(uri: string, open: boolean): void {
+      const document = this.__syncedDocuments.get(uri);
+      if (document) {
+         (document as any)[OPENED_IN_TEXT_EDITOR_PROP] = open;
+      }
+  }
 }

@@ -4,11 +4,11 @@
 import { describe, expect, test } from '@jest/globals';
 import { EmptyFileSystem, isReference } from 'langium';
 
-import { parseDocument } from './test-utils/utils';
 import { diagram1, diagram2, diagram3, diagram4, diagram5, diagram6 } from './test-utils/test-documents/diagram/index';
+import { parseDocument } from './test-utils/utils';
 
-import { CrossModelRoot } from '../../src/language-server/generated/ast';
 import { createCrossModelServices } from '../../src/language-server/cross-model-module';
+import { CrossModelRoot } from '../../src/language-server/generated/ast';
 
 const services = createCrossModelServices({ ...EmptyFileSystem }).CrossModel;
 
@@ -51,8 +51,8 @@ describe('CrossModel language Diagram', () => {
             expect(model.diagram?.nodes.length).toBe(1);
 
             expect(node1?.name).toBe('CustomerNode');
-            expect(isReference(node1?.for)).toBe(true);
-            expect(node1?.for?.$refText).toBe('Customer');
+            expect(isReference(node1?.entity)).toBe(true);
+            expect(node1?.entity?.$refText).toBe('Customer');
             expect(node1?.x).toBe(100);
         });
     });
@@ -71,8 +71,8 @@ describe('CrossModel language Diagram', () => {
             expect(model.diagram?.edges.length).toBe(1);
 
             expect(edge1?.name).toBe('OrderCustomerEdge');
-            expect(isReference(edge1?.for)).toBe(true);
-            expect(edge1?.for?.$refText).toBe('Order_Customer');
+            expect(isReference(edge1?.relationship)).toBe(true);
+            expect(edge1?.relationship?.$refText).toBe('Order_Customer');
         });
     });
 
@@ -95,13 +95,13 @@ describe('CrossModel language Diagram', () => {
             expect(model.diagram?.edges.length).toBe(1);
 
             expect(node1?.name).toBe('CustomerNode');
-            expect(isReference(node1?.for)).toBe(true);
-            expect(node1?.for?.$refText).toBe('Customer');
+            expect(isReference(node1?.entity)).toBe(true);
+            expect(node1?.entity?.$refText).toBe('Customer');
             expect(node1?.x).toBe(100);
 
             expect(edge1?.name).toBe('OrderCustomerEdge');
-            expect(isReference(edge1?.for)).toBe(true);
-            expect(edge1?.for?.$refText).toBe('Order_Customer');
+            expect(isReference(edge1?.relationship)).toBe(true);
+            expect(edge1?.relationship?.$refText).toBe('Order_Customer');
         });
 
         test('Simple file for diagram and edges, but descirption and name coming last', async () => {
@@ -121,13 +121,13 @@ describe('CrossModel language Diagram', () => {
             expect(model.diagram?.edges.length).toBe(1);
 
             expect(node1?.name).toBe('CustomerNode');
-            expect(isReference(node1?.for)).toBe(true);
-            expect(node1?.for?.$refText).toBe('Customer');
+            expect(isReference(node1?.entity)).toBe(true);
+            expect(node1?.entity?.$refText).toBe('Customer');
             expect(node1?.x).toBe(100);
 
             expect(edge1?.name).toBe('OrderCustomerEdge');
-            expect(isReference(edge1?.for)).toBe(true);
-            expect(edge1?.for?.$refText).toBe('Order_Customer');
+            expect(isReference(edge1?.relationship)).toBe(true);
+            expect(edge1?.relationship?.$refText).toBe('Order_Customer');
         });
     });
 });

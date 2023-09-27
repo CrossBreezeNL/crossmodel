@@ -4,8 +4,8 @@
 import { GEdge, GGraph, GModelFactory, GNode } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
 import { DiagramEdge, DiagramNode } from '../../language-server/generated/ast';
-import { CrossModelState } from './cross-model-state';
 import { GEntityNode } from './builders/node-builder';
+import { CrossModelState } from './cross-model-state';
 
 /**
  * Custom factory that translates the semantic diagram root from Langium to a GLSP graph.
@@ -29,7 +29,7 @@ export class CrossModelGModelFactory implements GModelFactory {
         const graphBuilder = GGraph.builder().id(this.modelState.semanticUri);
 
         diagramRoot.nodes.map(node => this.createDiagramNode(node)).forEach(node => graphBuilder.add(node));
-        diagramRoot.edges.map(edge => this.createDiagramEdge(edge, diagramRoot.nodes)).forEach(edge => graphBuilder.add(edge));
+        diagramRoot.edges.map(edge => this.createDiagramEdge(edge)).forEach(edge => graphBuilder.add(edge));
 
         return graphBuilder.build();
     }
@@ -41,14 +41,11 @@ export class CrossModelGModelFactory implements GModelFactory {
         return GEntityNode.builder().id(id).addNode(node).build();
     }
 
-    protected createDiagramEdge(edge: DiagramEdge, diagramNodes: DiagramNode[]): GEdge {
+    protected createDiagramEdge(edge: DiagramEdge): GEdge {
         const id = this.modelState.index.createId(edge) ?? 'unknown';
 
-        const parentRef = edge.for?.ref?.parent?.$refText;
-        const childRef = edge.for?.ref?.child?.$refText;
-
-        const parentDiagramNode = diagramNodes.find(item => item.for?.ref?.name === parentRef)?.name;
-        const childDiagramNode = diagramNodes.find(item => item.for?.ref?.name === childRef)?.name;
+        const parentDiagramNode = edge.sourceNode?.ref?.name || edge.sourceNode?.$refText;
+        const childDiagramNode = edge.targetNode?.ref?.name || edge.targetNode?.$refText;
 
         return GEdge.builder()
             .id(id)

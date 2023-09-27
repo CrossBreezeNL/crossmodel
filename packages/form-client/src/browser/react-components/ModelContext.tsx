@@ -1,8 +1,8 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import * as React from '@theia/core/shared/react';
 import { CrossModelRoot } from '@crossbreeze/protocol';
+import * as React from '@theia/core/shared/react';
 import _ = require('lodash');
 
 /**
@@ -43,7 +43,12 @@ export function ModelProvider(props: ModelProviderProps): React.ReactElement {
     );
 }
 
-export function ModelReducer(model: CrossModelRoot, action: any): CrossModelRoot {
+export interface AppState {
+    model: CrossModelRoot;
+    reason: string;
+}
+
+export function ModelReducer({ model }: AppState, action: any): AppState {
     if (model === undefined) {
         throw Error('Model error: model.entity undefined');
     }
@@ -55,7 +60,7 @@ export function ModelReducer(model: CrossModelRoot, action: any): CrossModelRoot
     switch (action.type) {
         // Update the entire model
         case 'model:update':
-            return action.model;
+            return { model: action.model, reason: action.type };
 
         // Change the name of the entity-model
         case 'entity:change-name':
@@ -66,7 +71,7 @@ export function ModelReducer(model: CrossModelRoot, action: any): CrossModelRoot
             }
 
             model.entity.name = action.name;
-            return model;
+            return { model, reason: action.type };
 
         // Change the name of the entity-model
         case 'entity:change-description':
@@ -77,7 +82,7 @@ export function ModelReducer(model: CrossModelRoot, action: any): CrossModelRoot
             }
 
             model.entity.description = action.description;
-            return model;
+            return { model, reason: action.type };
 
         // Change the datatype of one of entity attributes
         case 'entity:attribute:change-datatype':
@@ -89,7 +94,7 @@ export function ModelReducer(model: CrossModelRoot, action: any): CrossModelRoot
 
             model.entity.attributes[action.id].datatype = action.dataType;
 
-            return model;
+            return { model, reason: action.type };
 
         // Change the name of one of entity attributes
         case 'entity:attribute:change-name':
@@ -101,7 +106,7 @@ export function ModelReducer(model: CrossModelRoot, action: any): CrossModelRoot
 
             model.entity.attributes[action.id].name = action.name;
 
-            return model;
+            return { model, reason: action.type };
 
         default: {
             throw Error('Unknown ModelReducer action');

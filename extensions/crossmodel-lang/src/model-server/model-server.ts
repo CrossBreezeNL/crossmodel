@@ -6,6 +6,7 @@ import {
     CloseModel,
     CrossModelRoot,
     OnSave,
+    OnUpdated,
     OpenModel,
     RequestModel,
     RequestModelDiagramNode,
@@ -63,19 +64,19 @@ export class ModelServer implements Disposable {
             }
         }
 
-        const ref: Entity | undefined = diagramNode?.for?.ref;
+        const entity: Entity | undefined = diagramNode?.entity?.ref;
 
-        if (!diagramNode || !diagramNode.for || !ref || !ref.$container.$document) {
+        if (!entity?.$container.$document) {
             throw new Error('No node found with the given id');
         }
 
         const serializedEntity = toSerializable({
             $type: 'CrossModelRoot',
-            entity: ref
+            entity: entity
         }) as CrossModelRoot;
 
         return {
-            uri: ref.$container.$document.uri.toString(),
+            uri: entity.$container.$document.uri.toString(),
             model: serializedEntity
         };
     }
@@ -86,6 +87,10 @@ export class ModelServer implements Disposable {
         this.modelService.onSave(uri, newModel => {
             // TODO: Research if this also has to be closed after the document closes
             this.connection.sendNotification(OnSave, uri, toSerializable(newModel) as CrossModelRoot);
+        });
+        this.modelService.onUpdate(uri, newModel => {
+            // TODO: Research if this also has to be closed after the document closes
+            this.connection.sendNotification(OnUpdated, uri, toSerializable(newModel) as CrossModelRoot);
         });
     }
 

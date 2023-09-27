@@ -15,7 +15,7 @@ export class GEntityNode extends GNode {
 export class GEntityNodeBuilder extends GNodeBuilder {
     addNode(node: DiagramNode): this {
         // Get the reference that the DiagramNode holds to the Entity in the .langium file.
-        const entityRef = node.for?.ref;
+        const entityRef = node.entity?.ref;
 
         // Options which are the same for every node
         this.addCssClasses('diagram-node', 'entity').layout('vbox').addArgs(ArgsUtil.cornerRadius(3));

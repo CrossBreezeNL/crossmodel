@@ -4,7 +4,7 @@
 
 import { AstNode, DocumentState, isAstNode } from 'langium';
 import { Disposable } from 'vscode-languageserver';
-import { TextDocument } from 'vscode-languageserver-textdocument';
+import { OptionalVersionedTextDocumentIdentifier, Range, TextDocumentEdit, TextEdit } from 'vscode-languageserver-protocol';
 import { URI } from 'vscode-uri';
 import { CrossModelSharedServices } from '../language-server/cross-model-module';
 
@@ -77,12 +77,28 @@ export class ModelService {
         if (!isAstNode(root)) {
             throw new Error(`No AST node to update exists in '${uri}'`);
         }
-
+        const textDocument = document.textDocument;
         const text = typeof model === 'string' ? model : this.serialize(URI.parse(uri), model);
-        const version = document.textDocument.version + 1;
+        if (text === textDocument.getText()) {
+            return document.parseResult.value as T;
+        }
 
-        TextDocument.update(document.textDocument, [{ text }], version);
-        await this.documentManager.update(uri, version, text);
+        if (this.documentManager.isOpenInTextEditor(uri)) {
+            // we only want to apply a text edit if the editor is already open
+            // because opening and updating at the same time might cause problems as the open call resets the document to filesystem
+            await this.shared.lsp.Connection?.workspace.applyEdit({
+                label: 'Update Model',
+                documentChanges: [
+                    // we use a null version to indicate that the version is known
+                    // eslint-disable-next-line no-null/no-null
+                    TextDocumentEdit.create(OptionalVersionedTextDocumentIdentifier.create(textDocument.uri, null), [
+                        TextEdit.replace(Range.create(0, 0, textDocument.lineCount, textDocument.getText().length), text)
+                    ])
+                ]
+            });
+        }
+
+        await this.documentManager.update(uri, textDocument.version + 1, text);
         await this.documentBuilder.update([URI.parse(uri)], []);
 
         return document.parseResult.value as T;
@@ -108,6 +124,11 @@ export class ModelService {
      * @param model semantic model or text
      */
     async save(uri: string, model: AstNode | string): Promise<void> {
+        // sync: implicit update of internal data structure to match file system (similar to workspace initialization)
+        if (this.documents.hasDocument(URI.parse(uri))) {
+            await this.update(uri, model);
+        }
+
         const text = typeof model === 'string' ? model : this.serialize(URI.parse(uri), model);
         return this.documentManager.save(uri, text);
     }

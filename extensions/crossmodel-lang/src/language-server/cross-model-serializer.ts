@@ -7,6 +7,28 @@ import { Serializer } from '../model-server/serializer';
 import { CrossModelServices } from './cross-model-module';
 import { CrossModelRoot, Entity, Relationship, SystemDiagram } from './generated/ast';
 
+const PROPERTY_ORDER = [
+    'id',
+    'name',
+    'name_val',
+    'datatype',
+    'description',
+    'attributes',
+    'parent',
+    'child',
+    'type',
+    'nodes',
+    'edges',
+    'entity',
+    'x',
+    'y',
+    'width',
+    'height',
+    'relationship',
+    'sourceNode',
+    'targetNode'
+];
+
 /**
  * Hand-written AST serializer as there is currently no out-of-the box serializer from Langium, but it is on the roadmap.
  * cf. https://github.com/langium/langium/discussions/683
@@ -34,6 +56,7 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot> {
         const indentation = ' '.repeat(indentationLevel);
 
         const serializedProperties = Object.entries(obj)
+            .sort((left, right) => PROPERTY_ORDER.indexOf(left[0]) - PROPERTY_ORDER.indexOf(right[0]))
             .map(([key, value]) => {
                 if (Array.isArray(value) && value.length === 0) {
                     return;

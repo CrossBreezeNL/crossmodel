@@ -94,7 +94,7 @@ DiagramNode:
 
 DiagramNodeFields infers DiagramNode:
     'id' ':' name=STRING | 
-    'for' ':' for=[Entity:QualifiedName] |
+    'entity' ':' entity=[Entity:QualifiedName] |
     'x' ':' x=NUMBER | 
     'y' ':' y=NUMBER |
     'width' ':' width=NUMBER |
@@ -115,7 +115,9 @@ DiagramEdge:
 
 DiagramEdgeFields infers DiagramEdge:
     (
-        'for' ':' for=[Relationship:QualifiedName] |
+        'relationship' ':' relationship=[Relationship:QualifiedName] |
+        'sourceNode' ':' sourceNode=[DiagramNode:QualifiedName] |
+        'targetNode' ':' targetNode=[DiagramNode:QualifiedName] |
         'id' ':' name=STRING
     )
 ;

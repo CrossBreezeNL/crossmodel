@@ -3,12 +3,14 @@
  ********************************************************************************/
 
 import {
+   ActionDispatcher,
    ClientSession,
    ClientSessionListener,
    ClientSessionManager,
    GLSPServerError,
    Logger,
    MaybePromise,
+   ModelSubmissionHandler,
    RequestModelAction,
    SOURCE_URI_ARG,
    SaveModelAction,
@@ -17,7 +19,7 @@ import {
 import { inject, injectable, postConstruct } from 'inversify';
 import { findRootNode, streamReferences } from 'langium';
 import { URI } from 'vscode-uri';
-import { isCrossModelRoot } from '../../language-server/generated/ast';
+import { CrossModelRoot, isCrossModelRoot } from '../../language-server/generated/ast';
 import { CrossModelState } from './cross-model-state';
 
 /**
@@ -30,6 +32,8 @@ export class CrossModelStorage implements SourceModelStorage, ClientSessionListe
    @inject(Logger) protected logger: Logger;
    @inject(CrossModelState) protected state: CrossModelState;
    @inject(ClientSessionManager) protected sessionManager: ClientSessionManager;
+   @inject(ModelSubmissionHandler) protected submissionHandler: ModelSubmissionHandler;
+   @inject(ActionDispatcher) protected actionDispatcher: ActionDispatcher;
 
    @postConstruct()
    protected init(): void {
@@ -45,6 +49,10 @@ export class CrossModelStorage implements SourceModelStorage, ClientSessionListe
          throw new GLSPServerError('Expected CrossModal Diagram Root');
       }
       this.state.setSemanticRoot(rootUri, root);
+      this.state.modelService.onUpdate<CrossModelRoot>(rootUri, async newRoot => {
+         this.state.setSemanticRoot(rootUri, newRoot);
+         this.actionDispatcher.dispatchAll(await this.submissionHandler.submitModel('external'));
+      });
    }
 
    saveSourceModel(action: SaveModelAction): MaybePromise<void> {

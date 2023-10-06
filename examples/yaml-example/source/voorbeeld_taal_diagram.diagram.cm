@@ -1,5 +1,6 @@
 diagram:
     id: "Systemdiagram1"
+    name: "Systemdiagram1"
     description: "This should be the description"
     nodes:
       - id: "CustomerNode"
@@ -10,8 +11,8 @@ diagram:
         height: 151
       - id: "OrderNode"
         entity: "Order"
-        x: 655.4416344093675
-        y: 270.85224527770106
+        x: 618.4416344093675
+        y: 274.85224527770106
         width: 139.6079559326172
         height: 132
     edges:

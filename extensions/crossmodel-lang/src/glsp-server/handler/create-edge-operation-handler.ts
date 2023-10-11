@@ -84,7 +84,7 @@ export class CrossModelCreateEdgeOperationHandler extends OperationHandler imple
         relationshipRoot.relationship = relationship;
         const text = this.state.semanticSerializer.serialize(relationshipRoot);
 
-        await this.state.modelService.save(uri.toString(), text);
+        await this.state.modelService.save({ uri: uri.toString(), model: text, clientId: this.state.clientId });
         const root = await this.state.modelService.request<CrossModelRoot>(uri.toString(), isCrossModelRoot);
         return root?.relationship;
     }

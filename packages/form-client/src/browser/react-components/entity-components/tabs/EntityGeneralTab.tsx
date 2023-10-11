@@ -1,9 +1,9 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
+import { CrossModelRoot } from '@crossbreeze/protocol';
 import * as React from '@theia/core/shared/react';
 import { ModelContext, ModelDispatchContext, ModelReducer } from '../../ModelContext';
-import { CrossModelRoot } from '@crossbreeze/protocol';
 
 interface GeneralTabProps {}
 
@@ -32,7 +32,6 @@ export function GeneralTab(props: GeneralTabProps): React.ReactElement {
             <div>
                 <label>Name:</label>
                 <input
-                    // TODO, add debounce
                     className='theia-input'
                     value={model.entity.name}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {

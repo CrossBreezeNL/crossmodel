@@ -5,7 +5,15 @@
 import { ModelService, ModelServiceClient } from '@crossbreeze/model-service/lib/common';
 import { CrossModelRoot } from '@crossbreeze/protocol';
 import { CommandService, Emitter, Event } from '@theia/core';
-import { LabelProvider, NavigatableWidget, NavigatableWidgetOptions, ReactWidget, SaveOptions, Saveable } from '@theia/core/lib/browser';
+import {
+    LabelProvider,
+    Message,
+    NavigatableWidget,
+    NavigatableWidgetOptions,
+    ReactWidget,
+    SaveOptions,
+    Saveable
+} from '@theia/core/lib/browser';
 import URI from '@theia/core/lib/common/uri';
 import { inject, injectable, postConstruct } from '@theia/core/shared/inversify';
 import * as React from '@theia/core/shared/react';
@@ -18,6 +26,8 @@ export const FormEditorWidgetOptions = Symbol('FormEditorWidgetOptions');
 export interface FormEditorWidgetOptions extends NavigatableWidgetOptions {
     id: string;
 }
+
+const FORM_CLIENT_ID = 'form-client';
 
 @injectable()
 export class FormEditorWidget extends ReactWidget implements NavigatableWidget, Saveable {
@@ -47,9 +57,9 @@ export class FormEditorWidget extends ReactWidget implements NavigatableWidget, 
         this.getResourceUri = this.getResourceUri.bind(this);
         this.loadModel();
 
-        this.formClient.onUpdate(document => {
-            if (document.uri === this.getResourceUri().toString()) {
-                this.modelUpdated(document.model);
+        this.formClient.onUpdate(event => {
+            if (event.sourceClientId !== FORM_CLIENT_ID && event.uri === this.getResourceUri().toString()) {
+                this.modelUpdated(event.model);
             }
         });
     }
@@ -57,8 +67,7 @@ export class FormEditorWidget extends ReactWidget implements NavigatableWidget, 
     protected async loadModel(): Promise<void> {
         try {
             const uri = this.getResourceUri().toString();
-            await this.modelService.open(uri);
-            const model = await this.modelService.request(uri);
+            const model = await this.modelService.open({ uri, clientId: FORM_CLIENT_ID });
             if (model) {
                 this.syncedModel = model;
             }
@@ -75,13 +84,13 @@ export class FormEditorWidget extends ReactWidget implements NavigatableWidget, 
         }
 
         this.setDirty(false);
-        await this.modelService.save(this.getResourceUri().toString(), this.syncedModel);
+        await this.modelService.save({ uri: this.getResourceUri().toString(), model: this.syncedModel, clientId: FORM_CLIENT_ID });
     }
 
     protected updateModel = debounce((model: CrossModelRoot) => {
         if (!deepEqual(this.syncedModel, model)) {
             this.syncedModel = model;
-            this.modelService.update(this.getResourceUri().toString(), model);
+            this.modelService.update({ uri: this.getResourceUri().toString(), model, clientId: FORM_CLIENT_ID });
         }
     }, 200);
 
@@ -93,7 +102,7 @@ export class FormEditorWidget extends ReactWidget implements NavigatableWidget, 
     }
 
     override close(): void {
-        this.modelService.close(this.getResourceUri().toString());
+        this.modelService.close({ uri: this.getResourceUri().toString(), clientId: FORM_CLIENT_ID });
         super.close();
     }
 
@@ -117,11 +126,26 @@ export class FormEditorWidget extends ReactWidget implements NavigatableWidget, 
         return <App {...props} />;
     }
 
+    protected override onActivateRequest(msg: Message): void {
+        super.onActivateRequest(msg);
+        const focusInput = (): boolean => {
+            const inputs = this.node.getElementsByTagName('input');
+            if (inputs.length > 0) {
+                inputs[0].focus();
+                return true;
+            }
+            return false;
+        };
+        if (!focusInput()) {
+            setTimeout(focusInput, 500);
+        }
+    }
+
     getResourceUri(): URI {
         return new URI(this.options.uri);
     }
 
     createMoveToUri(resourceUri: URI): URI | undefined {
-        return undefined;
+        return resourceUri;
     }
 }

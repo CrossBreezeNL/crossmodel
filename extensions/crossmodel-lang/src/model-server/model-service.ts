@@ -2,11 +2,12 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
+import { CloseModelArgs, ModelSavedEvent, ModelUpdatedEvent, OpenModelArgs, SaveModelArgs, UpdateModelArgs } from '@crossbreeze/protocol';
 import { AstNode, DocumentState, isAstNode } from 'langium';
-import { Disposable } from 'vscode-languageserver';
-import { OptionalVersionedTextDocumentIdentifier, Range, TextDocumentEdit, TextEdit } from 'vscode-languageserver-protocol';
+import { Disposable, OptionalVersionedTextDocumentIdentifier, Range, TextDocumentEdit, TextEdit, uinteger } from 'vscode-languageserver';
 import { URI } from 'vscode-uri';
 import { CrossModelSharedServices } from '../language-server/cross-model-module';
+import { LANGUAGE_CLIENT_ID } from './openable-text-documents';
 
 /**
  * The model service serves as a facade to access and update semantic models from the language server as a non-LSP client.
@@ -18,15 +19,44 @@ export class ModelService {
         protected documentManager = shared.workspace.TextDocumentManager,
         protected documents = shared.workspace.LangiumDocuments,
         protected documentBuilder = shared.workspace.DocumentBuilder
-    ) {}
+    ) {
+        // sync updates with language client
+        this.documentBuilder.onBuildPhase(DocumentState.Validated, (allChangedDocuments, _token) => {
+            for (const changedDocument of allChangedDocuments) {
+                const sourceClientId = this.documentManager.getSourceClientId(changedDocument, allChangedDocuments);
+                if (sourceClientId === LANGUAGE_CLIENT_ID) {
+                    continue;
+                }
+                const textDocument = changedDocument.textDocument;
+                if (this.documentManager.isOpenInLanguageClient(textDocument.uri)) {
+                    // we only want to apply a text edit if the editor is already open
+                    // because opening and updating at the same time might cause problems as the open call resets the document to filesystem
+                    this.shared.lsp.Connection?.workspace.applyEdit({
+                        label: 'Update Model',
+                        documentChanges: [
+                            // we use a null version to indicate that the version is known
+                            // eslint-disable-next-line no-null/no-null
+                            TextDocumentEdit.create(OptionalVersionedTextDocumentIdentifier.create(textDocument.uri, null), [
+                                TextEdit.replace(Range.create(0, 0, uinteger.MAX_VALUE, uinteger.MAX_VALUE), textDocument.getText())
+                            ])
+                        ]
+                    });
+                }
+            }
+        });
+    }
 
     /**
      * Opens the document with the given URI for modification.
      *
      * @param uri document URI
      */
-    async open(uri: string): Promise<void> {
-        return this.documentManager.open(uri);
+    async open(args: OpenModelArgs): Promise<void> {
+        return this.documentManager.open(args);
+    }
+
+    isOpen(uri: string): boolean {
+        return this.documentManager.isOpen(uri);
     }
 
     /**
@@ -34,8 +64,8 @@ export class ModelService {
      *
      * @param uri document URI
      */
-    async close(uri: string): Promise<void> {
-        return this.documentManager.close(uri);
+    async close(args: CloseModelArgs): Promise<void> {
+        return this.documentManager.close(args);
     }
 
     /**
@@ -54,7 +84,6 @@ export class ModelService {
      */
     request<T extends AstNode>(uri: string, guard: (item: unknown) => item is T): Promise<T | undefined>;
     async request<T extends AstNode>(uri: string, guard?: (item: unknown) => item is T): Promise<AstNode | T | undefined> {
-        this.open(uri);
         const document = this.documents.getOrCreateDocument(URI.parse(uri));
         const root = document.parseResult.value;
         const check = guard ?? isAstNode;
@@ -70,50 +99,27 @@ export class ModelService {
      * @param model semantic model or textual representation of it
      * @returns the stored semantic model
      */
-    async update<T extends AstNode>(uri: string, model: T | string): Promise<T> {
-        await this.open(uri);
-        const document = this.documents.getOrCreateDocument(URI.parse(uri));
+    async update<T extends AstNode>(args: UpdateModelArgs<T>): Promise<T> {
+        await this.open(args);
+        const document = this.documents.getOrCreateDocument(URI.parse(args.uri));
         const root = document.parseResult.value;
         if (!isAstNode(root)) {
-            throw new Error(`No AST node to update exists in '${uri}'`);
+            throw new Error(`No AST node to update exists in '${args.uri}'`);
         }
         const textDocument = document.textDocument;
-        const text = typeof model === 'string' ? model : this.serialize(URI.parse(uri), model);
+        const text = typeof args.model === 'string' ? args.model : this.serialize(URI.parse(args.uri), args.model);
         if (text === textDocument.getText()) {
             return document.parseResult.value as T;
         }
-
-        if (this.documentManager.isOpenInTextEditor(uri)) {
-            // we only want to apply a text edit if the editor is already open
-            // because opening and updating at the same time might cause problems as the open call resets the document to filesystem
-            await this.shared.lsp.Connection?.workspace.applyEdit({
-                label: 'Update Model',
-                documentChanges: [
-                    // we use a null version to indicate that the version is known
-                    // eslint-disable-next-line no-null/no-null
-                    TextDocumentEdit.create(OptionalVersionedTextDocumentIdentifier.create(textDocument.uri, null), [
-                        TextEdit.replace(Range.create(0, 0, textDocument.lineCount, textDocument.getText().length), text)
-                    ])
-                ]
-            });
-        }
-
-        await this.documentManager.update(uri, textDocument.version + 1, text);
-        await this.documentBuilder.update([URI.parse(uri)], []);
-
+        await this.documentManager.update(args.uri, textDocument.version + 1, text, args.clientId);
         return document.parseResult.value as T;
     }
 
-    onUpdate<T extends AstNode>(uri: string, listener: (model: T) => void): Disposable {
-        return this.documentBuilder.onBuildPhase(DocumentState.Validated, (allChangedDocuments, _token) => {
-            const changedDocument = allChangedDocuments.find(document => document.uri.toString() === uri);
-            if (changedDocument) {
-                listener(changedDocument.parseResult.value as T);
-            }
-        });
+    onUpdate<T extends AstNode>(uri: string, listener: (model: ModelUpdatedEvent<T>) => void): Disposable {
+        return this.documentManager.onUpdate(uri, listener);
     }
 
-    onSave<T extends AstNode>(uri: string, listener: (model: T) => void): Disposable {
+    onSave<T extends AstNode>(uri: string, listener: (model: ModelSavedEvent<T>) => void): Disposable {
         return this.documentManager.onSave(uri, listener);
     }
 
@@ -123,14 +129,14 @@ export class ModelService {
      * @param uri document uri
      * @param model semantic model or text
      */
-    async save(uri: string, model: AstNode | string): Promise<void> {
+    async save<T extends AstNode>(args: SaveModelArgs<T>): Promise<void> {
         // sync: implicit update of internal data structure to match file system (similar to workspace initialization)
-        if (this.documents.hasDocument(URI.parse(uri))) {
-            await this.update(uri, model);
+        if (this.documents.hasDocument(URI.parse(args.uri))) {
+            await this.update(args);
         }
 
-        const text = typeof model === 'string' ? model : this.serialize(URI.parse(uri), model);
-        return this.documentManager.save(uri, text);
+        const text = typeof args.model === 'string' ? args.model : this.serialize(URI.parse(args.uri), args.model);
+        return this.documentManager.save(args.uri, text, args.clientId);
     }
 
     /**

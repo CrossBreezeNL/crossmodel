@@ -95,7 +95,7 @@ export const CrossModelSharedModule: Module<
         WorkspaceManager: services => new CrossModelWorkspaceManager(services),
         PackageManager: services => new CrossModelPackageManager(services),
         LangiumDocuments: services => new CrossModelLangiumDocuments(services),
-        TextDocuments: () => new OpenableTextDocuments(TextDocument),
+        TextDocuments: services => new OpenableTextDocuments(TextDocument, services.logger.ClientLogger),
         TextDocumentManager: services => new OpenTextDocumentManager(services),
         DocumentBuilder: services => new CrossModelDocumentBuilder(services)
     },

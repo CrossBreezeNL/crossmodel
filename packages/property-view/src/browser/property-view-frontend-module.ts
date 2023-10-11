@@ -3,12 +3,12 @@
  ********************************************************************************/
 
 import { ContainerModule } from '@theia/core/shared/inversify';
-import { PropertyViewWidgetProvider } from '@theia/property-view/lib/browser/property-view-widget-provider';
-import { ModelPropertyWidgetProvider } from './model-property-widget-provider';
 import { PropertyDataService } from '@theia/property-view/lib/browser/property-data-service';
-import { ModelDataService } from '../common/model-data-service';
+import { PropertyViewWidgetProvider } from '@theia/property-view/lib/browser/property-view-widget-provider';
 import '../../src/style/property-view.css';
+import { ModelDataService } from './model-data-service';
 import { ModelPropertyWidget } from './model-property-widget';
+import { ModelPropertyWidgetProvider } from './model-property-widget-provider';
 
 export default new ContainerModule((bind, _unbind, _isBound, rebind) => {
     // To make the property widget working

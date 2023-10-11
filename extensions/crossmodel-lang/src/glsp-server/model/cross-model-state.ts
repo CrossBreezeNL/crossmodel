@@ -60,7 +60,11 @@ export class CrossModelState extends DefaultModelState {
     }
 
     async updateSemanticRoot(content?: string): Promise<void> {
-        this._semanticRoot = await this.modelService.update(this.semanticUri, content ?? this.semanticRoot);
+        this._semanticRoot = await this.modelService.update({
+            uri: this.semanticUri,
+            model: content ?? this.semanticRoot,
+            clientId: this.clientId
+        });
         this.index.indexSemanticRoot(this.semanticRoot);
     }
 

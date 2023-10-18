@@ -69,6 +69,7 @@ export class ModelServiceImpl implements ModelService, BackendApplicationContrib
         this.connection.onClose(() => connected.reject('No connection to ModelServer.'));
         socket.on('close', () => connected.reject('No connection to ModelServer'));
         socket.on('ready', () => connected.resolve());
+        socket.on('error', error => console.error('Error was thrown on the ModelServer connection: %s; %s', error.name, error.message));
         socket.connect({ port });
         this.connection.listen();
 

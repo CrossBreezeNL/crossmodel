@@ -65,7 +65,7 @@ export function ModelReducer(model: CrossModelRoot, action: any): CrossModelRoot
                 throw Error('action.name undefined');
             }
 
-            model.entity.name = action.name;
+            model.entity.name_val = action.name;
 
             return model;
 
@@ -100,7 +100,7 @@ export function ModelReducer(model: CrossModelRoot, action: any): CrossModelRoot
                 throw Error('action.id or name is undefined');
             }
 
-            model.entity.attributes[action.id].name = action.name;
+            model.entity.attributes[action.id].name_val = action.name;
 
             return model;
 

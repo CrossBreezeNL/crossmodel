@@ -33,7 +33,7 @@ export class GEntityNodeBuilder extends GNodeBuilder {
             .addCssClass('entity-header-compartment')
             .add(
                 GLabel.builder()
-                    .text(entityRef?.name || 'unresolved')
+                    .text(entityRef?.name_val || 'unresolved')
                     .id(`${this.proxy.id}_label`)
                     .addCssClass('entity-header-label')
                     .build()

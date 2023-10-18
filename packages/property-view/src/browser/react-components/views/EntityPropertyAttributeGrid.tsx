@@ -236,7 +236,7 @@ function CustomSelect(props: any): React.ReactElement {
 function createRows(attributes: Array<EntityAttribute>): GridRowsProp {
     const rows = attributes.map((attribute, index) => ({
         id: index,
-        name: attribute.name,
+        name: attribute.name_val,
         value: attribute.datatype
     }));
 

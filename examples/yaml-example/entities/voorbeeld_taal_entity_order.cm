@@ -1,5 +1,6 @@
 entity:
     id: "Order"
+    name: "Order"
     description: "Order placed by a customer in the Customer table."
     attributes:
       - id: "Id"

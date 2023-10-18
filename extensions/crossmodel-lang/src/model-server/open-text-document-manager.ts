@@ -2,14 +2,24 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
+import { CloseModelArgs, ModelSavedEvent, ModelUpdatedEvent, OpenModelArgs } from '@crossbreeze/protocol';
 import * as fs from 'fs';
-import { AstNode, FileSystemProvider, LangiumDefaultSharedServices, LangiumDocuments } from 'langium';
+import {
+    AstNode,
+    DocumentBuilder,
+    DocumentState,
+    FileSystemProvider,
+    LangiumDefaultSharedServices,
+    LangiumDocument,
+    LangiumDocuments
+} from 'langium';
+import { Disposable } from 'vscode-languageserver';
 import { TextDocumentIdentifier, TextDocumentItem, VersionedTextDocumentIdentifier } from 'vscode-languageserver-protocol';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { URI } from 'vscode-uri';
+import { CrossModelLanguageMetaData } from '../language-server/generated/module';
 import { AddedSharedModelServices } from './model-module';
 import { OpenableTextDocuments } from './openable-text-documents';
-import { Disposable } from 'vscode-languageserver';
 
 /**
  * A manager class that suppors handling documents with a simple open-update-save/close lifecycle.
@@ -20,17 +30,18 @@ export class OpenTextDocumentManager {
     protected textDocuments: OpenableTextDocuments<TextDocument>;
     protected fileSystemProvider: FileSystemProvider;
     protected langiumDocs: LangiumDocuments;
-
-    /** Normalized URIs of open documents */
-    protected openDocuments: string[] = [];
+    protected documentBuilder: DocumentBuilder;
 
     constructor(services: AddedSharedModelServices & LangiumDefaultSharedServices) {
         this.textDocuments = services.workspace.TextDocuments;
         this.fileSystemProvider = services.workspace.FileSystemProvider;
         this.langiumDocs = services.workspace.LangiumDocuments;
+        this.documentBuilder = services.workspace.DocumentBuilder;
 
-        this.textDocuments.onDidOpen(event => this.open(event.document.uri, event.document.languageId));
-        this.textDocuments.onDidClose(event => this.close(event.document.uri));
+        this.textDocuments.onDidOpen(event =>
+            this.open({ clientId: event.clientId, uri: event.document.uri, languageId: event.document.languageId })
+        );
+        this.textDocuments.onDidClose(event => this.close({ clientId: event.clientId, uri: event.document.uri }));
     }
 
     /**
@@ -41,63 +52,94 @@ export class OpenTextDocumentManager {
      * @param listener Callback to be called
      * @returns Disposable object
      */
-    onSave<T extends AstNode>(uri: string, listener: (model: T) => void): Disposable {
-        return this.textDocuments.onDidSave(e => {
-            const documentURI = URI.parse(e.document.uri);
+    onSave<T extends AstNode>(uri: string, listener: (model: ModelSavedEvent<T>) => void): Disposable {
+        return this.textDocuments.onDidSave(event => {
+            const documentURI = URI.parse(event.document.uri);
 
             // Check if the uri of the saved document and the uri of the listener are equal.
-            if (e.document.uri === uri && documentURI !== undefined && this.langiumDocs.hasDocument(documentURI)) {
+            if (event.document.uri === uri && documentURI !== undefined && this.langiumDocs.hasDocument(documentURI)) {
                 const document = this.langiumDocs.getOrCreateDocument(documentURI);
                 const root = document.parseResult.value;
-                return listener(root as T);
+                return listener({ model: root as T, uri: event.document.uri, sourceClientId: event.clientId });
             }
 
             return undefined;
         });
     }
 
-    async open(uri: string, languageId?: string): Promise<void> {
-        if (this.isOpen(uri)) {
-            return;
-        }
-        this.openDocuments.push(this.normalizedUri(uri));
-        const textDocument = await this.readFromFilesystem(uri, languageId);
-        this.textDocuments.notifyDidOpenTextDocument({ textDocument });
-    }
-
-    async close(uri: string): Promise<void> {
-        if (!this.isOpen(uri)) {
-            return;
-        }
-        this.removeFromOpenedDocuments(uri);
-        this.textDocuments.notifyDidCloseTextDocument({ textDocument: TextDocumentIdentifier.create(uri) });
-    }
-
-    async update(uri: string, version: number, text: string): Promise<void> {
-        if (!this.isOpen(uri)) {
-            throw new Error(`Document ${uri} hasn't been opened for updating yet`);
-        }
-        this.textDocuments.notifyDidChangeTextDocument({
-            textDocument: VersionedTextDocumentIdentifier.create(uri, version),
-            contentChanges: [{ text }]
+    onUpdate<T extends AstNode>(uri: string, listener: (model: ModelUpdatedEvent<T>) => void): Disposable {
+        return this.documentBuilder.onBuildPhase(DocumentState.Validated, (allChangedDocuments, _token) => {
+            const changedDocument = allChangedDocuments.find(document => document.uri.toString() === uri);
+            if (changedDocument) {
+                const sourceClientId = this.getSourceClientId(changedDocument, allChangedDocuments);
+                listener({
+                    model: changedDocument.parseResult.value as T,
+                    sourceClientId,
+                    uri: changedDocument.textDocument.uri
+                });
+            }
         });
     }
 
-    async save(uri: string, text: string): Promise<void> {
+    getSourceClientId(preferred: LangiumDocument<AstNode>, rest: LangiumDocument<AstNode>[]): string {
+        const clientId = this.textDocuments.getChangeSource(preferred.textDocument.uri, preferred.textDocument.version);
+        if (clientId) {
+            return clientId;
+        }
+        return (
+            rest
+                .map(document => this.textDocuments.getChangeSource(document.textDocument.uri, document.textDocument.version))
+                .find(source => source !== undefined) || 'unknown'
+        );
+    }
+
+    async open(args: OpenModelArgs): Promise<void> {
+        // only create a dummy document if it is already open as we use the synced state anyway
+        const textDocument = this.isOpen(args.uri)
+            ? this.createDummyDocument(args.uri)
+            : await this.createDocumentFromFileSystem(args.uri, args.languageId);
+        this.textDocuments.notifyDidOpenTextDocument({ textDocument }, args.clientId);
+    }
+
+    async close(args: CloseModelArgs): Promise<void> {
+        this.textDocuments.notifyDidCloseTextDocument({ textDocument: TextDocumentIdentifier.create(args.uri) }, args.clientId);
+    }
+
+    async update(uri: string, version: number, text: string, clientId: string): Promise<void> {
+        if (!this.isOpen(uri)) {
+            throw new Error(`Document ${uri} hasn't been opened for updating yet`);
+        }
+        this.textDocuments.notifyDidChangeTextDocument(
+            {
+                textDocument: VersionedTextDocumentIdentifier.create(uri, version),
+                contentChanges: [{ text }]
+            },
+            clientId
+        );
+    }
+
+    async save(uri: string, text: string, clientId: string): Promise<void> {
         const vscUri = URI.parse(uri);
         fs.writeFileSync(vscUri.fsPath, text);
-        this.textDocuments.notifyDidSaveTextDocument({ textDocument: TextDocumentIdentifier.create(uri) });
+        this.textDocuments.notifyDidSaveTextDocument({ textDocument: TextDocumentIdentifier.create(uri), text }, clientId);
     }
 
-    protected isOpen(uri: string): boolean {
-        return this.openDocuments.includes(this.normalizedUri(uri));
+    isOpen(uri: string): boolean {
+        return !!this.textDocuments.get(this.normalizedUri(uri)) || !!this.textDocuments.get(uri);
     }
 
-    protected removeFromOpenedDocuments(uri: string): void {
-        this.openDocuments.splice(this.openDocuments.indexOf(this.normalizedUri(uri)));
+    isOpenInLanguageClient(uri: string): boolean {
+        return this.textDocuments.isOpenInLanguageClient(this.normalizedUri(uri));
     }
 
-    protected async readFromFilesystem(uri: string, languageId = 'cross-model'): Promise<TextDocumentItem> {
+    protected createDummyDocument(uri: string): TextDocumentItem {
+        return TextDocumentItem.create(this.normalizedUri(uri), CrossModelLanguageMetaData.languageId, 1, '');
+    }
+
+    protected async createDocumentFromFileSystem(
+        uri: string,
+        languageId: string = CrossModelLanguageMetaData.languageId
+    ): Promise<TextDocumentItem> {
         const vscUri = URI.parse(uri);
         const content = this.fileSystemProvider.readFileSync(vscUri);
         return TextDocumentItem.create(vscUri.toString(), languageId, 1, content.toString());

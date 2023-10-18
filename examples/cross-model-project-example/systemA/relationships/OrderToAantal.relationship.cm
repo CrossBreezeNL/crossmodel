@@ -1,0 +1,8 @@
+relationship OrderToAantal {
+         source := Order;
+         target := Aantal;
+         type := 1:1;
+         properties {
+            
+         }
+      }

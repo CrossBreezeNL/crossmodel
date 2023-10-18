@@ -56,7 +56,7 @@ function EntityPropertyGeneral(props: EntityPropertyGeneralProps): React.ReactEl
                     <input
                         // TODO, add debounce
                         className='theia-input'
-                        value={model.entity.name}
+                        value={model.entity.name_val}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             dispatch({ type: 'entity:change-name', name: e.target.value ? e.target.value : '' });
                         }}

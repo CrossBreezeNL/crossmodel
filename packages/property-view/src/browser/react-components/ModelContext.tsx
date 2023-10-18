@@ -65,7 +65,7 @@ export function ModelReducer(model: CrossModelRoot, action: any): CrossModelRoot
                 throw Error('action.name undefined');
             }
 
-            model.entity.name = action.name;
+            model.entity.name_val = action.name;
 
             return model;
 
@@ -88,7 +88,7 @@ export function ModelReducer(model: CrossModelRoot, action: any): CrossModelRoot
                 throw Error('action.id or dataType is undefined');
             }
 
-            model.entity.attributes[action.id].value = action.dataType;
+            model.entity.attributes[action.id].datatype = action.dataType;
 
             return model;
 
@@ -100,7 +100,7 @@ export function ModelReducer(model: CrossModelRoot, action: any): CrossModelRoot
                 throw Error('action.id or name is undefined');
             }
 
-            model.entity.attributes[action.id].name = action.name;
+            model.entity.attributes[action.id].name_val = action.name;
 
             return model;
 
@@ -110,9 +110,9 @@ export function ModelReducer(model: CrossModelRoot, action: any): CrossModelRoot
             }
 
             model.entity.attributes.push({
-                $type: 'Attribute',
+                $type: 'EntityAttribute',
                 name: `empty_attribute${model.entity.attributes.length}`,
-                value: 'Float'
+                datatype: 'Float'
             });
 
             return model;

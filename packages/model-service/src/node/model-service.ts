@@ -4,16 +4,21 @@
 import { waitForTemporaryFileContent } from '@crossbreeze/core/lib/node';
 import {
     CloseModel,
+    CloseModelArgs,
     CrossModelRoot,
     DiagramNodeEntity,
     MODELSERVER_PORT_FILE,
     OnSave,
+    OnUpdated,
     OpenModel,
+    OpenModelArgs,
     PORT_FOLDER,
     RequestModel,
     RequestModelDiagramNode,
     SaveModel,
-    UpdateModel
+    SaveModelArgs,
+    UpdateModel,
+    UpdateModelArgs
 } from '@crossbreeze/protocol';
 import { URI } from '@theia/core';
 import { Deferred } from '@theia/core/lib/common/promise-util';
@@ -55,45 +60,54 @@ export class ModelServiceImpl implements ModelService, BackendApplicationContrib
     }
 
     protected async connectToServer(port: number): Promise<void> {
+        // Create the deferred object which exposes the Promise of the connection with the ModelServer.
         const connected = new Deferred<void>();
+
+        // Create the socket, reader, writer and rpc-connection.
         const socket = new net.Socket();
         const reader = new rpc.SocketMessageReader(socket);
         const writer = new rpc.SocketMessageWriter(socket);
         this.connection = rpc.createMessageConnection(reader, writer);
 
-        this.connection.onClose(() => connected.reject('No connection to ModelServer.'));
-        socket.on('close', () => connected.reject('No connection to ModelServer'));
+        // Configure connection promise results for the rpc connection.
+        this.connection.onClose(() => connected.reject('Connection with the ModelServer was closed.'));
+        this.connection.onError(() => connected.reject('Error occured with the connection to the ModelServer'));
+
+        // Configure connection promise results for the socket.
         socket.on('ready', () => connected.resolve());
+        socket.on('close', () => connected.reject('Socket from ModelService to ModelServer was closed.'));
+        socket.on('error', error => console.error('Error occurred with the ModelServer socket: %s; %s', error.name, error.message));
+
+        // Connect to the ModelServer on the given port.
         socket.connect({ port });
         this.connection.listen();
 
-        this.connection.onNotification(OnSave, (uri: string, model: CrossModelRoot) => {
-            this.client?.updateModel(uri, model);
-        });
+        this.setUpListeners();
         return connected.promise;
     }
 
     async waitForPort(): Promise<number> {
         // the automatically assigned port is written by the server to a specific file location
         // we wait for that file to be available and read the port number out of it
-        // that way we can ensure that the server is ready to accept our connection
+        // that way we can ensure that the server is ready to accept our connection.
         const workspace = await this.workspaceServer.getMostRecentlyUsedWorkspace();
         if (!workspace) {
             throw new Error('No workspace set.');
         }
         const portFile = new URI(workspace).path.join(PORT_FOLDER, MODELSERVER_PORT_FILE).fsPath();
         const port = await waitForTemporaryFileContent(portFile);
+        console.debug('Found port number in workspace: %d: ', port);
         return Number.parseInt(port, 10);
     }
 
-    async open(uri: string): Promise<void> {
+    async open(args: OpenModelArgs): Promise<CrossModelRoot | undefined> {
         await this.initializeServer();
-        await this.connection.sendRequest(OpenModel, uri);
+        return this.connection.sendRequest(OpenModel, args);
     }
 
-    async close(uri: string): Promise<void> {
+    async close(args: CloseModelArgs): Promise<void> {
         await this.initializeServer();
-        await this.connection.sendRequest(CloseModel, uri);
+        await this.connection.sendRequest(CloseModel, args);
     }
 
     async request(uri: string): Promise<CrossModelRoot | undefined> {
@@ -101,14 +115,14 @@ export class ModelServiceImpl implements ModelService, BackendApplicationContrib
         return this.connection.sendRequest(RequestModel, uri);
     }
 
-    async update(uri: string, model: CrossModelRoot): Promise<CrossModelRoot> {
+    async update(args: UpdateModelArgs<CrossModelRoot>): Promise<CrossModelRoot> {
         await this.initializeServer();
-        return this.connection.sendRequest(UpdateModel, uri, model);
+        return this.connection.sendRequest(UpdateModel, args);
     }
 
-    async save(uri: string, model: CrossModelRoot): Promise<void> {
+    async save(args: SaveModelArgs<CrossModelRoot>): Promise<void> {
         await this.initializeServer();
-        return this.connection.sendRequest(SaveModel, uri, model);
+        return this.connection.sendRequest(SaveModel, args);
     }
 
     dispose(): void {
@@ -124,8 +138,11 @@ export class ModelServiceImpl implements ModelService, BackendApplicationContrib
     }
 
     setUpListeners(): void {
-        this.connection.onNotification(OnSave, (uri, model) => {
-            this.client?.updateModel(uri, model);
+        this.connection.onNotification(OnSave, event => {
+            this.client?.updateModel(event);
+        });
+        this.connection.onNotification(OnUpdated, event => {
+            this.client?.updateModel(event);
         });
     }
 

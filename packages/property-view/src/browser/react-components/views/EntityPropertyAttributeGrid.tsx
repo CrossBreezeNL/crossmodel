@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { CrossModelRoot, Attribute } from '@crossbreeze/protocol';
+import { CrossModelRoot, EntityAttribute } from '@crossbreeze/protocol';
 import * as React from '@theia/core/shared/react';
 import {
     DataGrid,
@@ -233,11 +233,11 @@ function CustomSelect(props: any): React.ReactElement {
     );
 }
 
-function createRows(attributes: Array<Attribute>): GridRowsProp {
+function createRows(attributes: Array<EntityAttribute>): GridRowsProp {
     const rows = attributes.map((attribute, index) => ({
         id: index,
-        name: attribute.name,
-        value: attribute.value
+        name: attribute.name_val,
+        value: attribute.datatype
     }));
 
     return rows;

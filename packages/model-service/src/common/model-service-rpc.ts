@@ -2,9 +2,16 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { CrossModelRoot, DiagramNodeEntity } from '@crossbreeze/protocol';
-import { JsonRpcServer, Event } from '@theia/core';
-import { ModelDocument } from '../browser';
+import {
+    CloseModelArgs,
+    CrossModelRoot,
+    DiagramNodeEntity,
+    ModelUpdatedEvent,
+    OpenModelArgs,
+    SaveModelArgs,
+    UpdateModelArgs
+} from '@crossbreeze/protocol';
+import { Event, JsonRpcServer } from '@theia/core';
 
 /** Path used to communicate between the Theia frontend and backend */
 export const MODEL_SERVICE_PATH = '/services/model-service';
@@ -14,17 +21,17 @@ export const MODEL_SERVICE_PATH = '/services/model-service';
  */
 export const ModelService = Symbol('ModelService');
 export interface ModelService extends JsonRpcServer<ModelServiceClient> {
-    open(uri: string): Promise<void>;
-    close(uri: string): Promise<void>;
+    open(args: OpenModelArgs): Promise<CrossModelRoot | undefined>;
+    close(args: CloseModelArgs): Promise<void>;
     request(uri: string): Promise<CrossModelRoot | undefined>;
     requestDiagramNodeEntityModel(uri: string, id: string): Promise<DiagramNodeEntity | undefined>;
-    update(uri: string, model: CrossModelRoot): Promise<CrossModelRoot>;
-    save(uri: string, model: CrossModelRoot): Promise<void>;
+    update(args: UpdateModelArgs<CrossModelRoot>): Promise<CrossModelRoot>;
+    save(args: SaveModelArgs<CrossModelRoot>): Promise<void>;
 }
 
 export const ModelServiceClient = Symbol('ModelServiceClient');
 export interface ModelServiceClient {
     getName(): Promise<string>;
-    updateModel(uri: string, model: CrossModelRoot): Promise<void>;
-    onUpdate: Event<ModelDocument>;
+    updateModel(args: ModelUpdatedEvent<CrossModelRoot>): Promise<void>;
+    onUpdate: Event<ModelUpdatedEvent<CrossModelRoot>>;
 }

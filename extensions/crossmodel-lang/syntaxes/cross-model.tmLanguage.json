@@ -10,7 +10,7 @@
     },
     {
       "name": "keyword.control.cross-model",
-      "match": "\\b(1:n|attributes|description|diagram|edge|entity|for|height|n:1|n:m|node|properties|relationship|source|target|type|width|with|x|y)\\b"
+      "match": "\\b(attributes|child|datatype|description|diagram|edges|entity|height|id|name|nodes|parent|relationship|sourceNode|targetNode|type|width|x|y)\\b"
     },
     {
       "name": "string.quoted.double.cross-model",
@@ -37,22 +37,7 @@
     "comments": {
       "patterns": [
         {
-          "name": "comment.block.cross-model",
-          "begin": "/\\*",
-          "beginCaptures": {
-            "0": {
-              "name": "punctuation.definition.comment.cross-model"
-            }
-          },
-          "end": "\\*/",
-          "endCaptures": {
-            "0": {
-              "name": "punctuation.definition.comment.cross-model"
-            }
-          }
-        },
-        {
-          "begin": "//",
+          "begin": "#",
           "beginCaptures": {
             "1": {
               "name": "punctuation.whitespace.comment.leading.cross-model"
@@ -60,6 +45,36 @@
           },
           "end": "(?=$)",
           "name": "comment.line.cross-model"
+        },
+        {
+          "name": "comment.block.cross-model",
+          "begin": "this_string_does_not_matter_newline#\\$%\\^&\\*\\(\\(",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.cross-model"
+            }
+          },
+          "end": "this_string_does_not_matter_newline#\\$%\\^&\\*\\(\\(",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.cross-model"
+            }
+          }
+        },
+        {
+          "name": "comment.block.cross-model",
+          "begin": "this_string_does_not_matter_spaces#\\$%\\^&\\*\\(\\(",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.cross-model"
+            }
+          },
+          "end": "this_string_does_not_matter_spaces#\\$%\\^&\\*\\(\\(",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.cross-model"
+            }
+          }
         }
       ]
     },

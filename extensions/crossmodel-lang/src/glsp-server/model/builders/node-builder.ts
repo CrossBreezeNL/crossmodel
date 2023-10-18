@@ -15,7 +15,7 @@ export class GEntityNode extends GNode {
 export class GEntityNodeBuilder extends GNodeBuilder {
     addNode(node: DiagramNode): this {
         // Get the reference that the DiagramNode holds to the Entity in the .langium file.
-        const entityRef = node.semanticElement.ref;
+        const entityRef = node.entity?.ref;
 
         // Options which are the same for every node
         this.addCssClasses('diagram-node', 'entity').layout('vbox').addArgs(ArgsUtil.cornerRadius(3));
@@ -27,12 +27,13 @@ export class GEntityNodeBuilder extends GNodeBuilder {
 
         // Add the label/name of the node
         const label = GCompartment.builder()
+            .id(`${this.proxy.id}_header`)
             .layout('hbox')
             .addLayoutOption('hAlign', 'center')
             .addCssClass('entity-header-compartment')
             .add(
                 GLabel.builder()
-                    .text(entityRef?.name || 'unresolved')
+                    .text(entityRef?.name_val || 'unresolved')
                     .id(`${this.proxy.id}_label`)
                     .addCssClass('entity-header-label')
                     .build()
@@ -44,6 +45,7 @@ export class GEntityNodeBuilder extends GNodeBuilder {
         // Add the children of the node
         if (entityRef !== undefined) {
             const allAttributesCompartment = GCompartment.builder()
+                .id(`${this.proxy.id}_attributes`)
                 .addCssClass('attributes-compartment')
                 .layout('vbox')
                 .addLayoutOption('hAlign', 'left')
@@ -52,14 +54,27 @@ export class GEntityNodeBuilder extends GNodeBuilder {
             // Add the attributes of the entity.
             for (const attribute of entityRef.attributes) {
                 const attributeCompartment = GCompartment.builder()
+                    .id(`${this.proxy.id}_${attribute.name}_attribute`)
                     .addCssClass('attribute-compartment')
                     .layout('hbox')
                     .addLayoutOption('paddingBottom', 3)
                     .addLayoutOption('paddingTop', 3);
 
-                attributeCompartment.add(GLabel.builder().text(attribute.name).addCssClass('attribute').build());
-                attributeCompartment.add(GLabel.builder().text(' : ').build());
-                attributeCompartment.add(GLabel.builder().text(attribute.value.toString()).addCssClass('datatype').build());
+                attributeCompartment.add(
+                    GLabel.builder()
+                        .id(`${this.proxy.id}_${attribute.name}_attribute_name`)
+                        .text(attribute.name_val || '')
+                        .addCssClass('attribute')
+                        .build()
+                );
+                attributeCompartment.add(GLabel.builder().text(' : ').id(`${this.proxy.id}_${attribute.name}_attribute_del`).build());
+                attributeCompartment.add(
+                    GLabel.builder()
+                        .id(`${this.proxy.id}_${attribute.name}_attribute_type`)
+                        .text(attribute.datatype?.toString() || '')
+                        .addCssClass('datatype')
+                        .build()
+                );
 
                 allAttributesCompartment.add(attributeCompartment.build());
             }
@@ -68,7 +83,9 @@ export class GEntityNodeBuilder extends GNodeBuilder {
         }
 
         // The DiagramNode in the langium file holds the coordinates of node
-        this.addLayoutOption('prefWidth', node.width).addLayoutOption('prefHeight', node.height).position(node.x, node.y);
+        this.addLayoutOption('prefWidth', node.width || 100)
+            .addLayoutOption('prefHeight', node.height || 100)
+            .position(node.x || 100, node.y || 100);
 
         return this;
     }

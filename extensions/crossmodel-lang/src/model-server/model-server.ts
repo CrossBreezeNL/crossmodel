@@ -4,15 +4,20 @@
 
 import {
     CloseModel,
+    CloseModelArgs,
     CrossModelRoot,
     OnSave,
+    OnUpdated,
     OpenModel,
+    OpenModelArgs,
     RequestModel,
     RequestModelDiagramNode,
     SaveModel,
-    UpdateModel
+    SaveModelArgs,
+    UpdateModel,
+    UpdateModelArgs
 } from '@crossbreeze/protocol';
-import { AstNode, isReference } from 'langium';
+import { isReference } from 'langium';
 import { Disposable } from 'vscode-jsonrpc';
 import * as rpc from 'vscode-jsonrpc/node';
 import { CrossModelRoot as CrossModelRootAst, DiagramNode, Entity, isCrossModelRoot } from '../language-server/generated/ast';
@@ -25,18 +30,19 @@ import { ModelService } from './model-service';
  */
 export class ModelServer implements Disposable {
     protected toDispose: Disposable[] = [];
+    protected toDisposeForSession: Map<string, Disposable[]> = new Map();
 
     constructor(protected connection: rpc.MessageConnection, protected modelService: ModelService) {
         this.initialize(connection);
     }
 
     protected initialize(connection: rpc.MessageConnection): void {
-        this.toDispose.push(connection.onRequest(OpenModel, uri => this.openModel(uri)));
-        this.toDispose.push(connection.onRequest(CloseModel, uri => this.closeModel(uri)));
+        this.toDispose.push(connection.onRequest(OpenModel, args => this.openModel(args)));
+        this.toDispose.push(connection.onRequest(CloseModel, args => this.closeModel(args)));
         this.toDispose.push(connection.onRequest(RequestModel, uri => this.requestModel(uri)));
         this.toDispose.push(connection.onRequest(RequestModelDiagramNode, (uri, id) => this.requestModelDiagramNode(uri, id)));
-        this.toDispose.push(connection.onRequest(UpdateModel, (uri, model) => this.updateModel(uri, model)));
-        this.toDispose.push(connection.onRequest(SaveModel, (uri, model) => this.saveModel(uri, model)));
+        this.toDispose.push(connection.onRequest(UpdateModel, args => this.updateModel(args)));
+        this.toDispose.push(connection.onRequest(SaveModel, args => this.saveModel(args)));
     }
 
     /**
@@ -59,47 +65,65 @@ export class ModelServer implements Disposable {
 
         for (const node of root.diagram.nodes) {
             if (node.name === id) {
-                if (diagramNode) {
-                    throw new Error('Multiple nodes with the same name');
-                }
-
                 diagramNode = node;
             }
         }
 
-        if (!diagramNode) {
+        const entity: Entity | undefined = diagramNode?.entity?.ref;
+
+        if (!entity?.$container.$document) {
             throw new Error('No node found with the given id');
         }
 
-        const ref: Entity | undefined = diagramNode.semanticElement.ref;
-
-        if (!ref || !ref.$container.$document) {
-            throw new Error('No node found with the given id');
-        }
-
-        const entityUri = ref.$container.$document.uri.toString();
-        const serializedEntity: CrossModelRoot | undefined = toSerializable({
+        const serializedEntity = toSerializable({
             $type: 'CrossModelRoot',
-            entity: diagramNode.semanticElement.ref
-        });
+            entity: entity
+        }) as CrossModelRoot;
 
         return {
-            uri: entityUri,
+            uri: entity.$container.$document.uri.toString(),
             model: serializedEntity
         };
     }
 
-    protected async openModel(uri: string): Promise<void> {
-        await this.modelService.open(uri);
-
-        this.modelService.onSave(uri, newModel => {
-            // TODO: Research if this also has to be closed after the document closes
-            this.connection.sendNotification(OnSave, uri, toSerializable(newModel) as CrossModelRoot);
-        });
+    protected async openModel(args: OpenModelArgs): Promise<CrossModelRoot | undefined> {
+        if (!this.modelService.isOpen(args.uri)) {
+            await this.modelService.open(args);
+        }
+        this.setupListeners(args);
+        return this.requestModel(args.uri);
     }
 
-    protected async closeModel(uri: string): Promise<void> {
-        await this.modelService.close(uri);
+    protected setupListeners(args: OpenModelArgs): void {
+        this.disposeListeners(args);
+        const listenersForClient = [];
+        listenersForClient.push(
+            this.modelService.onSave(args.uri, event =>
+                this.connection.sendNotification(OnSave, {
+                    uri: args.uri,
+                    model: toSerializable(event.model) as CrossModelRoot,
+                    sourceClientId: event.sourceClientId
+                })
+            ),
+            this.modelService.onUpdate(args.uri, event =>
+                this.connection.sendNotification(OnUpdated, {
+                    uri: args.uri,
+                    model: toSerializable(event.model) as CrossModelRoot,
+                    sourceClientId: event.sourceClientId
+                })
+            )
+        );
+        this.toDisposeForSession.set(args.clientId, listenersForClient);
+    }
+
+    protected disposeListeners(args: CloseModelArgs): void {
+        this.toDisposeForSession.get(args.clientId)?.forEach(disposable => disposable.dispose());
+        this.toDisposeForSession.delete(args.clientId);
+    }
+
+    protected async closeModel(args: CloseModelArgs): Promise<void> {
+        this.disposeListeners(args);
+        return this.modelService.close(args);
     }
 
     protected async requestModel(uri: string): Promise<CrossModelRoot | undefined> {
@@ -107,13 +131,13 @@ export class ModelServer implements Disposable {
         return toSerializable(root) as CrossModelRoot;
     }
 
-    protected async updateModel(uri: string, model: CrossModelRoot): Promise<CrossModelRoot> {
-        const updated = await this.modelService.update(uri, model);
+    protected async updateModel(args: UpdateModelArgs<CrossModelRoot>): Promise<CrossModelRoot> {
+        const updated = await this.modelService.update(args);
         return toSerializable(updated) as CrossModelRoot;
     }
 
-    protected async saveModel(uri: string, model: AstNode): Promise<void> {
-        await this.modelService.save(uri, model);
+    protected async saveModel(args: SaveModelArgs<CrossModelRoot>): Promise<void> {
+        await this.modelService.save(args);
     }
 
     dispose(): void {

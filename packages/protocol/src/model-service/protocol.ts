@@ -17,32 +17,30 @@ export function isCrossModelRoot(model?: any): model is CrossModelRoot {
     return !!model && model.$type === 'CrossModelRoot';
 }
 
-export interface Relationship {
-    readonly $type: 'Relationship';
-    name: string;
-    properties: Array<Property>;
-    source: string;
-    target: string;
-    type: '1:1' | '1:n' | 'n:1' | 'n:m';
-}
-
-export interface Property {
-    readonly $type: 'Property';
-    key: string;
-    value: number | string;
-}
-
 export interface Entity {
     readonly $type: 'Entity';
-    name: string;
-    description: string;
-    attributes: Array<Attribute>;
+    attributes: Array<EntityAttribute>;
+    description?: string;
+    name?: string;
+    name_val?: string;
 }
 
-export interface Attribute {
-    readonly $type: 'Attribute';
-    name: string;
-    value: number | string;
+export interface EntityAttribute {
+    readonly $type: 'EntityAttribute';
+    datatype?: string;
+    description?: string;
+    name?: string;
+    name_val?: string;
+}
+
+export interface Relationship {
+    readonly $type: 'Relationship';
+    child?: string;
+    description?: string;
+    name?: string;
+    name_val?: string;
+    parent?: string;
+    type?: string;
 }
 
 export interface DiagramNodeEntity {
@@ -54,12 +52,44 @@ export function isDiagramNodeEntity(model?: any): model is DiagramNodeEntity {
     return !!model && model.uri && model.model && isCrossModelRoot(model.model);
 }
 
-export const OpenModel = new rpc.RequestType1<string, void, void>('server/open');
-export const CloseModel = new rpc.RequestType1<string, void, void>('server/close');
+export interface ClientModelArgs {
+    uri: string;
+    clientId: string;
+}
+
+export interface OpenModelArgs extends ClientModelArgs {
+    languageId?: string;
+}
+
+export interface CloseModelArgs extends ClientModelArgs {}
+
+export interface UpdateModelArgs<T> extends ClientModelArgs {
+    model: T | string;
+}
+
+export interface SaveModelArgs<T> extends ClientModelArgs {
+    model: T | string;
+}
+
+export interface ModelUpdatedEvent<T> {
+    uri: string;
+    model: T;
+    sourceClientId: string;
+}
+
+export interface ModelSavedEvent<T> {
+    uri: string;
+    model: T;
+    sourceClientId: string;
+}
+
+export const OpenModel = new rpc.RequestType1<OpenModelArgs, CrossModelRoot | undefined, void>('server/open');
+export const CloseModel = new rpc.RequestType1<CloseModelArgs, void, void>('server/close');
 export const RequestModel = new rpc.RequestType1<string, CrossModelRoot | undefined, void>('server/request');
 export const RequestModelDiagramNode = new rpc.RequestType2<string, string, DiagramNodeEntity | undefined, void>(
     'server/requestModelDiagramNode'
 );
-export const UpdateModel = new rpc.RequestType2<string, CrossModelRoot, CrossModelRoot, void>('server/update');
-export const SaveModel = new rpc.RequestType2<string, CrossModelRoot, void, void>('server/save');
-export const OnSave = new rpc.NotificationType2<string, CrossModelRoot>('server/onSave');
+export const UpdateModel = new rpc.RequestType1<UpdateModelArgs<CrossModelRoot>, CrossModelRoot, void>('server/update');
+export const SaveModel = new rpc.RequestType1<SaveModelArgs<CrossModelRoot>, void, void>('server/save');
+export const OnSave = new rpc.NotificationType1<ModelSavedEvent<CrossModelRoot>>('server/onSave');
+export const OnUpdated = new rpc.NotificationType1<ModelUpdatedEvent<CrossModelRoot>>('server/onUpdated');

@@ -2,13 +2,13 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
+import { ModelServiceClient } from '@crossbreeze/model-service/lib/common';
 import { CrossModelRoot } from '@crossbreeze/protocol';
 import URI from '@theia/core/lib/common/uri';
 import * as React from '@theia/core/shared/react';
-import { ModelProvider, ModelReducer } from './ModelContext';
+import { AppState, ModelProvider, ModelReducer } from './ModelContext';
 import { EntityForm } from './entity-components/EntityForm';
 import _ = require('lodash');
-import { ModelServiceClient } from '@crossbreeze/model-service/lib/common';
 
 interface AppProps {
     updateModel: (model: CrossModelRoot) => void;
@@ -17,30 +17,27 @@ interface AppProps {
     formClient: ModelServiceClient;
 }
 
-export function App(props: AppProps): React.ReactElement {
-    const [model, dispatch] = React.useReducer(ModelReducer, props.model as CrossModelRoot);
+export function App({ model, updateModel }: AppProps): React.ReactElement {
+    const [appState, dispatch] = React.useReducer(ModelReducer, { model, reason: '' } as AppState);
 
-    // Subscribing to the updates made to the model by a different editor
     React.useEffect(() => {
-        props.formClient.onUpdate(document => {
-            if (document.uri === props.getResourceUri().toString()) {
-                dispatch({ type: 'model:update', model: document.model });
-            }
-        });
-    }, [props]);
+        // triggered when a new model is passed from the outside (widget) -> update internal state
+        dispatch({ type: 'model:update', model: model });
+    }, [model]);
 
-    // This effect gets triggered when the model gets updated, it will pass the new model
-    // to the Form-widget and that will pass it to the server to update
     React.useEffect(() => {
-        props.updateModel(_.cloneDeep(model));
-    }, [model, props]);
+        if (appState.reason !== 'model:update') {
+            // triggered when the internal model is updated, pass update to server
+            updateModel(_.cloneDeep(appState.model));
+        }
+    }, [appState, updateModel]);
 
     let render = undefined;
 
     // Rendering logic
-    if (!model) {
+    if (!appState?.model) {
         render = <div>loading</div>;
-    } else if (model.entity) {
+    } else if (appState.model.entity) {
         render = <EntityForm />;
     } else {
         render = (
@@ -58,7 +55,7 @@ export function App(props: AppProps): React.ReactElement {
 
     return (
         <div className='form-editor'>
-            <ModelProvider model={model} dispatch={dispatch}>
+            <ModelProvider model={appState.model} dispatch={dispatch}>
                 {render}
             </ModelProvider>
         </div>

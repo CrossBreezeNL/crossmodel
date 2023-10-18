@@ -8,11 +8,12 @@ import { PropertyDataService } from '@theia/property-view/lib/browser/property-d
 import { PropertyViewContentWidget } from '@theia/property-view/lib/browser/property-view-content-widget';
 
 import { ModelService } from '@crossbreeze/model-service/lib/common';
-import { CrossModelRoot, UpdateClientOperation, isDiagramNodeEntity } from '@crossbreeze/protocol';
+import { CrossModelRoot, isDiagramNodeEntity } from '@crossbreeze/protocol';
 import { IActionDispatcher } from '@eclipse-glsp/client';
 import { GLSPDiagramWidget, GlspSelection } from '@eclipse-glsp/theia-integration';
 import { ApplicationShell } from '@theia/core/lib/browser/shell/application-shell';
 import { inject, injectable } from '@theia/core/shared/inversify';
+import { PROPERTY_CLIENT_ID } from './model-data-service';
 import { App } from './react-components/App';
 
 @injectable()
@@ -60,10 +61,7 @@ export class ModelPropertyWidget extends ReactWidget implements PropertyViewCont
         if (this.model === undefined || this.uri === undefined) {
             throw new Error('Cannot save undefined model');
         }
-
-        const updated = await this.modelService.update(this.uri, this.model);
-        await this.modelService.save(this.uri, updated);
-        this.actionDispatcher?.dispatch(UpdateClientOperation.create());
+        this.modelService.update({ uri: this.uri, model: this.model, clientId: PROPERTY_CLIENT_ID });
     }
 
     protected async updateModel(model: CrossModelRoot): Promise<void> {

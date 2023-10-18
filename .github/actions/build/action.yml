@@ -32,23 +32,26 @@ runs: # windows-2019 # is needed because the Setup Python task does not work wit
     - name: Set up yarn to use version 1.22.19
       uses: Amadevus/pwsh-script@v2.0.3
       with:
-        # PowerShell script to execute in Actions-hydrated context
         script: |
           yarn policies set-version 1.22.19
 
     - name: Yarn version
       uses: Amadevus/pwsh-script@v2.0.3
       with:
-        # PowerShell script to execute in Actions-hydrated context
         script: |
           yarn --version | Write-Host
 
     - name: Yarn build
       uses: Amadevus/pwsh-script@v2.0.3
       with:
-        # PowerShell script to execute in Actions-hydrated context
         script: |
           yarn
+
+    - name: Yarn test
+      uses: Amadevus/pwsh-script@v2.0.3
+      with:
+        script: |
+          yarn test
 
     #- name: Yarn start browser
     # run:  |

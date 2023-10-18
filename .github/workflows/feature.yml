@@ -1,16 +1,18 @@
 name: feature
 
 on:
-    push:
-        branches:
-            - feature/*
+  push:
+    branches:
+      - feature/*
 
 jobs:
   build:
     runs-on: windows-2019 # is needed because the Setup Python task does not work with ubuntu
     steps:
-    # Checkout the code.
-    - name: check out # is needed to read the files on the root folder of the repo
-      uses: actions/checkout@v3
-    # Use the build-addin action.
-    - uses: ./.github/actions/build
+      # Checkout the code.
+      - name: check out # is needed to read the files on the root folder of the repo
+        uses: actions/checkout@v3
+      # Use the build action.
+      - uses: ./.github/actions/build
+      # Use the test action.
+      - uses: ./.github/actions/test

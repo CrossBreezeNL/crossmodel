@@ -60,16 +60,25 @@ export class ModelServiceImpl implements ModelService, BackendApplicationContrib
     }
 
     protected async connectToServer(port: number): Promise<void> {
+        // Create the deferred object which exposes the Promise of the connection with the ModelServer.
         const connected = new Deferred<void>();
+
+        // Create the socket, reader, writer and rpc-connection.
         const socket = new net.Socket();
         const reader = new rpc.SocketMessageReader(socket);
         const writer = new rpc.SocketMessageWriter(socket);
         this.connection = rpc.createMessageConnection(reader, writer);
 
-        this.connection.onClose(() => connected.reject('No connection to ModelServer.'));
-        socket.on('close', () => connected.reject('No connection to ModelServer'));
+        // Configure connection promise results for the rpc connection.
+        this.connection.onClose(() => connected.reject('Connection with the ModelServer was closed.'));
+        this.connection.onError(() => connected.reject('Error occured with the connection to the ModelServer'));
+
+        // Configure connection promise results for the socket.
         socket.on('ready', () => connected.resolve());
-        socket.on('error', error => console.error('Error was thrown on the ModelServer connection: %s; %s', error.name, error.message));
+        socket.on('close', () => connected.reject('Socket from ModelService to ModelServer was closed.'));
+        socket.on('error', error => console.error('Error occurred with the ModelServer socket: %s; %s', error.name, error.message));
+
+        // Connect to the ModelServer on the given port.
         socket.connect({ port });
         this.connection.listen();
 
@@ -80,13 +89,14 @@ export class ModelServiceImpl implements ModelService, BackendApplicationContrib
     async waitForPort(): Promise<number> {
         // the automatically assigned port is written by the server to a specific file location
         // we wait for that file to be available and read the port number out of it
-        // that way we can ensure that the server is ready to accept our connection
+        // that way we can ensure that the server is ready to accept our connection.
         const workspace = await this.workspaceServer.getMostRecentlyUsedWorkspace();
         if (!workspace) {
             throw new Error('No workspace set.');
         }
         const portFile = new URI(workspace).path.join(PORT_FOLDER, MODELSERVER_PORT_FILE).fsPath();
         const port = await waitForTemporaryFileContent(portFile);
+        console.debug('Found port number in workspace: %d: ', port);
         return Number.parseInt(port, 10);
     }
 

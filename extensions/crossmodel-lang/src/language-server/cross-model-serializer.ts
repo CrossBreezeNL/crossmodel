@@ -35,25 +35,34 @@ const PROPERTY_ORDER = [
  * cf. https://github.com/langium/langium/discussions/863
  */
 export class CrossModelSerializer implements Serializer<CrossModelRoot> {
+    // New line character.
+    static readonly CHAR_NEWLINE = '\n';
+    // Indentation character.
+    static readonly CHAR_INDENTATION = ' ';
+    // The amount of spaces to use to indent an object.
+    static readonly INDENTATION_AMOUNT_OBJECT = 4;
+    // The amount of spaces to use to indent an array.
+    static readonly INDENTATION_AMOUNT_ARRAY = 2;
+
     constructor(protected services: CrossModelServices, protected refNameProvider = services.references.QualifiedNameProvider) {}
 
     serialize(root: CrossModelRoot): string {
         const newRoot: CrossModelRoot | Entity | Relationship | SystemDiagram = this.toSerializableObject(root);
-        return this.serializeValue(newRoot, -4);
+        return this.serializeValue(newRoot, CrossModelSerializer.INDENTATION_AMOUNT_OBJECT * -1);
     }
 
     private serializeValue(value: any, indentationLevel: number): string {
         if (Array.isArray(value)) {
             return this.serializeArray(value, indentationLevel);
         } else if (typeof value === 'object' && value !== undefined) {
-            return this.serializeObject(value, indentationLevel + 4);
+            return this.serializeObject(value, indentationLevel + CrossModelSerializer.INDENTATION_AMOUNT_OBJECT);
         } else {
             return JSON.stringify(value);
         }
     }
 
     private serializeObject(obj: Record<string, any>, indentationLevel: number): string {
-        const indentation = ' '.repeat(indentationLevel);
+        const indentation = CrossModelSerializer.CHAR_INDENTATION.repeat(indentationLevel);
 
         const serializedProperties = Object.entries(obj)
             .sort((left, right) => PROPERTY_ORDER.indexOf(left[0]) - PROPERTY_ORDER.indexOf(right[0]))
@@ -64,6 +73,7 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot> {
 
                 const serializedValue = this.serializeValue(value, indentationLevel);
 
+                // TODO Refactor CrossModel language so key is same as property name. Then the following lines can be removed.
                 if (key === 'name_val') {
                     key = 'name';
                 } else if (key === 'name') {
@@ -71,21 +81,21 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot> {
                 }
 
                 if (typeof value === 'object') {
-                    return `${indentation}${key}:\n${serializedValue}`;
+                    return `${indentation}${key}:${CrossModelSerializer.CHAR_NEWLINE}${serializedValue}`;
                 } else {
                     return `${indentation}${key}: ${serializedValue}`;
                 }
             })
             .filter(item => item !== undefined);
 
-        return serializedProperties.join('\n');
+        return serializedProperties.join(CrossModelSerializer.CHAR_NEWLINE);
     }
 
     private serializeArray(arr: any[], indentationLevel: number): string {
         const serializedItems = arr
             .map(item => this.serializeValue(item, indentationLevel))
-            .map(item => this.changeCharInString(item, indentationLevel + 2, '-'))
-            .join('\n');
+            .map(item => this.changeCharInString(item, indentationLevel + CrossModelSerializer.INDENTATION_AMOUNT_ARRAY, '-'))
+            .join(CrossModelSerializer.CHAR_NEWLINE);
         return serializedItems;
     }
 

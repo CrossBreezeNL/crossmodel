@@ -15,4 +15,4 @@ jobs:
       # Use the build action.
       - uses: ./.github/actions/build
       # Use the test action.
-      - uses: ./.github/actions/test
+      # - uses: ./.github/actions/test

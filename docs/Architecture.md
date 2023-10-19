@@ -38,7 +38,7 @@ The code responsible for this functionality can be found in [`model-service.ts`]
 
 The support for graphical modeling is provided thorugh a graphical language server implemented based on the [GLSP](https://www.eclipse.org/glsp/) framework. As the language server serves as our single source of truth, the GLSP server should also use the document store as a data source and ensure that any persisted changes are synced back to the store. To ease that integration without any additional protocol, we start a Node-based GLSP server in the same process as the Langium server and provide access to any necessary functionality through exposed language services.
 
-When the user opens a diagram in the frontend, the GLSP client communicates through a contribution in the backend with the GLSP server to [load](https://www.eclipse.org/glsp/documentation/sourcemodel/) the [GModel](https://www.eclipse.org/glsp/documentation/gmodel/) and render it in the widget. On the server, we load the document from the language service and translate the semantic model into the GModel. Any operations that the user performs based on the GModel in the frontend are translated back to changes in the semantic model and the GModel is re-generated. If the user saves the model, the document in the document store is updated with the current version of the semantic model and persisted in textual format on the file system.
+When the user opens a diagram in the frontend, the GLSP client communicates through a contribution in the backend with the GLSP server to [load](https://www.eclipse.org/glsp/documentation/sourcemodel/) the [GModel](https://www.eclipse.org/glsp/documentation/gmodel/) and render it in the widget. On the server, we load the document from the language service and translate the semantic model into the GModel. Any operations that the user performs based on the GModel in the frontend are translated back to changes in the semantic model and the GModel is re-generated. If the user changes the model, the document in the document store is updated with the current version of the semantic model and any listeners for that document are notified.
 
 The code responsible for this functionality can be found in the [`glsp-server`](../extensions/crossmodel-lang/src/glsp-server/) directory and the [`glsp-client`](../packages/glsp-client) package.
 
@@ -46,6 +46,20 @@ The code responsible for this functionality can be found in the [`glsp-server`](
 
 The support for form-based modeling is provided through a custom solution: The generic Model Service Facade is exposed through a custom RPC protocol by a dedicated Model Server. This model server ensures that the semantic model which may contain cyclic references can be serialized and sent to a custom client to the Theia backend. That client servers as a server to the Theia frontend so that the serializable semantic models are available there as well.
 
-When the user opens a file with the form-based editor, the custom widget retrieves the semantic model for an opened URI and renders the data down in an HTML form. Any updates to the semantic model in the widget trigger a full update on the server. On save, the semantic model is persisted as text on the file system.
+When the user opens a file with the form-based editor, the custom widget retrieves the semantic model for an opened URI and renders the data down in an HTML form. Any updates to the semantic model in the widget trigger a full update on the server. If the user hits the Save button, the document in the document store is updated with the current version of the semantic model and any listeners for that document are notified.
 
 The code responsible for this functionality can be found in the [`model-server`](../extensions/crossmodel-lang/src/model-server/) directory and the [`form-client`](../packages/form-client) package.
+
+## Syncing Modeling Perspectives
+
+To sync the different modeling perspectives (textual, graphical, form-based, properties) we use the central document store from Langium as global state that is shared among all clients.
+The lifecycle of a document is aligned with the expected lifecycle of the [language server protocol](https://microsoft.github.io/language-server-protocol/overviews/lsp/overview/) where the `open` call transfers the document content from the client to the server which is now the source of truth until the document is `closed` again.
+Each update from the client changes the in-memory state of the server and increases its internal version number.
+
+In CrossModel, we enhance that lifecycle to support a multi-client scenario where only the first `open` call needs to transfer the content (usually the content of the file on the filesystem) and subsequent open calls are ignored as the server already holds the source of truth for the document.
+In-between the open and close calls, clients are free to send updates to the server.
+To allow live syncing, any state resulting from applying an update is forwarded to all clients with the information of which client triggered the update.
+This allows each client to decide whether to apply or discard an update based on their internal model and makes it easy to avoid update-cycles.
+A special case for this is the textual Monaco language client that we update directly from the server using the [`applyEdit`](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#workspace_applyEdit) request, as we cannot register the language client to our custom listener mechanism.
+Currently, we only support full updates where we always receive the complete model (or text) and also replace the complete model (or text) in the clients.
+After the last client `closes` the document, the server cleans its in-memory state and does not accept any updates unless a client opens the document for modification again.

@@ -4,10 +4,22 @@ on:
   push:
     branches:
       - feature/*
+  pull_request:
+    branches:
+      - feature/*
 
 jobs:
   build:
-    runs-on: windows-2019 # is needed because the Setup Python task does not work with ubuntu
+    name: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2019, ubuntu-latest, macos-11]
+
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+
     steps:
       # Checkout the code.
       - name: checkout # is needed to read the files on the root folder of the repo

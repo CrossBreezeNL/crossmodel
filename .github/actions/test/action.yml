@@ -8,3 +8,23 @@ runs: # windows-2019 # is needed because the Setup Python task does not work wit
       shell: bash
       run: |
         yarn test
+
+    # Publish Test Results
+    # On Linux:
+    - name: Publish Test Results
+      uses: EnricoMi/publish-unit-test-result-action@v2
+      if: runner.os == 'Linux'
+      with:
+        files: |
+          test-results/**/*.xml
+          test-results/**/*.trx
+          test-results/**/*.json
+    # On Windows or MacOS:
+    - name: Publish Test Results
+      uses: EnricoMi/publish-unit-test-result-action/composite@v2
+      if: runner.os == 'Windows' || runner.os == 'macOS'
+      with:
+        files: |
+          test-results/**/*.xml
+          test-results/**/*.trx
+          test-results/**/*.json

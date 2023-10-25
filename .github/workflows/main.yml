@@ -3,14 +3,25 @@ name: main
 on:
   push:
     branches:
-      - 'main'
+      - main
 
 jobs:
   build:
-    runs-on: windows-2019 # is needed because the Setup Python task does not work with ubuntu
+    name: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2019, ubuntu-latest, macos-11]
+
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+
     steps:
       # Checkout the code.
       - name: checkout # is needed to read the files on the root folder of the repo
         uses: actions/checkout@v4
-      # Use the build-addin action.
+      # Use the build action.
       - uses: ./.github/actions/build
+      # Use the test action.
+      - uses: ./.github/actions/test

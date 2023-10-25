@@ -61,7 +61,7 @@ jobs:
           # Include the unit-test-results folders, but skip the ones in plugin folders.
           path: |
             **/*/unit-test-results
-            !**/plugins/*/unit-test-tesults
+            !**/plugins
 
   # Publish a test report using the test result files published in the previous step (executed per OS).
   publish-test-report:

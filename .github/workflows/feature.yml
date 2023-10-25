@@ -9,7 +9,7 @@ on:
       - feature/*
 
 jobs:
-  build:
+  build-and-test:
     name: ${{ matrix.os }}
 
     strategy:
@@ -28,3 +28,15 @@ jobs:
       - uses: ./.github/actions/build
       # Use the test action.
       - uses: ./.github/actions/test
+
+  publish-test-report:
+    name: Publish Test Report
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      # Checkout the code (needed for the action).
+      - name: checkout # is needed to read the files on the root folder of the repo
+        uses: actions/checkout@v4
+      # Use the publish-test-report action.
+      - uses: ./.github/actions/publish-test-report

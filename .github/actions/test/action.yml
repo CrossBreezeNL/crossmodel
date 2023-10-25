@@ -6,23 +6,15 @@ runs: # windows-2019 # is needed because the Setup Python task does not work wit
   steps:
     - name: Yarn test
       shell: bash
-      run: |
-        yarn test
+      run: yarn test
+      env:
+        # The test result file name can be controlled using the following environment variable.
+        JEST_JUNIT_OUTPUT_NAME: test-results-${{ runner.os }}.xml
 
-    # Publish Test Results
-    # On Linux:
-    - name: Publish Test Results
-      uses: EnricoMi/publish-unit-test-result-action@v2
-      if: runner.os == 'Linux'
+    # Upload Test Results (The different files for the OSes will end up in the same artifact).
+    - name: Upload Test Results
+      if: always()
+      uses: actions/upload-artifact@v3
       with:
-        check_name: Test Results (${{ runner.os }})
-        files: |
-          **/test-results/*.xml
-    # On Windows or MacOS:
-    - name: Publish Test Results
-      uses: EnricoMi/publish-unit-test-result-action/composite@v2
-      if: runner.os == 'Windows' || runner.os == 'macOS'
-      with:
-        check_name: Test Results (${{ runner.os }})
-        files: |
-          **/test-results/*.xml
+        name: unit-test-tesults
+        path: **/test-results/*.xml

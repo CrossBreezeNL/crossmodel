@@ -19,7 +19,7 @@
       "protocol": "inspector",
       "args": [
         "${workspaceFolder}/applications/electron-app",
-        "--loglevel=debug",
+        "--log-level=debug",
         "--hostname=localhost",
         "--no-cluster",
         "--root-dir=${workspaceRoot}/examples/yaml-example",
@@ -59,7 +59,7 @@
       "args": [
         "${workspaceFolder}/applications/browser-app",
         "--debug",
-        "--loglevel=debug",
+        "--log-level=debug",
         "--hostname=localhost",
         "--no-cluster",
         "--root-dir=${workspaceRoot}/examples/workspace",

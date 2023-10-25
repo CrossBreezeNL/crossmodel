@@ -10,7 +10,7 @@ inputs:
     required: true
     default: '3.11.4'
 
-runs: # windows-2019 # is needed because the Setup Python task does not work with ubuntu
+runs:
   using: 'composite'
   steps:
     - name: Setup Node.js ${{ inputs.node-version }}
@@ -22,11 +22,6 @@ runs: # windows-2019 # is needed because the Setup Python task does not work wit
       uses: actions/setup-python@v4
       with:
         python-version: ${{ inputs.python-version }}
-
-    - name: Set up yarn to use version 1.22.19
-      shell: bash
-      run: |
-        yarn policies set-version 1.22.19
 
     - name: Yarn build
       shell: bash

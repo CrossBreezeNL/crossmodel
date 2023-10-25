@@ -41,7 +41,7 @@
     "symlink": "yarn symlink:browser && yarn symlink:electron",
     "symlink:browser": "symlink-dir . ../../applications/browser-app/plugins/crossmodel-lang",
     "symlink:electron": "symlink-dir . ../../applications/electron-app/plugins/crossmodel-lang",
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "vscode:prepublish": "yarn lint",
     "watch": "yarn watch:webpack",
     "watch:tsc": "tsc -b tsconfig.json --watch",

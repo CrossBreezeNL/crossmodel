@@ -24,7 +24,7 @@
     "clean": "rimraf lib && rimraf tsconfig.tsbuildinfo",
     "lint": "eslint -c ../../.eslintrc.js --ext .ts,.tsx ./src",
     "prepare": "yarn clean && yarn build",
-    "test": "echo Tests not implemented for this package.",
+    "test": "jest --passWithNoTests",
     "watch": "tsc -w"
   },
   "dependencies": {

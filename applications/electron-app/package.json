@@ -26,7 +26,7 @@
     "prepare": "theia build --mode development && yarn download:plugins",
     "rebuild": "theia rebuild:electron --cacheRoot ../..",
     "start": "yarn rebuild && cross-env NODE_ENV=development theia start --plugins=local-dir:plugins",
-    "test": "echo Tests not implemented for this package.",
+    "test": "jest --passWithNoTests",
     "watch": "theia build --watch --mode development"
   },
   "dependencies": {

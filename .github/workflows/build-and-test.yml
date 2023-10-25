@@ -3,12 +3,12 @@ on:
     inputs:
       node-version:
         description: 'Node version to use'
-        required: true
+        required: false
         default: '16.20.0'
         type: string
       python-version:
         description: 'Python version to use'
-        required: true
+        required: false
         default: '3.11.4'
         type: string
 

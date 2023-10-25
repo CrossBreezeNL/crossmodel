@@ -16,7 +16,7 @@
     "start:browser": "yarn theia:browser start",
     "start:electron": "yarn theia:electron start",
     "start:verdaccio": "yarn verdaccio --config verdaccio-config.yaml",
-    "test": "yarn --cwd extensions/crossmodel-lang test",
+    "test": "lerna run test",
     "theia:browser": "yarn --cwd applications/browser-app",
     "theia:electron": "yarn --cwd applications/electron-app",
     "watch": "lerna run --parallel watch"
@@ -35,11 +35,13 @@
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.32.1",
     "eslint-plugin-react-hooks": "^4.6.0",
+    "jest": "^29.7.0",
     "lerna": "2.4.0",
     "prettier": "^2.6.2",
     "prettier-plugin-packagejson": "^2.3.0",
     "rimraf": "^2.6.1",
     "symlink-dir": "^5.1.0",
+    "ts-jest": "^29.1.1",
     "ts-node": "^10.9.1",
     "typescript": ">=4.9.3",
     "verdaccio": "^5.23.1"

@@ -19,6 +19,7 @@
     "prepare": "theia build --mode development && yarn download:plugins",
     "rebuild": "theia rebuild:browser --cacheRoot ../..",
     "start": "yarn rebuild && theia start --plugins=local-dir:plugins",
+    "test": "echo Tests not implemented for this package.",
     "watch": "theia build --watch --mode development"
   },
   "dependencies": {

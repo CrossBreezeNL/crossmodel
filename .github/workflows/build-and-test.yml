@@ -1,0 +1,88 @@
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        description: 'Node version to use'
+        required: true
+        default: '16.20.0'
+      python-version:
+        description: 'Python version to use'
+        required: true
+        default: '3.11.4'
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build-and-test:
+    name: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2019, ubuntu-latest, macos-11]
+
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+
+    steps:
+      # Checkout the code.
+      - name: checkout
+        uses: actions/checkout@v4
+
+      # Setup Node
+      - name: Setup Node.js ${{ inputs.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ inputs.node-version }}
+
+      # Setup Python
+      - name: Setup Python ${{ inputs.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ inputs.python-version }}
+
+      # Build the code.
+      - name: Yarn build
+        # We set a timeout here as a fix for the timeout issues which sometimes occur when connecting the the npm repo.
+        run: |
+          yarn --skip-integrity-check --network-timeout 100000
+          yarn build
+
+      # Execute the tests.
+      - name: Yarn test
+        run: yarn test
+        env:
+          # The test result file name can be controlled using the following environment variable.
+          JEST_JUNIT_OUTPUT_NAME: test-results-${{ runner.os }}.xml
+
+      # Upload Test Results (The different files for the OSes will end up in the same artifact).
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: unit-test-tesults
+          path: |
+            **/test-results-${{ runner.os }}.xml
+
+  # Publish a test report using the test result files published in the previous step (executed per OS).
+  publish-test-report:
+    name: Publish Test Report
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      # Download the test results artifacts.
+      - name: Download Test Results
+        uses: actions/download-artifact@v3
+        with:
+          name: unit-test-tesults
+          path: unit-test-tesults
+      # Publish Test Results
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          check_name: Test Results
+          files: |
+            unit-test-tesults/*.xml

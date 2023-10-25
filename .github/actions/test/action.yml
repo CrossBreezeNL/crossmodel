@@ -17,4 +17,5 @@ runs: # windows-2019 # is needed because the Setup Python task does not work wit
       uses: actions/upload-artifact@v3
       with:
         name: unit-test-tesults
-        path: **/test-results/*.xml
+        path: |
+          **/test-results-${{ runner.os }}.xml

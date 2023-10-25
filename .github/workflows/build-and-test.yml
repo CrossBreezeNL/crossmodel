@@ -58,8 +58,10 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: unit-test-tesults
+          # Include the unit-test-results folders, but skip the ones in plugin folders.
           path: |
-            **/unit-test-results-${{ runner.os }}.xml
+            **/*/unit-test-results
+            !**/plugins/*/unit-test-tesults
 
   # Publish a test report using the test result files published in the previous step (executed per OS).
   publish-test-report:
@@ -80,4 +82,4 @@ jobs:
         with:
           check_name: Test Results
           files: |
-            **/unit-test-tesults/*.xml
+            unit-test-tesults/**/*.xml

@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
     "skipLibCheck": true,
     "declaration": true,
@@ -19,11 +20,11 @@
     "forceConsistentCasingInFileNames": true,
     "downlevelIteration": true,
     "resolveJsonModule": true,
-    "module": "commonjs",
-    "moduleResolution": "Node16",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
     "target": "ES2019",
     "jsx": "react",
-    "lib": ["ES2019", "dom"],
+    "lib": ["ES2019", "ES2020.Promise", "DOM"],
     "sourceMap": true,
     "types": ["node", "reflect-metadata"]
   }

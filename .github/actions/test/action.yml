@@ -15,16 +15,14 @@ runs: # windows-2019 # is needed because the Setup Python task does not work wit
       uses: EnricoMi/publish-unit-test-result-action@v2
       if: runner.os == 'Linux'
       with:
+        name: Test Results (${{ runner.os }})
         files: |
           test-results/**/*.xml
-          test-results/**/*.trx
-          test-results/**/*.json
     # On Windows or MacOS:
     - name: Publish Test Results
       uses: EnricoMi/publish-unit-test-result-action/composite@v2
       if: runner.os == 'Windows' || runner.os == 'macOS'
       with:
+        name: Test Results (${{ runner.os }})
         files: |
           test-results/**/*.xml
-          test-results/**/*.trx
-          test-results/**/*.json

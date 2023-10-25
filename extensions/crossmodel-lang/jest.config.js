@@ -2,5 +2,5 @@
 module.exports = {
     preset: 'ts-jest',
     testEnvironment: 'node',
-    reporters: [['github-actions', { silent: false }], 'summary']
+    reporters: ['default', ['jest-junit', { outputDirectory: 'out/test-results', outputName: 'jest-report.xml' }]]
 };

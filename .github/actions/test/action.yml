@@ -17,7 +17,7 @@ runs: # windows-2019 # is needed because the Setup Python task does not work wit
       with:
         check_name: Test Results (${{ runner.os }})
         files: |
-          out/test-results/*.xml
+          **/test-results/*.xml
     # On Windows or MacOS:
     - name: Publish Test Results
       uses: EnricoMi/publish-unit-test-result-action/composite@v2
@@ -25,4 +25,4 @@ runs: # windows-2019 # is needed because the Setup Python task does not work wit
       with:
         check_name: Test Results (${{ runner.os }})
         files: |
-          out/test-results/*.xml
+          **/test-results/*.xml

@@ -1,16 +1,9 @@
 on:
   workflow_call:
-    inputs:
-      node-version:
-        description: 'Node version to use'
-        required: false
-        default: '16.20.0'
-        type: string
-      python-version:
-        description: 'Python version to use'
-        required: false
-        default: '3.11.4'
-        type: string
+
+env:
+  NODE_VERSION: 16.20.0
+  PYTHON_VERSION: 3.11.4
 
 defaults:
   run:
@@ -28,22 +21,25 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
 
+    env:
+      TEST_RESULTS_FILE_NAME: test-results-${{ runner.os }}.xml
+
     steps:
       # Checkout the code.
       - name: checkout
         uses: actions/checkout@v4
 
       # Setup Node
-      - name: Setup Node.js ${{ inputs.node-version }}
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ inputs.node-version }}
+          node-version: ${{ env.NODE_VERSION }}
 
       # Setup Python
-      - name: Setup Python ${{ inputs.python-version }}
+      - name: Setup Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ inputs.python-version }}
+          python-version: ${{ env.PYTHON_VERSION }}
 
       # Build the code.
       - name: Yarn build
@@ -57,7 +53,7 @@ jobs:
         run: yarn test
         env:
           # The test result file name can be controlled using the following environment variable.
-          JEST_JUNIT_OUTPUT_NAME: test-results-${{ runner.os }}.xml
+          JEST_JUNIT_OUTPUT_NAME: ${{ env.TEST_RESULTS_FILE_NAME }}
 
       # Upload Test Results (The different files for the OSes will end up in the same artifact).
       - name: Upload Test Results
@@ -66,7 +62,7 @@ jobs:
         with:
           name: unit-test-tesults
           path: |
-            **/test-results-${{ runner.os }}.xml
+            **/${{ env.TEST_RESULTS_FILE_NAME }}
 
   # Publish a test report using the test result files published in the previous step (executed per OS).
   publish-test-report:
@@ -87,4 +83,4 @@ jobs:
         with:
           check_name: Test Results
           files: |
-            unit-test-tesults/*.xml
+            **/unit-test-tesults/*.xml

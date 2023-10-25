@@ -5,10 +5,12 @@ on:
         description: 'Node version to use'
         required: true
         default: '16.20.0'
+        type: string
       python-version:
         description: 'Python version to use'
         required: true
         default: '3.11.4'
+        type: string
 
 defaults:
   run:

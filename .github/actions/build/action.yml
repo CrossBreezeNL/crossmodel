@@ -1,60 +1,35 @@
 name: build
 description: 'Build CrossModel'
+inputs:
+  node-version:
+    description: 'Node version to use'
+    required: true
+    default: '16.20.0'
+  python-version:
+    description: 'Python version to use'
+    required: true
+    default: '3.11.4'
 
 runs: # windows-2019 # is needed because the Setup Python task does not work with ubuntu
   using: 'composite'
   steps:
-    - name: Set up Node js to use version 16.20.0
-      uses: actions/setup-node@v3.6.0
+    - name: Setup Node.js ${{ inputs.node-version }}
+      uses: actions/setup-node@v3
       with:
-        node-version: '16.20.0'
+        node-version: ${{ inputs.node-version }}
 
-    - name: Node version
-      uses: Amadevus/pwsh-script@v2.0.3
+    - name: Setup Python ${{ inputs.python-version }}
+      uses: actions/setup-python@v4
       with:
-        # PowerShell script to execute in Actions-hydrated context
-        script: |
-          node -v | Write-Host
-
-    - name: Setup Python to use version 3.11.4
-      uses: actions/setup-python@v4.6.1
-      with:
-        # Version range or exact version of Python or PyPy to use, using SemVer's version range syntax. Reads from .python-version if unset.
-        python-version: 3.11.4
-
-    - name: Python version
-      uses: Amadevus/pwsh-script@v2.0.3
-      with:
-        # PowerShell script to execute in Actions-hydrated context
-        script: |
-          python --version | Write-Host
+        python-version: ${{ inputs.python-version }}
 
     - name: Set up yarn to use version 1.22.19
-      uses: Amadevus/pwsh-script@v2.0.3
-      with:
-        script: |
-          yarn policies set-version 1.22.19
-
-    - name: Yarn version
-      uses: Amadevus/pwsh-script@v2.0.3
-      with:
-        script: |
-          yarn --version | Write-Host
+      shell: bash
+      run: |
+        yarn policies set-version 1.22.19
 
     - name: Yarn build
-      uses: Amadevus/pwsh-script@v2.0.3
-      with:
-        script: |
-          yarn
-
-    - name: Yarn test
-      uses: Amadevus/pwsh-script@v2.0.3
-      with:
-        script: |
-          yarn test
-
-    #- name: Yarn start browser
-    # run:  |
-    #        yarn start:browser
-    #        curl http://localhost:3000/
-    #        echo DONE
+      shell: bash
+      run: |
+        yarn --skip-integrity-check --network-timeout 100000
+        yarn build

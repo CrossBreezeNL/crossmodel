@@ -50,7 +50,7 @@ jobs:
         run: yarn test
         env:
           # The test result file name can be controlled using the following environment variable.
-          JEST_JUNIT_OUTPUT_NAME: test-results-${{ runner.os }}.xml
+          JEST_JUNIT_OUTPUT_NAME: unit-test-results-${{ runner.os }}.xml
 
       # Upload Test Results (The different files for the OSes will end up in the same artifact).
       - name: Upload Test Results
@@ -59,7 +59,7 @@ jobs:
         with:
           name: unit-test-tesults
           path: |
-            **/test-results-${{ runner.os }}.xml
+            **/unit-test-results-${{ runner.os }}.xml
 
   # Publish a test report using the test result files published in the previous step (executed per OS).
   publish-test-report:

@@ -2,5 +2,5 @@
 module.exports = {
     preset: 'ts-jest',
     testEnvironment: 'node',
-    reporters: ['default', ['jest-junit', { outputDirectory: 'test-results', outputName: 'jest-report.xml' }]]
+    reporters: ['default', ['jest-junit', { outputDirectory: 'unit-test-results', outputName: 'jest-report.xml' }]]
 };

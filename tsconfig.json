@@ -1,0 +1,37 @@
+{
+  "extends": "./configs/base.tsconfig.json",
+  "include": [],
+  "compilerOptions": {
+    "composite": true,
+    "allowJs": true
+  },
+  "references": [
+    {
+      "path": "extensions/crossmodel-lang"
+    },
+    {
+      "path": "packages/core"
+    },
+    {
+      "path": "packages/form-client"
+    },
+    {
+      "path": "packages/core"
+    },
+    {
+      "path": "packages/glsp-client"
+    },
+    {
+      "path": "packages/model-service"
+    },
+    {
+      "path": "packages/product"
+    },
+    {
+      "path": "packages/property-view"
+    },
+    {
+      "path": "packages/protocol"
+    }
+  ]
+}

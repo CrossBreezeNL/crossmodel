@@ -6,9 +6,10 @@
   "exclude": ["**/node_modules", "**/.eslintrc.js"],
   "include": [
     "packages/*/src",
+    "packages/*/test",
     "applications/*/src",
     "applications/*/scripts",
     "extensions/*/src",
-    "**/test"
+    "extensions/*/test"
   ]
 }

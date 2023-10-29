@@ -23,5 +23,5 @@ module.exports = {
         es6: true,
         node: true
     },
-    ignorePatterns: ['node_modules', 'lib', '*.d.ts']
+    ignorePatterns: ['node_modules', '*.d.ts']
 };

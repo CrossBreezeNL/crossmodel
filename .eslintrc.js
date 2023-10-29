@@ -2,7 +2,7 @@
 module.exports = {
     root: true,
     extends: ['./configs/base.eslintrc.js', './configs/warnings.eslintrc.js', './configs/errors.eslintrc.js'],
-    ignorePatterns: ['**/{node_modules,lib}', 'plugins', '**/.eslintrc.js', 'extensions/**/generated'],
+    ignorePatterns: ['**/{node_modules,lib}', '**/.eslintrc.js', 'extensions/**/generated'],
     parserOptions: {
         tsconfigRootDir: __dirname,
         project: 'tsconfig.eslint.json'

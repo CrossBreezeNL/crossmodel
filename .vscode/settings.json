@@ -40,5 +40,5 @@
   "[yaml]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "jest.jestCommandLine": "npx jest --config=configs/jest.config.js"
+  "jest.jestCommandLine": "npm exec -- jest --config=configs/jest.config.js"
 }

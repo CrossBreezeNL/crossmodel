@@ -123,8 +123,8 @@
         "--inspect-brk",
         "${workspaceRoot}/node_modules/jest/bin/jest.js",
         "--runInBand",
-        "--config=extensions/crossmodel-lang/jest.config.js",
-        "--testPathPattern=extensions/crossmodel-lang/test/language-server/util/name-util.test.ts"
+        "--config=${workspaceRoot}/config/jest.config.js",
+        "--testPathPattern={extensions|packages}/*/test/**/*.test.ts"
       ],
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"

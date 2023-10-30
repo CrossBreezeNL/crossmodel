@@ -20,8 +20,9 @@ describe('Model Service', () => {
         try {
             await modelService.open({ uri: 'non-existing-uri', clientId: 'non-existing-client' });
         } catch (error) {
-            expect(error).toHaveProperty('path', '\\non-existing-uri');
             expect(error).toBeDefined();
+            // We expect the ENOENT (Error No Entity) error to be thrown, because the file doesn't exist.
+            expect(error).toHaveProperty('code', 'ENOENT');
         }
     });
 });

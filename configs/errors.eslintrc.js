@@ -65,9 +65,7 @@ module.exports = {
         'import/no-deprecated': 'error',
         // eslint-plugin-no-null
         'no-null/no-null': 'error',
-        // chai friendly
         'no-unused-expressions': 'off',
-        'chai-friendly/no-unused-expressions': 'error',
         'react/react-in-jsx-scope': 'off'
     }
 };

@@ -1,5 +1,5 @@
-/** @type {import('ts-jest').JestConfigWithTsJest} */
 module.exports = {
-    preset: 'ts-jest',
-    testEnvironment: 'node'
+    rootDir: '../',
+    projects: ['<rootDir>/applications/*', '<rootDir>/extensions/*', '<rootDir>/packages/*'],
+    reporters: ['default', ['jest-junit', { outputDirectory: 'unit-test-results', outputName: 'jest-report.xml' }]]
 };

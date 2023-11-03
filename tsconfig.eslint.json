@@ -1,8 +1,15 @@
 {
-  "extends": "./configs/tsconfig.json",
+  "extends": "./configs/base.tsconfig.json",
   "compilerOptions": {
     "noEmit": true
   },
   "exclude": ["**/node_modules", "**/.eslintrc.js"],
-  "include": ["packages/*/src", "applications/*/src", "applications/*/scripts", "extensions/*/src", "extensions/*/test"]
+  "include": [
+    "packages/*/src",
+    "packages/*/test",
+    "applications/*/src",
+    "applications/*/scripts",
+    "extensions/*/src",
+    "extensions/*/test"
+  ]
 }

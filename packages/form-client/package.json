@@ -26,17 +26,18 @@
     "clean": "rimraf lib && rimraf tsconfig.tsbuildinfo",
     "lint": "eslint -c ../../.eslintrc.js --ext .ts,.tsx ./src",
     "prepare": "yarn clean && yarn build",
+    "test": "jest --passWithNoTests",
     "watch": "tsc -w"
   },
   "dependencies": {
     "@crossbreeze/core": "0.0.0",
-    "@crossbreeze/protocol": "0.0.0",
     "@crossbreeze/model-service": "^1.0.0",
+    "@crossbreeze/protocol": "0.0.0",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@mui/material": "^5.13.5",
     "@mui/x-data-grid": "^6.2.1",
-    "@theia/core": "^1.34.4",
+    "@theia/core": "1.37.2",
     "lodash": "^4.17.21",
     "react-tabs": "^6.0.1",
     "vscode-jsonrpc": "^8.0.2"

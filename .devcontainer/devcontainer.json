@@ -1,0 +1,18 @@
+// Dev-Container for CrossModel.
+// For format details, see https://aka.ms/devcontainer.json.
+{
+  "name": "Node.js & TypeScript",
+  // https://github.com/devcontainers/templates/tree/main/src/typescript-node
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:1-16-bullseye",
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.11.4"
+    }
+  },
+
+  // Allow port 3000 to be forwarded.
+  "forwardPorts": [3000],
+
+  // Install the needed OS libs for building.
+  "postCreateCommand": "sudo apt-get update && sudo apt-get -y install libsecret-1-dev libxkbfile-dev"
+}

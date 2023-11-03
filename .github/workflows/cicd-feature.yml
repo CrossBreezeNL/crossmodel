@@ -1,0 +1,13 @@
+name: cicd-feature
+
+on:
+  push:
+    branches:
+      - feature/*
+  pull_request:
+    branches:
+      - feature/*
+
+jobs:
+  build-and-test:
+    uses: ./.github/workflows/build-and-test.yml

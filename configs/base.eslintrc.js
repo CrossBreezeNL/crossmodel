@@ -7,7 +7,7 @@ module.exports = {
             jsx: true
         }
     },
-    plugins: ['@typescript-eslint', 'header', 'import', 'no-null', 'chai-friendly', 'deprecation'],
+    plugins: ['@typescript-eslint', 'header', 'import', 'no-null', 'deprecation', 'jest'],
     extends: [
         'eslint:recommended',
         'plugin:@typescript-eslint/recommended',
@@ -19,7 +19,7 @@ module.exports = {
     ],
     env: {
         browser: true,
-        mocha: true,
+        'jest/globals': true,
         es6: true,
         node: true
     },

@@ -54,7 +54,7 @@ export const DEDENT = createToken({
  * @returns The matched indent or dedent token. null if no indentation match is found.
  * @throws {IndentationError} If an invalid outdent is encountered.
  */
-function matchIndentBase(text: string, offset: number, matchedTokens: IToken[], groups: any, type: string) {
+function matchIndentBase(text: string, offset: number, matchedTokens: IToken[], groups: any, type: string): RegExpExecArray | null {
     const noTokensMatchedYet = _.isEmpty(matchedTokens);
     const newLines: Array<IToken> = groups.nl;
     const noNewLinesMatchedYet = _.isEmpty(newLines);

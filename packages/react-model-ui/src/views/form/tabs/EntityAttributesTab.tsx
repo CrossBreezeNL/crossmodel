@@ -4,25 +4,25 @@
     Attributes tab for the entity node. Uses the @mui/x-data-grid library to render a table.
 */
 
-import * as React from '@theia/core/shared/react';
+import { EntityAttribute } from '@crossbreeze/protocol';
+import { Checkbox, FormControl, MenuItem, Select, SelectChangeEvent } from '@mui/material';
 import {
     DataGrid,
+    GridCellEditStopParams,
     GridCellParams,
     GridColDef,
-    GridRowsProp,
-    GridCellEditStopParams,
     GridEventListener,
-    MuiEvent,
-    MuiBaseEvent
+    GridRowsProp,
+    MuiBaseEvent,
+    MuiEvent
 } from '@mui/x-data-grid';
-import { Checkbox, FormControl, MenuItem, Select, SelectChangeEvent } from '@mui/material';
-import { ModelContext, ModelDispatchContext, ModelReducer } from '../../ModelContext';
-import { EntityAttribute, CrossModelRoot } from '@crossbreeze/protocol';
+import * as React from 'react';
+import { useModel, useModelDispatch } from '../../../ModelContext';
 
 export function EntityAttributesTab(): React.ReactElement {
     // Context variables to handle model state.
-    const model = React.useContext(ModelContext) as CrossModelRoot;
-    const dispatch = React.useContext(ModelDispatchContext) as React.Dispatch<React.ReducerAction<typeof ModelReducer>>;
+    const model = useModel();
+    const dispatch = useModelDispatch();
 
     // Callback for when the user stops editing a cell.
     const handleCellEdited: GridEventListener<'cellEditStop'> = (params: GridCellEditStopParams, event: MuiEvent<MuiBaseEvent>) => {
@@ -32,7 +32,7 @@ export function EntityAttributesTab(): React.ReactElement {
         if (params.field === 'name') {
             dispatch({
                 type: 'entity:attribute:change-name',
-                id: params.id,
+                attributeIdx: Number(params.id),
                 name: reactEvent.target.value ? reactEvent.target.value : ''
             });
         }
@@ -42,8 +42,8 @@ export function EntityAttributesTab(): React.ReactElement {
     function dataTypeChangedDispatch(id: number, newVal: string): void {
         dispatch({
             type: 'entity:attribute:change-datatype',
-            id: id,
-            dataType: newVal
+            attributeIdx: id,
+            datatype: newVal
         });
     }
 

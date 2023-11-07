@@ -1,8 +1,8 @@
 {
-  "name": "@crossbreeze/form-client",
+  "name": "@crossbreeze/react-model-ui",
   "version": "0.0.0",
   "private": true,
-  "description": "CrossModel Form-based Editor Contribution",
+  "description": "CrossModel React-based UI components",
   "keywords": [
     "theia-extension"
   ],
@@ -16,6 +16,8 @@
     "name": "CrossBreeze Team",
     "email": "team@x-breeze.com"
   },
+  "main": "lib/index",
+  "types": "lib/index",
   "files": [
     "lib",
     "src",
@@ -30,23 +32,13 @@
     "watch": "tsc -w"
   },
   "dependencies": {
-    "@crossbreeze/core": "0.0.0",
-    "@crossbreeze/model-service": "^1.0.0",
     "@crossbreeze/protocol": "0.0.0",
-    "@crossbreeze/react-model-ui": "0.0.0",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@mui/material": "^5.13.5",
     "@mui/x-data-grid": "^6.2.1",
-    "@theia/core": "1.37.2",
-    "lodash": "^4.17.21",
+    "immer": "^10.0.3",
     "react-tabs": "^6.0.1",
-    "vscode-jsonrpc": "^8.0.2"
-  },
-  "theiaExtensions": [
-    {
-      "frontend": "lib/browser/form-client-frontend-module",
-      "backend": "lib/node/form-client-backend-module"
-    }
-  ]
+    "use-immer": "^0.9.0"
+  }
 }

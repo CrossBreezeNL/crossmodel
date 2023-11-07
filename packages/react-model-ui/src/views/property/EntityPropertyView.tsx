@@ -2,20 +2,17 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-// other
-import { CrossModelRoot } from '@crossbreeze/protocol';
 import * as React from '@theia/core/shared/react';
-import { ErrorView } from './ErrorView';
-import { ModelContext, ModelDispatchContext, ModelReducer } from '../ModelContext';
-import { Accordion, AccordionDetails, AccordionSummary, SaveButton } from './styled-elements';
+import { useModel, useModelDispatch, useModelSave } from '../../ModelContext';
+import { ErrorView } from '../ErrorView';
 import { EntityPropertyAttributes } from './EntityPropertyAttributeGrid';
-import SaveModelContext from '../SaveModelContext';
+import { Accordion, AccordionDetails, AccordionSummary, SaveButton } from '../styled-elements';
 
 export interface EntityPropertyViewProps extends React.HTMLProps<HTMLDivElement> {}
 
-export function EntityPropertyView(props: EntityPropertyViewProps): React.ReactElement {
-    const model = React.useContext(ModelContext) as CrossModelRoot;
-    const saveModel = React.useContext(SaveModelContext);
+export function EntityPropertyView(_props: EntityPropertyViewProps): React.ReactElement {
+    const model = useModel();
+    const saveModel = useModelSave();
 
     const onSaveButtonClick = (): void => {
         saveModel();
@@ -37,9 +34,9 @@ export function EntityPropertyView(props: EntityPropertyViewProps): React.ReactE
 
 interface EntityPropertyGeneralProps extends React.HTMLProps<HTMLDivElement> {}
 
-function EntityPropertyGeneral(props: EntityPropertyGeneralProps): React.ReactElement {
-    const model = React.useContext(ModelContext) as CrossModelRoot;
-    const dispatch = React.useContext(ModelDispatchContext) as React.Dispatch<React.ReducerAction<typeof ModelReducer>>;
+function EntityPropertyGeneral(_props: EntityPropertyGeneralProps): React.ReactElement {
+    const model = useModel();
+    const dispatch = useModelDispatch();
 
     if (!model || !model.entity) {
         return <ErrorView errorMessage='Something went wrong loading the model!' />;
@@ -54,7 +51,6 @@ function EntityPropertyGeneral(props: EntityPropertyGeneralProps): React.ReactEl
                 <div>
                     <label>Name:</label>
                     <input
-                        // TODO, add debounce
                         className='theia-input'
                         value={model.entity.name_val}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {

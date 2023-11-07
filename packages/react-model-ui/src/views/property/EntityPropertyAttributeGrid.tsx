@@ -1,37 +1,37 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { CrossModelRoot, EntityAttribute } from '@crossbreeze/protocol';
-import * as React from '@theia/core/shared/react';
+import { EntityAttribute } from '@crossbreeze/protocol';
+import AddIcon from '@mui/icons-material/Add';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { FormControl, MenuItem, Select, SelectChangeEvent } from '@mui/material';
+import Button from '@mui/material/Button';
 import {
     DataGrid,
+    GridActionsCellItem,
+    GridCellEditStartParams,
+    GridCellEditStopParams,
+    GridCellModes,
     GridCellParams,
     GridColDef,
-    GridRowsProp,
-    GridRowModel,
-    GridToolbarContainer,
-    GridActionsCellItem,
     GridRowId,
+    GridRowModel,
+    GridRowsProp,
+    GridToolbarContainer,
     MuiEvent,
-    GridCellEditStopParams,
-    GridCellEditStartParams,
-    useGridApiRef,
-    GridCellModes
+    useGridApiRef
 } from '@mui/x-data-grid';
-import { FormControl, MenuItem, Select, SelectChangeEvent } from '@mui/material';
-import { ModelContext, ModelDispatchContext, ModelReducer } from '../ModelContext';
-import { Accordion, AccordionDetails, AccordionSummary } from './styled-elements';
-import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
-import Button from '@mui/material/Button';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import * as React from 'react';
+import { useModel, useModelDispatch } from '../../ModelContext';
+import { Accordion, AccordionDetails, AccordionSummary } from '../styled-elements';
 
 export function EntityPropertyAttributes(): React.ReactElement {
     // Context variables to handle model state.
     const apiRef = useGridApiRef();
-    const model = React.useContext(ModelContext) as CrossModelRoot;
-    const dispatch = React.useContext(ModelDispatchContext) as React.Dispatch<React.ReducerAction<typeof ModelReducer>>;
+    const model = useModel();
+    const dispatch = useModelDispatch();
     const [errorRow, setErrorRow] = React.useState(undefined);
     const [currentEdit, setCurrentEdit] = React.useState({} as CurrentEdit);
 
@@ -45,7 +45,7 @@ export function EntityPropertyAttributes(): React.ReactElement {
 
             dispatch({
                 type: 'entity:attribute:change-name',
-                id: updatedRow.id,
+                attributeIdx: updatedRow.id,
                 name: updatedRow.name
             });
         }
@@ -85,29 +85,29 @@ export function EntityPropertyAttributes(): React.ReactElement {
     function dataTypeChangedDispatch(id: number, newVal: string): void {
         dispatch({
             type: 'entity:attribute:change-datatype',
-            id: id,
-            dataType: newVal
+            attributeIdx: id,
+            datatype: newVal
         });
     }
 
     const handleUpward = (id: GridRowId) => () => {
         dispatch({
             type: 'entity:attribute:move-attribute-up',
-            id: id
+            attributeIdx: Number(id)
         });
     };
 
     const handleDownward = (id: GridRowId) => () => {
         dispatch({
             type: 'entity:attribute:move-attribute-down',
-            id: id
+            attributeIdx: Number(id)
         });
     };
 
     const handleDelete = (id: GridRowId) => () => {
         dispatch({
             type: 'entity:attribute:delete-attribute',
-            id: id
+            attributeIdx: Number(id)
         });
     };
 

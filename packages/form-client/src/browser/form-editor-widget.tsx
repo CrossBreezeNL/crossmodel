@@ -18,9 +18,9 @@ import URI from '@theia/core/lib/common/uri';
 import { inject, injectable, postConstruct } from '@theia/core/shared/inversify';
 import * as React from '@theia/core/shared/react';
 import '../../style/form-view.css';
-import { App } from './react-components/App';
 import debounce = require('p-debounce');
 import deepEqual = require('fast-deep-equal');
+import { EntityForm, withModelProvider } from '@crossbreeze/react-model-ui';
 
 export const FormEditorWidgetOptions = Symbol('FormEditorWidgetOptions');
 export interface FormEditorWidgetOptions extends NavigatableWidgetOptions {
@@ -116,14 +116,8 @@ export class FormEditorWidget extends ReactWidget implements NavigatableWidget, 
     }
 
     render(): React.ReactNode {
-        const props = {
-            model: this.syncedModel,
-            updateModel: this.updateModel,
-            getResourceUri: this.getResourceUri,
-            formClient: this.formClient
-        };
-
-        return <App {...props} />;
+        const FormComponent = withModelProvider(EntityForm, { model: this.syncedModel, onModelUpdate: this.updateModel });
+        return <FormComponent />;
     }
 
     protected override onActivateRequest(msg: Message): void {

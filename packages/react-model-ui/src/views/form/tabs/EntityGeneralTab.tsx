@@ -1,30 +1,20 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { CrossModelRoot } from '@crossbreeze/protocol';
-import * as React from '@theia/core/shared/react';
-import { ModelContext, ModelDispatchContext, ModelReducer } from '../../ModelContext';
+import * as React from 'react';
+import { useModel, useModelDispatch } from '../../../ModelContext';
+import { ErrorView } from '../../ErrorView';
 
 interface GeneralTabProps {}
 
-export function GeneralTab(props: GeneralTabProps): React.ReactElement {
+export function GeneralTab(_props: GeneralTabProps): React.ReactElement {
     // Context variables to handle model state.
-    const model = React.useContext(ModelContext) as CrossModelRoot;
-    const dispatch = React.useContext(ModelDispatchContext) as React.Dispatch<React.ReducerAction<typeof ModelReducer>>;
+    const model = useModel();
+    const dispatch = useModelDispatch();
 
     // Check if model initialized. Has to be here otherwise the compiler complains.
     if (model.entity === undefined) {
-        return (
-            <div
-                style={{
-                    backgroundColor: 'red',
-                    color: 'white',
-                    padding: '10px'
-                }}
-            >
-                Model not initialized!
-            </div>
-        );
+        return <ErrorView errorMessage='Model not initialized!' />;
     }
 
     return (

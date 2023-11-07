@@ -33,6 +33,7 @@
   "dependencies": {
     "@crossbreeze/model-service": "^1.0.0",
     "@crossbreeze/protocol": "^0.0.0",
+    "@crossbreeze/react-model-ui": "0.0.0",
     "@eclipse-glsp/theia-integration": "1.1.0-RC10",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",

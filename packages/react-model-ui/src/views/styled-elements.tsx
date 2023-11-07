@@ -7,7 +7,7 @@ import MuiAccordionSummary, { AccordionSummaryProps } from '@mui/material/Accord
 import { styled } from '@mui/material/styles';
 import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
-import * as React from '@theia/core/shared/react';
+import * as React from 'react';
 import Button, { ButtonProps } from '@mui/material/Button';
 
 export const Accordion = styled((props: AccordionProps) => <MuiAccordion disableGutters elevation={0} square {...props} />)(

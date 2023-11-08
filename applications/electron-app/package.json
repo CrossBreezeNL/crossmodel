@@ -3,15 +3,15 @@
   "version": "0.0.0",
   "private": true,
   "description": "CrossModel Community Edition",
-  "homepage": "https://github.com/CrossBreezeNL/CrossModel",
+  "homepage": "https://github.com/CrossBreezeNL/crossmodel",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/CrossBreezeNL/CrossModel"
+    "url": "git+https://github.com/CrossBreezeNL/crossmodel"
   },
-  "license": "UNLICENSED",
+  "license": "AGPL-3.0-or-later",
   "author": {
-    "name": "CrossBreeze Team",
-    "email": "team@x-breeze.com"
+    "name": "CrossBreeze",
+    "email": "devops@crossbreeze.nl"
   },
   "main": "scripts/electron-main.js",
   "scripts": {

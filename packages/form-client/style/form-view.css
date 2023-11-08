@@ -6,32 +6,6 @@
     box-sizing: border-box;
 }
 
-.form-editor-general {
-    display: table;
-    width: 100%;
-}
-
-.form-editor-general > div {
-    display: table-row;
-}
-
-.form-editor-general label {
-    display: table-cell;
-    padding-right: 10px;
-    vertical-align: top;
-    width: 50px;
-    margin-bottom: 5px;
-}
-
-.form-editor-general input,
-.form-editor-general textarea {
-    display: table-cell;
-    width: 80%;
-    border: gray 1px solid;
-    resize: none;
-    margin-bottom: 5px;
-}
-
 .form-editor-attributes-tab {
     padding: 0 10px;
 }

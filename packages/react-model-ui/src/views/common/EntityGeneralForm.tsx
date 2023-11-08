@@ -4,6 +4,7 @@
 import * as React from 'react';
 import { useModel, useModelDispatch } from '../../ModelContext';
 import { ErrorView } from '../ErrorView';
+import '../../../style/entity-general-form.css';
 
 interface EntityGeneralProps extends React.HTMLProps<HTMLDivElement> {}
 

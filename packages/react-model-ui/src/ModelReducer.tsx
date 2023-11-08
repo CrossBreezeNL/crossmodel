@@ -129,7 +129,7 @@ export function ModelReducer(state: ModelState, action: DispatchAction): ModelSt
             state.model.entity!.attributes.push({
                 $type: 'EntityAttribute',
                 name: `empty_attribute${state.model.entity!.attributes.length}`,
-                datatype: 'Float'
+                datatype: 'Varchar'
             });
             break;
 

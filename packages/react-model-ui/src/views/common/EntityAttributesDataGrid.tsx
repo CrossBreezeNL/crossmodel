@@ -8,10 +8,13 @@ import {
     DataGrid,
     GridActionsCellItem,
     GridCellEditStartParams,
-    GridCellEditStopParams,
     GridCellModes,
     GridCellParams,
     GridColDef,
+    GridEditCellProps,
+    GridEditInputCell,
+    GridPreProcessEditCellProps,
+    GridRenderEditCellParams,
     GridRowId,
     GridRowModel,
     GridRowsProp,
@@ -19,7 +22,7 @@ import {
     MuiEvent,
     useGridApiRef
 } from '@mui/x-data-grid';
-import { FormControl, MenuItem, Select, SelectChangeEvent } from '@mui/material';
+import { FormControl, MenuItem, Select, SelectChangeEvent, Tooltip, TooltipProps, tooltipClasses, styled, Box } from '@mui/material';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -28,18 +31,13 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 
 export function EntityAttributesDataGrid(): React.ReactElement {
     // Context variables to handle model state.
-    const apiRef = useGridApiRef();
     const model = useModel();
+    const gridApiRef = useGridApiRef();
     const dispatch = useModelDispatch();
-    const [errorRow, setErrorRow] = React.useState(undefined);
     const [currentEdit, setCurrentEdit] = React.useState({} as CurrentEdit);
 
     // Callback for when the user stops editing a cell.
     const handleRowUpdate = (updatedRow: GridRowModel, originalRow: GridRowModel): GridRowModel => {
-        if (!updatedRow.name) {
-            setErrorRow(originalRow.id);
-            throw new Error('Name can not be empty');
-        }
         // Handle change of name property.
         dispatch({
             type: 'entity:attribute:update',
@@ -52,19 +50,14 @@ export function EntityAttributesDataGrid(): React.ReactElement {
                 description: updatedRow.description
             }
         });
-
-        setErrorRow(undefined);
         return updatedRow;
     };
 
-    const handleOnCellEditStop = (params: GridCellEditStopParams, event: MuiEvent): void => {
-        setErrorRow(undefined);
-    };
-
+    // Cell edit handler to block editing of any other row, when a row is erroneous.
     const handleOnCellEditStart = (params: GridCellEditStartParams, event: MuiEvent): void => {
         if (currentEdit.row_id && currentEdit.field) {
-            if (apiRef.current.getCellMode(currentEdit.row_id, currentEdit.field) === GridCellModes.Edit) {
-                apiRef.current.stopCellEditMode({
+            if (gridApiRef.current.getCellMode(currentEdit.row_id, currentEdit.field) === GridCellModes.Edit) {
+                gridApiRef.current.stopCellEditMode({
                     id: currentEdit.row_id,
                     field: currentEdit.field,
                     ignoreModifications: true // will also discard the changes made
@@ -78,7 +71,7 @@ export function EntityAttributesDataGrid(): React.ReactElement {
         });
     };
 
-    const handleClick = (): void => {
+    const handleAddAttribute = (): void => {
         dispatch({
             type: 'entity:attribute:add-empty'
         });
@@ -93,21 +86,21 @@ export function EntityAttributesDataGrid(): React.ReactElement {
         });
     }
 
-    const handleUpward = (id: GridRowId) => () => {
+    const handleAttributeUpward = (id: GridRowId) => () => {
         dispatch({
             type: 'entity:attribute:move-attribute-up',
             attributeIdx: Number(id)
         });
     };
 
-    const handleDownward = (id: GridRowId) => () => {
+    const handleAttributeDownward = (id: GridRowId) => () => {
         dispatch({
             type: 'entity:attribute:move-attribute-down',
             attributeIdx: Number(id)
         });
     };
 
-    const handleDelete = (id: GridRowId) => () => {
+    const handleAttributeDelete = (id: GridRowId) => () => {
         dispatch({
             type: 'entity:attribute:delete-attribute',
             attributeIdx: Number(id)
@@ -123,11 +116,25 @@ export function EntityAttributesDataGrid(): React.ReactElement {
         return <></>;
     }
 
+    // Pre-process function for mandatory cells. This will show an error message on the cell of the field is empty.
+    const preProcessMandatoryCellProps = (params: GridPreProcessEditCellProps): GridEditCellProps => {
+        const error = params.props.value!.toString().length === 0;
+        const errormessage = error ? 'This field is mandatory!' : undefined;
+        return { ...params.props, error: error, errormessage: errormessage };
+    };
+
     // Cols and rows for the datagrid
     const rows = createRows(model.entity.attributes);
     const columns: GridColDef[] = [
-        { field: 'id', headerName: 'Index', width: 40 },
-        { field: 'name_val', headerName: 'Name', editable: true, minWidth: 200 },
+        // { field: 'name', headerName: 'Id', width: 40 },
+        {
+            field: 'name_val',
+            headerName: 'Name',
+            minWidth: 200,
+            editable: true,
+            preProcessEditCellProps: preProcessMandatoryCellProps,
+            renderEditCell: renderValidateableCell
+        },
         {
             field: 'datatype',
             headerName: 'Data type',
@@ -144,21 +151,21 @@ export function EntityAttributesDataGrid(): React.ReactElement {
                     key={'Property-view-grid-Move up'}
                     icon={<ArrowUpwardIcon />}
                     label='Move up'
-                    onClick={handleUpward(params.id)}
+                    onClick={handleAttributeUpward(params.id)}
                     showInMenu
                 />,
                 <GridActionsCellItem
                     key={'Property-view-grid-Move down'}
                     icon={<ArrowDownwardIcon />}
                     label='Move down'
-                    onClick={handleDownward(params.id)}
+                    onClick={handleAttributeDownward(params.id)}
                     showInMenu
                 />,
                 <GridActionsCellItem
                     key={'Property-view-grid-delete'}
                     icon={<DeleteIcon />}
                     label='Delete'
-                    onClick={handleDelete(params.id)}
+                    onClick={handleAttributeDelete(params.id)}
                     showInMenu
                 />
             ]
@@ -168,11 +175,11 @@ export function EntityAttributesDataGrid(): React.ReactElement {
     return (
         <DataGrid
             autoHeight
-            rows={rows}
             columns={columns}
+            rows={rows}
             // Toolbar
             slots={{ toolbar: EditToolbar }}
-            slotProps={{ toolbar: { handleClick: handleClick } }}
+            slotProps={{ toolbar: { handleClick: handleAddAttribute } }}
             // page sizes
             pageSizeOptions={[8, 16, 24]}
             initialState={{
@@ -185,14 +192,45 @@ export function EntityAttributesDataGrid(): React.ReactElement {
             }}
             processRowUpdate={handleRowUpdate}
             onProcessRowUpdateError={handleRowUpdateError}
-            onCellEditStop={handleOnCellEditStop}
+            // Enable cell edit stop and start handlers to revert cell-changes for erroneous cells when starting editing another cell.
             onCellEditStart={handleOnCellEditStart}
-            getRowClassName={params => (params.row.id === errorRow ? 'entity-attribute-error-row' : '')}
-            apiRef={apiRef}
+            apiRef={gridApiRef}
         />
     );
 }
 
+// Style tooltop element, to show the error message of a validation.
+const StyledTooltip = styled(({ className, ...props }: TooltipProps) => <Tooltip {...props} classes={{ popper: className }} />)(
+    ({ theme }) => ({
+        [`& .${tooltipClasses.tooltip}`]: {
+            backgroundColor: theme.palette.error.main,
+            color: theme.palette.error.contrastText
+        }
+    })
+);
+
+// Custom edit cell element, which can show an error in a tooltip.
+function ValidateableEditInputCell(props: GridRenderEditCellParams): React.JSX.Element {
+    return (
+        <div>
+            <div>
+                <GridEditInputCell {...props} />
+            </div>
+            <Box sx={{ width: '100%' }}>
+                <StyledTooltip open={!!props.error} title={props.errormessage || ''} arrow>
+                    <div></div>
+                </StyledTooltip>
+            </Box>
+        </div>
+    );
+}
+
+// Render function for rendering the validateable cell.
+function renderValidateableCell(params: GridRenderEditCellParams): React.JSX.Element {
+    return <ValidateableEditInputCell {...params} />;
+}
+
+// Edit toolbar with the button to add an attribute.
 function EditToolbar(props: any): React.ReactElement {
     return (
         <GridToolbarContainer>
@@ -232,6 +270,7 @@ function DataTypeSelect(props: any): React.ReactElement {
     );
 }
 
+// Function to construct an error of rows.
 function createRows(attributes: Array<EntityAttribute>): GridRowsProp {
     const rows = attributes.map((attribute, index) => ({
         id: index,
@@ -244,6 +283,7 @@ function createRows(attributes: Array<EntityAttribute>): GridRowsProp {
     return rows;
 }
 
+// Interface for storing the currently being edited row and field.
 interface CurrentEdit {
     row_id?: number;
     field?: string;

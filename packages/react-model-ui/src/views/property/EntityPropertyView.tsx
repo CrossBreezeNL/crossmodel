@@ -8,6 +8,7 @@ import { ErrorView } from '../ErrorView';
 import { EntityGeneralForm } from '../common/EntityGeneralForm';
 import { EntityAttributesDataGrid } from '../common/EntityAttributesDataGrid';
 import { Accordion, AccordionDetails, AccordionSummary, SaveButton } from '../styled-elements';
+import '../../../style/entity-property-view.css';
 
 // Container with the entity poperties and attributes in accordions.
 export function EntityPropertyView(): React.ReactElement {

@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { CrossModelRoot } from '@crossbreeze/protocol';
+import { CrossModelRoot, EntityAttribute } from '@crossbreeze/protocol';
 
 export interface ModelAction {
     type: string;
@@ -22,6 +22,12 @@ export interface EntityChangeDescriptionAction extends ModelAction {
     description: string;
 }
 
+export interface EntityAttributeUpdateAction extends ModelAction {
+    type: 'entity:attribute:update';
+    attributeIdx: number;
+    attribute: EntityAttribute;
+}
+
 export interface EntityAttributeChangeNameAction extends ModelAction {
     type: 'entity:attribute:change-name';
     attributeIdx: number;
@@ -32,6 +38,12 @@ export interface EntityAttributeChangeDatatypeAction extends ModelAction {
     type: 'entity:attribute:change-datatype';
     attributeIdx: number;
     datatype: string;
+}
+
+export interface EntityAttributeChangeDescriptionAction extends ModelAction {
+    type: 'entity:attribute:change-description';
+    attributeIdx: number;
+    description: string;
 }
 
 export interface EntityAttributeAddEmptyAction extends ModelAction {
@@ -57,8 +69,10 @@ export type DispatchAction =
     | ModelUpdateAction
     | EntityChangeNameAction
     | EntityChangeDescriptionAction
+    | EntityAttributeUpdateAction
     | EntityAttributeChangeNameAction
     | EntityAttributeChangeDatatypeAction
+    | EntityAttributeChangeDescriptionAction
     | EntityAttributeAddEmptyAction
     | EntityAttributeMoveUpAction
     | EntityAttributeMoveDownAction
@@ -88,15 +102,23 @@ export function ModelReducer(state: ModelState, action: DispatchAction): ModelSt
             break;
 
         case 'entity:change-name':
-            state.model.entity!.name = action.name;
+            state.model.entity!.name_val = action.name;
             break;
 
         case 'entity:change-description':
             state.model.entity!.description = action.description;
             break;
 
+        case 'entity:attribute:update':
+            state.model.entity!.attributes[action.attributeIdx] = action.attribute;
+            break;
+
         case 'entity:attribute:change-datatype':
             state.model.entity!.attributes[action.attributeIdx].datatype = action.datatype;
+            break;
+
+        case 'entity:attribute:change-description':
+            state.model.entity!.attributes[action.attributeIdx].description = action.description;
             break;
 
         case 'entity:attribute:change-name':

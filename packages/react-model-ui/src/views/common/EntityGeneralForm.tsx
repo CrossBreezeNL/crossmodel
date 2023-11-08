@@ -2,12 +2,12 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 import * as React from 'react';
-import { useModel, useModelDispatch } from '../../../ModelContext';
-import { ErrorView } from '../../ErrorView';
+import { useModel, useModelDispatch } from '../../ModelContext';
+import { ErrorView } from '../ErrorView';
 
-interface GeneralTabProps {}
+interface EntityGeneralProps extends React.HTMLProps<HTMLDivElement> {}
 
-export function GeneralTab(_props: GeneralTabProps): React.ReactElement {
+export function EntityGeneralForm(_props: EntityGeneralProps): React.ReactElement {
     // Context variables to handle model state.
     const model = useModel();
     const dispatch = useModelDispatch();
@@ -23,7 +23,7 @@ export function GeneralTab(_props: GeneralTabProps): React.ReactElement {
                 <label>Name:</label>
                 <input
                     className='theia-input'
-                    value={model.entity.name}
+                    value={model.entity.name_val}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                         dispatch({ type: 'entity:change-name', name: e.target.value ? e.target.value : '' });
                     }}

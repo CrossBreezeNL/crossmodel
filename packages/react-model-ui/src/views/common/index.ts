@@ -1,4 +1,5 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-export * from './EntityPropertyView';
+export * from './EntityGeneralForm';
+export * from './EntityAttributesDataGrid';

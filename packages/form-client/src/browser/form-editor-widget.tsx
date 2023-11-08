@@ -116,7 +116,10 @@ export class FormEditorWidget extends ReactWidget implements NavigatableWidget, 
     }
 
     render(): React.ReactNode {
-        const FormComponent = withModelProvider(EntityForm, { model: this.syncedModel, onModelUpdate: this.updateModel });
+        const FormComponent = withModelProvider(EntityForm, {
+            model: this.syncedModel,
+            onModelUpdate: this.updateModel
+        });
         return <FormComponent />;
     }
 

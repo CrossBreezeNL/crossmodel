@@ -3,14 +3,14 @@
  ********************************************************************************/
 
 import * as React from '@theia/core/shared/react';
-import { useModel, useModelDispatch, useModelSave } from '../../ModelContext';
+import { useModel, useModelSave } from '../../ModelContext';
 import { ErrorView } from '../ErrorView';
-import { EntityPropertyAttributes } from './EntityPropertyAttributeGrid';
+import { EntityGeneralForm } from '../common/EntityGeneralForm';
+import { EntityAttributesDataGrid } from '../common/EntityAttributesDataGrid';
 import { Accordion, AccordionDetails, AccordionSummary, SaveButton } from '../styled-elements';
 
-export interface EntityPropertyViewProps extends React.HTMLProps<HTMLDivElement> {}
-
-export function EntityPropertyView(_props: EntityPropertyViewProps): React.ReactElement {
+// Container with the entity poperties and attributes in accordions.
+export function EntityPropertyView(): React.ReactElement {
     const model = useModel();
     const saveModel = useModelSave();
 
@@ -32,11 +32,9 @@ export function EntityPropertyView(_props: EntityPropertyViewProps): React.React
     );
 }
 
-interface EntityPropertyGeneralProps extends React.HTMLProps<HTMLDivElement> {}
-
-function EntityPropertyGeneral(_props: EntityPropertyGeneralProps): React.ReactElement {
+// Accordion for the general entity properties.
+function EntityPropertyGeneral(): React.ReactElement {
     const model = useModel();
-    const dispatch = useModelDispatch();
 
     if (!model || !model.entity) {
         return <ErrorView errorMessage='Something went wrong loading the model!' />;
@@ -45,31 +43,24 @@ function EntityPropertyGeneral(_props: EntityPropertyGeneralProps): React.ReactE
     return (
         <Accordion defaultExpanded={true}>
             <AccordionSummary aria-controls='general-info-content' className='property-accordion'>
-                General information
+                General
             </AccordionSummary>
             <AccordionDetails className='property-entity-general'>
-                <div>
-                    <label>Name:</label>
-                    <input
-                        className='theia-input'
-                        value={model.entity.name_val}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                            dispatch({ type: 'entity:change-name', name: e.target.value ? e.target.value : '' });
-                        }}
-                    />
-                </div>
+                <EntityGeneralForm />
+            </AccordionDetails>
+        </Accordion>
+    );
+}
 
-                <div>
-                    <label>Description:</label>
-                    <textarea
-                        className='theia-input'
-                        value={model.entity.description}
-                        rows={4}
-                        onChange={(e: any) => {
-                            dispatch({ type: 'entity:change-description', description: e.target.value });
-                        }}
-                    />
-                </div>
+// Accordion with the entity attributes in a data grid.
+function EntityPropertyAttributes(): React.ReactElement {
+    return (
+        <Accordion defaultExpanded={true}>
+            <AccordionSummary aria-controls='property-entity-attributes' className='property-accordion'>
+                Attributes
+            </AccordionSummary>
+            <AccordionDetails className='property-entity-attributes'>
+                <EntityAttributesDataGrid />
             </AccordionDetails>
         </Accordion>
     );

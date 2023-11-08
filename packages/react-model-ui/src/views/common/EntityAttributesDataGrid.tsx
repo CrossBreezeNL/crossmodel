@@ -2,12 +2,8 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 import { EntityAttribute } from '@crossbreeze/protocol';
-import AddIcon from '@mui/icons-material/Add';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { FormControl, MenuItem, Select, SelectChangeEvent } from '@mui/material';
-import Button from '@mui/material/Button';
+import { useModel, useModelDispatch } from '../../ModelContext';
+import * as React from 'react';
 import {
     DataGrid,
     GridActionsCellItem,
@@ -23,11 +19,14 @@ import {
     MuiEvent,
     useGridApiRef
 } from '@mui/x-data-grid';
-import * as React from 'react';
-import { useModel, useModelDispatch } from '../../ModelContext';
-import { Accordion, AccordionDetails, AccordionSummary } from '../styled-elements';
+import { FormControl, MenuItem, Select, SelectChangeEvent } from '@mui/material';
+import Button from '@mui/material/Button';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 
-export function EntityPropertyAttributes(): React.ReactElement {
+export function EntityAttributesDataGrid(): React.ReactElement {
     // Context variables to handle model state.
     const apiRef = useGridApiRef();
     const model = useModel();
@@ -37,18 +36,22 @@ export function EntityPropertyAttributes(): React.ReactElement {
 
     // Callback for when the user stops editing a cell.
     const handleRowUpdate = (updatedRow: GridRowModel, originalRow: GridRowModel): GridRowModel => {
-        if (updatedRow.name !== originalRow.name) {
-            if (!updatedRow.name) {
-                setErrorRow(originalRow.id);
-                throw new Error('Name can not be empty');
-            }
-
-            dispatch({
-                type: 'entity:attribute:change-name',
-                attributeIdx: updatedRow.id,
-                name: updatedRow.name
-            });
+        if (!updatedRow.name) {
+            setErrorRow(originalRow.id);
+            throw new Error('Name can not be empty');
         }
+        // Handle change of name property.
+        dispatch({
+            type: 'entity:attribute:update',
+            attributeIdx: updatedRow.id,
+            attribute: {
+                $type: 'EntityAttribute',
+                name: updatedRow.name,
+                name_val: updatedRow.name_val,
+                datatype: updatedRow.datatype,
+                description: updatedRow.description
+            }
+        });
 
         setErrorRow(undefined);
         return updatedRow;
@@ -123,14 +126,15 @@ export function EntityPropertyAttributes(): React.ReactElement {
     // Cols and rows for the datagrid
     const rows = createRows(model.entity.attributes);
     const columns: GridColDef[] = [
-        { field: 'id', headerName: 'id', width: 40 },
-        { field: 'name', headerName: 'Naam', editable: true, minWidth: 200 },
+        { field: 'id', headerName: 'Index', width: 40 },
+        { field: 'name_val', headerName: 'Name', editable: true, minWidth: 200 },
         {
-            field: 'value',
+            field: 'datatype',
             headerName: 'Data type',
             minWidth: 120,
-            renderCell: (params: GridCellParams) => <CustomSelect {...params} onChange={dataTypeChangedDispatch} />
+            renderCell: (params: GridCellParams) => <DataTypeSelect {...params} onChange={dataTypeChangedDispatch} />
         },
+        { field: 'description', headerName: 'Description', editable: true, minWidth: 200 },
         {
             field: 'actions',
             type: 'actions',
@@ -162,36 +166,30 @@ export function EntityPropertyAttributes(): React.ReactElement {
     ];
 
     return (
-        <Accordion defaultExpanded={true}>
-            <AccordionSummary aria-controls='property-entity-attributes' className='property-accordion'>
-                Attributes
-            </AccordionSummary>
-            <AccordionDetails className='property-entity-attributes'>
-                <DataGrid
-                    rows={rows}
-                    columns={columns}
-                    // Toolbar
-                    slots={{ toolbar: EditToolbar }}
-                    slotProps={{ toolbar: { handleClick: handleClick } }}
-                    // page sizes
-                    pageSizeOptions={[8, 16, 24]}
-                    initialState={{
-                        pagination: { paginationModel: { pageSize: 8 } },
-                        columns: {
-                            columnVisibilityModel: {
-                                id: false
-                            }
-                        }
-                    }}
-                    processRowUpdate={handleRowUpdate}
-                    onProcessRowUpdateError={handleRowUpdateError}
-                    onCellEditStop={handleOnCellEditStop}
-                    onCellEditStart={handleOnCellEditStart}
-                    getRowClassName={params => (params.row.id === errorRow ? 'entity-attribute-error-row' : '')}
-                    apiRef={apiRef}
-                />
-            </AccordionDetails>
-        </Accordion>
+        <DataGrid
+            autoHeight
+            rows={rows}
+            columns={columns}
+            // Toolbar
+            slots={{ toolbar: EditToolbar }}
+            slotProps={{ toolbar: { handleClick: handleClick } }}
+            // page sizes
+            pageSizeOptions={[8, 16, 24]}
+            initialState={{
+                pagination: { paginationModel: { pageSize: 8 } },
+                columns: {
+                    columnVisibilityModel: {
+                        id: false
+                    }
+                }
+            }}
+            processRowUpdate={handleRowUpdate}
+            onProcessRowUpdateError={handleRowUpdateError}
+            onCellEditStop={handleOnCellEditStop}
+            onCellEditStart={handleOnCellEditStart}
+            getRowClassName={params => (params.row.id === errorRow ? 'entity-attribute-error-row' : '')}
+            apiRef={apiRef}
+        />
     );
 }
 
@@ -205,13 +203,14 @@ function EditToolbar(props: any): React.ReactElement {
     );
 }
 
-function CustomSelect(props: any): React.ReactElement {
+// Data Type selection (drop-down) element.
+function DataTypeSelect(props: any): React.ReactElement {
     const { id, value, onChange } = props;
     const options = ['Integer', 'Float', 'Char', 'Varchar', 'Bool'];
 
     // When the custom value does not exist yet in the options, we add it to the list
-    if (options.findIndex((item: string) => item.toLowerCase() === props.value.toLowerCase()) === -1) {
-        options.push(props.value);
+    if (props.datatype !== undefined && options.findIndex((item: string) => item.toLowerCase() === props.datatype.toLowerCase()) === -1) {
+        options.push(props.datatype);
     }
 
     return (
@@ -236,8 +235,10 @@ function CustomSelect(props: any): React.ReactElement {
 function createRows(attributes: Array<EntityAttribute>): GridRowsProp {
     const rows = attributes.map((attribute, index) => ({
         id: index,
-        name: attribute.name_val,
-        value: attribute.datatype
+        name: attribute.name,
+        name_val: attribute.name_val,
+        datatype: attribute.datatype,
+        description: attribute.description
     }));
 
     return rows;

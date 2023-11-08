@@ -7,11 +7,11 @@ import { Tab, TabList, TabPanel, Tabs } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import { useModel } from '../../ModelContext';
 import { ErrorView } from '../ErrorView';
-import { GeneralTab } from './tabs/EntityGeneralTab';
+import { EntityGeneralForm } from '../common/EntityGeneralForm';
+import { EntityAttributesDataGrid } from '../common/EntityAttributesDataGrid';
 
-export interface ModelProps {}
-
-export function EntityForm(_props: ModelProps): React.ReactElement {
+// Form with tabs to edit an entity's properites and attributes.
+export function EntityForm(): React.ReactElement {
     const model = useModel();
 
     if (!model.entity) {
@@ -31,14 +31,16 @@ export function EntityForm(_props: ModelProps): React.ReactElement {
                     <Tab>
                         <h3>General</h3>
                     </Tab>
-                    {/* <Tab>
+                    <Tab>
                         <h3>Attributes</h3>
                     </Tab>
-                    */}
                 </TabList>
 
                 <TabPanel>
-                    <GeneralTab />
+                    <EntityGeneralForm />
+                </TabPanel>
+                <TabPanel>
+                    <EntityAttributesDataGrid />
                 </TabPanel>
             </Tabs>
         </div>

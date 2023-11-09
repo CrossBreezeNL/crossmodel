@@ -24,7 +24,7 @@ export class ModelPropertyWidget extends ReactWidget implements PropertyViewCont
     @inject(ModelService) protected modelService: ModelService;
     @inject(ApplicationShell) protected shell: ApplicationShell;
 
-    protected model: CrossModelRoot | undefined = undefined;
+    protected model: CrossModelRoot | undefined;
     protected uri: string;
 
     constructor() {

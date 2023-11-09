@@ -27,10 +27,10 @@ export class CrossModelTokenBuilder extends DefaultTokenBuilder {
         const tokens: TokenType[] = super.buildTokens(grammar, options) as TokenType[];
 
         const updatedTokens: TokenType[] = [];
-        let tokenWithSpaces: TokenType | undefined = undefined;
-        let tokenIndent: TokenType | undefined = undefined;
-        let tokenDedent: TokenType | undefined = undefined;
-        let tokenNewLine: TokenType | undefined = undefined;
+        let tokenWithSpaces: TokenType | undefined;
+        let tokenIndent: TokenType | undefined;
+        let tokenDedent: TokenType | undefined;
+        let tokenNewLine: TokenType | undefined;
 
         for (const token of tokens) {
             if (token.name === NAMES.SPACES) {

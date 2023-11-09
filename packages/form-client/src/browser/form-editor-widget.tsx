@@ -41,8 +41,8 @@ export class FormEditorWidget extends ReactWidget implements NavigatableWidget, 
     @inject(CommandService) protected commandService: CommandService;
     @inject(ModelServiceClient) protected formClient: ModelServiceClient;
 
-    protected syncedModel: CrossModelRoot | undefined = undefined;
-    protected error: string | undefined = undefined;
+    protected syncedModel: CrossModelRoot | undefined;
+    protected error: string | undefined;
 
     @postConstruct()
     init(): void {

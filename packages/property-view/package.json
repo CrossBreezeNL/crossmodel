@@ -20,7 +20,8 @@
   "files": [
     "lib",
     "src",
-    "resources"
+    "resources",
+    "style"
   ],
   "scripts": {
     "build": "tsc -b",

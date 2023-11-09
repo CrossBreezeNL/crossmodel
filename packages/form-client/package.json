@@ -18,8 +18,7 @@
   },
   "files": [
     "lib",
-    "src",
-    "style"
+    "src"
   ],
   "scripts": {
     "build": "tsc -b",

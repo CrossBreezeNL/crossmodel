@@ -17,7 +17,6 @@ import {
 import URI from '@theia/core/lib/common/uri';
 import { inject, injectable, postConstruct } from '@theia/core/shared/inversify';
 import * as React from '@theia/core/shared/react';
-import '../../style/form-view.css';
 import debounce = require('p-debounce');
 import deepEqual = require('fast-deep-equal');
 import { EntityForm, withModelProvider } from '@crossbreeze/react-model-ui';

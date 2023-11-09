@@ -9,6 +9,7 @@ import { useModel } from '../../ModelContext';
 import { ErrorView } from '../ErrorView';
 import { EntityGeneralForm } from '../common/EntityGeneralForm';
 import { EntityAttributesDataGrid } from '../common/EntityAttributesDataGrid';
+import '../../../style/entity-form.css';
 
 // Form with tabs to edit an entity's properites and attributes.
 export function EntityForm(): React.ReactElement {

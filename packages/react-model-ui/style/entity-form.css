@@ -1,0 +1,7 @@
+.form-editor {
+    padding: 10px;
+}
+
+.form-editor * {
+    box-sizing: border-box;
+}

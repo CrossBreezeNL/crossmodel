@@ -10,7 +10,6 @@ import { PropertyViewContentWidget } from '@theia/property-view/lib/browser/prop
 import { ModelService } from '@crossbreeze/model-service/lib/common';
 import { CrossModelRoot, isDiagramNodeEntity } from '@crossbreeze/protocol';
 import { EntityPropertyView, withModelProvider } from '@crossbreeze/react-model-ui';
-import { IActionDispatcher } from '@eclipse-glsp/client';
 import { GLSPDiagramWidget, GlspSelection } from '@eclipse-glsp/theia-integration';
 import { ApplicationShell } from '@theia/core/lib/browser/shell/application-shell';
 import { inject, injectable } from '@theia/core/shared/inversify';
@@ -90,15 +89,6 @@ export class ModelPropertyWidget extends ReactWidget implements PropertyViewCont
             if (widget instanceof GLSPDiagramWidget) {
                 return widget;
             }
-        }
-        return undefined;
-    }
-
-    protected get actionDispatcher(): IActionDispatcher | undefined {
-        const widget = this.getDiagramWidget();
-
-        if (widget instanceof GLSPDiagramWidget) {
-            return widget.actionDispatcher;
         }
         return undefined;
     }

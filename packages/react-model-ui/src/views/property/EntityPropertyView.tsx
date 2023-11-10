@@ -2,7 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import * as React from '@theia/core/shared/react';
+import * as React from 'react';
 import { useModel, useModelSave } from '../../ModelContext';
 import { ErrorView } from '../ErrorView';
 import { EntityGeneralForm } from '../common/EntityGeneralForm';

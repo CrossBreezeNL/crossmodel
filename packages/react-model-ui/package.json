@@ -40,6 +40,7 @@
     "@mui/x-data-grid": "^6.2.1",
     "@theia/core": "1.37.2",
     "immer": "^10.0.3",
+    "react": "18.2.0",
     "react-tabs": "^6.0.1",
     "use-immer": "^0.9.0"
   }

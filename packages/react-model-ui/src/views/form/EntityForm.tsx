@@ -2,33 +2,25 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import * as React from '@theia/core/shared/react';
+import * as React from 'react';
 import { Tab, TabList, TabPanel, Tabs } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
-import { ModelContext } from '../ModelContext';
-import { GeneralTab } from './tabs/EntityGeneralTab';
+import { useModel } from '../../ModelContext';
+import { ErrorView } from '../ErrorView';
+import { EntityGeneralForm } from '../common/EntityGeneralForm';
+import { EntityAttributesDataGrid } from '../common/EntityAttributesDataGrid';
+import '../../../style/entity-form.css';
 
-export interface ModelProps {}
-
-export function EntityForm(props: ModelProps): React.ReactElement {
-    const model = React.useContext(ModelContext);
+// Form with tabs to edit an entity's properites and attributes.
+export function EntityForm(): React.ReactElement {
+    const model = useModel();
 
     if (!model.entity) {
-        return (
-            <div
-                style={{
-                    backgroundColor: 'red',
-                    color: 'white',
-                    padding: '10px'
-                }}
-            >
-                This is not an entity model!
-            </div>
-        );
+        return <ErrorView errorMessage='This is not an entity model!' />;
     }
 
     return (
-        <>
+        <div className='form-editor'>
             <div className='form-editor-header'>
                 <h1>
                     <span className='label'>Entity : </span>
@@ -40,16 +32,18 @@ export function EntityForm(props: ModelProps): React.ReactElement {
                     <Tab>
                         <h3>General</h3>
                     </Tab>
-                    {/* <Tab>
+                    <Tab>
                         <h3>Attributes</h3>
                     </Tab>
-                    */}
                 </TabList>
 
                 <TabPanel>
-                    <GeneralTab />
+                    <EntityGeneralForm />
+                </TabPanel>
+                <TabPanel>
+                    <EntityAttributesDataGrid />
                 </TabPanel>
             </Tabs>
-        </>
+        </div>
     );
 }

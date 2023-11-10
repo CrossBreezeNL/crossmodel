@@ -73,7 +73,7 @@ function matchIndentBase(text: string, offset: number, matchedTokens: IToken[], 
 
     // indentation can only be matched at the start of a line.
     if (isFirstLine || isStartOfLine) {
-        let currIndentLevel: number | undefined = undefined;
+        let currIndentLevel: number | undefined;
         const prevIndentLevel = indentStack.getLast();
 
         const wsRegExp = /[ ]+/y;

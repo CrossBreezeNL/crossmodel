@@ -1,30 +1,21 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { CrossModelRoot } from '@crossbreeze/protocol';
-import * as React from '@theia/core/shared/react';
-import { ModelContext, ModelDispatchContext, ModelReducer } from '../../ModelContext';
+import * as React from 'react';
+import { useModel, useModelDispatch } from '../../ModelContext';
+import { ErrorView } from '../ErrorView';
+import '../../../style/entity-general-form.css';
 
-interface GeneralTabProps {}
+interface EntityGeneralProps extends React.HTMLProps<HTMLDivElement> {}
 
-export function GeneralTab(props: GeneralTabProps): React.ReactElement {
+export function EntityGeneralForm(_props: EntityGeneralProps): React.ReactElement {
     // Context variables to handle model state.
-    const model = React.useContext(ModelContext) as CrossModelRoot;
-    const dispatch = React.useContext(ModelDispatchContext) as React.Dispatch<React.ReducerAction<typeof ModelReducer>>;
+    const model = useModel();
+    const dispatch = useModelDispatch();
 
     // Check if model initialized. Has to be here otherwise the compiler complains.
     if (model.entity === undefined) {
-        return (
-            <div
-                style={{
-                    backgroundColor: 'red',
-                    color: 'white',
-                    padding: '10px'
-                }}
-            >
-                Model not initialized!
-            </div>
-        );
+        return <ErrorView errorMessage='Model not initialized!' />;
     }
 
     return (
@@ -33,7 +24,7 @@ export function GeneralTab(props: GeneralTabProps): React.ReactElement {
                 <label>Name:</label>
                 <input
                     className='theia-input'
-                    value={model.entity.name}
+                    value={model.entity.name_val}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                         dispatch({ type: 'entity:change-name', name: e.target.value ? e.target.value : '' });
                     }}

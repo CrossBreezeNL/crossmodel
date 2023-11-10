@@ -6,20 +6,19 @@
   "keywords": [
     "theia-extension"
   ],
-  "homepage": "https://github.com/CrossBreezeNL/CrossModel",
+  "homepage": "https://github.com/CrossBreezeNL/crossmodel",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/CrossBreezeNL/CrossModel"
+    "url": "git+https://github.com/CrossBreezeNL/crossmodel"
   },
-  "license": "UNLICENSED",
+  "license": "AGPL-3.0-or-later",
   "author": {
-    "name": "CrossBreeze Team",
-    "email": "team@x-breeze.com"
+    "name": "CrossBreeze",
+    "email": "devops@crossbreeze.nl"
   },
   "files": [
     "lib",
-    "src",
-    "style"
+    "src"
   ],
   "scripts": {
     "build": "tsc -b",
@@ -30,17 +29,12 @@
     "watch": "tsc -w"
   },
   "dependencies": {
-    "@crossbreeze/core": "0.0.0",
     "@crossbreeze/model-service": "^1.0.0",
     "@crossbreeze/protocol": "0.0.0",
-    "@emotion/react": "^11.10.6",
-    "@emotion/styled": "^11.10.6",
-    "@mui/material": "^5.13.5",
-    "@mui/x-data-grid": "^6.2.1",
+    "@crossbreeze/react-model-ui": "0.0.0",
     "@theia/core": "1.37.2",
-    "lodash": "^4.17.21",
-    "react-tabs": "^6.0.1",
-    "vscode-jsonrpc": "^8.0.2"
+    "fast-deep-equal": "3.1.3",
+    "p-debounce": "2.1.0"
   },
   "theiaExtensions": [
     {

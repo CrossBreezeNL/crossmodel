@@ -5,7 +5,7 @@
 import { ContainerModule } from '@theia/core/shared/inversify';
 import { PropertyDataService } from '@theia/property-view/lib/browser/property-data-service';
 import { PropertyViewWidgetProvider } from '@theia/property-view/lib/browser/property-view-widget-provider';
-import '../../src/style/property-view.css';
+import '../../style/property-view.css';
 import { ModelDataService } from './model-data-service';
 import { ModelPropertyWidget } from './model-property-widget';
 import { ModelPropertyWidgetProvider } from './model-property-widget-provider';

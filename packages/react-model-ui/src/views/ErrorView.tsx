@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import * as React from '@theia/core/shared/react';
+import * as React from 'react';
 
 export interface ErrorMessageProps extends React.HTMLProps<HTMLDivElement> {
     errorMessage: string;

@@ -3,15 +3,15 @@
   "version": "0.0.0",
   "private": true,
   "description": "CrossModel Protocol Extensions between Server and Client",
-  "homepage": "https://github.com/CrossBreezeNL/CrossModel",
+  "homepage": "https://github.com/CrossBreezeNL/crossmodel",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/CrossBreezeNL/CrossModel"
+    "url": "git+https://github.com/CrossBreezeNL/crossmodel"
   },
-  "license": "UNLICENSED",
+  "license": "AGPL-3.0-or-later",
   "author": {
-    "name": "CrossBreeze Team",
-    "email": "team@x-breeze.com"
+    "name": "CrossBreeze",
+    "email": "devops@crossbreeze.nl"
   },
   "main": "lib/index",
   "types": "lib/index",

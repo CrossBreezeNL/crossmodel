@@ -25,6 +25,9 @@
       "path": "packages/model-service"
     },
     {
+      "path": "packages/react-model-ui"
+    },
+    {
       "path": "packages/product"
     },
     {

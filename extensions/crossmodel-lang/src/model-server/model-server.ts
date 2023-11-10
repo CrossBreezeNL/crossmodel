@@ -57,7 +57,7 @@ export class ModelServer implements Disposable {
      */
     async requestModelDiagramNode(uri: string, id: string): Promise<DiagramNodeEntity | undefined> {
         const root = (await this.modelService.request(uri)) as CrossModelRootAst;
-        let diagramNode: DiagramNode | undefined = undefined;
+        let diagramNode: DiagramNode | undefined;
 
         if (!root || !root.diagram) {
             throw new Error('Something went wrong loading the diagram');

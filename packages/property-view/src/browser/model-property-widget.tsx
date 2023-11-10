@@ -9,12 +9,11 @@ import { PropertyViewContentWidget } from '@theia/property-view/lib/browser/prop
 
 import { ModelService } from '@crossbreeze/model-service/lib/common';
 import { CrossModelRoot, isDiagramNodeEntity } from '@crossbreeze/protocol';
-import { IActionDispatcher } from '@eclipse-glsp/client';
+import { EntityPropertyView, withModelProvider } from '@crossbreeze/react-model-ui';
 import { GLSPDiagramWidget, GlspSelection } from '@eclipse-glsp/theia-integration';
 import { ApplicationShell } from '@theia/core/lib/browser/shell/application-shell';
 import { inject, injectable } from '@theia/core/shared/inversify';
 import { PROPERTY_CLIENT_ID } from './model-data-service';
-import { App } from './react-components/App';
 
 @injectable()
 export class ModelPropertyWidget extends ReactWidget implements PropertyViewContentWidget {
@@ -69,17 +68,15 @@ export class ModelPropertyWidget extends ReactWidget implements PropertyViewCont
     }
 
     protected render(): React.ReactNode {
-        if (this.model) {
-            const props = {
-                model: this.model,
-                saveModel: this.saveModel,
-                updateModel: this.updateModel
-            };
-
-            return <App {...props} />;
+        if (!this.model) {
+            return <></>;
         }
-
-        return <></>;
+        const PropertyComponent = withModelProvider(EntityPropertyView, {
+            model: this.model,
+            onModelUpdate: this.updateModel,
+            onModelSave: this.saveModel
+        });
+        return <PropertyComponent />;
     }
 
     protected override onActivateRequest(msg: Message): void {
@@ -92,15 +89,6 @@ export class ModelPropertyWidget extends ReactWidget implements PropertyViewCont
             if (widget instanceof GLSPDiagramWidget) {
                 return widget;
             }
-        }
-        return undefined;
-    }
-
-    protected get actionDispatcher(): IActionDispatcher | undefined {
-        const widget = this.getDiagramWidget();
-
-        if (widget instanceof GLSPDiagramWidget) {
-            return widget.actionDispatcher;
         }
         return undefined;
     }

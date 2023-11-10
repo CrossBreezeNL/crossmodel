@@ -1,8 +1,8 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { ContainerModule } from '@theia/core/shared/inversify';
-
-export default new ContainerModule((bind, _unbind, _isBound, rebind) => {
-    // nothing to bind yet
-});
+export * from './ModelContext';
+export * from './ModelProvider';
+export * from './ModelReducer';
+export * from './ModelViewer';
+export * from './views';

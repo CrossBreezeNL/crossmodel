@@ -28,6 +28,7 @@ export class CrossModelDiagramServerContribution extends GLSPSocketServerContrib
         const workspace = await this.workspaceServer.getMostRecentlyUsedWorkspace();
         const portFile = new URI(workspace).path.join(PORT_FOLDER, GLSP_PORT_FILE).fsPath();
         const port = await waitForTemporaryFileContent(portFile);
+        console.debug('Found GLSP port number in workspace: %d', port);
         if (workspace) {
             this.options.socketConnectionOptions.port = Number.parseInt(port, 10);
         }

@@ -25,7 +25,7 @@ import { CrossModelLayoutConfigurator } from './layout/cross-model-layout-config
  * @returns a promise that is resolved as soon as the server is shut down or rejects if an error occurs
  */
 export function startGLSPServer(services: CrossModelLSPServices, workspaceFolder: URI): MaybePromise<void> {
-   const launchOptions: SocketLaunchOptions = { ...defaultSocketLaunchOptions, logLevel: LogLevel.info };
+   const launchOptions: SocketLaunchOptions = { ...defaultSocketLaunchOptions, host: '127.0.0.1', logLevel: LogLevel.info };
 
    // create module based on launch options, e.g., logging etc.
    const appModule = createAppModule(launchOptions);

@@ -31,10 +31,10 @@
   },
   "dependencies": {
     "@crossbreeze/protocol": "0.0.0",
-    "@theia/core": "1.37.2",
-    "@theia/markers": "1.37.2",
-    "@theia/outline-view": "1.37.2",
-    "@theia/plugin-ext": "1.37.2"
+    "@theia/core": "1.43.1",
+    "@theia/markers": "1.43.1",
+    "@theia/outline-view": "1.43.1",
+    "@theia/plugin-ext": "1.43.1"
   },
   "theiaExtensions": [
     {

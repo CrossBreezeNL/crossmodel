@@ -3,7 +3,7 @@
  ********************************************************************************/
 
 import { CloseModelArgs, ModelSavedEvent, ModelUpdatedEvent, OpenModelArgs, SaveModelArgs, UpdateModelArgs } from '@crossbreeze/protocol';
-import { AstNode, DocumentState, isAstNode } from 'langium';
+import { AstNode, Deferred, DocumentState, isAstNode } from 'langium';
 import { Disposable, OptionalVersionedTextDocumentIdentifier, Range, TextDocumentEdit, TextEdit, uinteger } from 'vscode-languageserver';
 import { URI } from 'vscode-uri';
 import { CrossModelSharedServices } from '../language-server/cross-model-module';
@@ -101,18 +101,30 @@ export class ModelService {
      */
     async update<T extends AstNode>(args: UpdateModelArgs<T>): Promise<T> {
         await this.open(args);
-        const document = this.documents.getOrCreateDocument(URI.parse(args.uri));
+        const documentUri = URI.parse(args.uri);
+        const document = this.documents.getOrCreateDocument(documentUri);
         const root = document.parseResult.value;
         if (!isAstNode(root)) {
             throw new Error(`No AST node to update exists in '${args.uri}'`);
         }
         const textDocument = document.textDocument;
-        const text = typeof args.model === 'string' ? args.model : this.serialize(URI.parse(args.uri), args.model);
+        const text = typeof args.model === 'string' ? args.model : this.serialize(documentUri, args.model);
         if (text === textDocument.getText()) {
             return document.parseResult.value as T;
         }
-        await this.documentManager.update(args.uri, textDocument.version + 1, text, args.clientId);
-        return document.parseResult.value as T;
+        const newVersion = textDocument.version + 1;
+        const pendingUpdate = new Deferred<T>();
+        const listener = this.documentBuilder.onBuildPhase(DocumentState.Validated, (allChangedDocuments, _token) => {
+            const updatedDocument = allChangedDocuments
+                .find(doc => doc.uri.toString() === documentUri.toString() && doc.textDocument.version === newVersion);
+            if (updatedDocument) {
+                pendingUpdate.resolve(updatedDocument.parseResult.value as T);
+                listener.dispose();
+            }
+        });
+        const timeout = new Promise<T>((_, reject) => setTimeout(() => { listener.dispose(); reject('Update timed out.'); }, 5000));
+        this.documentManager.update(args.uri, newVersion, text, args.clientId);
+        return Promise.race([pendingUpdate.promise, timeout]);
     }
 
     onUpdate<T extends AstNode>(uri: string, listener: (model: ModelUpdatedEvent<T>) => void): Disposable {

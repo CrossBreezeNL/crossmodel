@@ -10,10 +10,12 @@ import { FILE_NAVIGATOR_ID, FileNavigatorWidget } from '@theia/navigator/lib/bro
 
 import { DropEntityOperation } from '@crossbreeze/protocol';
 import { FileNode } from '@theia/filesystem/lib/browser';
+import { injectable } from '@theia/core/shared/inversify';
 
 /**
  * Customization of the default GLSP diagram widget that adds support for dropping files from the file navigator on the diagram.
  */
+@injectable()
 export class CrossModelDiagramWidget extends GLSPDiagramWidget {
    protected override onAfterAttach(msg: Message): void {
       // Add a DOM listener for the drop event on this node.

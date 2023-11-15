@@ -1,18 +1,48 @@
 // Dev-Container for CrossModel.
-// For format details, see https://aka.ms/devcontainer.json.
 {
   "name": "Node.js & TypeScript",
-  // https://github.com/devcontainers/templates/tree/main/src/typescript-node
-  "image": "mcr.microsoft.com/devcontainers/typescript-node:1-16-bullseye",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
   "features": {
     "ghcr.io/devcontainers/features/python:1": {
       "version": "3.11.4"
     }
   },
-
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "langium.langium-vscode",
+        "esbenp.prettier-vscode",
+        "eamodio.gitlens",
+        "davidanson.vscode-markdownlint",
+        "ms-playwright.playwright",
+        "dbaeumer.vscode-eslint"
+      ]
+    }
+  },
   // Allow port 3000 to be forwarded.
   "forwardPorts": [3000],
-
-  // Install the needed OS libs for building.
-  "postCreateCommand": "sudo apt-get update && sudo apt-get -y install libsecret-1-dev libxkbfile-dev"
+  "portsAttributes": {
+    "3000": {
+      "label": "Theia Backend",
+      "onAutoForward": "openBrowserOnce"
+    }
+  },
+  // Install the playwright dependencies.
+  "postCreateCommand": "yarn playwright install --with-deps",
+  // PlayWright with headed Chromium doesn't seem to work yet wih  the current config.
+  // There are some articales about it being possible:
+  //  - https://playwright.dev/docs/docker
+  //  - https://stackoverflow.com/questions/73092750/how-to-show-gui-apps-from-docker-desktop-container-on-windows-11
+  //  - https://github.com/microsoft/wslg/issues/782
+  // The config below is the current preparation based on the articles above.
+  "containerEnv": { "DISPLAY": ":0" },
+  "mounts": [
+    {
+      "source": "/run/desktop/mnt/host/wslg/.X11-unix",
+      "target": "/tmp/.X11-unix",
+      "type": "bind"
+    }
+  ]
 }

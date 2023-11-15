@@ -24,7 +24,7 @@ _or:_ launch `Launch CrossModel Electron` configuration from VS code.
 
 ## Example Workspace
 
-Under `examples/workspace` we provide an example workspace with some demo packages containing entities, relationships and system diagrams.
+Under `examples/verdaccio-example/workspace` we provide an example workspace with some demo packages containing entities, relationships and system diagrams.
 Each package represents a dedicated system or library and may depend on other packages.
 
 Using a known package structure - npm in our case - we can re-use large parts of the package management to download dependencies that are not locally available from an external package registry.
@@ -35,7 +35,7 @@ You can start verdaccio using
 
 The local npm registry will be available under `http://localhost:4873/` where we already provide four packages by default.
 
-After opening the workspace, you can install the necessary dependencies in the example workspace by opening a terminal in `examples/workspace` and execute
+After opening the workspace, you can install the necessary dependencies in the example workspace by opening a terminal in `examples/verdaccio-example/workspace` and execute
 
     npm install
 
@@ -64,6 +64,10 @@ Run the example as [described above](#running-the-application).
 Any code changes will be automatically detected and the application will be re-compiled.
 If you only made changes to the frontend or plugins, simply reloading the running application with `F5` is enough.
 If you also made changes to the backend, you can close and restart the appliaction without manual re-compilation.
+
+### Developing in Dev Container
+
+You can work on CrossModel from within a Dev Container. The best way to do so is create a new Dev Container and cloning the repository in there. For instructions please consult [this](https://code.visualstudio.com/docs/devcontainers/containers#_quick-start-open-a-git-repository-or-github-pr-in-an-isolated-container-volume) page.
 
 ## Packaging
 

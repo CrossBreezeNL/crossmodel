@@ -34,7 +34,7 @@
   "dependencies": {
     "@crossbreeze/core": "^0.0.0",
     "@crossbreeze/protocol": "^0.0.0",
-    "@theia/core": "1.37.2"
+    "@theia/core": "1.43.1"
   },
   "theiaExtensions": [
     {

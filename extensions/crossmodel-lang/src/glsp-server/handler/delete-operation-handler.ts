@@ -1,39 +1,39 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { Command, DeleteElementOperation, OperationHandler } from '@eclipse-glsp/server';
+import { Command, DeleteElementOperation, JsonOperationHandler } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
 import { DiagramEdge, DiagramNode, isDiagramEdge, isDiagramNode } from '../../language-server/generated/ast';
 import { CrossModelState } from '../model/cross-model-state';
 import { CrossModelCommand } from './cross-model-command';
 
 @injectable()
-export class CrossModelDeleteOperationHandler extends OperationHandler {
+export class CrossModelDeleteOperationHandler extends JsonOperationHandler {
    operationType = DeleteElementOperation.KIND;
 
-   @inject(CrossModelState) protected state: CrossModelState;
+   @inject(CrossModelState) protected override modelState: CrossModelState;
 
    createCommand(operation: DeleteElementOperation): Command | undefined {
       if (!operation.elementIds || operation.elementIds.length === 0) {
          return;
       }
-      return new CrossModelCommand(this.state, () => this.deleteElements(operation));
+      return new CrossModelCommand(this.modelState, () => this.deleteElements(operation));
    }
 
    protected deleteElements(operation: DeleteElementOperation): void {
       for (const elementId of operation.elementIds) {
-         const element = this.state.index.findSemanticElement(elementId, isDiagramElement);
+         const element = this.modelState.index.findSemanticElement(elementId, isDiagramElement);
          // simply remove any diagram nodes or edges from the diagram
          if (isDiagramNode(element)) {
-            this.state.diagramRoot.nodes.forEach((node, idx) => {
+            this.modelState.diagramRoot.nodes.forEach((node, idx) => {
                if (node === element) {
-                  this.state.diagramRoot.nodes.splice(idx, 1);
+                  this.modelState.diagramRoot.nodes.splice(idx, 1);
                }
             });
          } else if (isDiagramEdge(element)) {
-            this.state.diagramRoot.edges.forEach((edge, idx) => {
+            this.modelState.diagramRoot.edges.forEach((edge, idx) => {
                if (edge === element) {
-                  this.state.diagramRoot.edges.splice(idx, 1);
+                  this.modelState.diagramRoot.edges.splice(idx, 1);
                }
             });
          }

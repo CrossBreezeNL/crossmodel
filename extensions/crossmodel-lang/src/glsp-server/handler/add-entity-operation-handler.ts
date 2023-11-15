@@ -3,8 +3,8 @@
  ********************************************************************************/
 
 import { AddEntityOperation } from '@crossbreeze/protocol';
-import { Command, OperationHandler } from '@eclipse-glsp/server';
-import { inject, injectable } from 'inversify';
+import { Command, JsonOperationHandler, ModelState } from '@eclipse-glsp/server';
+import { injectable, inject } from 'inversify';
 import { DiagramNode, Entity } from '../../language-server/generated/ast';
 import { createNodeToEntityReference } from '../../language-server/util/ast-util';
 import { findAvailableNodeName } from '../../language-server/util/name-util';
@@ -15,19 +15,18 @@ import { CrossModelCommand } from './cross-model-command';
  * An operation handler for the 'AddEntityOperation' that resolves the referenced entity by name and places it in a new node on the diagram.
  */
 @injectable()
-export class CrossModelAddEntityOperationHandler extends OperationHandler {
+export class CrossModelAddEntityOperationHandler extends JsonOperationHandler {
     override operationType = AddEntityOperation.KIND;
-
-    @inject(CrossModelState) protected state: CrossModelState;
+    @inject(ModelState) protected override modelState: CrossModelState;
 
     createCommand(operation: AddEntityOperation): Command {
-        return new CrossModelCommand(this.state, () => this.createEntityNode(operation));
+        return new CrossModelCommand(this.modelState, () => this.createEntityNode(operation));
     }
 
     protected async createEntityNode(operation: AddEntityOperation): Promise<void> {
-        const container = this.state.diagramRoot;
+        const container = this.modelState.diagramRoot;
         const refInfo = createNodeToEntityReference(container);
-        const scope = this.state.services.language.references.ScopeProvider.getScope(refInfo);
+        const scope = this.modelState.services.language.references.ScopeProvider.getScope(refInfo);
         const entityDescription = scope.getElement(operation.entityName);
 
         if (entityDescription) {

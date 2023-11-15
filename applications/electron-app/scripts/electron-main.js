@@ -16,4 +16,4 @@ process.env.THEIA_PLUGINS = [process.env.THEIA_PLUGINS, `local-dir:${path.resolv
    .join(',');
 
 // Handover to the auto-generated electron application handler.
-require('../src-gen/frontend/electron-main.js');
+require('../lib/backend/electron-main.js');

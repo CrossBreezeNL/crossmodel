@@ -96,7 +96,7 @@ export class ModelServiceImpl implements ModelService, BackendApplicationContrib
         }
         const portFile = new URI(workspace).path.join(PORT_FOLDER, MODELSERVER_PORT_FILE).fsPath();
         const port = await waitForTemporaryFileContent(portFile);
-        console.debug('Found port number in workspace: %d: ', port);
+        console.debug('Found port number in workspace: %d', port);
         return Number.parseInt(port, 10);
     }
 

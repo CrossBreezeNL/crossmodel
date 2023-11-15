@@ -11,7 +11,7 @@ import {
     SaveModelArgs,
     UpdateModelArgs
 } from '@crossbreeze/protocol';
-import { Event, JsonRpcServer } from '@theia/core';
+import { Event, RpcServer } from '@theia/core';
 
 /** Path used to communicate between the Theia frontend and backend */
 export const MODEL_SERVICE_PATH = '/services/model-service';
@@ -20,7 +20,7 @@ export const MODEL_SERVICE_PATH = '/services/model-service';
  * Protocol used by the Theia frontend-backend communication
  */
 export const ModelService = Symbol('ModelService');
-export interface ModelService extends JsonRpcServer<ModelServiceClient> {
+export interface ModelService extends RpcServer<ModelServiceClient> {
     open(args: OpenModelArgs): Promise<CrossModelRoot | undefined>;
     close(args: CloseModelArgs): Promise<void>;
     request(uri: string): Promise<CrossModelRoot | undefined>;

@@ -8,8 +8,7 @@ import {
     TYPES,
     configureDefaultModelElements,
     configureModelElement,
-    initializeDiagramContainer,
-    overrideViewerOptions
+    initializeDiagramContainer
 } from '@eclipse-glsp/client';
 import { Container, ContainerModule } from '@theia/core/shared/inversify';
 import { EntityNode } from './model';
@@ -31,15 +30,10 @@ const crossModelDiagramModule = new ContainerModule((bind, unbind, isBound, rebi
     configureModelElement(context, 'node:entity', EntityNode, EntityNodeView);
 });
 
-export function initializeCrossModelDiagramContainer(
-    container: Container,
-    widgetId: string,
-    ...containerConfiguration: ContainerConfiguration
-): Container {
-    initializeDiagramContainer(container, crossModelDiagramModule, ...containerConfiguration);
-    overrideViewerOptions(container, {
-        baseDiv: widgetId,
-        hiddenDiv: widgetId + '_hidden'
-    });
-    return container;
+export function createCrossModelDiagramContainer(...containerConfiguration: ContainerConfiguration): Container {
+    return initializeCrossModelDiagramContainer(new Container(), ...containerConfiguration);
+}
+
+export function initializeCrossModelDiagramContainer(container: Container, ...containerConfiguration: ContainerConfiguration): Container {
+    return initializeDiagramContainer(container, crossModelDiagramModule, ...containerConfiguration);
 }

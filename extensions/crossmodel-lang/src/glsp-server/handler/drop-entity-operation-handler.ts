@@ -3,7 +3,7 @@
  ********************************************************************************/
 
 import { DropEntityOperation } from '@crossbreeze/protocol';
-import { Command, OperationHandler } from '@eclipse-glsp/server';
+import { Command, JsonOperationHandler } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
 import { URI } from 'vscode-uri';
 import { CrossModelRoot, DiagramNode, isCrossModelRoot } from '../../language-server/generated/ast';
@@ -17,21 +17,21 @@ import { CrossModelCommand } from './cross-model-command';
  * their position is shifted by (10,10) so they do not fully overlap.
  */
 @injectable()
-export class CrossModelDropEntityOperationHandler extends OperationHandler {
+export class CrossModelDropEntityOperationHandler extends JsonOperationHandler {
     override operationType = DropEntityOperation.KIND;
 
-    @inject(CrossModelState) protected state: CrossModelState;
+    @inject(CrossModelState) protected override modelState: CrossModelState;
 
     createCommand(operation: DropEntityOperation): Command {
-        return new CrossModelCommand(this.state, () => this.createEntityNode(operation));
+        return new CrossModelCommand(this.modelState, () => this.createEntityNode(operation));
     }
 
     protected async createEntityNode(operation: DropEntityOperation): Promise<void> {
-        const container = this.state.diagramRoot;
+        const container = this.modelState.diagramRoot;
         let x = operation.position.x;
         let y = operation.position.y;
         for (const filePath of operation.filePaths) {
-            const root = await this.state.modelService.request<CrossModelRoot>(URI.file(filePath).toString(), isCrossModelRoot);
+            const root = await this.modelState.modelService.request<CrossModelRoot>(URI.file(filePath).toString(), isCrossModelRoot);
             if (root?.entity) {
                 // create node for entity
                 const node: DiagramNode = {
@@ -39,7 +39,7 @@ export class CrossModelDropEntityOperationHandler extends OperationHandler {
                     $container: container,
                     name: findAvailableNodeName(container, root.entity.name + 'Node'),
                     entity: {
-                        $refText: this.state.nameProvider.getFullyQualifiedName(root.entity) || root.entity.name || '',
+                        $refText: this.modelState.nameProvider.getFullyQualifiedName(root.entity) || root.entity.name || '',
                         ref: root.entity
                     },
                     x: (x += 10),

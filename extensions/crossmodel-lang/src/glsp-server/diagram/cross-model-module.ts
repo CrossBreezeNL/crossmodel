@@ -21,7 +21,6 @@ import { CrossModelChangeBoundsOperationHandler } from '../handler/change-bounds
 import { CrossModelCreateEdgeOperationHandler } from '../handler/create-edge-operation-handler';
 import { CrossModelDeleteOperationHandler } from '../handler/delete-operation-handler';
 import { CrossModelDropEntityOperationHandler } from '../handler/drop-entity-operation-handler';
-import { CrossModelUpdateClientOperationHandler } from '../handler/update-glsp-client-handler';
 import { CrossModelGModelFactory } from '../model/cross-model-gmodel-factory';
 import { CrossModelIndex } from '../model/cross-model-index';
 import { CrossModelState } from '../model/cross-model-state';
@@ -50,7 +49,6 @@ export class CrossModelDiagramModule extends DiagramModule {
         binding.add(CrossModelDeleteOperationHandler); // delete elements
         binding.add(CrossModelDropEntityOperationHandler);
         binding.add(CrossModelAddEntityOperationHandler);
-        binding.add(CrossModelUpdateClientOperationHandler);
     }
 
     protected override configureContextActionProviders(binding: MultiBinding<ContextActionsProvider>): void {

@@ -54,23 +54,3 @@ export namespace AddEntityOperation {
         };
     }
 }
-
-// -------------------------UpdateClientOperation---------------------------------
-export interface UpdateClientOperation extends Operation {
-    kind: typeof UpdateClientOperation.KIND;
-}
-
-export namespace UpdateClientOperation {
-    export const KIND = 'crossModelUpdateClientOperation';
-
-    export function is(object: any): object is DropEntityOperation {
-        return Operation.hasKind(object, KIND);
-    }
-
-    export function create(): UpdateClientOperation {
-        return {
-            kind: KIND,
-            isOperation: true
-        };
-    }
-}

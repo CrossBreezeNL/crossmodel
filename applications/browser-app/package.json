@@ -29,22 +29,22 @@
     "@crossbreeze/model-service": "^1.0.0",
     "@crossbreeze/product": "0.0.0",
     "@crossbreeze/property-view": "^1.0.0",
-    "@theia/core": "1.37.2",
-    "@theia/editor": "1.37.2",
-    "@theia/filesystem": "1.37.2",
-    "@theia/markers": "1.37.2",
-    "@theia/messages": "1.37.2",
-    "@theia/monaco": "1.37.2",
-    "@theia/navigator": "1.37.2",
-    "@theia/plugin-ext": "1.37.2",
-    "@theia/plugin-ext-vscode": "1.37.2",
-    "@theia/preferences": "1.37.2",
-    "@theia/process": "1.37.2",
-    "@theia/terminal": "1.37.2",
-    "@theia/workspace": "1.37.2"
+    "@theia/core": "1.43.1",
+    "@theia/editor": "1.43.1",
+    "@theia/filesystem": "1.43.1",
+    "@theia/markers": "1.43.1",
+    "@theia/messages": "1.43.1",
+    "@theia/monaco": "1.43.1",
+    "@theia/navigator": "1.43.1",
+    "@theia/plugin-ext": "1.43.1",
+    "@theia/plugin-ext-vscode": "1.43.1",
+    "@theia/preferences": "1.43.1",
+    "@theia/process": "1.43.1",
+    "@theia/terminal": "1.43.1",
+    "@theia/workspace": "1.43.1"
   },
   "devDependencies": {
-    "@theia/cli": "1.37.2"
+    "@theia/cli": "1.43.1"
   },
   "productName": "CrossModel Community Edition",
   "theia": {

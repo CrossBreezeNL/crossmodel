@@ -3,7 +3,7 @@
  ********************************************************************************/
 import { GLSP_PORT_FILE, MODELSERVER_PORT_FILE, PORT_FOLDER } from '@crossbreeze/protocol';
 import { URI } from '@theia/core';
-import { FrontendApplication, FrontendApplicationContribution } from '@theia/core/lib/browser';
+import { FrontendApplication, FrontendApplicationContribution, OnWillStopAction } from '@theia/core/lib/browser';
 import { inject, injectable } from '@theia/core/shared/inversify';
 import { FileService } from '@theia/filesystem/lib/browser/file-service';
 import { FileStat } from '@theia/filesystem/lib/common/files';
@@ -20,19 +20,31 @@ export class DynamicPortCleanup implements FrontendApplicationContribution {
 
     async onStart(_app: FrontendApplication): Promise<void> {
         this.workspaceService.onWorkspaceChanged(workspaces => workspaces.forEach(ws => this.cleanupDynamicPorts(ws)));
-        await Promise.all(this.workspaceService.tryGetRoots().map(ws => this.cleanupDynamicPorts(ws)));
+        await this.cleanupAllDynamicPorts();
     }
 
-    onStop(_app: FrontendApplication): void {
-        this.workspaceService.tryGetRoots().map(ws => this.cleanupDynamicPorts(ws));
+    onWillStop(_app: FrontendApplication): OnWillStopAction {
+        return {
+            action: () => this.cleanupAllDynamicPorts(),
+            reason: 'Cleanup Port Files',
+            priority: Number.MAX_SAFE_INTEGER /* run as late as possible */
+        };
     }
 
-    async cleanupDynamicPorts(workspace: FileStat, portFiles = [GLSP_PORT_FILE, MODELSERVER_PORT_FILE]): Promise<void> {
+    async cleanupAllDynamicPorts(portFiles = [GLSP_PORT_FILE, MODELSERVER_PORT_FILE]): Promise<boolean> {
+        for (const workspace of this.workspaceService.tryGetRoots()) {
+            await this.cleanupDynamicPorts(workspace, portFiles);
+        }
+        return true; /* true indicates safe to shut down when stopping the application */
+    }
+
+    async cleanupDynamicPorts(workspace: FileStat, portFiles = [GLSP_PORT_FILE, MODELSERVER_PORT_FILE]): Promise<boolean> {
         for (const portFile of portFiles) {
             const portFileURI = URI.fromFilePath(workspace.resource.path.join(PORT_FOLDER, portFile).fsPath());
             if (await this.fileService.exists(portFileURI)) {
                 await this.fileService.delete(portFileURI);
             }
         }
+        return true;
     }
 }

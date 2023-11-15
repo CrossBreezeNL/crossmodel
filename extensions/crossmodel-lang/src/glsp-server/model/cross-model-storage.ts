@@ -52,7 +52,7 @@ export class CrossModelStorage implements SourceModelStorage, ClientSessionListe
         this.toDispose.push(Disposable.create(() => this.state.modelService.close({ uri: rootUri, clientId: this.state.clientId })));
         const root = await this.state.modelService.request(rootUri, isCrossModelRoot);
         if (!root || !root.diagram) {
-            throw new GLSPServerError('Expected CrossModal Diagram Root');
+            throw new GLSPServerError('Expected CrossModel Diagram Root');
         }
         this.state.setSemanticRoot(rootUri, root);
         this.toDispose.push(

@@ -6,14 +6,14 @@ import {
    ContainerContext,
    DiagramConfiguration,
    GLSPClientContribution,
-   GLSPTheiaFrontendModule,
-   registerDiagramManager
+   GLSPDiagramWidget,
+   GLSPTheiaFrontendModule
 } from '@eclipse-glsp/theia-integration';
 
 import { CrossModelDiagramLanguage } from '../common/crossmodel-diagram-language';
 import { CrossModelClientContribution } from './crossmodel-client-contribution';
 import { CrossModelDiagramConfiguration } from './crossmodel-diagram-configuration';
-import { CrossModelDiagramManager } from './crossmodel-diagram-manager';
+import { CrossModelDiagramWidget } from './crossmodel-diagram-widget';
 
 export class CrossModelDiagramModule extends GLSPTheiaFrontendModule {
    readonly diagramLanguage = CrossModelDiagramLanguage;
@@ -28,8 +28,9 @@ export class CrossModelDiagramModule extends GLSPTheiaFrontendModule {
       context.bind(GLSPClientContribution).toService(CrossModelClientContribution);
    }
 
-   override configureDiagramManager(context: ContainerContext): void {
-      registerDiagramManager(context.bind, CrossModelDiagramManager);
+   override bindDiagramWidgetFactory(context: ContainerContext): void {
+      super.bindDiagramWidgetFactory(context);
+      context.rebind(GLSPDiagramWidget).to(CrossModelDiagramWidget);
    }
 }
 

@@ -1,15 +1,15 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { GLSPClient } from '@eclipse-glsp/protocol';
 import { BaseGLSPClientContribution } from '@eclipse-glsp/theia-integration';
 import { Deferred } from '@theia/core/lib/common/promise-util';
-import { inject, injectable, postConstruct } from '@theia/core/shared/inversify';
+import { inject, injectable } from '@theia/core/shared/inversify';
 import { OutputChannelManager } from '@theia/output/lib/browser/output-channel';
 import '../../style/diagram.css';
 import { CrossModelDiagramLanguage } from '../common/crossmodel-diagram-language';
+import { GLSPClient } from '@eclipse-glsp/protocol';
 
-/** The message the GLSP server outputs as soon as it is ready to accept client connections. */
+/** The message the GLSP server outputs as soon as it is properly connected through a socket. */
 export const CLIENT_CONNECTION_READY_MSG = 'Starting GLSP server connection';
 
 /**
@@ -23,29 +23,24 @@ export class CrossModelClientContribution extends BaseGLSPClientContribution {
    readonly id = CrossModelDiagramLanguage.contributionId;
    readonly fileExtensions = CrossModelDiagramLanguage.fileExtensions;
 
-   protected serverReady: Promise<void>;
-   protected clientConnectionReady: Promise<void>;
-
-   @postConstruct()
-   protected init(): void {
-      this.clientConnectionReady = this.listenToServerOutput(CLIENT_CONNECTION_READY_MSG);
-   }
-
-   protected listenToServerOutput(msg: string): Promise<void> {
+   protected async waitForBackendConnected(): Promise<void> {
       // We know that our VS Code extension outputs any log on a channel called 'CrossModel'
       // So we check whether our expected message is already part of the channel's text or otherwise listen to any new content
-      const deferred = new Deferred();
+
+      // While a socket connection to the server can be established earlier, the server might still do some internal initialization
+      // So we wait for it to report that client connections can be accepted
+      // Only then we actually start and initialize our client connection with the server
       const channel = this.outputChannelManager.getChannel('CrossModel');
-      if (channel['resource'].textModel?.getValue().includes(msg)) {
-         deferred.resolve();
-      } else {
-         const channelListener = channel.onContentChange(() => {
-            if (channel['resource'].textModel?.getValue().includes(msg)) {
-               channelListener.dispose();
-               deferred.resolve();
-            }
-         });
+      if (channel['resource'].textModel?.getValue().includes(CLIENT_CONNECTION_READY_MSG)) {
+         return;
       }
+      const deferred = new Deferred();
+      const channelListener = channel.onContentChange(() => {
+         if (channel['resource'].textModel?.getValue().includes(CLIENT_CONNECTION_READY_MSG)) {
+            channelListener.dispose();
+            deferred.resolve();
+         }
+      });
       return deferred.promise;
    }
 
@@ -53,7 +48,7 @@ export class CrossModelClientContribution extends BaseGLSPClientContribution {
       // While a socket connection to the server can be established earlier, the server might still do some internal initialization
       // So we wait for it to report that client connections can be accepted
       // Only then we actually start and initialize our client connection with the server
-      await this.clientConnectionReady;
+      await this.waitForBackendConnected();
       return super.start(glspClient);
    }
 }

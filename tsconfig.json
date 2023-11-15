@@ -35,6 +35,9 @@
     },
     {
       "path": "packages/protocol"
+    },
+    {
+      "path": "e2e-tests"
     }
   ]
 }

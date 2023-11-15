@@ -5,7 +5,8 @@
   "workspaces": [
     "packages/*",
     "applications/*",
-    "extensions/*"
+    "extensions/*",
+    "e2e-tests"
   ],
   "scripts": {
     "build": "lerna run build",

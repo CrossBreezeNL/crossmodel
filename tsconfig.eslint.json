@@ -10,6 +10,7 @@
     "applications/*/src",
     "applications/*/scripts",
     "extensions/*/src",
-    "extensions/*/test"
+    "extensions/*/test",
+    "e2e-tests/src/"
   ]
 }

@@ -14,5 +14,7 @@ bin
 .ignored_out
 dist
 *.port
-**/unit-test-results
+**/*test-results
 **/coverage
+**/playwright-report
+**/playwright/.cache

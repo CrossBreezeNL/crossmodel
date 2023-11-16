@@ -31,7 +31,7 @@
     }
   },
   // Install the playwright dependencies.
-  "postCreateCommand": "yarn playwright install --with-deps",
+  "postCreateCommand": "yarn && yarn playwright install --with-deps",
   // PlayWright with headed Chromium seems to work yet wih the current config for mounts and containerEnv.
   // There are some articles about it being possible:
   //  - https://playwright.dev/docs/docker

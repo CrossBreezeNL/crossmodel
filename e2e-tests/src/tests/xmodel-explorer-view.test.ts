@@ -19,12 +19,14 @@ test.describe('CrossModel Explorer View', () => {
         await explorer.waitForVisibleFileNodes();
     });
 
-    test('should open context menu on "example-entity.cm"', async () => {
-        const file = await explorer.getFileStatNodeByLabel('example-entity.cm');
+    test('code and form editor options should be available in the context menu on an entity', async () => {
+        // NOTE: It seems if we don't set compact here to true, it doesn't pickup the right file node.
+        const file = await explorer.getFileStatNodeByLabel('example-entity.cm', true);
+        expect(await file.label()).toBe('example-entity.cm');
         const menu = await file.openContextMenu();
         expect(await menu.isOpen()).toBe(true);
-
-        const menuItems = await menu.visibleMenuItems();
-        expect(menuItems).toContain('Open With...');
+        // Expect the Code and Form editor to be in the Open With menu option.
+        expect(await menu.menuItemByNamePath('Open With', 'Code Editor')).toBeDefined();
+        expect(await menu.menuItemByNamePath('Open With', 'Form Editor')).toBeDefined();
     });
 });

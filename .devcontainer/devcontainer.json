@@ -17,7 +17,8 @@
         "eamodio.gitlens",
         "davidanson.vscode-markdownlint",
         "ms-playwright.playwright",
-        "dbaeumer.vscode-eslint"
+        "dbaeumer.vscode-eslint",
+        "orta.vscode-jest"
       ]
     }
   },
@@ -25,24 +26,33 @@
   "forwardPorts": [3000],
   "portsAttributes": {
     "3000": {
-      "label": "Theia Backend",
-      "onAutoForward": "openBrowserOnce"
+      "label": "Theia Backend" //,
+      // "onAutoForward": "openBrowserOnce"
     }
   },
   // Install the playwright dependencies.
   "postCreateCommand": "yarn playwright install --with-deps",
-  // PlayWright with headed Chromium doesn't seem to work yet wih  the current config.
-  // There are some articales about it being possible:
+  // PlayWright with headed Chromium seems to work yet wih the current config for mounts and containerEnv.
+  // There are some articles about it being possible:
   //  - https://playwright.dev/docs/docker
   //  - https://stackoverflow.com/questions/73092750/how-to-show-gui-apps-from-docker-desktop-container-on-windows-11
   //  - https://github.com/microsoft/wslg/issues/782
-  // The config below is the current preparation based on the articles above.
-  "containerEnv": { "DISPLAY": ":0" },
   "mounts": [
     {
       "source": "/run/desktop/mnt/host/wslg/.X11-unix",
       "target": "/tmp/.X11-unix",
       "type": "bind"
+    },
+    {
+      "source": "/run/desktop/mnt/host/wslg",
+      "target": "/mnt/wslg",
+      "type": "bind"
     }
-  ]
+  ],
+  "containerEnv": {
+    "DISPLAY": ":0",
+    "WAYLAND_DISPLAY": "wayland-0",
+    "XDG_RUNTIME_DIR": "/mnt/wslg/runtime-dir",
+    "PULSE_SERVER": "/mnt/wslg/PulseServer"
+  }
 }

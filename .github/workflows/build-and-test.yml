@@ -110,8 +110,8 @@ jobs:
     name: Publish PlayWright Test Report
     needs: build-and-test
     permissions:
-      pages: write      # to deploy to Pages
-      id-token: write   # to verify the deployment originates from an appropriate source
+      pages: write # to deploy to Pages
+      id-token: write # to verify the deployment originates from an appropriate source
     # Deploy to the github-pages environment
     environment:
       name: github-pages
@@ -119,6 +119,9 @@ jobs:
     runs-on: ubuntu-latest
     if: always()
     steps:
+      # Setup the GitHub Pages, if it doesn't exist yet.
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
       # Download the test results artifacts.
       - name: Download Test Results
         uses: actions/download-artifact@v3
@@ -145,10 +148,12 @@ jobs:
           subfolder: allure
           # Where to find the gh-pages history.
           gh_pages: gh-pages
-      - name: Setup Pages
-        uses: actions/configure-pages@v3
+      # Upload allure-history report to github-pages artifact.
+      - name: Upload Pages
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: 'allure-history'
+      # Deploy the github-pages artifact to GitHub pages.
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: allure-history

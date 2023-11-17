@@ -118,7 +118,7 @@ jobs:
         with:
           name: allure-results
           path: allure-results
-      # Get the gh-pages history, so the next report can be generated with history.
+      Get the gh-pages history, so the next report can be generated with history.
       - name: Get History
         uses: actions/checkout@v2
         continue-on-error: true
@@ -138,8 +138,17 @@ jobs:
           subfolder: allure
           # Where to find the gh-pages history.
           gh_pages: gh-pages
-      - name: Publish Allure Report
-        uses: peaceiris/actions-gh-pages@v3
+      # - name: Publish Allure Report
+      #   uses: peaceiris/actions-gh-pages@v3
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     publish_dir: allure-history
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+      - name: Upload Pages
+        uses: actions/upload-pages-artifact@v2
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: allure-history
+          path: 'allure-history'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2

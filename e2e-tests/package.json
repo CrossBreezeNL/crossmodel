@@ -8,7 +8,7 @@
     "email": "devops@crossbreeze.nl"
   },
   "scripts": {
-    "build": "tsc --incremental && npx playwright install chromium",
+    "build": "tsc -b && npx playwright install chromium",
     "clean": "rimraf lib tsconfig.tsbuildinfo",
     "lint": "eslint -c ../.eslintrc.js --ext .ts ./src",
     "prepare": "yarn clean && yarn build && yarn lint",
@@ -16,8 +16,9 @@
   },
   "dependencies": {
     "@playwright/test": "^1.37.1",
-    "@theia/playwright": "1.43.1",
-    "allure-playwright": "^2.9.2",
-    "crossmodel-browser-app": "0.0.0"
+    "@theia/playwright": "1.43.1"
+  },
+  "devDependencies": {
+    "allure-playwright": "^2.9.2"
   }
 }

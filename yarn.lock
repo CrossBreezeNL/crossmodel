@@ -3954,6 +3954,20 @@ ajv@^6.10.0, ajv@^6.12.0, ajv@^6.12.3, ajv@^6.12.4, ajv@^6.12.5, ajv@^6.5.3:
     json-schema-traverse "^0.4.1"
     uri-js "^4.2.2"
 
+allure-js-commons@2.9.2:
+  version "2.9.2"
+  resolved "https://registry.yarnpkg.com/allure-js-commons/-/allure-js-commons-2.9.2.tgz#47a2e31d1e476aa565fd4c467e6e1f3540774f6a"
+  integrity sha512-Qvi+zMZQruklqcnqG/zHCnE209v1YiWGhO3H2aPW2aXC8Ockqd01a+w2lP4Qqp3SfC+WQDeAK2+pp+v+eNl8xQ==
+  dependencies:
+    properties "^1.2.1"
+
+allure-playwright@^2.9.2:
+  version "2.9.2"
+  resolved "https://registry.yarnpkg.com/allure-playwright/-/allure-playwright-2.9.2.tgz#27e86f37921a456632830e9c9820188ad5844aad"
+  integrity sha512-N0X1c1GGLg74vdDAuq86KCekuvQ5BaqqpgcBpJj5x3y/RlQPBn84wlg8PT/ViKQM4EdbNFMXOXpa5Opufv6qCg==
+  dependencies:
+    allure-js-commons "2.9.2"
+
 anser@^2.0.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/anser/-/anser-2.1.1.tgz#8afae28d345424c82de89cc0e4d1348eb0c5af7c"
@@ -11465,6 +11479,11 @@ prop-types@^15.5.0, prop-types@^15.5.6, prop-types@^15.6.1, prop-types@^15.6.2, 
     loose-envify "^1.4.0"
     object-assign "^4.1.1"
     react-is "^16.13.1"
+
+properties@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/properties/-/properties-1.2.1.tgz#0ee97a7fc020b1a2a55b8659eda4aa8d869094bd"
+  integrity sha512-qYNxyMj1JeW54i/EWEFsM1cVwxJbtgPp8+0Wg9XjNaK6VE/c4oRi6PNu5p7w1mNXEIQIjV5Wwn8v8Gz82/QzdQ==
 
 property-expr@^2.0.4:
   version "2.0.6"

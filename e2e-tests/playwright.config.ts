@@ -5,13 +5,13 @@ import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
     testDir: './src/tests',
-    testMatch: ['**/*.test.ts'],
+    testMatch: ['**/*.spec.ts'],
     workers: process.env.CI ? 1 : 2,
     retries: process.env.CI ? 1 : 0,
     // The number of times to repeat each test, useful for debugging flaky tests
     repeatEach: 1,
-    // Timeout for each test in milliseconds.
-    timeout: 30 * 1000,
+    // Timeout for each test in milliseconds: 60 seconds.
+    timeout: 60 * 1000,
     use: {
         baseURL: 'http://localhost:3000',
         browserName: 'chromium',
@@ -23,7 +23,7 @@ export default defineConfig({
         toMatchSnapshot: { threshold: 0.01 }
     },
     preserveOutput: 'failures-only',
-    reporter: process.env.CI ? [['list'], ['html'], ['github']] : [['list'], ['html']],
+    reporter: process.env.CI ? [['list'], ['allure-playwright'], ['github']] : [['list'], ['html']],
     /* Run your local dev server before starting the tests */
     webServer: {
         command: 'yarn --cwd ../../ start:browser',

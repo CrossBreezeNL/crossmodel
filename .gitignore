@@ -18,3 +18,4 @@ dist
 **/coverage
 **/playwright-report
 **/playwright/.cache
+**/allure-results

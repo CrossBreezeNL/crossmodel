@@ -17,6 +17,7 @@
   "dependencies": {
     "@playwright/test": "^1.37.1",
     "@theia/playwright": "1.43.1",
+    "allure-playwright": "^2.9.2",
     "crossmodel-browser-app": "0.0.0"
   }
 }

@@ -9,11 +9,6 @@ defaults:
   run:
     shell: bash
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
-permissions:
-  pages: write
-  id-token: write
-
 jobs:
   build-and-test:
     name: ${{ matrix.os }}
@@ -114,6 +109,13 @@ jobs:
   publish-playwright-test-report:
     name: Publish PlayWright Test Report
     needs: build-and-test
+    permissions:
+      pages: write      # to deploy to Pages
+      id-token: write   # to verify the deployment originates from an appropriate source
+    # Deploy to the github-pages environment
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     if: always()
     steps:
@@ -143,8 +145,10 @@ jobs:
           subfolder: allure
           # Where to find the gh-pages history.
           gh_pages: gh-pages
-      - name: Publish Allure Report
-        uses: peaceiris/actions-gh-pages@v3
-        with:
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: allure-history

@@ -130,7 +130,7 @@ jobs:
           path: allure-results
       # Get the gh-pages history, so the next report can be generated with history.
       - name: Get History
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         continue-on-error: true
         with:
           ref: gh-pages

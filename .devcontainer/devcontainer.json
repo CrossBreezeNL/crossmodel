@@ -11,6 +11,7 @@
   },
   "customizations": {
     "vscode": {
+      // Install a list of extensions in the Dev Container so everything is reasdy to develop and test.
       "extensions": [
         "langium.langium-vscode",
         "esbenp.prettier-vscode",
@@ -26,17 +27,13 @@
   "forwardPorts": [3000],
   "portsAttributes": {
     "3000": {
-      "label": "Theia Backend" //,
-      // "onAutoForward": "openBrowserOnce"
+      "label": "Theia Backend"
     }
   },
   // Install the playwright dependencies.
   "postCreateCommand": "yarn && yarn playwright install --with-deps",
-  // PlayWright with headed Chromium seems to work yet wih the current config for mounts and containerEnv.
-  // There are some articles about it being possible:
-  //  - https://playwright.dev/docs/docker
-  //  - https://stackoverflow.com/questions/73092750/how-to-show-gui-apps-from-docker-desktop-container-on-windows-11
-  //  - https://github.com/microsoft/wslg/issues/782
+  // When we want to be able to run playwright headed within the Dev Container,
+  // we need to setup the mounts and container environment variables like below.
   "mounts": [
     {
       "source": "/run/desktop/mnt/host/wslg/.X11-unix",

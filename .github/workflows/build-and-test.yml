@@ -139,7 +139,7 @@ jobs:
           # Where to find the gh-pages history.
           gh_pages: gh-pages
       - name: Publish Allure Report
-        uses: peaceiris/actions-gh-pages@v2
+        uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: allure-history

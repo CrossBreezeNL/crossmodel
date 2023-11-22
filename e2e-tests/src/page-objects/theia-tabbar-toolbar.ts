@@ -1,19 +1,31 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { ElementHandle } from '@playwright/test';
-import { TheiaPageObject, TheiaView, isElementVisible } from '@theia/playwright';
+import { TheiaToolbarItem, TheiaView } from '@theia/playwright';
+import { TheiaViewObject } from './theia-view-object';
 
-export class TheiaTabbarToolbar extends TheiaPageObject {
-    constructor(protected view: TheiaView) {
-        super(view.app);
+export class TheiaTabBarToolbar extends TheiaViewObject {
+    constructor(view: TheiaView) {
+        super(view, '.p-TabBar-toolbar');
     }
 
-    async isDisplayed(): Promise<boolean> {
-        return isElementVisible(this.viewElement());
+    async hover(): Promise<void> {
+        this.page.hover(this.selector);
     }
 
-    protected viewElement(): Promise<ElementHandle<SVGElement | HTMLElement> | null> {
-        return this.page.$(this.view.viewSelector + ' .p-TabBar-toolbar');
+    async toolBarItem(commandId: string): Promise<TheiaToolbarItem | undefined> {
+        const toolbarHandle = await this.objectElementHandle();
+        if (!toolbarHandle) {
+            return undefined;
+        }
+        const item = await toolbarHandle.$(this.toolBarItemSelector(commandId));
+        if (item) {
+            return new TheiaToolbarItem(this.app, item);
+        }
+        return undefined;
+    }
+
+    protected toolBarItemSelector(toolbarItemId = ''): string {
+        return `div.item > div${toolbarItemId ? `[id="${toolbarItemId}"]` : ''}`;
     }
 }

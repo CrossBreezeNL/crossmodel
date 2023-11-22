@@ -6,5 +6,5 @@
     "rootDir": ".",
     "outDir": "lib"
   },
-  "include": ["src/tests", "src/page-objects", "src/resources"]
+  "include": ["src/tests", "src/fixtures", "src/page-objects", "src/resources"]
 }

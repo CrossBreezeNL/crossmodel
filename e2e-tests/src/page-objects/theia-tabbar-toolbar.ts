@@ -9,10 +9,6 @@ export class TheiaTabBarToolbar extends TheiaViewObject {
         super(view, '.p-TabBar-toolbar');
     }
 
-    async hover(): Promise<void> {
-        this.page.hover(this.selector);
-    }
-
     async toolBarItem(commandId: string): Promise<TheiaToolbarItem | undefined> {
         const toolbarHandle = await this.objectElementHandle();
         if (!toolbarHandle) {

@@ -7,8 +7,8 @@ import { DocumentState, LangiumDocument, MultiMap } from 'langium';
 import { PackageJson } from 'type-fest';
 import { CancellationToken, WorkspaceFolder } from 'vscode-languageserver';
 import { URI, Utils as UriUtils } from 'vscode-uri';
-import { CrossModelSharedServices } from './cross-model-module';
-import { Utils } from './util/uri-util';
+import { CrossModelSharedServices } from './cross-model-module.js';
+import { Utils } from './util/uri-util.js';
 
 /** Constant for representing an unknown project ID. */
 export const UNKNOWN_PROJECT_ID = 'unknown';

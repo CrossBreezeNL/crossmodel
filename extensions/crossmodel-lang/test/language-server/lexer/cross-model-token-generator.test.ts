@@ -2,7 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { describe, expect, test, beforeAll } from '@jest/globals';
+import { describe, expect, test, beforeAll, jest } from '@jest/globals';
 
 import { Grammar } from 'langium';
 import { TokenType } from 'chevrotain';
@@ -11,6 +11,8 @@ import { DEDENT, INDENT, NEWLINE, SPACES } from '../../../src/language-server/le
 import { CrossModelTokenBuilder } from '../../../src/language-server/lexer/cross-model-token-generator';
 import { CrossModelGrammar } from '../../../src/language-server/generated/grammar';
 import _ from 'lodash';
+
+jest.useFakeTimers();
 
 describe('CrossModelTokenBuilder', () => {
     let tokenBuilder: CrossModelTokenBuilder;

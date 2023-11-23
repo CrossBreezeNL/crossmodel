@@ -2,11 +2,9 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { DefaultTokenBuilder, TokenBuilderOptions } from 'langium';
-import { Grammar, TerminalRule } from 'langium/lib/grammar/generated/ast';
+import { DefaultTokenBuilder, Grammar, GrammarAST, TokenBuilderOptions } from 'langium';
 import { TokenType, TokenVocabulary } from 'chevrotain';
-import { DEDENT, INDENT, NEWLINE, SPACES, NAMES } from './cross-model-indentation-tokens';
-
+import { DEDENT, INDENT, NEWLINE, SPACES, NAMES } from './cross-model-indentation-tokens.js';
 /**
  * Custom implementation of TokenBuilder for the CrossModel language.
  * Overrides the default behavior to handle custom indentation tokens.
@@ -64,7 +62,7 @@ export class CrossModelTokenBuilder extends DefaultTokenBuilder {
      * @returns The TokenType representing the terminal token.
      *
      */
-    protected override buildTerminalToken(terminal: TerminalRule): TokenType {
+    protected override buildTerminalToken(terminal: GrammarAST.TerminalRule): TokenType {
         let token;
 
         if (terminal.name === NAMES.NEWLINE) {

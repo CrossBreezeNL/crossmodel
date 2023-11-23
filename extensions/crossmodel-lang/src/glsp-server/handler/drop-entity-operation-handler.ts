@@ -6,10 +6,10 @@ import { DropEntityOperation } from '@crossbreeze/protocol';
 import { Command, JsonOperationHandler } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
 import { URI } from 'vscode-uri';
-import { CrossModelRoot, DiagramNode, isCrossModelRoot } from '../../language-server/generated/ast';
-import { findAvailableNodeName } from '../../language-server/util/name-util';
-import { CrossModelState } from '../model/cross-model-state';
-import { CrossModelCommand } from './cross-model-command';
+import { CrossModelRoot, DiagramNode, isCrossModelRoot } from '../../language-server/generated/ast.js';
+import { findAvailableNodeName } from '../../language-server/util/name-util.js';
+import { CrossModelState } from '../model/cross-model-state.js';
+import { CrossModelCommand } from './cross-model-command.js';
 
 /**
  * An operation handler for the 'DropEntityOperation' that finds an entity for each of the given file URIs and
@@ -20,7 +20,7 @@ import { CrossModelCommand } from './cross-model-command';
 export class CrossModelDropEntityOperationHandler extends JsonOperationHandler {
     override operationType = DropEntityOperation.KIND;
 
-    @inject(CrossModelState) protected override modelState: CrossModelState;
+    @inject(CrossModelState) protected override modelState!: CrossModelState;
 
     createCommand(operation: DropEntityOperation): Command {
         return new CrossModelCommand(this.modelState, () => this.createEntityNode(operation));

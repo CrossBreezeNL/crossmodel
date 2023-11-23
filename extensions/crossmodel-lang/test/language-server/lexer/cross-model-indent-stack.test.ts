@@ -2,8 +2,10 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { describe, expect, test, beforeEach } from '@jest/globals';
-import { indentStack } from '../../../src/language-server/lexer/cross-model-indent-stack';
+import { describe, expect, test, beforeEach, jest } from '@jest/globals';
+import { indentStack } from '../../../src/language-server/lexer/cross-model-indent-stack.js';
+
+jest.useFakeTimers();
 
 describe('IndentStack', () => {
     beforeEach(() => {

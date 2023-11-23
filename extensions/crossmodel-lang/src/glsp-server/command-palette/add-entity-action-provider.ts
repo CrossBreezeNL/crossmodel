@@ -6,9 +6,9 @@ import { EditorContext, LabeledAction } from '@eclipse-glsp/protocol';
 import { ContextActionsProvider, Point } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
 import { codiconCSSString } from 'sprotty';
-import { isExternalDescriptionForLocalPackage } from '../../language-server/cross-model-scope';
-import { createNodeToEntityReference } from '../../language-server/util/ast-util';
-import { CrossModelState } from '../model/cross-model-state';
+import { isExternalDescriptionForLocalPackage } from '../../language-server/cross-model-scope.js';
+import { createNodeToEntityReference } from '../../language-server/util/ast-util.js';
+import { CrossModelState } from '../model/cross-model-state.js';
 
 /**
  * An action provider for the command palette (Ctrl+Space) to allow adding entities to an existing diagram.
@@ -18,7 +18,7 @@ import { CrossModelState } from '../model/cross-model-state';
 export class CrossModelAddEntityActionProvider implements ContextActionsProvider {
     contextId = 'command-palette';
 
-    @inject(CrossModelState) protected state: CrossModelState;
+    @inject(CrossModelState) protected state!: CrossModelState;
 
     async getActions(editorContext: EditorContext): Promise<LabeledAction[]> {
         const scopeProvider = this.state.services.language.references.ScopeProvider;

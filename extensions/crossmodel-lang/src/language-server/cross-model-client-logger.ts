@@ -2,7 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { CrossModelSharedServices } from './cross-model-module';
+import { CrossModelSharedServices } from './cross-model-module.js';
 
 /**
  * Centralized logger.

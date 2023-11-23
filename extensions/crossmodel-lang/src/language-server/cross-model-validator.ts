@@ -2,8 +2,8 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 import { ValidationAcceptor, ValidationChecks } from 'langium';
-import type { CrossModelServices } from './cross-model-module';
-import { CrossModelAstType, DiagramEdge, Entity, EntityAttribute, Relationship, SystemDiagram } from './generated/ast';
+import type { CrossModelServices } from './cross-model-module.js';
+import { CrossModelAstType, DiagramEdge, Entity, EntityAttribute, Relationship, SystemDiagram } from './generated/ast.js';
 
 /**
  * Register custom validation checks.

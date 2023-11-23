@@ -1,14 +1,16 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { describe, expect, test } from '@jest/globals';
+import { describe, expect, test, jest } from '@jest/globals';
 import { EmptyFileSystem, isReference } from 'langium';
 
-import { diagram1, diagram2, diagram3, diagram4, diagram5, diagram6 } from './test-utils/test-documents/diagram/index';
-import { parseDocument } from './test-utils/utils';
+import { diagram1, diagram2, diagram3, diagram4, diagram5, diagram6 } from './test-utils/test-documents/diagram/index.js';
+import { parseDocument } from './test-utils/utils.js';
 
-import { createCrossModelServices } from '../../src/language-server/cross-model-module';
-import { CrossModelRoot } from '../../src/language-server/generated/ast';
+import { createCrossModelServices } from '../../src/language-server/cross-model-module.js';
+import { CrossModelRoot } from '../../src/language-server/generated/ast.js';
+
+jest.useFakeTimers();
 
 const services = createCrossModelServices({ ...EmptyFileSystem }).CrossModel;
 

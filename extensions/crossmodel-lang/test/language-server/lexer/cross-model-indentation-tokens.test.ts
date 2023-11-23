@@ -1,11 +1,13 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { describe, expect, test, beforeEach, beforeAll } from '@jest/globals';
+import { describe, expect, test, beforeEach, beforeAll, jest } from '@jest/globals';
 import { Lexer, TokenType, createToken, tokenMatcher } from 'chevrotain';
 
-import { SPACES, NEWLINE, INDENT, DEDENT } from '../../../src/language-server/lexer/cross-model-indentation-tokens';
-import { indentStack } from '../../../src/language-server/lexer/cross-model-indent-stack';
+import { SPACES, NEWLINE, INDENT, DEDENT } from '../../../src/language-server/lexer/cross-model-indentation-tokens.js';
+import { indentStack } from '../../../src/language-server/lexer/cross-model-indent-stack.js';
+
+jest.useFakeTimers();
 
 describe('matchIndentBase', () => {
     let TESTTOKEN: TokenType;

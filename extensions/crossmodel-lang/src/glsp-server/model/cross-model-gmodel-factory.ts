@@ -3,9 +3,9 @@
  ********************************************************************************/
 import { GEdge, GGraph, GModelFactory, GNode } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
-import { DiagramEdge, DiagramNode } from '../../language-server/generated/ast';
-import { GEntityNode } from './builders/node-builder';
-import { CrossModelState } from './cross-model-state';
+import { DiagramEdge, DiagramNode } from '../../language-server/generated/ast.js';
+import { GEntityNode } from './builders/node-builder.js';
+import { CrossModelState } from './cross-model-state.js';
 
 /**
  * Custom factory that translates the semantic diagram root from Langium to a GLSP graph.
@@ -14,7 +14,7 @@ import { CrossModelState } from './cross-model-state';
  */
 @injectable()
 export class CrossModelGModelFactory implements GModelFactory {
-    @inject(CrossModelState) protected readonly modelState: CrossModelState;
+    @inject(CrossModelState) protected readonly modelState!: CrossModelState;
 
     createModel(): void {
         const newRoot = this.createGraph();

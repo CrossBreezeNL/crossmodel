@@ -1,11 +1,20 @@
 {
-  "extends": "../../configs/base.tsconfig.json",
   "compilerOptions": {
-    "composite": true,
+    "target": "ES2017",
+    "module": "Node16",
+    "lib": ["ESNext"],
+    "sourceMap": true,
+    "outDir": "out",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noImplicitReturns": true,
+    "noImplicitOverride": true,
+    "moduleResolution": "Node16",
+    "experimentalDecorators": true,
     "esModuleInterop": true,
-    "rootDir": "src",
-    "outDir": "out"
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
   },
-  "include": ["src"],
+  "include": ["src/**/*.ts", "test/**/*.ts"],
   "exclude": ["out", "node_modules"]
 }

@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@eclipse-glsp/protocol": "2.0.0",
-    "langium": "~1.3.0",
+    "langium": "~2.1.3",
     "vscode-jsonrpc": "^8.0.2"
   }
 }

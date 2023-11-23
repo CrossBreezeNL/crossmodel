@@ -5,17 +5,17 @@
 import { Command, CreateEdgeOperation, DefaultTypes, JsonCreateEdgeOperationHandler, ModelState } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
 import { URI, Utils as UriUtils } from 'vscode-uri';
-import { CrossModelRoot, DiagramEdge, DiagramNode, Relationship, isCrossModelRoot } from '../../language-server/generated/ast';
-import { Utils } from '../../language-server/util/uri-util';
-import { CrossModelState } from '../model/cross-model-state';
-import { CrossModelCommand } from './cross-model-command';
+import { CrossModelRoot, DiagramEdge, DiagramNode, Relationship, isCrossModelRoot } from '../../language-server/generated/ast.js';
+import { Utils } from '../../language-server/util/uri-util.js';
+import { CrossModelState } from '../model/cross-model-state.js';
+import { CrossModelCommand } from './cross-model-command.js';
 
 @injectable()
 export class CrossModelCreateEdgeOperationHandler extends JsonCreateEdgeOperationHandler {
     override label = '1:1 Relationship';
     elementTypeIds = [DefaultTypes.EDGE];
 
-    @inject(ModelState) protected override modelState: CrossModelState;
+    @inject(ModelState) protected override modelState!: CrossModelState;
 
     createCommand(operation: CreateEdgeOperation): Command {
         return new CrossModelCommand(this.modelState, () => this.createEdge(operation));

@@ -4,11 +4,11 @@
 import chalk from 'chalk';
 import { Command } from 'commander';
 import { NodeFileSystem } from 'langium/node';
-import { createCrossModelServices } from '../language-server/cross-model-module';
-import { CrossModelRoot } from '../language-server/generated/ast';
-import { CrossModelLanguageMetaData } from '../language-server/generated/module';
-import { extractAstNode } from './cli-util';
-import { generateJavaScript } from './generator';
+import { createCrossModelServices } from '../language-server/cross-model-module.js';
+import { CrossModelRoot } from '../language-server/generated/ast.js';
+import { CrossModelLanguageMetaData } from '../language-server/generated/module.js';
+import { extractAstNode } from './cli-util.js';
+import { generateJavaScript } from './generator.js';
 
 export const generateAction = async (fileName: string, opts: GenerateOptions): Promise<void> => {
    const services = createCrossModelServices(NodeFileSystem).CrossModel;

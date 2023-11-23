@@ -40,6 +40,7 @@
         "${workspaceFolder}/applications/electron-app/src-gen/backend/server.js",
         "${workspaceFolder}/applications/electron-app/src-gen/backend/main.js",
         "${workspaceFolder}/extensions/*/out/**/*.js",
+        "${workspaceFolder}/extensions/*/out/**/*.cjs",
         "${workspaceFolder}/packages/*/lib/**/*.js",
         "${workspaceFolder}/node_modules/langium/lib/**/*.js",
         "${workspaceFolder}/node_modules/@eclipse-glsp/*/lib/**/*.js"
@@ -79,6 +80,7 @@
         "${workspaceFolder}/applications/electron-app/src-gen/backend/server.js",
         "${workspaceFolder}/applications/electron-app/src-gen/backend/main.js",
         "${workspaceFolder}/extensions/*/out/**/*.js",
+        "${workspaceFolder}/extensions/*/out/**/*.cjs",
         "${workspaceFolder}/packages/*/lib/**/*.js",
         "${workspaceFolder}/node_modules/langium/lib/**/*.js",
         "${workspaceFolder}/node_modules/@eclipse-glsp/*/lib/**/*.js"
@@ -116,18 +118,75 @@
       ]
     },
     {
-      "name": "Debug Jest Tests",
+      "name": "Debug All CJS Jest Tests",
       "type": "node",
       "request": "launch",
       "runtimeArgs": [
         "--inspect-brk",
         "${workspaceRoot}/node_modules/jest/bin/jest.js",
         "--runInBand",
-        "--config=${workspaceRoot}/config/jest.config.js",
-        "--testPathPattern={extensions|packages}/*/test/**/*.test.ts"
+        "--config=${workspaceRoot}/configs/jest.config.js"
       ],
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "name": "Debug All ESM Jest Tests",
+      "type": "node",
+      "request": "launch",
+      "runtimeArgs": [
+        "--experimental-vm-modules",
+        "--inspect-brk",
+        "${workspaceRoot}/node_modules/jest/bin/jest.js",
+        "--runInBand",
+        "--config=${workspaceRoot}/configs/esm.jest.config.js"
+      ],
+      "env": {
+        "NODE_NO_WARNINGS": "1"
+      },
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "name": "Debug Open CJS Jest Test",
+      "type": "node",
+      "request": "launch",
+      "runtimeArgs": [
+        "--inspect-brk",
+        "${workspaceRoot}/node_modules/jest/bin/jest.js",
+        "--runInBand",
+        "--config=${workspaceRoot}/configs/jest.config.js",
+        "${file}"
+      ],
+      "env": {
+        "NODE_NO_WARNINGS": "1"
+      },
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "name": "Debug Open ESM Jest Test",
+      "type": "node",
+      "request": "launch",
+      "runtimeArgs": [
+        "--experimental-vm-modules",
+        "--inspect-brk",
+        "${workspaceRoot}/node_modules/jest/bin/jest.js",
+        "--runInBand",
+        "--config=${workspaceRoot}/configs/esm.jest.config.js",
+        "${file}"
+      ],
+      "env": {
+        "NODE_NO_WARNINGS": "1"
+      },
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Debug All Jest Tests",
+      "configurations": ["Debug All CJS Jest Tests", "Debug All ESM Jest Tests"]
     }
   ]
 }

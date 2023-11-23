@@ -1,8 +1,8 @@
-/* eslint-disable header/header */
 /* --------------------------------------------------------------------------------------------
  * Copyright (c) Microsoft Corporation and EclipseSource. All rights reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
  * ------------------------------------------------------------------------------------------ */
+// eslint-disable-next-line header/header
 import { basename } from 'path';
 import {
     CancellationToken,
@@ -25,7 +25,7 @@ import {
 } from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { URI } from 'vscode-uri';
-import { ClientLogger } from '../language-server/cross-model-client-logger';
+import { ClientLogger } from '../language-server/cross-model-client-logger.js';
 
 export const LANGUAGE_CLIENT_ID = 'language-client';
 

@@ -2,7 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { SystemDiagram } from '../generated/ast';
+import { SystemDiagram } from '../generated/ast.js';
 
 export function findAvailableNodeName(container: SystemDiagram, name: string): string {
     let availableName = name;

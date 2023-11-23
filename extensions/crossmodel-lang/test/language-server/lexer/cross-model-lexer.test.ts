@@ -2,13 +2,15 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { describe, expect, test, beforeAll } from '@jest/globals';
+import { describe, expect, test, beforeAll, jest } from '@jest/globals';
 import { EmptyFileSystem } from 'langium';
 import { tokenMatcher } from 'chevrotain';
 
 import { CrossModelLexer } from '../../../src/language-server/lexer/cross-model-lexer';
 import { DEDENT, INDENT } from '../../../src/language-server/lexer/cross-model-indentation-tokens';
 import { createCrossModelServices } from '../../../src/language-server/cross-model-module';
+
+jest.useFakeTimers();
 
 const services = createCrossModelServices({ ...EmptyFileSystem }).CrossModel;
 

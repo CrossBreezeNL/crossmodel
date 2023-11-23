@@ -2,10 +2,12 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { describe, expect, test } from '@jest/globals';
+import { describe, expect, test, jest } from '@jest/globals';
 import { NodeFileSystem } from 'langium/node';
-import { createCrossModelServices } from '../../src/language-server/cross-model-module';
-import { ModelService } from '../../src/model-server/model-service';
+import { createCrossModelServices } from '../../src/language-server/cross-model-module.js';
+import { ModelService } from '../../src/model-server/model-service.js';
+
+jest.useFakeTimers();
 
 // Test written by Martin Fleck, added to this branch for Jest. Using Vitest is not necessary
 

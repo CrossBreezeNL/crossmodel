@@ -21,8 +21,8 @@ import {
 import { inject, injectable, postConstruct } from 'inversify';
 import { findRootNode, streamReferences } from 'langium';
 import { URI } from 'vscode-uri';
-import { CrossModelRoot, isCrossModelRoot } from '../../language-server/generated/ast';
-import { CrossModelState } from './cross-model-state';
+import { CrossModelRoot, isCrossModelRoot } from '../../language-server/generated/ast.js';
+import { CrossModelState } from './cross-model-state.js';
 
 /**
  * Model storage implementation that loads the model through the ModelService extension in our language services.
@@ -31,11 +31,11 @@ import { CrossModelState } from './cross-model-state';
  */
 @injectable()
 export class CrossModelStorage implements SourceModelStorage, ClientSessionListener {
-    @inject(Logger) protected logger: Logger;
-    @inject(CrossModelState) protected state: CrossModelState;
-    @inject(ClientSessionManager) protected sessionManager: ClientSessionManager;
-    @inject(ModelSubmissionHandler) protected submissionHandler: ModelSubmissionHandler;
-    @inject(ActionDispatcher) protected actionDispatcher: ActionDispatcher;
+    @inject(Logger) protected logger!: Logger;
+    @inject(CrossModelState) protected state!: CrossModelState;
+    @inject(ClientSessionManager) protected sessionManager!: ClientSessionManager;
+    @inject(ModelSubmissionHandler) protected submissionHandler!: ModelSubmissionHandler;
+    @inject(ActionDispatcher) protected actionDispatcher!: ActionDispatcher;
 
     protected toDispose = new DisposableCollection();
 

@@ -3,9 +3,9 @@
  ********************************************************************************/
 
 import { TextDocument } from 'vscode-languageserver-textdocument';
-import { ModelService } from './model-service';
-import { OpenTextDocumentManager } from './open-text-document-manager';
-import { OpenableTextDocuments } from './openable-text-documents';
+import { ModelService } from './model-service.js';
+import { OpenTextDocumentManager } from './open-text-document-manager.js';
+import { OpenableTextDocuments } from './openable-text-documents.js';
 
 /**
  * Extension to the default shared model services by Langium.

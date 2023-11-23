@@ -5,11 +5,11 @@
 import { AddEntityOperation } from '@crossbreeze/protocol';
 import { Command, JsonOperationHandler, ModelState } from '@eclipse-glsp/server';
 import { injectable, inject } from 'inversify';
-import { DiagramNode, Entity } from '../../language-server/generated/ast';
-import { createNodeToEntityReference } from '../../language-server/util/ast-util';
-import { findAvailableNodeName } from '../../language-server/util/name-util';
-import { CrossModelState } from '../model/cross-model-state';
-import { CrossModelCommand } from './cross-model-command';
+import { DiagramNode, Entity } from '../../language-server/generated/ast.js';
+import { createNodeToEntityReference } from '../../language-server/util/ast-util.js';
+import { findAvailableNodeName } from '../../language-server/util/name-util.js';
+import { CrossModelState } from '../model/cross-model-state.js';
+import { CrossModelCommand } from './cross-model-command.js';
 
 /**
  * An operation handler for the 'AddEntityOperation' that resolves the referenced entity by name and places it in a new node on the diagram.
@@ -17,7 +17,7 @@ import { CrossModelCommand } from './cross-model-command';
 @injectable()
 export class CrossModelAddEntityOperationHandler extends JsonOperationHandler {
     override operationType = AddEntityOperation.KIND;
-    @inject(ModelState) protected override modelState: CrossModelState;
+    @inject(ModelState) protected override modelState!: CrossModelState;
 
     createCommand(operation: AddEntityOperation): Command {
         return new CrossModelCommand(this.modelState, () => this.createEntityNode(operation));

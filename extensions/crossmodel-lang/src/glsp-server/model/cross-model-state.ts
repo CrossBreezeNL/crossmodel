@@ -4,12 +4,12 @@
 import { DefaultModelState, JsonModelState, ModelState, hasFunctionProp } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
 import { URI } from 'vscode-uri';
-import { CrossModelLSPServices } from '../../integration';
-import { QualifiedNameProvider } from '../../language-server/cross-model-naming';
-import { CrossModelRoot, SystemDiagram } from '../../language-server/generated/ast';
-import { ModelService } from '../../model-server/model-service';
-import { Serializer } from '../../model-server/serializer';
-import { CrossModelIndex } from './cross-model-index';
+import { CrossModelLSPServices } from '../../integration.js';
+import { QualifiedNameProvider } from '../../language-server/cross-model-naming.js';
+import { CrossModelRoot, SystemDiagram } from '../../language-server/generated/ast.js';
+import { ModelService } from '../../model-server/model-service.js';
+import { Serializer } from '../../model-server/serializer.js';
+import { CrossModelIndex } from './cross-model-index.js';
 
 export interface CrossModelSourceModel {
     text: string;
@@ -21,12 +21,12 @@ export interface CrossModelSourceModel {
  */
 @injectable()
 export class CrossModelState extends DefaultModelState implements JsonModelState<CrossModelSourceModel> {
-    @inject(CrossModelIndex) override readonly index: CrossModelIndex;
-    @inject(CrossModelLSPServices) readonly services: CrossModelLSPServices;
+    @inject(CrossModelIndex) override readonly index!: CrossModelIndex;
+    @inject(CrossModelLSPServices) readonly services!: CrossModelLSPServices;
 
-    protected _semanticUri: string;
-    protected _semanticRoot: CrossModelRoot;
-    protected _packageId: string;
+    protected _semanticUri!: string;
+    protected _semanticRoot!: CrossModelRoot;
+    protected _packageId!: string;
 
     setSemanticRoot(uri: string, semanticRoot: CrossModelRoot): void {
         this._semanticUri = uri;

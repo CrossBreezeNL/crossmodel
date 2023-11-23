@@ -3,8 +3,8 @@
  ********************************************************************************/
 import { DefaultLangiumDocuments } from 'langium';
 import { URI } from 'vscode-uri';
-import { isPackageUri } from './cross-model-package-manager';
-import { Utils } from './util/uri-util';
+import { isPackageUri } from './cross-model-package-manager.js';
+import { Utils } from './util/uri-util.js';
 
 export class CrossModelLangiumDocuments extends DefaultLangiumDocuments {
    override getOrCreateDocument(uri: URI): any {

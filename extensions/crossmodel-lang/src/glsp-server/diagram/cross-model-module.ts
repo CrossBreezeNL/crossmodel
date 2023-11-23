@@ -15,17 +15,17 @@ import {
     SourceModelStorage
 } from '@eclipse-glsp/server';
 import { injectable } from 'inversify';
-import { CrossModelAddEntityActionProvider } from '../command-palette/add-entity-action-provider';
-import { CrossModelAddEntityOperationHandler } from '../handler/add-entity-operation-handler';
-import { CrossModelChangeBoundsOperationHandler } from '../handler/change-bounds-operation-handler';
-import { CrossModelCreateEdgeOperationHandler } from '../handler/create-edge-operation-handler';
-import { CrossModelDeleteOperationHandler } from '../handler/delete-operation-handler';
-import { CrossModelDropEntityOperationHandler } from '../handler/drop-entity-operation-handler';
-import { CrossModelGModelFactory } from '../model/cross-model-gmodel-factory';
-import { CrossModelIndex } from '../model/cross-model-index';
-import { CrossModelState } from '../model/cross-model-state';
-import { CrossModelStorage } from '../model/cross-model-storage';
-import { CrossModelDiagramConfiguration } from './cross-model-diagram-configuration';
+import { CrossModelAddEntityActionProvider } from '../command-palette/add-entity-action-provider.js';
+import { CrossModelAddEntityOperationHandler } from '../handler/add-entity-operation-handler.js';
+import { CrossModelChangeBoundsOperationHandler } from '../handler/change-bounds-operation-handler.js';
+import { CrossModelCreateEdgeOperationHandler } from '../handler/create-edge-operation-handler.js';
+import { CrossModelDeleteOperationHandler } from '../handler/delete-operation-handler.js';
+import { CrossModelDropEntityOperationHandler } from '../handler/drop-entity-operation-handler.js';
+import { CrossModelGModelFactory } from '../model/cross-model-gmodel-factory.js';
+import { CrossModelIndex } from '../model/cross-model-index.js';
+import { CrossModelState } from '../model/cross-model-state.js';
+import { CrossModelStorage } from '../model/cross-model-storage.js';
+import { CrossModelDiagramConfiguration } from './cross-model-diagram-configuration.js';
 
 /**
  * Provides configuration about our crossmodel diagrams.

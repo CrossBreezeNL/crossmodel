@@ -2,7 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 import _ from 'lodash';
-import { IndentStackError } from './cross-model-lexer-error';
+import { IndentStackError } from './cross-model-lexer-error.js';
 
 /**
  * Class to hold the current indentation levels. Has a few basic functions to handle

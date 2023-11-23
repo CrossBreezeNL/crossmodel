@@ -17,10 +17,10 @@
     "start:browser": "yarn theia:browser start",
     "start:electron": "yarn theia:electron start",
     "start:verdaccio": "yarn verdaccio --config verdaccio-config.yaml",
-    "test": "jest --config=configs/jest.config.js",
+    "test": "rimraf unit-test-results && lerna run test",
     "theia:browser": "yarn --cwd applications/browser-app",
     "theia:electron": "yarn --cwd applications/electron-app",
-    "ui-test": "yarn --cwd ./e2e-tests/ test",
+    "ui-test": "yarn --cwd e2e-tests ui-test",
     "watch": "lerna run --parallel watch"
   },
   "devDependencies": {

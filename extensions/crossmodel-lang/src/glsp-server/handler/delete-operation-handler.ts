@@ -3,15 +3,15 @@
  ********************************************************************************/
 import { Command, DeleteElementOperation, JsonOperationHandler } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
-import { DiagramEdge, DiagramNode, isDiagramEdge, isDiagramNode } from '../../language-server/generated/ast';
-import { CrossModelState } from '../model/cross-model-state';
-import { CrossModelCommand } from './cross-model-command';
+import { DiagramEdge, DiagramNode, isDiagramEdge, isDiagramNode } from '../../language-server/generated/ast.js';
+import { CrossModelState } from '../model/cross-model-state.js';
+import { CrossModelCommand } from './cross-model-command.js';
 
 @injectable()
 export class CrossModelDeleteOperationHandler extends JsonOperationHandler {
    operationType = DeleteElementOperation.KIND;
 
-   @inject(CrossModelState) protected override modelState: CrossModelState;
+   @inject(CrossModelState) protected override modelState!: CrossModelState;
 
    createCommand(operation: DeleteElementOperation): Command | undefined {
       if (!operation.elementIds || operation.elementIds.length === 0) {

@@ -7,7 +7,7 @@ import { AstNode, Deferred, DocumentState, isAstNode } from 'langium';
 import { Disposable, OptionalVersionedTextDocumentIdentifier, Range, TextDocumentEdit, TextEdit, uinteger } from 'vscode-languageserver';
 import { URI } from 'vscode-uri';
 import { CrossModelSharedServices } from '../language-server/cross-model-module';
-import { LANGUAGE_CLIENT_ID } from './openable-text-documents';
+import { LANGUAGE_CLIENT_ID } from './openable-text-documents.js';
 
 /**
  * The model service serves as a facade to access and update semantic models from the language server as a non-LSP client.
@@ -115,14 +115,20 @@ export class ModelService {
         const newVersion = textDocument.version + 1;
         const pendingUpdate = new Deferred<T>();
         const listener = this.documentBuilder.onBuildPhase(DocumentState.Validated, (allChangedDocuments, _token) => {
-            const updatedDocument = allChangedDocuments
-                .find(doc => doc.uri.toString() === documentUri.toString() && doc.textDocument.version === newVersion);
+            const updatedDocument = allChangedDocuments.find(
+                doc => doc.uri.toString() === documentUri.toString() && doc.textDocument.version === newVersion
+            );
             if (updatedDocument) {
                 pendingUpdate.resolve(updatedDocument.parseResult.value as T);
                 listener.dispose();
             }
         });
-        const timeout = new Promise<T>((_, reject) => setTimeout(() => { listener.dispose(); reject('Update timed out.'); }, 5000));
+        const timeout = new Promise<T>((_, reject) =>
+            setTimeout(() => {
+                listener.dispose();
+                reject('Update timed out.');
+            }, 5000)
+        );
         this.documentManager.update(args.uri, newVersion, text, args.clientId);
         return Promise.race([pendingUpdate.promise, timeout]);
     }

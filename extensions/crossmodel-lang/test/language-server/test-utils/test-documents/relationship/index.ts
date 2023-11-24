@@ -1,5 +1,5 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-export * from './relationship1';
-export * from './relationship2';
+export * from './relationship1.js';
+export * from './relationship2.js';

@@ -2,7 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 import { JsonRecordingCommand, MaybePromise } from '@eclipse-glsp/server';
-import { CrossModelSourceModel, CrossModelState } from '../model/cross-model-state';
+import { CrossModelSourceModel, CrossModelState } from '../model/cross-model-state.js';
 import * as jsonPatch from 'fast-json-patch';
 
 /**

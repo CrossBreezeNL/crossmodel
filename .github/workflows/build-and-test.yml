@@ -50,14 +50,14 @@ jobs:
         run: yarn test
         env:
           # The test result file name can be controlled using the following environment variable.
-          JEST_JUNIT_OUTPUT_NAME: unit-test-results-${{ runner.os }}.xml
+          JEST_JUNIT_OUTPUT_NAME: ${{ runner.os }}-unit-test-results
 
       # Upload Unit Test Results (The different files for the OSes will end up in the same artifact).
       - name: Upload Unit Test Results
         if: always()
         uses: actions/upload-artifact@v3
         with:
-          name: unit-test-tesults
+          name: unit-test-results
           # Include the unit-test-results folders (which is in the root of the workspace).
           path: unit-test-results
           retention-days: 30
@@ -95,12 +95,12 @@ jobs:
       - name: Download Unit Test Results
         uses: actions/download-artifact@v3
         with:
-          name: unit-test-tesults
-          path: unit-test-tesults
+          name: unit-test-results
+          path: unit-test-results
       # Publish Test Results
       - name: Publish Unit Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
         with:
           check_name: Unit Test Results
           files: |
-            unit-test-tesults/**/*.xml
+            unit-test-results/**/*.xml

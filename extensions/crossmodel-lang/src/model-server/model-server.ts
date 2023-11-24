@@ -19,10 +19,10 @@ import {
 } from '@crossbreeze/protocol';
 import { isReference } from 'langium';
 import { Disposable } from 'vscode-jsonrpc';
-import * as rpc from 'vscode-jsonrpc/node';
+import * as rpc from 'vscode-jsonrpc/node.js';
 import { CrossModelRoot as CrossModelRootAst, DiagramNode, Entity, isCrossModelRoot } from '../language-server/generated/ast';
 
-import { ModelService } from './model-service';
+import { ModelService } from './model-service.js';
 
 /**
  * The model server handles request messages on the RPC connection and ensures that any return value

@@ -2,8 +2,8 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 import { AstNodeDescription, DefaultScopeProvider, getDocument, ReferenceInfo, Scope, StreamScope } from 'langium';
-import { CrossModelServices } from './cross-model-module';
-import { PackageAstNodeDescription, PackageExternalAstNodeDescription } from './cross-model-scope';
+import { CrossModelServices } from './cross-model-module.js';
+import { PackageAstNodeDescription, PackageExternalAstNodeDescription } from './cross-model-scope.js';
 
 /**
  * A custom scope provider that considers the dependencies between packages to indicate which elements form the global scope

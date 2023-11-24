@@ -4,10 +4,10 @@
 
 import { AstNode, AstNodeDescription, DefaultScopeComputation, LangiumDocument, PrecomputedScopes, streamAllContents } from 'langium';
 import { CancellationToken } from 'vscode-jsonrpc';
-import { CrossModelServices } from './cross-model-module';
-import { QualifiedNameProvider } from './cross-model-naming';
-import { CrossModelPackageManager, UNKNOWN_PROJECT_ID, UNKNOWN_PROJECT_REFERENCE } from './cross-model-package-manager';
-import { isCrossModelRoot } from './generated/ast';
+import { CrossModelServices } from './cross-model-module.js';
+import { QualifiedNameProvider } from './cross-model-naming.js';
+import { CrossModelPackageManager, UNKNOWN_PROJECT_ID, UNKNOWN_PROJECT_REFERENCE } from './cross-model-package-manager.js';
+import { isCrossModelRoot } from './generated/ast.js';
 
 /**
  * Custom node description that wraps a given description under a potentially new name and also stores the package id for faster access.

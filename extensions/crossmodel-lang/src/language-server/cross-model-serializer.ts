@@ -3,9 +3,9 @@
  ********************************************************************************/
 
 import { isReference } from 'langium';
-import { Serializer } from '../model-server/serializer';
-import { CrossModelServices } from './cross-model-module';
-import { CrossModelRoot, Entity, Relationship, SystemDiagram } from './generated/ast';
+import { Serializer } from '../model-server/serializer.js';
+import { CrossModelServices } from './cross-model-module.js';
+import { CrossModelRoot, Entity, Relationship, SystemDiagram } from './generated/ast.js';
 
 const PROPERTY_ORDER = [
     'id',

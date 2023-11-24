@@ -1,22 +1,24 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-/* eslint-disable import/no-duplicates */
 import { GLSP_PORT_FILE } from '@crossbreeze/protocol';
 import { configureELKLayoutModule } from '@eclipse-glsp/layout-elk';
-import { LogLevel, LoggerFactory, MaybePromise, ServerModule } from '@eclipse-glsp/server';
 import {
+   LogLevel,
+   LoggerFactory,
+   MaybePromise,
+   ServerModule,
    SocketLaunchOptions,
    SocketServerLauncher,
    createAppModule,
    defaultSocketLaunchOptions
-} from '@eclipse-glsp/server/lib/node/index';
+} from '@eclipse-glsp/server/node.js';
 import { Container, ContainerModule } from 'inversify';
 import { URI } from 'vscode-uri';
-import { CrossModelLSPServices, writePortFileToWorkspace } from '../integration';
-import { CrossModelServices, CrossModelSharedServices } from '../language-server/cross-model-module';
-import { CrossModelDiagramModule } from './diagram/cross-model-module';
-import { CrossModelLayoutConfigurator } from './layout/cross-model-layout-configurator';
+import { CrossModelLSPServices, writePortFileToWorkspace } from '../integration.js';
+import { CrossModelServices, CrossModelSharedServices } from '../language-server/cross-model-module.js';
+import { CrossModelDiagramModule } from './diagram/cross-model-module.js';
+import { CrossModelLayoutConfigurator } from './layout/cross-model-layout-configurator.js';
 
 /**
  * Launches a GLSP server with access to the given language services on the default port.

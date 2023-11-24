@@ -18,27 +18,27 @@ import {
 } from 'langium';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { URI } from 'vscode-uri';
-import { AddedSharedModelServices } from '../model-server/model-module';
-import { ModelService } from '../model-server/model-service';
-import { OpenTextDocumentManager } from '../model-server/open-text-document-manager';
-import { OpenableTextDocuments } from '../model-server/openable-text-documents';
-import { Serializer } from '../model-server/serializer';
-import { ClientLogger } from './cross-model-client-logger';
-import { CrossModelCompletionProvider } from './cross-model-completion-provider';
-import { CrossModelDocumentBuilder } from './cross-model-document-builder';
-import { CrossModelModelFormatter } from './cross-model-formatter';
-import { CrossModelLangiumDocuments } from './cross-model-langium-documents';
-import { CrossModelLanguageServer } from './cross-model-language-server';
-import { QualifiedNameProvider } from './cross-model-naming';
-import { CrossModelPackageManager } from './cross-model-package-manager';
-import { CrossModelScopeComputation } from './cross-model-scope';
-import { CrossModelScopeProvider } from './cross-model-scope-provider';
-import { CrossModelSerializer } from './cross-model-serializer';
-import { CrossModelValidator, registerValidationChecks } from './cross-model-validator';
-import { CrossModelWorkspaceManager } from './cross-model-workspace-manager';
-import { CrossModelGeneratedModule, CrossModelGeneratedSharedModule } from './generated/module';
-import { CrossModelLexer } from './lexer/cross-model-lexer';
-import { CrossModelTokenBuilder } from './lexer/cross-model-token-generator';
+import { AddedSharedModelServices } from '../model-server/model-module.js';
+import { ModelService } from '../model-server/model-service.js';
+import { OpenTextDocumentManager } from '../model-server/open-text-document-manager.js';
+import { OpenableTextDocuments } from '../model-server/openable-text-documents.js';
+import { Serializer } from '../model-server/serializer.js';
+import { ClientLogger } from './cross-model-client-logger.js';
+import { CrossModelCompletionProvider } from './cross-model-completion-provider.js';
+import { CrossModelDocumentBuilder } from './cross-model-document-builder.js';
+import { CrossModelModelFormatter } from './cross-model-formatter.js';
+import { CrossModelLangiumDocuments } from './cross-model-langium-documents.js';
+import { CrossModelLanguageServer } from './cross-model-language-server.js';
+import { QualifiedNameProvider } from './cross-model-naming.js';
+import { CrossModelPackageManager } from './cross-model-package-manager.js';
+import { CrossModelScopeComputation } from './cross-model-scope.js';
+import { CrossModelScopeProvider } from './cross-model-scope-provider.js';
+import { CrossModelSerializer } from './cross-model-serializer.js';
+import { CrossModelValidator, registerValidationChecks } from './cross-model-validator.js';
+import { CrossModelWorkspaceManager } from './cross-model-workspace-manager.js';
+import { CrossModelGeneratedModule, CrossModelGeneratedSharedModule } from './generated/module.js';
+import { CrossModelLexer } from './lexer/cross-model-lexer.js';
+import { CrossModelTokenBuilder } from './lexer/cross-model-token-generator.js';
 
 /***************************
  * Shared Module
@@ -50,7 +50,7 @@ export interface ExtendedLangiumServices extends LangiumServices {
     };
 }
 
-export class ExtendedServiceRegistry extends DefaultServiceRegistry {
+export class DefaultExtendedServiceRegistry extends DefaultServiceRegistry {
     override register(language: ExtendedLangiumServices): void {
         super.register(language);
     }
@@ -90,7 +90,7 @@ export const CrossModelSharedModule: Module<
     CrossModelSharedServices,
     PartialLangiumSharedServices & CrossModelAddedSharedServices & AddedSharedModelServices
 > = {
-    ServiceRegistry: () => new ExtendedServiceRegistry(),
+    ServiceRegistry: () => new DefaultExtendedServiceRegistry(),
     workspace: {
         WorkspaceManager: services => new CrossModelWorkspaceManager(services),
         PackageManager: services => new CrossModelPackageManager(services),

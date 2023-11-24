@@ -1,9 +1,9 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-export * from './diagram1';
-export * from './diagram2';
-export * from './diagram3';
-export * from './diagram4';
-export * from './diagram5';
-export * from './diagram6';
+export * from './diagram1.js';
+export * from './diagram2.js';
+export * from './diagram3.js';
+export * from './diagram4.js';
+export * from './diagram5.js';
+export * from './diagram6.js';

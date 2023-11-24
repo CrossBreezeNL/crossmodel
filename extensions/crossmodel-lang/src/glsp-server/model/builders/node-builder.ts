@@ -2,7 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 import { ArgsUtil, GCompartment, GLabel, GNode, GNodeBuilder } from '@eclipse-glsp/server';
-import { DiagramNode } from '../../../language-server/generated/ast';
+import { DiagramNode } from '../../../language-server/generated/ast.js';
 
 export class GEntityNode extends GNode {
     override type = 'node:entity';

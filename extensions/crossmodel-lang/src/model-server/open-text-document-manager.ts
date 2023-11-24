@@ -17,9 +17,9 @@ import { Disposable } from 'vscode-languageserver';
 import { TextDocumentIdentifier, TextDocumentItem, VersionedTextDocumentIdentifier } from 'vscode-languageserver-protocol';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { URI } from 'vscode-uri';
-import { CrossModelLanguageMetaData } from '../language-server/generated/module';
-import { AddedSharedModelServices } from './model-module';
-import { OpenableTextDocuments } from './openable-text-documents';
+import { CrossModelLanguageMetaData } from '../language-server/generated/module.js';
+import { AddedSharedModelServices } from './model-module.js';
+import { OpenableTextDocuments } from './openable-text-documents.js';
 
 /**
  * A manager class that suppors handling documents with a simple open-update-save/close lifecycle.

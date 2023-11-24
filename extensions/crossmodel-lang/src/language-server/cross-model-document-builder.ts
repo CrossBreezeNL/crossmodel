@@ -4,8 +4,8 @@
 import { DefaultDocumentBuilder, LangiumSharedServices } from 'langium';
 import { CancellationToken } from 'vscode-languageclient';
 import { URI, Utils as UriUtils } from 'vscode-uri';
-import { isPackageUri } from './cross-model-package-manager';
-import { Utils } from './util/uri-util';
+import { isPackageUri } from './cross-model-package-manager.js';
+import { Utils } from './util/uri-util.js';
 
 /**
  * A document builder that can also handle directories by flattening out directories to an array of file URIs.

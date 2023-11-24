@@ -4,9 +4,9 @@
 
 import { createTokenInstance } from 'chevrotain';
 import { DefaultLexer, LexerResult } from 'langium';
-import { indentStack } from './cross-model-indent-stack';
-import { DEDENT, NAMES } from './cross-model-indentation-tokens';
-import { IndentationError } from './cross-model-lexer-error';
+import { indentStack } from './cross-model-indent-stack.js';
+import { DEDENT, NAMES } from './cross-model-indentation-tokens.js';
+import { IndentationError } from './cross-model-lexer-error.js';
 
 /**
  * Custom CrossModelLexer to get indentation working.

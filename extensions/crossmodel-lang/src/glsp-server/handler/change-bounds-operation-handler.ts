@@ -3,13 +3,13 @@
  ********************************************************************************/
 import { ChangeBoundsOperation, Command, JsonOperationHandler, ModelState } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
-import { CrossModelState } from '../model/cross-model-state';
-import { CrossModelCommand } from './cross-model-command';
+import { CrossModelState } from '../model/cross-model-state.js';
+import { CrossModelCommand } from './cross-model-command.js';
 
 @injectable()
 export class CrossModelChangeBoundsOperationHandler extends JsonOperationHandler {
     operationType = ChangeBoundsOperation.KIND;
-    @inject(ModelState) protected override modelState: CrossModelState;
+    @inject(ModelState) protected override modelState!: CrossModelState;
 
     createCommand(operation: ChangeBoundsOperation): Command {
         return new CrossModelCommand(this.modelState, () => this.changeBounds(operation));

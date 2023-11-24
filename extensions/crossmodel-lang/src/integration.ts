@@ -6,7 +6,7 @@ import * as fs from 'fs';
 import { AddressInfo } from 'net';
 import { join } from 'path';
 import { URI } from 'vscode-uri';
-import { CrossModelServices, CrossModelSharedServices } from './language-server/cross-model-module';
+import { CrossModelServices, CrossModelSharedServices } from './language-server/cross-model-module.js';
 
 /**
  * Language services required in GLSP.

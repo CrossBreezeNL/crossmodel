@@ -3,8 +3,8 @@
  ********************************************************************************/
 
 import { AstNode, CstNode, findNodeForProperty, getDocument, isNamed, NameProvider } from 'langium';
-import { CrossModelServices } from './cross-model-module';
-import { UNKNOWN_PROJECT_REFERENCE } from './cross-model-package-manager';
+import { CrossModelServices } from './cross-model-module.js';
+import { UNKNOWN_PROJECT_REFERENCE } from './cross-model-package-manager.js';
 
 /**
  * A name provider that returns the fully qualified name of a node by default but also exposes methods to get other names:

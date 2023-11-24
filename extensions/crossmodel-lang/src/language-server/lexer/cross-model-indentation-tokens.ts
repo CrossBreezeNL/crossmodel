@@ -5,8 +5,8 @@
 
 import { IToken, Lexer, createToken, createTokenInstance } from 'chevrotain';
 import _ from 'lodash';
-import { indentStack } from './cross-model-indent-stack';
-import { IndentationError } from './cross-model-lexer-error';
+import { indentStack } from './cross-model-indent-stack.js';
+import { IndentationError } from './cross-model-lexer-error.js';
 
 export const NAMES = {
     INDENT: 'INDENT',

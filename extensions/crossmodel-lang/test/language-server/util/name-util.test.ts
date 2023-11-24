@@ -1,15 +1,13 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { describe, expect, test, jest } from '@jest/globals';
+import { describe, expect, test } from '@jest/globals';
 import { EmptyFileSystem } from 'langium';
 
 import { createCrossModelServices } from '../../../src/language-server/cross-model-module.js';
 import { CrossModelRoot } from '../../../src/language-server/generated/ast.js';
 import { findAvailableNodeName } from '../../../src/language-server/util/name-util.js';
 import { parseDocument } from '../test-utils/utils.js';
-
-jest.useFakeTimers();
 
 const services = createCrossModelServices({ ...EmptyFileSystem });
 const cmServices = services.CrossModel;
@@ -30,31 +28,31 @@ const ex4 = `diagram:
         - id: "nodeA4"`;
 
 describe('NameUtil', () => {
-    describe('findAvailableNodeName', () => {
-        test('should return given name if unique', async () => {
-            const document = await parseDocument<CrossModelRoot>(cmServices, ex1);
+   describe('findAvailableNodeName', () => {
+      test('should return given name if unique', async () => {
+         const document = await parseDocument<CrossModelRoot>(cmServices, ex1);
 
-            expect(findAvailableNodeName(document.parseResult.value.diagram!, 'nodeA')).toBe('nodeA');
-        });
+         expect(findAvailableNodeName(document.parseResult.value.diagram!, 'nodeA')).toBe('nodeA');
+      });
 
-        test('should return unique name if given is taken', async () => {
-            const document = await parseDocument<CrossModelRoot>(cmServices, ex2);
+      test('should return unique name if given is taken', async () => {
+         const document = await parseDocument<CrossModelRoot>(cmServices, ex2);
 
-            const resultat = findAvailableNodeName(document.parseResult.value.diagram!, 'nodeA');
+         const result = findAvailableNodeName(document.parseResult.value.diagram!, 'nodeA');
 
-            expect(resultat).toBe('nodeA1');
-        });
+         expect(result).toBe('nodeA1');
+      });
 
-        test('should properly count up if name is taken', async () => {
-            const document = await parseDocument<CrossModelRoot>(cmServices, ex3);
+      test('should properly count up if name is taken', async () => {
+         const document = await parseDocument<CrossModelRoot>(cmServices, ex3);
 
-            expect(findAvailableNodeName(document.parseResult.value.diagram!, 'nodeA')).toBe('nodeA2');
-        });
+         expect(findAvailableNodeName(document.parseResult.value.diagram!, 'nodeA')).toBe('nodeA2');
+      });
 
-        test('should find lowest count if multiple are taken', async () => {
-            const document = await parseDocument<CrossModelRoot>(cmServices, ex4);
+      test('should find lowest count if multiple are taken', async () => {
+         const document = await parseDocument<CrossModelRoot>(cmServices, ex4);
 
-            expect(findAvailableNodeName(document.parseResult.value.diagram!, 'nodeA')).toBe('nodeA3');
-        });
-    });
+         expect(findAvailableNodeName(document.parseResult.value.diagram!, 'nodeA')).toBe('nodeA3');
+      });
+   });
 });

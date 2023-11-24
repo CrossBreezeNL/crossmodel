@@ -5,7 +5,8 @@
   "workspaces": [
     "packages/*",
     "applications/*",
-    "extensions/*"
+    "extensions/*",
+    "e2e-tests"
   ],
   "scripts": {
     "build": "lerna run build",
@@ -19,6 +20,7 @@
     "test": "jest --config=configs/jest.config.js",
     "theia:browser": "yarn --cwd applications/browser-app",
     "theia:electron": "yarn --cwd applications/electron-app",
+    "ui-test": "yarn --cwd ./e2e-tests/ test",
     "watch": "lerna run --parallel watch"
   },
   "devDependencies": {

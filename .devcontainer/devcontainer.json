@@ -1,18 +1,55 @@
 // Dev-Container for CrossModel.
-// For format details, see https://aka.ms/devcontainer.json.
 {
   "name": "Node.js & TypeScript",
-  // https://github.com/devcontainers/templates/tree/main/src/typescript-node
-  "image": "mcr.microsoft.com/devcontainers/typescript-node:1-16-bullseye",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
   "features": {
     "ghcr.io/devcontainers/features/python:1": {
       "version": "3.11.4"
     }
   },
-
+  "customizations": {
+    "vscode": {
+      // Install a list of extensions in the Dev Container so everything is reasdy to develop and test.
+      "extensions": [
+        "langium.langium-vscode",
+        "esbenp.prettier-vscode",
+        "eamodio.gitlens",
+        "davidanson.vscode-markdownlint",
+        "ms-playwright.playwright",
+        "dbaeumer.vscode-eslint",
+        "orta.vscode-jest"
+      ]
+    }
+  },
   // Allow port 3000 to be forwarded.
   "forwardPorts": [3000],
-
-  // Install the needed OS libs for building.
-  "postCreateCommand": "sudo apt-get update && sudo apt-get -y install libsecret-1-dev libxkbfile-dev"
+  "portsAttributes": {
+    "3000": {
+      "label": "Theia Backend"
+    }
+  },
+  // Install the playwright dependencies.
+  "postCreateCommand": "yarn && yarn playwright install --with-deps",
+  // When we want to be able to run playwright headed within the Dev Container,
+  // we need to setup the mounts and container environment variables like below.
+  "mounts": [
+    {
+      "source": "/run/desktop/mnt/host/wslg/.X11-unix",
+      "target": "/tmp/.X11-unix",
+      "type": "bind"
+    },
+    {
+      "source": "/run/desktop/mnt/host/wslg",
+      "target": "/mnt/wslg",
+      "type": "bind"
+    }
+  ],
+  "containerEnv": {
+    "DISPLAY": ":0",
+    "WAYLAND_DISPLAY": "wayland-0",
+    "XDG_RUNTIME_DIR": "/mnt/wslg/runtime-dir",
+    "PULSE_SERVER": "/mnt/wslg/PulseServer"
+  }
 }

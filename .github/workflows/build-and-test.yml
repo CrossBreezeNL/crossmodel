@@ -46,43 +46,61 @@ jobs:
           yarn build
 
       # Execute the tests.
-      - name: Test
+      - name: Run Unit Tests
         run: yarn test
         env:
           # The test result file name can be controlled using the following environment variable.
           JEST_JUNIT_OUTPUT_NAME: unit-test-results-${{ runner.os }}.xml
 
-      # Upload Test Results (The different files for the OSes will end up in the same artifact).
-      - name: Upload Test Results
+      # Upload Unit Test Results (The different files for the OSes will end up in the same artifact).
+      - name: Upload Unit Test Results
         if: always()
         uses: actions/upload-artifact@v3
         with:
           name: unit-test-tesults
           # Include the unit-test-results folders (which is in the root of the workspace).
           path: unit-test-results
+          retention-days: 30
+
+      # Run PlayWright tests, only on Linux container.
+      - name: Install Playwright Browsers
+        if: runner.os == 'Linux'
+        run: yarn --cwd ./e2e-tests/ playwright:install
+      - name: Run Playwright tests
+        if: runner.os == 'Linux'
+        uses: coactions/setup-xvfb@v1
+        with:
+          run: yarn ui-test
+      - name: Upload PlayWrite test report
+        if: always() && runner.os == 'Linux'
+        uses: actions/upload-artifact@v3
+        with:
+          name: allure-results
+          path: e2e-tests/allure-results/
+          retention-days: 30
 
       # Run lint only on Linux (since it only makes sense to run it once, and linux is the fastest).
       - name: Lint
-        if: runner.os == 'Linux'
+        if: always() && runner.os == 'Linux'
         run: yarn lint
 
-  # Publish a test report using the test result files published in the previous step (executed per OS).
-  publish-test-report:
-    name: Publish Test Report
+  # Publish a test report using the unit test result files published in the previous step (which was executed per OS).
+  publish-unit-test-report:
+    name: Publish Unit Test Report
     needs: build-and-test
     runs-on: ubuntu-latest
     if: always()
     steps:
       # Download the test results artifacts.
-      - name: Download Test Results
+      - name: Download Unit Test Results
         uses: actions/download-artifact@v3
         with:
           name: unit-test-tesults
           path: unit-test-tesults
       # Publish Test Results
-      - name: Publish Test Results
+      - name: Publish Unit Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
         with:
-          check_name: Test Results
+          check_name: Unit Test Results
           files: |
             unit-test-tesults/**/*.xml

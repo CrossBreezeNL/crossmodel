@@ -1,0 +1,25 @@
+{
+  "name": "crossmodel-e2e-tests",
+  "version": "0.0.0",
+  "private": true,
+  "license": "AGPL-3.0-or-later",
+  "author": {
+    "name": "CrossBreeze",
+    "email": "devops@crossbreeze.nl"
+  },
+  "scripts": {
+    "build": "tsc -b && npx playwright install chromium",
+    "clean": "rimraf lib tsconfig.tsbuildinfo",
+    "lint": "eslint -c ../.eslintrc.js --ext .ts ./src",
+    "playwright:install": "yarn playwright install --with-deps",
+    "prepare": "yarn clean && yarn build && yarn lint",
+    "test": "yarn playwright test"
+  },
+  "dependencies": {
+    "@playwright/test": "^1.37.1",
+    "@theia/playwright": "1.43.1"
+  },
+  "devDependencies": {
+    "allure-playwright": "^2.9.2"
+  }
+}

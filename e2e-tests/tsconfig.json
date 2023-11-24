@@ -1,0 +1,10 @@
+{
+  "extends": "../configs/base.tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "baseUrl": ".",
+    "rootDir": ".",
+    "outDir": "lib"
+  },
+  "include": ["src/tests", "src/fixtures", "src/page-objects", "src/resources"]
+}

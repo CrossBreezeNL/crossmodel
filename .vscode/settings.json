@@ -6,9 +6,14 @@
 {
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+    "source.organizeImports": true,
+    "source.fixAll.eslint": true,
+    "source.fixAll.markdownlint": true
   },
-  "eslint.validate": ["javascript", "typescript"],
+  "eslint.validate": [
+    "javascript",
+    "typescript"
+  ],
   "prettier.prettierPath": "node_modules/prettier",
   "search.exclude": {
     "**/node_modules": true,
@@ -40,6 +45,49 @@
   "[yaml]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
+  "markdownlint.config": {
+    "MD007": {
+      "indent": 4
+    },
+    "MD030": {
+      "ul_single": 3,
+      "ul_multi": 3
+    },
+    "no-inline-html": {
+      "allowed_elements": [
+        "br",
+        "details",
+        "summary"
+      ]
+    }
+  },
   "jest.jestCommandLine": "yarn test",
-  "jest.debugMode": true
+  "jest.debugMode": true,
+  "cSpell.enabled": true,
+  "cSpell.words": [
+    "Langium",
+    "Chevrotrain",
+    "CrossModel",
+    "Modelserver",
+    "CrossBreeze",
+    "Navigatable",
+    "Validateable",
+    "codicon",
+    "tabbar",
+    "uinteger"
+  ],
+  "cSpell.useGitignore": true,
+  "cSpell.enabledLanguageIds": [
+    "css",
+    "javascript",
+    "javascriptreact",
+    "markdown",
+    "plaintext",
+    "text",
+    "typescript",
+    "typescriptreact"
+  ],
+  "cSpell.ignoreRegExpList": [
+    "/^\\s*import.*from.*/gm"
+  ]
 }

@@ -14,7 +14,7 @@ test.describe('CrossModel TabBar Toolbar', () => {
     test.beforeAll(async ({ browser }) => {
         explorer = await app.openView(CrossModelExplorerView);
         await explorer.waitForVisibleFileNodes();
-        tabBarToolbar = await explorer.tabBarToolbar();
+        tabBarToolbar = explorer.tabBarToolbar;
     });
 
     test.beforeEach(async () => {

@@ -11,6 +11,7 @@
     "build": "tsc -b && npx playwright install chromium",
     "clean": "rimraf lib tsconfig.tsbuildinfo",
     "lint": "eslint -c ../.eslintrc.js --ext .ts ./src",
+    "playwright:install": "yarn playwright install --with-deps",
     "prepare": "yarn clean && yarn build && yarn lint",
     "test": "yarn playwright test"
   },

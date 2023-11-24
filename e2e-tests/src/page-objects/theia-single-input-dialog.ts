@@ -7,7 +7,7 @@ export class TheiaSingleInputDialog extends TheiaDialog {
     async enterSingleInput(inputValue: string): Promise<void> {
         const inputField = await this.page.waitForSelector(`${this.blockSelector} .theia-input`);
         await inputField.press(OSUtil.isMacOS ? 'Meta+a' : 'Control+a');
-        await inputField.type(inputValue, { delay: USER_KEY_TYPING_DELAY });
+        await inputField.fill(inputValue);
         await this.page.waitForTimeout(USER_KEY_TYPING_DELAY);
     }
 

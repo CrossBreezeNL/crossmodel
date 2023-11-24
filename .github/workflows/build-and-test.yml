@@ -65,12 +65,12 @@ jobs:
       # Run PlayWright tests, only on Linux container.
       - name: Install Playwright Browsers
         if: runner.os == 'Linux'
-        run: yarn --cwd ./e2e-tests/ playwright install --with-deps
+        run: yarn --cwd ./e2e-tests/ playwright:install
       - name: Run Playwright tests
         if: runner.os == 'Linux'
         uses: coactions/setup-xvfb@v1
         with:
-          run: yarn --cwd ./e2e-tests/ test
+          run: yarn ui-test
       - name: Upload PlayWrite test report
         if: always() && runner.os == 'Linux'
         uses: actions/upload-artifact@v3

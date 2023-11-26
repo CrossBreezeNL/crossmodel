@@ -44,8 +44,8 @@ export function EntityAttributesDataGrid(): React.ReactElement {
          attributeIdx: updatedRow.id,
          attribute: {
             $type: 'EntityAttribute',
+            id: updatedRow.attributeId,
             name: updatedRow.name,
-            name_val: updatedRow.name_val,
             datatype: updatedRow.datatype,
             description: updatedRow.description
          }
@@ -123,12 +123,12 @@ export function EntityAttributesDataGrid(): React.ReactElement {
       return { ...params.props, error: error, errormessage: errormessage };
    };
 
-   // Cols and rows for the datagrid
+   // Cols and rows for the data grid
    const rows = createRows(model.entity.attributes);
    const columns: GridColDef[] = [
-      // { field: 'name', headerName: 'Id', width: 40 },
+      // { field: 'id', headerName: 'Id', width: 40 },
       {
-         field: 'name_val',
+         field: 'name',
          headerName: 'Name',
          minWidth: 200,
          editable: true,
@@ -274,8 +274,8 @@ function DataTypeSelect(props: any): React.ReactElement {
 function createRows(attributes: Array<EntityAttribute>): GridRowsProp {
    const rows = attributes.map((attribute, index) => ({
       id: index,
+      attributeId: attribute.id,
       name: attribute.name,
-      name_val: attribute.name_val,
       datatype: attribute.datatype,
       description: attribute.description
    }));

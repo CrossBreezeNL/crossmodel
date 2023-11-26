@@ -131,7 +131,10 @@ export class CrossModelPackageManager {
       return this.getPackageInfoByDocument(doc)?.id || UNKNOWN_PROJECT_ID;
    }
 
-   getPackageInfoByDocument(doc: LangiumDocument): PackageInfo | undefined {
+   getPackageInfoByDocument(doc?: LangiumDocument): PackageInfo | undefined {
+      if (!doc) {
+         return undefined;
+      }
       // during document parsing we store the package URI in the document
       const packageUri = (doc as any)['packageUri'] as URI | undefined;
       return this.getPackageInfoByURI(packageUri ?? doc.uri);

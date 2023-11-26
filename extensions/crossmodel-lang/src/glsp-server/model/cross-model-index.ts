@@ -27,7 +27,7 @@ export class CrossModelIndex extends GModelIndex {
    protected idToSemanticNode = new Map<string, AstNode>();
 
    createId(node?: AstNode): string | undefined {
-      return this.services.language.references.QualifiedNameProvider.getLocalName(node);
+      return this.services.language.references.IdProvider.getNodeId(node);
    }
 
    indexSemanticRoot(root: CrossModelRoot): void {

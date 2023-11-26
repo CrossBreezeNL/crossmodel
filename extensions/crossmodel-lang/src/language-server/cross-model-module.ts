@@ -29,7 +29,7 @@ import { CrossModelDocumentBuilder } from './cross-model-document-builder.js';
 import { CrossModelModelFormatter } from './cross-model-formatter.js';
 import { CrossModelLangiumDocuments } from './cross-model-langium-documents.js';
 import { CrossModelLanguageServer } from './cross-model-language-server.js';
-import { QualifiedNameProvider } from './cross-model-naming.js';
+import { DefaultIdProvider } from './cross-model-naming.js';
 import { CrossModelPackageManager } from './cross-model-package-manager.js';
 import { CrossModelScopeProvider } from './cross-model-scope-provider.js';
 import { CrossModelScopeComputation } from './cross-model-scope.js';
@@ -123,7 +123,7 @@ export interface CrossModelModuleContext {
  */
 export interface CrossModelAddedServices {
    references: {
-      QualifiedNameProvider: QualifiedNameProvider;
+      IdProvider: DefaultIdProvider;
    };
    validation: {
       CrossModelValidator: CrossModelValidator;
@@ -153,17 +153,18 @@ export function createCrossModelModule(
       references: {
          ScopeComputation: services => new CrossModelScopeComputation(services),
          ScopeProvider: services => new CrossModelScopeProvider(services),
-         QualifiedNameProvider: services => new QualifiedNameProvider(services)
+         IdProvider: services => new DefaultIdProvider(services),
+         NameProvider: services => services.references.IdProvider
       },
       validation: {
-         CrossModelValidator: () => new CrossModelValidator()
+         CrossModelValidator: services => new CrossModelValidator(services)
       },
       lsp: {
          CompletionProvider: services => new CrossModelCompletionProvider(services),
          Formatter: () => new CrossModelModelFormatter()
       },
       serializer: {
-         Serializer: services => new CrossModelSerializer(services)
+         Serializer: () => new CrossModelSerializer()
       },
       parser: {
          TokenBuilder: () => new CrossModelTokenBuilder(),

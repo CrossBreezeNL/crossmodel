@@ -7,8 +7,6 @@ import { NodeFileSystem } from 'langium/node';
 import { createCrossModelServices } from '../../src/language-server/cross-model-module.js';
 import { ModelService } from '../../src/model-server/model-service.js';
 
-// Test written by Martin Fleck, added to this branch for Jest. Using Vitest is not necessary
-
 // the model service actually needs a file system, so we use the NodeFileSystem
 const services = createCrossModelServices({ ...NodeFileSystem });
 const sharedServices = services.shared;

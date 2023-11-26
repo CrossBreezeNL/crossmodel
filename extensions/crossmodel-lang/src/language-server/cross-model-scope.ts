@@ -5,7 +5,7 @@
 import { AstNode, AstNodeDescription, DefaultScopeComputation, LangiumDocument, PrecomputedScopes, streamAllContents } from 'langium';
 import { CancellationToken } from 'vscode-jsonrpc';
 import { CrossModelServices } from './cross-model-module.js';
-import { QualifiedNameProvider } from './cross-model-naming.js';
+import { DefaultIdProvider } from './cross-model-naming.js';
 import { CrossModelPackageManager, UNKNOWN_PROJECT_ID, UNKNOWN_PROJECT_REFERENCE } from './cross-model-package-manager.js';
 import { isCrossModelRoot } from './generated/ast.js';
 
@@ -55,12 +55,12 @@ export function isExternalDescriptionForLocalPackage(description: AstNodeDescrip
  * - Export nodes twice: Once for external usage with the fully-qualified name and once for package-local usage.
  */
 export class CrossModelScopeComputation extends DefaultScopeComputation {
-   protected override nameProvider: QualifiedNameProvider;
+   protected idProvider: DefaultIdProvider;
    protected packageManager: CrossModelPackageManager;
 
    constructor(services: CrossModelServices) {
       super(services);
-      this.nameProvider = services.references.QualifiedNameProvider;
+      this.idProvider = services.references.IdProvider;
       this.packageManager = services.shared.workspace.PackageManager;
    }
 
@@ -83,7 +83,7 @@ export class CrossModelScopeComputation extends DefaultScopeComputation {
       const packageInfo = this.packageManager.getPackageInfoByDocument(document);
       const packageId = packageInfo?.id ?? UNKNOWN_PROJECT_ID;
       const packageName = packageInfo?.referenceName ?? UNKNOWN_PROJECT_REFERENCE;
-      const packageQualifiedName = this.nameProvider.getFullyQualifiedName(node, packageName);
+      const packageQualifiedName = this.idProvider.getExternalId(node, packageName);
 
       // Export nodes twice: Once for external usage with the fully-qualified name and once for package-local usage.
       // To avoid duplicates in the UI but still allow access to the node through both names we filter the
@@ -94,16 +94,16 @@ export class CrossModelScopeComputation extends DefaultScopeComputation {
          description = this.descriptions.createDescription(node, packageQualifiedName, document);
          exports.push(new PackageExternalAstNodeDescription(packageId, packageQualifiedName, description));
       }
-      const documentLocalName = this.nameProvider.getQualifiedName(node);
-      if (documentLocalName && description) {
-         exports.push(new PackageLocalAstNodeDescription(packageId, documentLocalName, description));
+      const packageLocalName = this.idProvider.getLocalId(node);
+      if (packageLocalName && description) {
+         exports.push(new PackageLocalAstNodeDescription(packageId, packageLocalName, description));
       }
    }
 
    protected override processNode(node: AstNode, document: LangiumDocument, scopes: PrecomputedScopes): void {
       const container = node.$container;
       if (container) {
-         const name = this.nameProvider.getLocalName(node);
+         const name = this.idProvider.getNodeId(node);
          if (name) {
             scopes.add(container, this.descriptions.createDescription(node, name, document));
          }

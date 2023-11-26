@@ -23,8 +23,8 @@ describe('CrossModel language Relationship', () => {
       expect(parsedDocument.parseResult.lexerErrors.length).toBe(0);
       expect(parsedDocument.parseResult.parserErrors.length).toBe(0);
 
-      expect(model.relationship?.name).toBe('Order_Customer');
-      expect(model.relationship?.name_val).toBe('Customer Order relationship');
+      expect(model.relationship?.id).toBe('Order_Customer');
+      expect(model.relationship?.name).toBe('Customer Order relationship');
       expect(model.relationship?.type).toBe('1:1');
       expect(model.relationship?.description).toBe('A relationship between a customer and an order.');
 

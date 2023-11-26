@@ -33,7 +33,7 @@ export class GEntityNodeBuilder extends GNodeBuilder {
          .addCssClass('entity-header-compartment')
          .add(
             GLabel.builder()
-               .text(entityRef?.name_val || 'unresolved')
+               .text(entityRef?.name || 'unresolved')
                .id(`${this.proxy.id}_label`)
                .addCssClass('entity-header-label')
                .build()
@@ -54,7 +54,7 @@ export class GEntityNodeBuilder extends GNodeBuilder {
          // Add the attributes of the entity.
          for (const attribute of entityRef.attributes) {
             const attributeCompartment = GCompartment.builder()
-               .id(`${this.proxy.id}_${attribute.name}_attribute`)
+               .id(`${this.proxy.id}_${attribute.id}_attribute`)
                .addCssClass('attribute-compartment')
                .layout('hbox')
                .addLayoutOption('paddingBottom', 3)
@@ -62,15 +62,15 @@ export class GEntityNodeBuilder extends GNodeBuilder {
 
             attributeCompartment.add(
                GLabel.builder()
-                  .id(`${this.proxy.id}_${attribute.name}_attribute_name`)
-                  .text(attribute.name_val || '')
+                  .id(`${this.proxy.id}_${attribute.id}_attribute_name`)
+                  .text(attribute.name || '')
                   .addCssClass('attribute')
                   .build()
             );
-            attributeCompartment.add(GLabel.builder().text(' : ').id(`${this.proxy.id}_${attribute.name}_attribute_del`).build());
+            attributeCompartment.add(GLabel.builder().text(' : ').id(`${this.proxy.id}_${attribute.id}_attribute_del`).build());
             attributeCompartment.add(
                GLabel.builder()
-                  .id(`${this.proxy.id}_${attribute.name}_attribute_type`)
+                  .id(`${this.proxy.id}_${attribute.id}_attribute_type`)
                   .text(attribute.datatype?.toString() || '')
                   .addCssClass('datatype')
                   .build()

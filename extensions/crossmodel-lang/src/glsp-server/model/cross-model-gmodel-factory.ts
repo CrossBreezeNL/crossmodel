@@ -44,14 +44,14 @@ export class CrossModelGModelFactory implements GModelFactory {
    protected createDiagramEdge(edge: DiagramEdge): GEdge {
       const id = this.modelState.index.createId(edge) ?? 'unknown';
 
-      const parentDiagramNode = edge.sourceNode?.ref?.name || edge.sourceNode?.$refText;
-      const childDiagramNode = edge.targetNode?.ref?.name || edge.targetNode?.$refText;
+      const sourceId = edge.sourceNode?.ref?.id || edge.sourceNode?.$refText;
+      const targetId = edge.targetNode?.ref?.id || edge.targetNode?.$refText;
 
       return GEdge.builder()
          .id(id)
          .addCssClasses('diagram-edge', 'relationship')
-         .sourceId(parentDiagramNode || '')
-         .targetId(childDiagramNode || '')
+         .sourceId(sourceId || '')
+         .targetId(targetId || '')
          .build();
    }
 }

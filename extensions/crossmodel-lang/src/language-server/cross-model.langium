@@ -17,8 +17,8 @@ Entity:
 
 EntityFields infers Entity:
     (
-        'id' ':' name=STRING |
-        'name' ':'  name_val=STRING |
+        'id' ':' id=STRING |
+        'name' ':'  name=STRING |
         'description' ':' description=STRING |
         'attributes' ':' EntityAttributes
     )
@@ -35,8 +35,8 @@ EntityAttribute:
 
 EntityAttributeFields infers EntityAttribute:
     (
-        'id' ':' name=STRING |
-        'name' ':'  name_val=STRING |
+        'id' ':' id=STRING |
+        'name' ':'  name=STRING |
         'datatype' ':' datatype=STRING |
         'description' ':' description=STRING
     );
@@ -53,11 +53,11 @@ Relationship:
 
 RelationshipFields infers Relationship:
     (
-        'id' ':' name=STRING |
-        'name' ':'  name_val=STRING |
+        'id' ':' id=STRING |
+        'name' ':'  name=STRING |
         'description' ':' description=STRING |
-        'parent' ':' parent=[Entity:QualifiedName] |
-        'child' ':' child=[Entity:QualifiedName] |
+        'parent' ':' parent=[Entity:Identifier] |
+        'child' ':' child=[Entity:Identifier] |
         'type' ':' type=STRING
     )
 ;
@@ -76,9 +76,9 @@ SystemDiagramFields infers SystemDiagram:
     (
         'nodes' ':' SystemDiagramNodes |
         'edges' ':' SystemDiagramEdge |
-        'id' ':' name=STRING |
+        'id' ':' id=STRING |
         'description' ':' description=STRING |
-        'name' ':'  name_val=STRING
+        'name' ':'  name=STRING
     )
 ;
 
@@ -93,13 +93,13 @@ DiagramNode:
 ;
 
 DiagramNodeFields infers DiagramNode:
-    'id' ':' name=STRING | 
-    'entity' ':' entity=[Entity:QualifiedName] |
+    'id' ':' id=STRING | 
+    'entity' ':' entity=[Entity:Identifier] |
     'x' ':' x=NUMBER | 
     'y' ':' y=NUMBER |
     'width' ':' width=NUMBER |
     'height' ':' height=NUMBER |
-    'name' ':'  name_val=STRING |
+    'name' ':'  name=STRING |
     'description' ':' description=STRING
 ;
 
@@ -115,15 +115,15 @@ DiagramEdge:
 
 DiagramEdgeFields infers DiagramEdge:
     (
-        'relationship' ':' relationship=[Relationship:QualifiedName] |
-        'sourceNode' ':' sourceNode=[DiagramNode:QualifiedName] |
-        'targetNode' ':' targetNode=[DiagramNode:QualifiedName] |
-        'id' ':' name=STRING
+        'relationship' ':' relationship=[Relationship:Identifier] |
+        'sourceNode' ':' sourceNode=[DiagramNode:Identifier] |
+        'targetNode' ':' targetNode=[DiagramNode:Identifier] |
+        'id' ':' id=STRING
     )
 ;
 
 // Identification
-QualifiedName returns string:
+Identifier returns string:
     STRING ('.' STRING)*;
 
 // Scalar values

@@ -32,18 +32,18 @@ export class CrossModelCreateEdgeOperationHandler extends JsonCreateEdgeOperatio
             const edge: DiagramEdge = {
                $type: DiagramEdge,
                $container: this.modelState.diagramRoot,
-               name: relationship.name,
+               id: relationship.id,
                relationship: {
                   ref: relationship,
-                  $refText: this.modelState.nameProvider.getName(relationship) || relationship.name || ''
+                  $refText: this.modelState.idProvider.getExternalId(relationship) || relationship.id || ''
                },
                sourceNode: {
                   ref: sourceNode,
-                  $refText: this.modelState.nameProvider.getLocalName(sourceNode) || sourceNode.name || ''
+                  $refText: this.modelState.idProvider.getNodeId(sourceNode) || sourceNode.id || ''
                },
                targetNode: {
                   ref: targetNode,
-                  $refText: this.modelState.nameProvider.getLocalName(targetNode) || targetNode.name || ''
+                  $refText: this.modelState.idProvider.getNodeId(targetNode) || targetNode.id || ''
                }
             };
             this.modelState.diagramRoot.edges.push(edge);
@@ -55,22 +55,22 @@ export class CrossModelCreateEdgeOperationHandler extends JsonCreateEdgeOperatio
     * Creates a new relationship and stores it on a file on the file system.
     */
    protected async createAndSaveRelationship(sourceNode: DiagramNode, targetNode: DiagramNode): Promise<Relationship | undefined> {
-      const source = sourceNode.entity?.ref?.name || sourceNode.entity?.$refText;
-      const target = targetNode.entity?.ref?.name || targetNode.entity?.$refText;
+      const source = sourceNode.entity?.ref?.id || sourceNode.entity?.$refText;
+      const target = targetNode.entity?.ref?.id || targetNode.entity?.$refText;
 
       // search for unique file name for the relationship and use file base name as relationship name
       // if the user doesn't rename any files we should end up with unique names ;-)
       const dirName = UriUtils.dirname(URI.parse(this.modelState.semanticUri));
       const targetUri = UriUtils.joinPath(dirName, source + 'To' + target + '.relationship.cm');
       const uri = Utils.findNewUri(targetUri);
-      const name = UriUtils.basename(uri).split('.')[0];
+      const id = UriUtils.basename(uri).split('.')[0];
 
       // create relationship, serialize and re-read to ensure everything is up to date and linked properly
       const relationshipRoot: CrossModelRoot = { $type: 'CrossModelRoot' };
       const relationship: Relationship = {
          $type: Relationship,
          $container: relationshipRoot,
-         name,
+         id,
          type: '1:1',
          parent: { $refText: sourceNode.entity?.$refText || '' },
          child: { $refText: targetNode.entity?.$refText || '' }

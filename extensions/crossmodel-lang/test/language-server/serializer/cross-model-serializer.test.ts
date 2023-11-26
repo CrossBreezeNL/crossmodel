@@ -3,20 +3,17 @@
  ********************************************************************************/
 
 import { beforeAll, describe, expect, test } from '@jest/globals';
-import { EmptyFileSystem, Reference } from 'langium';
+import { Reference } from 'langium';
 
 import _ from 'lodash';
-import { createCrossModelServices } from '../../../src/language-server/cross-model-module.js';
 import { CrossModelSerializer } from '../../../src/language-server/cross-model-serializer.js';
 import { CrossModelRoot, Entity, Relationship } from '../../../src/language-server/generated/ast.js';
-
-const services = createCrossModelServices({ ...EmptyFileSystem }).CrossModel;
 
 describe('CrossModelLexer', () => {
    let serializer: CrossModelSerializer;
 
    beforeAll(() => {
-      serializer = new CrossModelSerializer(services);
+      serializer = new CrossModelSerializer();
    });
 
    describe('Serialize entity', () => {
@@ -35,16 +32,16 @@ describe('CrossModelLexer', () => {
             $container: crossModelRoot,
             $type: 'Entity',
             description: 'Test description',
-            name: 'test id',
-            name_val: 'test Name',
+            id: 'test id',
+            name: 'test Name',
             attributes: []
          };
 
          crossModelRootWithoutAttributes = _.cloneDeep(crossModelRoot);
 
          crossModelRoot.entity.attributes = [
-            { $container: crossModelRoot.entity, $type: 'EntityAttribute', name: 'Attribute 1', datatype: 'Datatype Attribute 1' },
-            { $container: crossModelRoot.entity, $type: 'EntityAttribute', name: 'Attribute 2', datatype: 'Datatype Attribute 2' }
+            { $container: crossModelRoot.entity, $type: 'EntityAttribute', id: 'Attribute 1', datatype: 'Datatype Attribute 1' },
+            { $container: crossModelRoot.entity, $type: 'EntityAttribute', id: 'Attribute 2', datatype: 'Datatype Attribute 2' }
          ];
 
          crossModelRootWithAttributesDifPlace.entity = {
@@ -52,12 +49,12 @@ describe('CrossModelLexer', () => {
             $type: 'Entity',
             description: 'Test description',
             attributes: [],
-            name: 'test id',
-            name_val: 'test Name'
+            id: 'test id',
+            name: 'test Name'
          };
          crossModelRootWithAttributesDifPlace.entity.attributes = [
-            { $container: crossModelRoot.entity, $type: 'EntityAttribute', name: 'Attribute 1', datatype: 'Datatype Attribute 1' },
-            { $container: crossModelRoot.entity, $type: 'EntityAttribute', name: 'Attribute 2', datatype: 'Datatype Attribute 2' }
+            { $container: crossModelRoot.entity, $type: 'EntityAttribute', id: 'Attribute 1', datatype: 'Datatype Attribute 1' },
+            { $container: crossModelRoot.entity, $type: 'EntityAttribute', id: 'Attribute 2', datatype: 'Datatype Attribute 2' }
          ];
       });
 
@@ -94,8 +91,8 @@ describe('CrossModelLexer', () => {
                $type: 'Entity',
                description: 'Test description',
                attributes: [],
-               name: 'Ref1',
-               name_val: 'test Name'
+               id: 'Ref1',
+               name: 'test Name'
             }
          };
 
@@ -106,8 +103,8 @@ describe('CrossModelLexer', () => {
                $type: 'Entity',
                description: 'Test description',
                attributes: [],
-               name: 'Ref2',
-               name_val: 'test Name'
+               id: 'Ref2',
+               name: 'test Name'
             }
          };
 
@@ -115,8 +112,8 @@ describe('CrossModelLexer', () => {
             $container: crossModelRoot,
             $type: 'Relationship',
             description: 'Test description',
-            name: 'test id',
-            name_val: 'test Name',
+            id: 'test id',
+            name: 'test Name',
             parent: ref1,
             child: ref2,
             type: 'n:m'
@@ -144,8 +141,8 @@ describe('CrossModelLexer', () => {
                $type: 'Entity',
                description: 'Test description',
                attributes: [],
-               name: 'Ref1',
-               name_val: 'test Name'
+               id: 'Ref1',
+               name: 'test Name'
             }
          };
 
@@ -156,8 +153,8 @@ describe('CrossModelLexer', () => {
                $type: 'Entity',
                description: 'Test description',
                attributes: [],
-               name: 'Ref2',
-               name_val: 'test Name'
+               id: 'Ref2',
+               name: 'test Name'
             }
          };
 
@@ -167,8 +164,8 @@ describe('CrossModelLexer', () => {
                $container: crossModelRoot,
                $type: 'Relationship',
                description: 'Test description',
-               name: 'test id',
-               name_val: 'test Name',
+               id: 'test id',
+               name: 'test Name',
                parent: ref1,
                child: ref2,
                type: 'n:m'
@@ -179,8 +176,8 @@ describe('CrossModelLexer', () => {
             $container: crossModelRoot,
             $type: 'SystemDiagram',
             description: 'Test description',
-            name: 'test id',
-            name_val: 'test Name',
+            id: 'test id',
+            name: 'test Name',
             nodes: [],
             edges: []
          };
@@ -194,8 +191,8 @@ describe('CrossModelLexer', () => {
                width: 102,
                height: 102,
                entity: ref1,
-               name: 'Node1',
-               name_val: 'Node 1'
+               id: 'Node1',
+               name: 'Node 1'
             },
             {
                $container: crossModelRoot.diagram,
@@ -205,8 +202,8 @@ describe('CrossModelLexer', () => {
                width: 102,
                height: 102,
                entity: ref2,
-               name: 'Node2',
-               name_val: 'Node 2'
+               id: 'Node2',
+               name: 'Node 2'
             }
          ];
 
@@ -215,7 +212,7 @@ describe('CrossModelLexer', () => {
                $container: crossModelRoot.diagram,
                $type: 'DiagramEdge',
                relationship: ref3,
-               name: 'Edge1'
+               id: 'Edge1'
             }
          ];
       });

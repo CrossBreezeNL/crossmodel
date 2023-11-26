@@ -20,7 +20,7 @@ import {
 import { isReference } from 'langium';
 import { Disposable } from 'vscode-jsonrpc';
 import * as rpc from 'vscode-jsonrpc/node.js';
-import { CrossModelRoot as CrossModelRootAst, DiagramNode, Entity, isCrossModelRoot } from '../language-server/generated/ast';
+import { CrossModelRoot as CrossModelRootAst, DiagramNode, Entity, isCrossModelRoot } from '../language-server/generated/ast.js';
 
 import { ModelService } from './model-service.js';
 
@@ -158,7 +158,7 @@ export function toSerializable<T extends object>(obj?: T): T | undefined {
     }
     // We remove all $<property> from the semantic object with the exception of type
     // they are added by Langium but have no additional value on the client side
-    // Furtermore we ensure that for references we use their string representation ($refText)
+    // Furthermore we ensure that for references we use their string representation ($refText)
     // instead of their real value to avoid sending whole serialized object graphs
     return <T>Object.entries(obj)
         .filter(([key, value]) => !key.startsWith('$') || key === '$type')

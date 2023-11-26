@@ -3,14 +3,14 @@
  ********************************************************************************/
 
 import * as React from 'react';
+import '../../../style/entity-property-view.css';
 import { useModel, useModelSave } from '../../ModelContext';
 import { ErrorView } from '../ErrorView';
-import { EntityGeneralForm } from '../common/EntityGeneralForm';
 import { EntityAttributesDataGrid } from '../common/EntityAttributesDataGrid';
+import { EntityGeneralForm } from '../common/EntityGeneralForm';
 import { Accordion, AccordionDetails, AccordionSummary, SaveButton } from '../styled-elements';
-import '../../../style/entity-property-view.css';
 
-// Container with the entity poperties and attributes in accordions.
+// Container with the entity properties and attributes in accordions.
 export function EntityPropertyView(): React.ReactElement {
     const model = useModel();
     const saveModel = useModelSave();

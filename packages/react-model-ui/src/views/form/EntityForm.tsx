@@ -5,13 +5,13 @@
 import * as React from 'react';
 import { Tab, TabList, TabPanel, Tabs } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
+import '../../../style/entity-form.css';
 import { useModel } from '../../ModelContext';
 import { ErrorView } from '../ErrorView';
-import { EntityGeneralForm } from '../common/EntityGeneralForm';
 import { EntityAttributesDataGrid } from '../common/EntityAttributesDataGrid';
-import '../../../style/entity-form.css';
+import { EntityGeneralForm } from '../common/EntityGeneralForm';
 
-// Form with tabs to edit an entity's properites and attributes.
+// Form with tabs to edit an entity's properties and attributes.
 export function EntityForm(): React.ReactElement {
     const model = useModel();
 

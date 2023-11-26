@@ -26,7 +26,7 @@ export class CrossModelCreateEdgeOperationHandler extends JsonCreateEdgeOperatio
         const targetNode = this.modelState.index.findDiagramNode(operation.targetElementId);
 
         if (sourceNode && targetNode) {
-            // before we can create a digram edge, we need to create the corresponding relationship that it is based on
+            // before we can create a diagram edge, we need to create the corresponding relationship that it is based on
             const relationship = await this.createAndSaveRelationship(sourceNode, targetNode);
             if (relationship) {
                 const edge: DiagramEdge = {

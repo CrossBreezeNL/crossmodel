@@ -3,10 +3,10 @@
  ********************************************************************************/
 import { MODELSERVER_PORT_FILE } from '@crossbreeze/protocol';
 import * as net from 'net';
-import * as rpc from 'vscode-jsonrpc/node';
+import * as rpc from 'vscode-jsonrpc/node.js';
 import { URI } from 'vscode-uri';
-import { CrossModelLSPServices, writePortFileToWorkspace } from '../integration';
-import { ModelServer } from './model-server';
+import { CrossModelLSPServices, writePortFileToWorkspace } from '../integration.js';
+import { ModelServer } from './model-server.js';
 
 const currentConnections: rpc.MessageConnection[] = [];
 

@@ -8,7 +8,7 @@ To install the pre-requisites on Windows, follow the steps below.
 
 In order to build CrossModel for Windows you need to have Visual Studio installed with the workload "Desktop development with C++".
 
-#### If you already have a Visual Studio 2022 installed:
+#### If you already have a Visual Studio 2022 installed
 
 -   Start the "Visual Studio Installer"
 -   Choose "Modify" on the Visual Studio 2022 installation
@@ -18,7 +18,7 @@ In order to build CrossModel for Windows you need to have Visual Studio installe
 
 -   Download and install the installer from on the following page:
 
-    -   https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022
+    -   <https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022>
 
 -   Make sure to enable "Desktop development with C++" during the installation.
 

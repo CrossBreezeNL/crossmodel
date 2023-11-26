@@ -69,20 +69,20 @@ export namespace Utils {
    }
 
    /**
-    * Creates an absolute, canonicalized URI for the given URI.
+    * Creates an absolute, canonical URI for the given URI.
     *
     * @param uri URI
-    * @returns absolute, canonicalized URI
+    * @returns absolute, canonical URI
     */
    export function toRealURI(uri: URI): URI {
       return URI.file(fs.realpathSync(uri.fsPath));
    }
 
    /**
-    * Creates an absolute, canonicalized URI for the given URI if possible. If not possible, undefined is returned.
+    * Creates an absolute, canonical URI for the given URI if possible. If not possible, undefined is returned.
     *
     * @param uri URI
-    * @returns absolute, canonicalized URI or undefined
+    * @returns absolute, canonical URI or undefined
     */
    export function toRealURIorUndefined(uri: URI): URI | undefined {
       try {

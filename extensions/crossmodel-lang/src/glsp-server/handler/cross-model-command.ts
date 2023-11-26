@@ -2,11 +2,11 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 import { JsonRecordingCommand, MaybePromise } from '@eclipse-glsp/server';
-import { CrossModelSourceModel, CrossModelState } from '../model/cross-model-state.js';
 import * as jsonPatch from 'fast-json-patch';
+import { CrossModelSourceModel, CrossModelState } from '../model/cross-model-state.js';
 
 /**
- * A custom recording command that tracks updates during exection through a textual semantic state.
+ * A custom recording command that tracks updates during execution through a textual semantic state.
  * Tracking updates ensures that we have proper undo/redo support
  */
 export class CrossModelCommand extends JsonRecordingCommand<CrossModelSourceModel> {

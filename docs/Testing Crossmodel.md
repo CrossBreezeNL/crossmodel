@@ -37,9 +37,7 @@ To run a test multiple times with different variable values, use `test.each()`. 
 
 Test can be run by using the following command in the root directory or in the sub-directory where the tests are located you want to run.
 
-```cmd
     yarn test
-```
 
 ### Debugging test
 

@@ -104,7 +104,7 @@ describe('CrossModel language Diagram', () => {
          expect(edge1?.relationship?.$refText).toBe('Order_Customer');
       });
 
-      test('Simple file for diagram and edges, but descirption and name coming last', async () => {
+      test('Simple file for diagram and edges, but description and name coming last', async () => {
          const document = diagram6;
          const parsedDocument = await parseDocument(services, document);
          const model = parsedDocument.parseResult.value as CrossModelRoot;

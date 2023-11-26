@@ -2,10 +2,10 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 import { expect } from '@playwright/test';
+import test, { app } from '../fixtures/crossmodel-fixture';
 import { CrossModelExplorerView } from '../page-objects/crossmodel-explorer-view';
 import { TheiaSingleInputDialog } from '../page-objects/theia-single-input-dialog';
 import { TheiaTabBarToolbar } from '../page-objects/theia-tabbar-toolbar';
-import test, { app } from '../fixtures/crossmodel-fixture';
 
 let explorer: CrossModelExplorerView;
 let tabBarToolbar: TheiaTabBarToolbar;
@@ -32,7 +32,7 @@ test.describe('CrossModel TabBar Toolbar', () => {
             await tabBarToolbarNewEntity.trigger();
 
             const newEntityDialog = new TheiaSingleInputDialog(app);
-            // Wait for the New Entity dailog to popup.
+            // Wait for the New Entity dialog to popup.
             newEntityDialog.waitForVisible();
             // Check the title of the dialog.
             expect(await newEntityDialog.title()).toBe('New Entity...');
@@ -62,7 +62,7 @@ test.describe('CrossModel TabBar Toolbar', () => {
             await tabBarToolbarNewEntity.trigger();
 
             const newRelationshipDialog = new TheiaSingleInputDialog(app);
-            // Wait for the New Entity dailog to popup.
+            // Wait for the New Entity dialog to popup.
             newRelationshipDialog.waitForVisible();
             // Check the title of the dialog.
             expect(await newRelationshipDialog.title()).toBe('New Relationship...');
@@ -92,7 +92,7 @@ test.describe('CrossModel TabBar Toolbar', () => {
             await tabBarToolbarNewEntity.trigger();
 
             const newDiagramDialog = new TheiaSingleInputDialog(app);
-            // Wait for the New Entity dailog to popup.
+            // Wait for the New Entity dialog to popup.
             newDiagramDialog.waitForVisible();
             // Check the title of the dialog.
             expect(await newDiagramDialog.title()).toBe('New Diagram...');

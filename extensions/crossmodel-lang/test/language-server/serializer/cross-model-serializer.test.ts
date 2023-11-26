@@ -21,15 +21,15 @@ describe('CrossModelLexer', () => {
 
    describe('Serialize entity', () => {
       let crossModelRoot: CrossModelRoot;
-      let crossModelRootwithoutAttributes: CrossModelRoot;
-      let crossModelRootwithAttributesDifPlace: CrossModelRoot;
+      let crossModelRootWithoutAttributes: CrossModelRoot;
+      let crossModelRootWithAttributesDifPlace: CrossModelRoot;
 
       beforeAll(() => {
          crossModelRoot = {
             $type: 'CrossModelRoot'
          };
 
-         crossModelRootwithAttributesDifPlace = _.cloneDeep(crossModelRoot);
+         crossModelRootWithAttributesDifPlace = _.cloneDeep(crossModelRoot);
 
          crossModelRoot.entity = {
             $container: crossModelRoot,
@@ -40,14 +40,14 @@ describe('CrossModelLexer', () => {
             attributes: []
          };
 
-         crossModelRootwithoutAttributes = _.cloneDeep(crossModelRoot);
+         crossModelRootWithoutAttributes = _.cloneDeep(crossModelRoot);
 
          crossModelRoot.entity.attributes = [
             { $container: crossModelRoot.entity, $type: 'EntityAttribute', name: 'Attribute 1', datatype: 'Datatype Attribute 1' },
             { $container: crossModelRoot.entity, $type: 'EntityAttribute', name: 'Attribute 2', datatype: 'Datatype Attribute 2' }
          ];
 
-         crossModelRootwithAttributesDifPlace.entity = {
+         crossModelRootWithAttributesDifPlace.entity = {
             $container: crossModelRoot,
             $type: 'Entity',
             description: 'Test description',
@@ -55,7 +55,7 @@ describe('CrossModelLexer', () => {
             name: 'test id',
             name_val: 'test Name'
          };
-         crossModelRootwithAttributesDifPlace.entity.attributes = [
+         crossModelRootWithAttributesDifPlace.entity.attributes = [
             { $container: crossModelRoot.entity, $type: 'EntityAttribute', name: 'Attribute 1', datatype: 'Datatype Attribute 1' },
             { $container: crossModelRoot.entity, $type: 'EntityAttribute', name: 'Attribute 2', datatype: 'Datatype Attribute 2' }
          ];
@@ -67,13 +67,13 @@ describe('CrossModelLexer', () => {
       });
 
       test('serialize entity without attributes', () => {
-         const parseResult = serializer.serialize(crossModelRootwithoutAttributes);
+         const parseResult = serializer.serialize(crossModelRootWithoutAttributes);
 
          expect(parseResult).toBe(expected_result2);
       });
 
       test('serialize entity with attributes in different place', () => {
-         const parseResult = serializer.serialize(crossModelRootwithAttributesDifPlace);
+         const parseResult = serializer.serialize(crossModelRootWithAttributesDifPlace);
 
          expect(parseResult).toBe(expected_result3);
       });

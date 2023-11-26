@@ -6,7 +6,7 @@ import { CloseModelArgs, ModelSavedEvent, ModelUpdatedEvent, OpenModelArgs, Save
 import { AstNode, Deferred, DocumentState, isAstNode } from 'langium';
 import { Disposable, OptionalVersionedTextDocumentIdentifier, Range, TextDocumentEdit, TextEdit, uinteger } from 'vscode-languageserver';
 import { URI } from 'vscode-uri';
-import { CrossModelSharedServices } from '../language-server/cross-model-module';
+import { CrossModelSharedServices } from '../language-server/cross-model-module.js';
 import { LANGUAGE_CLIENT_ID } from './openable-text-documents.js';
 
 /**

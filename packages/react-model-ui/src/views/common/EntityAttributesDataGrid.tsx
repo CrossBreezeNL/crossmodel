@@ -2,8 +2,12 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 import { EntityAttribute } from '@crossbreeze/protocol';
-import { useModel, useModelDispatch } from '../../ModelContext';
-import * as React from 'react';
+import AddIcon from '@mui/icons-material/Add';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { Box, FormControl, MenuItem, Select, SelectChangeEvent, Tooltip, TooltipProps, styled, tooltipClasses } from '@mui/material';
+import Button from '@mui/material/Button';
 import {
     DataGrid,
     GridActionsCellItem,
@@ -22,12 +26,8 @@ import {
     MuiEvent,
     useGridApiRef
 } from '@mui/x-data-grid';
-import { FormControl, MenuItem, Select, SelectChangeEvent, Tooltip, TooltipProps, tooltipClasses, styled, Box } from '@mui/material';
-import Button from '@mui/material/Button';
-import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import * as React from 'react';
+import { useModel, useModelDispatch } from '../../ModelContext';
 
 export function EntityAttributesDataGrid(): React.ReactElement {
     // Context variables to handle model state.
@@ -111,7 +111,7 @@ export function EntityAttributesDataGrid(): React.ReactElement {
         console.log(error.message);
     };
 
-    // Check if model initalized. Has to be here otherwise the compiler complains.
+    // Check if model initialized. Has to be here otherwise the compiler complains.
     if (model.entity === undefined) {
         return <></>;
     }
@@ -199,7 +199,7 @@ export function EntityAttributesDataGrid(): React.ReactElement {
     );
 }
 
-// Style tooltop element, to show the error message of a validation.
+// Style tooltip element, to show the error message of a validation.
 const StyledTooltip = styled(({ className, ...props }: TooltipProps) => <Tooltip {...props} classes={{ popper: className }} />)(
     ({ theme }) => ({
         [`& .${tooltipClasses.tooltip}`]: {

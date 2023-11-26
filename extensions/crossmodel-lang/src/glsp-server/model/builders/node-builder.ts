@@ -20,7 +20,7 @@ export class GEntityNodeBuilder extends GNodeBuilder {
         // Options which are the same for every node
         this.addCssClasses('diagram-node', 'entity').layout('vbox').addArgs(ArgsUtil.cornerRadius(3));
 
-        // We need the id before we can build the label and childeren.
+        // We need the id before we can build the label and children.
         if (this.id === undefined) {
             throw new Error('Add id to builder before adding the node reference.');
         }

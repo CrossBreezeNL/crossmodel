@@ -22,7 +22,7 @@ import { AddedSharedModelServices } from './model-module.js';
 import { OpenableTextDocuments } from './openable-text-documents.js';
 
 /**
- * A manager class that suppors handling documents with a simple open-update-save/close lifecycle.
+ * A manager class that supports handling documents with a simple open-update-save/close lifecycle.
  *
  * The manager wraps the services exposed by Langium and acts as a small language client on behalf of the caller.
  */
@@ -45,7 +45,7 @@ export class OpenTextDocumentManager {
     }
 
     /**
-     * Subscribe to the onsave of the textdocuments.
+     * Subscribe to the save event of the textdocument.
      *
      * @param uri Uri of the document to listen to. The callback only gets called when this URI and the URI of the saved document
      * are equal.

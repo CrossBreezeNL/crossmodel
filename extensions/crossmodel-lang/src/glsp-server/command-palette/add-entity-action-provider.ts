@@ -16,28 +16,28 @@ import { CrossModelState } from '../model/cross-model-state.js';
  */
 @injectable()
 export class CrossModelAddEntityActionProvider implements ContextActionsProvider {
-    contextId = 'command-palette';
+   contextId = 'command-palette';
 
-    @inject(CrossModelState) protected state!: CrossModelState;
+   @inject(CrossModelState) protected state!: CrossModelState;
 
-    async getActions(editorContext: EditorContext): Promise<LabeledAction[]> {
-        const scopeProvider = this.state.services.language.references.ScopeProvider;
-        const refInfo = createNodeToEntityReference(this.state.diagramRoot);
-        const actions: LabeledAction[] = [];
-        const scope = scopeProvider.getScope(refInfo);
-        const duplicateStore = new Set<string>();
+   async getActions(editorContext: EditorContext): Promise<LabeledAction[]> {
+      const scopeProvider = this.state.services.language.references.ScopeProvider;
+      const refInfo = createNodeToEntityReference(this.state.diagramRoot);
+      const actions: LabeledAction[] = [];
+      const scope = scopeProvider.getScope(refInfo);
+      const duplicateStore = new Set<string>();
 
-        scope.getAllElements().forEach(description => {
-            if (!duplicateStore.has(description.name) && !isExternalDescriptionForLocalPackage(description, this.state.packageId)) {
-                actions.push({
-                    label: description.name,
-                    actions: [AddEntityOperation.create(description.name, editorContext.lastMousePosition || Point.ORIGIN)],
-                    icon: codiconCSSString('inspect')
-                });
-                duplicateStore.add(description.name);
-            }
-        });
+      scope.getAllElements().forEach(description => {
+         if (!duplicateStore.has(description.name) && !isExternalDescriptionForLocalPackage(description, this.state.packageId)) {
+            actions.push({
+               label: description.name,
+               actions: [AddEntityOperation.create(description.name, editorContext.lastMousePosition || Point.ORIGIN)],
+               icon: codiconCSSString('inspect')
+            });
+            duplicateStore.add(description.name);
+         }
+      });
 
-        return actions;
-    }
+      return actions;
+   }
 }

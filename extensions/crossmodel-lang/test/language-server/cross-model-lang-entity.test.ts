@@ -5,11 +5,11 @@
 import { describe, expect, test } from '@jest/globals';
 import { EmptyFileSystem } from 'langium';
 
-import { parseDocument } from './test-utils/utils.js';
 import { entity1, entity2, entity3, entity4 } from './test-utils/test-documents/entity/index.js';
+import { parseDocument } from './test-utils/utils.js';
 
-import { CrossModelRoot } from '../../src/language-server/generated/ast.js';
 import { createCrossModelServices } from '../../src/language-server/cross-model-module.js';
+import { CrossModelRoot } from '../../src/language-server/generated/ast.js';
 
 const services = createCrossModelServices({ ...EmptyFileSystem }).CrossModel;
 

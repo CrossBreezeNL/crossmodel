@@ -3,12 +3,12 @@
  ********************************************************************************/
 import 'reflect-metadata';
 
+import { startLanguageServer } from 'langium';
+import { NodeFileSystem } from 'langium/node';
 import { createConnection, ProposedFeatures } from 'vscode-languageserver/node.js';
 import { startGLSPServer } from './glsp-server/launch.js';
 import { createCrossModelServices } from './language-server/cross-model-module.js';
 import { startModelServer } from './model-server/launch.js';
-import { startLanguageServer } from 'langium';
-import { NodeFileSystem } from 'langium/node';
 
 /**
  * This module will be spawned as a separate language server process by the 'extension.ts'.

@@ -8,86 +8,86 @@ import * as rpc from 'vscode-jsonrpc/node';
  */
 
 export interface CrossModelRoot {
-    readonly $type: 'CrossModelRoot';
-    entity?: Entity;
-    relationship?: Relationship;
+   readonly $type: 'CrossModelRoot';
+   entity?: Entity;
+   relationship?: Relationship;
 }
 
 export function isCrossModelRoot(model?: any): model is CrossModelRoot {
-    return !!model && model.$type === 'CrossModelRoot';
+   return !!model && model.$type === 'CrossModelRoot';
 }
 
 export interface Entity {
-    readonly $type: 'Entity';
-    attributes: Array<EntityAttribute>;
-    description?: string;
-    name?: string;
-    name_val?: string;
+   readonly $type: 'Entity';
+   attributes: Array<EntityAttribute>;
+   description?: string;
+   name?: string;
+   name_val?: string;
 }
 
 export interface EntityAttribute {
-    readonly $type: 'EntityAttribute';
-    datatype?: string;
-    description?: string;
-    name?: string;
-    name_val?: string;
+   readonly $type: 'EntityAttribute';
+   datatype?: string;
+   description?: string;
+   name?: string;
+   name_val?: string;
 }
 
 export interface Relationship {
-    readonly $type: 'Relationship';
-    child?: string;
-    description?: string;
-    name?: string;
-    name_val?: string;
-    parent?: string;
-    type?: string;
+   readonly $type: 'Relationship';
+   child?: string;
+   description?: string;
+   name?: string;
+   name_val?: string;
+   parent?: string;
+   type?: string;
 }
 
 export interface DiagramNodeEntity {
-    uri: string;
-    model: CrossModelRoot;
+   uri: string;
+   model: CrossModelRoot;
 }
 
 export function isDiagramNodeEntity(model?: any): model is DiagramNodeEntity {
-    return !!model && model.uri && model.model && isCrossModelRoot(model.model);
+   return !!model && model.uri && model.model && isCrossModelRoot(model.model);
 }
 
 export interface ClientModelArgs {
-    uri: string;
-    clientId: string;
+   uri: string;
+   clientId: string;
 }
 
 export interface OpenModelArgs extends ClientModelArgs {
-    languageId?: string;
+   languageId?: string;
 }
 
 export interface CloseModelArgs extends ClientModelArgs {}
 
 export interface UpdateModelArgs<T> extends ClientModelArgs {
-    model: T | string;
+   model: T | string;
 }
 
 export interface SaveModelArgs<T> extends ClientModelArgs {
-    model: T | string;
+   model: T | string;
 }
 
 export interface ModelUpdatedEvent<T> {
-    uri: string;
-    model: T;
-    sourceClientId: string;
+   uri: string;
+   model: T;
+   sourceClientId: string;
 }
 
 export interface ModelSavedEvent<T> {
-    uri: string;
-    model: T;
-    sourceClientId: string;
+   uri: string;
+   model: T;
+   sourceClientId: string;
 }
 
 export const OpenModel = new rpc.RequestType1<OpenModelArgs, CrossModelRoot | undefined, void>('server/open');
 export const CloseModel = new rpc.RequestType1<CloseModelArgs, void, void>('server/close');
 export const RequestModel = new rpc.RequestType1<string, CrossModelRoot | undefined, void>('server/request');
 export const RequestModelDiagramNode = new rpc.RequestType2<string, string, DiagramNodeEntity | undefined, void>(
-    'server/requestModelDiagramNode'
+   'server/requestModelDiagramNode'
 );
 export const UpdateModel = new rpc.RequestType1<UpdateModelArgs<CrossModelRoot>, CrossModelRoot, void>('server/update');
 export const SaveModel = new rpc.RequestType1<SaveModelArgs<CrossModelRoot>, void, void>('server/save');

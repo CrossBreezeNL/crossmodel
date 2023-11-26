@@ -8,203 +8,200 @@ import type { AstNode, Reference, ReferenceInfo, TypeMetaData } from 'langium';
 import { AbstractAstReflection } from 'langium';
 
 export const CrossModelTerminals = {
-    STRING: /"[^"]*"|'[^']*'/,
-    NUMBER: /(-)?[0-9]+(\.[0-9]*)?/,
-    SL_COMMENT: /#[^\n\r]*/,
-    NEWLINE: /this_string_does_not_matter_newline#\$%\^&\*\(\(/,
-    DEDENT: /this_string_does_not_matter_dedent#\$%\^&\*\(\(/,
-    INDENT: /this_string_does_not_matter_indent#\$%\^&\*\(\(/,
-    SPACES: /this_string_does_not_matter_spaces#\$%\^&\*\(\(/,
+   STRING: /"[^"]*"|'[^']*'/,
+   NUMBER: /(-)?[0-9]+(\.[0-9]*)?/,
+   SL_COMMENT: /#[^\n\r]*/,
+   NEWLINE: /this_string_does_not_matter_newline#\$%\^&\*\(\(/,
+   DEDENT: /this_string_does_not_matter_dedent#\$%\^&\*\(\(/,
+   INDENT: /this_string_does_not_matter_indent#\$%\^&\*\(\(/,
+   SPACES: /this_string_does_not_matter_spaces#\$%\^&\*\(\(/
 };
 
 export type QualifiedName = string;
 
 export function isQualifiedName(item: unknown): item is QualifiedName {
-    return typeof item === 'string';
+   return typeof item === 'string';
 }
 
 export interface CrossModelRoot extends AstNode {
-    readonly $type: 'CrossModelRoot';
-    diagram?: SystemDiagram
-    entity?: Entity
-    relationship?: Relationship
+   readonly $type: 'CrossModelRoot';
+   diagram?: SystemDiagram;
+   entity?: Entity;
+   relationship?: Relationship;
 }
 
 export const CrossModelRoot = 'CrossModelRoot';
 
 export function isCrossModelRoot(item: unknown): item is CrossModelRoot {
-    return reflection.isInstance(item, CrossModelRoot);
+   return reflection.isInstance(item, CrossModelRoot);
 }
 
 export interface DiagramEdge extends AstNode {
-    readonly $container: SystemDiagram;
-    readonly $type: 'DiagramEdge';
-    name?: string
-    relationship?: Reference<Relationship>
-    sourceNode?: Reference<DiagramNode>
-    targetNode?: Reference<DiagramNode>
+   readonly $container: SystemDiagram;
+   readonly $type: 'DiagramEdge';
+   name?: string;
+   relationship?: Reference<Relationship>;
+   sourceNode?: Reference<DiagramNode>;
+   targetNode?: Reference<DiagramNode>;
 }
 
 export const DiagramEdge = 'DiagramEdge';
 
 export function isDiagramEdge(item: unknown): item is DiagramEdge {
-    return reflection.isInstance(item, DiagramEdge);
+   return reflection.isInstance(item, DiagramEdge);
 }
 
 export interface DiagramNode extends AstNode {
-    readonly $container: SystemDiagram;
-    readonly $type: 'DiagramNode';
-    description?: string
-    entity?: Reference<Entity>
-    height?: number
-    name?: string
-    name_val?: string
-    width?: number
-    x?: number
-    y?: number
+   readonly $container: SystemDiagram;
+   readonly $type: 'DiagramNode';
+   description?: string;
+   entity?: Reference<Entity>;
+   height?: number;
+   name?: string;
+   name_val?: string;
+   width?: number;
+   x?: number;
+   y?: number;
 }
 
 export const DiagramNode = 'DiagramNode';
 
 export function isDiagramNode(item: unknown): item is DiagramNode {
-    return reflection.isInstance(item, DiagramNode);
+   return reflection.isInstance(item, DiagramNode);
 }
 
 export interface Entity extends AstNode {
-    readonly $container: CrossModelRoot;
-    readonly $type: 'Entity';
-    attributes: Array<EntityAttribute>
-    description?: string
-    name?: string
-    name_val?: string
+   readonly $container: CrossModelRoot;
+   readonly $type: 'Entity';
+   attributes: Array<EntityAttribute>;
+   description?: string;
+   name?: string;
+   name_val?: string;
 }
 
 export const Entity = 'Entity';
 
 export function isEntity(item: unknown): item is Entity {
-    return reflection.isInstance(item, Entity);
+   return reflection.isInstance(item, Entity);
 }
 
 export interface EntityAttribute extends AstNode {
-    readonly $container: Entity;
-    readonly $type: 'EntityAttribute';
-    datatype?: string
-    description?: string
-    name?: string
-    name_val?: string
+   readonly $container: Entity;
+   readonly $type: 'EntityAttribute';
+   datatype?: string;
+   description?: string;
+   name?: string;
+   name_val?: string;
 }
 
 export const EntityAttribute = 'EntityAttribute';
 
 export function isEntityAttribute(item: unknown): item is EntityAttribute {
-    return reflection.isInstance(item, EntityAttribute);
+   return reflection.isInstance(item, EntityAttribute);
 }
 
 export interface Relationship extends AstNode {
-    readonly $container: CrossModelRoot;
-    readonly $type: 'Relationship';
-    child?: Reference<Entity>
-    description?: string
-    name?: string
-    name_val?: string
-    parent?: Reference<Entity>
-    type?: string
+   readonly $container: CrossModelRoot;
+   readonly $type: 'Relationship';
+   child?: Reference<Entity>;
+   description?: string;
+   name?: string;
+   name_val?: string;
+   parent?: Reference<Entity>;
+   type?: string;
 }
 
 export const Relationship = 'Relationship';
 
 export function isRelationship(item: unknown): item is Relationship {
-    return reflection.isInstance(item, Relationship);
+   return reflection.isInstance(item, Relationship);
 }
 
 export interface SystemDiagram extends AstNode {
-    readonly $container: CrossModelRoot;
-    readonly $type: 'SystemDiagram';
-    description?: string
-    edges: Array<DiagramEdge>
-    name?: string
-    name_val?: string
-    nodes: Array<DiagramNode>
+   readonly $container: CrossModelRoot;
+   readonly $type: 'SystemDiagram';
+   description?: string;
+   edges: Array<DiagramEdge>;
+   name?: string;
+   name_val?: string;
+   nodes: Array<DiagramNode>;
 }
 
 export const SystemDiagram = 'SystemDiagram';
 
 export function isSystemDiagram(item: unknown): item is SystemDiagram {
-    return reflection.isInstance(item, SystemDiagram);
+   return reflection.isInstance(item, SystemDiagram);
 }
 
 export type CrossModelAstType = {
-    CrossModelRoot: CrossModelRoot
-    DiagramEdge: DiagramEdge
-    DiagramNode: DiagramNode
-    Entity: Entity
-    EntityAttribute: EntityAttribute
-    Relationship: Relationship
-    SystemDiagram: SystemDiagram
-}
+   CrossModelRoot: CrossModelRoot;
+   DiagramEdge: DiagramEdge;
+   DiagramNode: DiagramNode;
+   Entity: Entity;
+   EntityAttribute: EntityAttribute;
+   Relationship: Relationship;
+   SystemDiagram: SystemDiagram;
+};
 
 export class CrossModelAstReflection extends AbstractAstReflection {
+   getAllTypes(): string[] {
+      return ['CrossModelRoot', 'DiagramEdge', 'DiagramNode', 'Entity', 'EntityAttribute', 'Relationship', 'SystemDiagram'];
+   }
 
-    getAllTypes(): string[] {
-        return ['CrossModelRoot', 'DiagramEdge', 'DiagramNode', 'Entity', 'EntityAttribute', 'Relationship', 'SystemDiagram'];
-    }
+   protected override computeIsSubtype(subtype: string, supertype: string): boolean {
+      switch (subtype) {
+         default: {
+            return false;
+         }
+      }
+   }
 
-    protected override computeIsSubtype(subtype: string, supertype: string): boolean {
-        switch (subtype) {
-            default: {
-                return false;
-            }
-        }
-    }
+   getReferenceType(refInfo: ReferenceInfo): string {
+      const referenceId = `${refInfo.container.$type}:${refInfo.property}`;
+      switch (referenceId) {
+         case 'DiagramEdge:relationship': {
+            return Relationship;
+         }
+         case 'DiagramEdge:sourceNode':
+         case 'DiagramEdge:targetNode': {
+            return DiagramNode;
+         }
+         case 'DiagramNode:entity':
+         case 'Relationship:child':
+         case 'Relationship:parent': {
+            return Entity;
+         }
+         default: {
+            throw new Error(`${referenceId} is not a valid reference id.`);
+         }
+      }
+   }
 
-    getReferenceType(refInfo: ReferenceInfo): string {
-        const referenceId = `${refInfo.container.$type}:${refInfo.property}`;
-        switch (referenceId) {
-            case 'DiagramEdge:relationship': {
-                return Relationship;
-            }
-            case 'DiagramEdge:sourceNode':
-            case 'DiagramEdge:targetNode': {
-                return DiagramNode;
-            }
-            case 'DiagramNode:entity':
-            case 'Relationship:child':
-            case 'Relationship:parent': {
-                return Entity;
-            }
-            default: {
-                throw new Error(`${referenceId} is not a valid reference id.`);
-            }
-        }
-    }
-
-    getTypeMetaData(type: string): TypeMetaData {
-        switch (type) {
-            case 'Entity': {
-                return {
-                    name: 'Entity',
-                    mandatory: [
-                        { name: 'attributes', type: 'array' }
-                    ]
-                };
-            }
-            case 'SystemDiagram': {
-                return {
-                    name: 'SystemDiagram',
-                    mandatory: [
-                        { name: 'edges', type: 'array' },
-                        { name: 'nodes', type: 'array' }
-                    ]
-                };
-            }
-            default: {
-                return {
-                    name: type,
-                    mandatory: []
-                };
-            }
-        }
-    }
+   getTypeMetaData(type: string): TypeMetaData {
+      switch (type) {
+         case 'Entity': {
+            return {
+               name: 'Entity',
+               mandatory: [{ name: 'attributes', type: 'array' }]
+            };
+         }
+         case 'SystemDiagram': {
+            return {
+               name: 'SystemDiagram',
+               mandatory: [
+                  { name: 'edges', type: 'array' },
+                  { name: 'nodes', type: 'array' }
+               ]
+            };
+         }
+         default: {
+            return {
+               name: type,
+               mandatory: []
+            };
+         }
+      }
+   }
 }
 
 export const reflection = new CrossModelAstReflection();

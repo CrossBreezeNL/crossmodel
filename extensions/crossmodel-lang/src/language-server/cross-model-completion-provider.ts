@@ -19,7 +19,10 @@ import { isExternalDescriptionForLocalPackage } from './cross-model-scope.js';
 export class CrossModelCompletionProvider extends DefaultCompletionProvider {
    protected packageId?: string;
 
-   constructor(services: CrossModelServices, protected packageManager = services.shared.workspace.PackageManager) {
+   constructor(
+      services: CrossModelServices,
+      protected packageManager = services.shared.workspace.PackageManager
+   ) {
       super(services);
    }
 

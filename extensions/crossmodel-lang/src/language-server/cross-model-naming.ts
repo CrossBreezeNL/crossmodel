@@ -13,7 +13,10 @@ import { UNKNOWN_PROJECT_REFERENCE } from './cross-model-package-manager.js';
  * - The fully qualified is the package name plus the document-local name.
  */
 export class QualifiedNameProvider implements NameProvider {
-   constructor(protected services: CrossModelServices, protected packageManager = services.shared.workspace.PackageManager) {}
+   constructor(
+      protected services: CrossModelServices,
+      protected packageManager = services.shared.workspace.PackageManager
+   ) {}
 
    /**
     * Returns the direct name of the node if it has one.

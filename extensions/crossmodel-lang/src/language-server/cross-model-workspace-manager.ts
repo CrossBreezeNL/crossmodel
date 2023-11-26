@@ -15,7 +15,10 @@ import { CrossModelSharedServices } from './cross-model-module.js';
 export class CrossModelWorkspaceManager extends DefaultWorkspaceManager {
    protected onWorkspaceInitializedEmitter = new Emitter<URI[]>();
 
-   constructor(protected services: CrossModelSharedServices, protected logger = services.logger.ClientLogger) {
+   constructor(
+      protected services: CrossModelSharedServices,
+      protected logger = services.logger.ClientLogger
+   ) {
       super(services);
       this.initialBuildOptions = { validation: true };
    }

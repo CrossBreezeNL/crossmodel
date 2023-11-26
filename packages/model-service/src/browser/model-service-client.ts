@@ -9,14 +9,14 @@ import { ModelServiceClient } from '../common/model-service-rpc';
 
 @injectable()
 export class ModelServiceClientImpl implements ModelServiceClient {
-    protected onUpdateEmitter = new Emitter<ModelUpdatedEvent<CrossModelRoot>>();
-    onUpdate = this.onUpdateEmitter.event;
+   protected onUpdateEmitter = new Emitter<ModelUpdatedEvent<CrossModelRoot>>();
+   onUpdate = this.onUpdateEmitter.event;
 
-    async getName(): Promise<string> {
-        return 'ModelServiceClient';
-    }
+   async getName(): Promise<string> {
+      return 'ModelServiceClient';
+   }
 
-    async updateModel(event: ModelUpdatedEvent<CrossModelRoot>): Promise<void> {
-        this.onUpdateEmitter.fire(event);
-    }
+   async updateModel(event: ModelUpdatedEvent<CrossModelRoot>): Promise<void> {
+      this.onUpdateEmitter.fire(event);
+   }
 }

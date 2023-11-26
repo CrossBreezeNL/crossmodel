@@ -10,31 +10,31 @@ import { ModelPropertyWidget } from './model-property-widget';
 
 @injectable()
 export class ModelPropertyWidgetProvider extends DefaultPropertyViewWidgetProvider {
-    override readonly id = 'model-property-widget-provider';
-    override readonly label = 'Model Property Widget Provider';
-    currentUri = '';
-    currentNode = '';
+   override readonly id = 'model-property-widget-provider';
+   override readonly label = 'Model Property Widget Provider';
+   currentUri = '';
+   currentNode = '';
 
-    @inject(ModelPropertyWidget) protected modelPropertyWidget: ModelPropertyWidget;
-    @inject(ModelService) protected modelService: ModelService;
+   @inject(ModelPropertyWidget) protected modelPropertyWidget: ModelPropertyWidget;
+   @inject(ModelService) protected modelService: ModelService;
 
-    constructor() {
-        super();
-    }
+   constructor() {
+      super();
+   }
 
-    override canHandle(selection: GlspSelection | undefined): number {
-        // issue with how selection is determined, if the additionalSelectionData is empty we simply delete the property
-        if (selection && 'additionalSelectionData' in selection && !selection.additionalSelectionData) {
-            delete selection['additionalSelectionData'];
-        }
-        return GlspSelection.is(selection) ? 100 : 0;
-    }
+   override canHandle(selection: GlspSelection | undefined): number {
+      // issue with how selection is determined, if the additionalSelectionData is empty we simply delete the property
+      if (selection && 'additionalSelectionData' in selection && !selection.additionalSelectionData) {
+         delete selection['additionalSelectionData'];
+      }
+      return GlspSelection.is(selection) ? 100 : 0;
+   }
 
-    override async provideWidget(_selection: GlspSelection | undefined): Promise<ModelPropertyWidget> {
-        return this.modelPropertyWidget;
-    }
+   override async provideWidget(_selection: GlspSelection | undefined): Promise<ModelPropertyWidget> {
+      return this.modelPropertyWidget;
+   }
 
-    override updateContentWidget(selection: GlspSelection | undefined): void {
-        this.getPropertyDataService(selection).then(service => this.modelPropertyWidget.updatePropertyViewContent(service, selection));
-    }
+   override updateContentWidget(selection: GlspSelection | undefined): void {
+      this.getPropertyDataService(selection).then(service => this.modelPropertyWidget.updatePropertyViewContent(service, selection));
+   }
 }

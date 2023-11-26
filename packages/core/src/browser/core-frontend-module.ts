@@ -11,12 +11,12 @@ import { DynamicPortCleanup } from './dynamic-port-cleanup';
 import { CrossModelFileNavigatorContribution, CrossModelWorkspaceContribution } from './new-element-contribution';
 
 export default new ContainerModule((bind, _unbind, _isBound, rebind) => {
-    bind(FrontendApplicationContribution).to(DynamicPortCleanup);
+   bind(FrontendApplicationContribution).to(DynamicPortCleanup);
 
-    bind(CrossModelWorkspaceContribution).toSelf().inSingletonScope();
-    rebind(WorkspaceCommandContribution).toService(CrossModelWorkspaceContribution);
-    bind(MenuContribution).toService(CrossModelWorkspaceContribution);
+   bind(CrossModelWorkspaceContribution).toSelf().inSingletonScope();
+   rebind(WorkspaceCommandContribution).toService(CrossModelWorkspaceContribution);
+   bind(MenuContribution).toService(CrossModelWorkspaceContribution);
 
-    bind(CrossModelFileNavigatorContribution).toSelf().inSingletonScope();
-    rebind(FileNavigatorContribution).toService(CrossModelFileNavigatorContribution);
+   bind(CrossModelFileNavigatorContribution).toSelf().inSingletonScope();
+   rebind(FileNavigatorContribution).toService(CrossModelFileNavigatorContribution);
 });

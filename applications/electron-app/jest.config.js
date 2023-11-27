@@ -2,6 +2,6 @@
 const baseConfig = require('../../configs/base.jest.config');
 
 module.exports = {
-    ...baseConfig,
-    displayName: 'Electron App'
+   ...baseConfig,
+   displayName: 'Electron App'
 };

@@ -2,6 +2,6 @@
 const baseConfig = require('../../configs/base.jest.config');
 
 module.exports = {
-    ...baseConfig,
-    displayName: 'GLSP-Client'
+   ...baseConfig,
+   displayName: 'GLSP-Client'
 };

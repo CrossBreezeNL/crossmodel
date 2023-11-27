@@ -17,79 +17,79 @@ import { PROPERTY_CLIENT_ID } from './model-data-service';
 
 @injectable()
 export class ModelPropertyWidget extends ReactWidget implements PropertyViewContentWidget {
-    static readonly ID = 'attribute-property-view';
-    static readonly LABEL = 'Model property widget';
+   static readonly ID = 'attribute-property-view';
+   static readonly LABEL = 'Model property widget';
 
-    @inject(ModelService) protected modelService: ModelService;
-    @inject(ApplicationShell) protected shell: ApplicationShell;
+   @inject(ModelService) protected modelService: ModelService;
+   @inject(ApplicationShell) protected shell: ApplicationShell;
 
-    protected model: CrossModelRoot | undefined;
-    protected uri: string;
+   protected model: CrossModelRoot | undefined;
+   protected uri: string;
 
-    constructor() {
-        super();
-        this.id = ModelPropertyWidget.ID;
-        this.title.label = ModelPropertyWidget.LABEL;
-        this.title.caption = ModelPropertyWidget.LABEL;
-        this.title.closable = false;
-        this.node.tabIndex = 0;
+   constructor() {
+      super();
+      this.id = ModelPropertyWidget.ID;
+      this.title.label = ModelPropertyWidget.LABEL;
+      this.title.caption = ModelPropertyWidget.LABEL;
+      this.title.closable = false;
+      this.node.tabIndex = 0;
 
-        this.saveModel = this.saveModel.bind(this);
-        this.updateModel = this.updateModel.bind(this);
-    }
+      this.saveModel = this.saveModel.bind(this);
+      this.updateModel = this.updateModel.bind(this);
+   }
 
-    async updatePropertyViewContent(propertyDataService?: PropertyDataService, selection?: GlspSelection | undefined): Promise<void> {
-        this.model = undefined;
+   async updatePropertyViewContent(propertyDataService?: PropertyDataService, selection?: GlspSelection | undefined): Promise<void> {
+      this.model = undefined;
 
-        if (propertyDataService) {
-            try {
-                const selectionData = await propertyDataService.providePropertyData(selection);
-                if (isDiagramNodeEntity(selectionData)) {
-                    this.model = selectionData.model;
-                    this.uri = selectionData.uri;
-                }
-            } catch (error) {
-                this.model = undefined;
+      if (propertyDataService) {
+         try {
+            const selectionData = await propertyDataService.providePropertyData(selection);
+            if (isDiagramNodeEntity(selectionData)) {
+               this.model = selectionData.model;
+               this.uri = selectionData.uri;
             }
-        }
+         } catch (error) {
+            this.model = undefined;
+         }
+      }
 
-        this.update();
-    }
+      this.update();
+   }
 
-    async saveModel(): Promise<void> {
-        if (this.model === undefined || this.uri === undefined) {
-            throw new Error('Cannot save undefined model');
-        }
-        this.modelService.update({ uri: this.uri, model: this.model, clientId: PROPERTY_CLIENT_ID });
-    }
+   async saveModel(): Promise<void> {
+      if (this.model === undefined || this.uri === undefined) {
+         throw new Error('Cannot save undefined model');
+      }
+      this.modelService.update({ uri: this.uri, model: this.model, clientId: PROPERTY_CLIENT_ID });
+   }
 
-    protected async updateModel(model: CrossModelRoot): Promise<void> {
-        this.model = model;
-    }
+   protected async updateModel(model: CrossModelRoot): Promise<void> {
+      this.model = model;
+   }
 
-    protected render(): React.ReactNode {
-        if (!this.model) {
-            return <></>;
-        }
-        const PropertyComponent = withModelProvider(EntityPropertyView, {
-            model: this.model,
-            onModelUpdate: this.updateModel,
-            onModelSave: this.saveModel
-        });
-        return <PropertyComponent />;
-    }
+   protected render(): React.ReactNode {
+      if (!this.model) {
+         return <></>;
+      }
+      const PropertyComponent = withModelProvider(EntityPropertyView, {
+         model: this.model,
+         onModelUpdate: this.updateModel,
+         onModelSave: this.saveModel
+      });
+      return <PropertyComponent />;
+   }
 
-    protected override onActivateRequest(msg: Message): void {
-        super.onActivateRequest(msg);
-        this.node.focus();
-    }
+   protected override onActivateRequest(msg: Message): void {
+      super.onActivateRequest(msg);
+      this.node.focus();
+   }
 
-    protected getDiagramWidget(): GLSPDiagramWidget | undefined {
-        for (const widget of this.shell.widgets) {
-            if (widget instanceof GLSPDiagramWidget) {
-                return widget;
-            }
-        }
-        return undefined;
-    }
+   protected getDiagramWidget(): GLSPDiagramWidget | undefined {
+      for (const widget of this.shell.widgets) {
+         if (widget instanceof GLSPDiagramWidget) {
+            return widget;
+         }
+      }
+      return undefined;
+   }
 }

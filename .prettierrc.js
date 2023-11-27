@@ -6,7 +6,7 @@ module.exports = {
     trailingComma: 'none',
     endOfLine: 'lf',
     printWidth: 140,
-    tabWidth: 4,
+    tabWidth: 3,
     overrides: [
         {
             files: ['*.json', '*.yml'],

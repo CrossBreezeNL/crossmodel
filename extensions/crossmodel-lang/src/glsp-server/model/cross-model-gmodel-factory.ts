@@ -14,44 +14,44 @@ import { CrossModelState } from './cross-model-state.js';
  */
 @injectable()
 export class CrossModelGModelFactory implements GModelFactory {
-    @inject(CrossModelState) protected readonly modelState!: CrossModelState;
+   @inject(CrossModelState) protected readonly modelState!: CrossModelState;
 
-    createModel(): void {
-        const newRoot = this.createGraph();
-        if (newRoot) {
-            // update GLSP root element in state so it can be used in any follow-up actions/commands
-            this.modelState.updateRoot(newRoot);
-        }
-    }
+   createModel(): void {
+      const newRoot = this.createGraph();
+      if (newRoot) {
+         // update GLSP root element in state so it can be used in any follow-up actions/commands
+         this.modelState.updateRoot(newRoot);
+      }
+   }
 
-    protected createGraph(): GGraph | undefined {
-        const diagramRoot = this.modelState.diagramRoot;
-        const graphBuilder = GGraph.builder().id(this.modelState.semanticUri);
+   protected createGraph(): GGraph | undefined {
+      const diagramRoot = this.modelState.diagramRoot;
+      const graphBuilder = GGraph.builder().id(this.modelState.semanticUri);
 
-        diagramRoot.nodes.map(node => this.createDiagramNode(node)).forEach(node => graphBuilder.add(node));
-        diagramRoot.edges.map(edge => this.createDiagramEdge(edge)).forEach(edge => graphBuilder.add(edge));
+      diagramRoot.nodes.map(node => this.createDiagramNode(node)).forEach(node => graphBuilder.add(node));
+      diagramRoot.edges.map(edge => this.createDiagramEdge(edge)).forEach(edge => graphBuilder.add(edge));
 
-        return graphBuilder.build();
-    }
+      return graphBuilder.build();
+   }
 
-    protected createDiagramNode(node: DiagramNode): GNode {
-        // Get the reference that the DiagramNode holds to the Entity in the .langium file.
-        const id = this.modelState.index.createId(node) ?? 'unknown';
+   protected createDiagramNode(node: DiagramNode): GNode {
+      // Get the reference that the DiagramNode holds to the Entity in the .langium file.
+      const id = this.modelState.index.createId(node) ?? 'unknown';
 
-        return GEntityNode.builder().id(id).addNode(node).build();
-    }
+      return GEntityNode.builder().id(id).addNode(node).build();
+   }
 
-    protected createDiagramEdge(edge: DiagramEdge): GEdge {
-        const id = this.modelState.index.createId(edge) ?? 'unknown';
+   protected createDiagramEdge(edge: DiagramEdge): GEdge {
+      const id = this.modelState.index.createId(edge) ?? 'unknown';
 
-        const parentDiagramNode = edge.sourceNode?.ref?.name || edge.sourceNode?.$refText;
-        const childDiagramNode = edge.targetNode?.ref?.name || edge.targetNode?.$refText;
+      const parentDiagramNode = edge.sourceNode?.ref?.name || edge.sourceNode?.$refText;
+      const childDiagramNode = edge.targetNode?.ref?.name || edge.targetNode?.$refText;
 
-        return GEdge.builder()
-            .id(id)
-            .addCssClasses('diagram-edge', 'relationship')
-            .sourceId(parentDiagramNode || '')
-            .targetId(childDiagramNode || '')
-            .build();
-    }
+      return GEdge.builder()
+         .id(id)
+         .addCssClasses('diagram-edge', 'relationship')
+         .sourceId(parentDiagramNode || '')
+         .targetId(childDiagramNode || '')
+         .build();
+   }
 }

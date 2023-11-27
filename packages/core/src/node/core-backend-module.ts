@@ -6,6 +6,6 @@ import { ContainerModule } from '@theia/core/shared/inversify';
 import { CMEnvVariableServer } from './cm-env-variable-server';
 
 export default new ContainerModule((bind, _unbind, _isBound, rebind) => {
-    bind(CMEnvVariableServer).toSelf().inSingletonScope();
-    rebind(EnvVariablesServer).toService(CMEnvVariableServer);
+   bind(CMEnvVariableServer).toSelf().inSingletonScope();
+   rebind(EnvVariablesServer).toService(CMEnvVariableServer);
 });

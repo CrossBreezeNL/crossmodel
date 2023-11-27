@@ -2,17 +2,17 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 import {
-    BindingTarget,
-    ContextActionsProvider,
-    DiagramConfiguration,
-    DiagramModule,
-    GModelFactory,
-    GModelIndex,
-    InstanceMultiBinding,
-    ModelState,
-    MultiBinding,
-    OperationHandlerConstructor,
-    SourceModelStorage
+   BindingTarget,
+   ContextActionsProvider,
+   DiagramConfiguration,
+   DiagramModule,
+   GModelFactory,
+   GModelIndex,
+   InstanceMultiBinding,
+   ModelState,
+   MultiBinding,
+   OperationHandlerConstructor,
+   SourceModelStorage
 } from '@eclipse-glsp/server';
 import { injectable } from 'inversify';
 import { CrossModelAddEntityActionProvider } from '../command-palette/add-entity-action-provider.js';
@@ -32,40 +32,40 @@ import { CrossModelDiagramConfiguration } from './cross-model-diagram-configurat
  */
 @injectable()
 export class CrossModelDiagramModule extends DiagramModule {
-    readonly diagramType = 'crossmodel-diagram';
+   readonly diagramType = 'crossmodel-diagram';
 
-    protected bindDiagramConfiguration(): BindingTarget<DiagramConfiguration> {
-        return CrossModelDiagramConfiguration;
-    }
+   protected bindDiagramConfiguration(): BindingTarget<DiagramConfiguration> {
+      return CrossModelDiagramConfiguration;
+   }
 
-    protected bindSourceModelStorage(): BindingTarget<SourceModelStorage> {
-        return CrossModelStorage;
-    }
+   protected bindSourceModelStorage(): BindingTarget<SourceModelStorage> {
+      return CrossModelStorage;
+   }
 
-    protected override configureOperationHandlers(binding: InstanceMultiBinding<OperationHandlerConstructor>): void {
-        super.configureOperationHandlers(binding);
-        binding.add(CrossModelChangeBoundsOperationHandler); // move + resize behavior
-        binding.add(CrossModelCreateEdgeOperationHandler); // create 1:1 relationship
-        binding.add(CrossModelDeleteOperationHandler); // delete elements
-        binding.add(CrossModelDropEntityOperationHandler);
-        binding.add(CrossModelAddEntityOperationHandler);
-    }
+   protected override configureOperationHandlers(binding: InstanceMultiBinding<OperationHandlerConstructor>): void {
+      super.configureOperationHandlers(binding);
+      binding.add(CrossModelChangeBoundsOperationHandler); // move + resize behavior
+      binding.add(CrossModelCreateEdgeOperationHandler); // create 1:1 relationship
+      binding.add(CrossModelDeleteOperationHandler); // delete elements
+      binding.add(CrossModelDropEntityOperationHandler);
+      binding.add(CrossModelAddEntityOperationHandler);
+   }
 
-    protected override configureContextActionProviders(binding: MultiBinding<ContextActionsProvider>): void {
-        super.configureContextActionProviders(binding);
-        binding.add(CrossModelAddEntityActionProvider);
-    }
+   protected override configureContextActionProviders(binding: MultiBinding<ContextActionsProvider>): void {
+      super.configureContextActionProviders(binding);
+      binding.add(CrossModelAddEntityActionProvider);
+   }
 
-    protected override bindGModelIndex(): BindingTarget<GModelIndex> {
-        this.context.bind(CrossModelIndex).toSelf().inSingletonScope();
-        return { service: CrossModelIndex };
-    }
+   protected override bindGModelIndex(): BindingTarget<GModelIndex> {
+      this.context.bind(CrossModelIndex).toSelf().inSingletonScope();
+      return { service: CrossModelIndex };
+   }
 
-    protected bindModelState(): BindingTarget<ModelState> {
-        return { service: CrossModelState };
-    }
+   protected bindModelState(): BindingTarget<ModelState> {
+      return { service: CrossModelState };
+   }
 
-    protected bindGModelFactory(): BindingTarget<GModelFactory> {
-        return CrossModelGModelFactory;
-    }
+   protected bindGModelFactory(): BindingTarget<GModelFactory> {
+      return CrossModelGModelFactory;
+   }
 }

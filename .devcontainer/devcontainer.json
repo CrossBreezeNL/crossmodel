@@ -19,7 +19,8 @@
         "davidanson.vscode-markdownlint",
         "ms-playwright.playwright",
         "dbaeumer.vscode-eslint",
-        "orta.vscode-jest"
+        "orta.vscode-jest",
+        "streetsidesoftware.code-spell-checker"
       ]
     }
   },

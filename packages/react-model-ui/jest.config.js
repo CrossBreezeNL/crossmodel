@@ -2,6 +2,6 @@
 const baseConfig = require('../../configs/base.jest.config');
 
 module.exports = {
-    ...baseConfig,
-    displayName: 'React Model UI'
+   ...baseConfig,
+   displayName: 'React Model UI'
 };

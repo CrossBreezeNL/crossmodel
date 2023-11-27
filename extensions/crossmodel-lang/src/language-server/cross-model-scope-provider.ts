@@ -10,7 +10,10 @@ import { PackageAstNodeDescription, PackageExternalAstNodeDescription } from './
  * are actually available from a certain document.
  */
 export class PackageScopeProvider extends DefaultScopeProvider {
-   constructor(protected services: CrossModelServices, protected packageManager = services.shared.workspace.PackageManager) {
+   constructor(
+      protected services: CrossModelServices,
+      protected packageManager = services.shared.workspace.PackageManager
+   ) {
       super(services);
    }
 

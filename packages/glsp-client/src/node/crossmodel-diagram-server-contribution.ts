@@ -15,29 +15,29 @@ import { CrossModelDiagramLanguage } from '../common/crossmodel-diagram-language
  */
 @injectable()
 export class CrossModelDiagramServerContribution extends GLSPSocketServerContribution {
-    readonly id = CrossModelDiagramLanguage.contributionId;
+   readonly id = CrossModelDiagramLanguage.contributionId;
 
-    @inject(WorkspaceServer) protected workspaceServer: WorkspaceServer;
+   @inject(WorkspaceServer) protected workspaceServer: WorkspaceServer;
 
-    protected port: number;
+   protected port: number;
 
-    override async doConnect(clientChannel: Channel): Promise<Disposable> {
-        // the automatically assigned port is written by the server to a specific file location
-        // we wait for that file to be available and read the port number out of it
-        // that way we can ensure that the server is ready to accept our connection
-        const workspace = await this.workspaceServer.getMostRecentlyUsedWorkspace();
-        const portFile = new URI(workspace).path.join(PORT_FOLDER, GLSP_PORT_FILE).fsPath();
-        const port = await waitForTemporaryFileContent(portFile);
-        console.debug('Found GLSP port number in workspace: %d', port);
-        if (workspace) {
-            this.options.socketConnectionOptions.port = Number.parseInt(port, 10);
-        }
-        return super.doConnect(clientChannel);
-    }
+   override async doConnect(clientChannel: Channel): Promise<Disposable> {
+      // the automatically assigned port is written by the server to a specific file location
+      // we wait for that file to be available and read the port number out of it
+      // that way we can ensure that the server is ready to accept our connection
+      const workspace = await this.workspaceServer.getMostRecentlyUsedWorkspace();
+      const portFile = new URI(workspace).path.join(PORT_FOLDER, GLSP_PORT_FILE).fsPath();
+      const port = await waitForTemporaryFileContent(portFile);
+      console.debug('Found GLSP port number in workspace: %d', port);
+      if (workspace) {
+         this.options.socketConnectionOptions.port = Number.parseInt(port, 10);
+      }
+      return super.doConnect(clientChannel);
+   }
 
-    createContributionOptions(): Partial<GLSPSocketServerContributionOptions> {
-        return {
-            launchedExternally: true
-        };
-    }
+   createContributionOptions(): Partial<GLSPSocketServerContributionOptions> {
+      return {
+         launchedExternally: true
+      };
+   }
 }

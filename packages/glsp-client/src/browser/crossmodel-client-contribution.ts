@@ -1,13 +1,13 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
+import { GLSPClient } from '@eclipse-glsp/protocol';
 import { BaseGLSPClientContribution } from '@eclipse-glsp/theia-integration';
 import { Deferred } from '@theia/core/lib/common/promise-util';
 import { inject, injectable } from '@theia/core/shared/inversify';
 import { OutputChannelManager } from '@theia/output/lib/browser/output-channel';
 import '../../style/diagram.css';
 import { CrossModelDiagramLanguage } from '../common/crossmodel-diagram-language';
-import { GLSPClient } from '@eclipse-glsp/protocol';
 
 /** The message the GLSP server outputs as soon as it is properly connected through a socket. */
 export const CLIENT_CONNECTION_READY_MSG = 'Starting GLSP server connection';

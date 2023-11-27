@@ -21,7 +21,7 @@ The code responsible for this functionality can be found in [`extension.ts`](../
 In general, the language server protocol does not contain any dedicated project-like semantics, only the concept of a workspace.
 In CrossModel, however, we want to be able to support multiple closed systems where elements can only be referenced within that system but also allow references between systems if declared explicitly.
 For this reason, we are defining that any directory with a [`package.json`](https://docs.npmjs.com/cli/v9/configuring-npm/package-json) file is considered a closed system and can only see elements within that system as well as any direct or indirect dependency declared through the `package.json`.
-By re-using the `package.json` format from npm, we also gain automatic support for publishing systems and libraries on an npm registry that can be automatically downloaded throught he npm CLI.
+By re-using the `package.json` format from npm, we also gain automatic support for publishing systems and libraries on an npm registry that can be automatically downloaded through the npm CLI.
 The task of the package manager is to introduce that mechanism in the language server.
 
 The code responsible for this functionality can be found in [`cross-model-package-manager.ts`](../extensions/crossmodel-lang/src/language-server/cross-model-package-manager.ts).
@@ -36,7 +36,7 @@ The code responsible for this functionality can be found in [`model-service.ts`]
 
 ## Graphical Modeling with GLSP
 
-The support for graphical modeling is provided thorugh a graphical language server implemented based on the [GLSP](https://www.eclipse.org/glsp/) framework. As the language server serves as our single source of truth, the GLSP server should also use the document store as a data source and ensure that any persisted changes are synced back to the store. To ease that integration without any additional protocol, we start a Node-based GLSP server in the same process as the Langium server and provide access to any necessary functionality through exposed language services.
+The support for graphical modeling is provided through a graphical language server implemented based on the [GLSP](https://www.eclipse.org/glsp/) framework. As the language server serves as our single source of truth, the GLSP server should also use the document store as a data source and ensure that any persisted changes are synced back to the store. To ease that integration without any additional protocol, we start a Node-based GLSP server in the same process as the Langium server and provide access to any necessary functionality through exposed language services.
 
 When the user opens a diagram in the frontend, the GLSP client communicates through a contribution in the backend with the GLSP server to [load](https://www.eclipse.org/glsp/documentation/sourcemodel/) the [GModel](https://www.eclipse.org/glsp/documentation/gmodel/) and render it in the widget. On the server, we load the document from the language service and translate the semantic model into the GModel. Any operations that the user performs based on the GModel in the frontend are translated back to changes in the semantic model and the GModel is re-generated. If the user changes the model, the document in the document store is updated with the current version of the semantic model and any listeners for that document are notified.
 

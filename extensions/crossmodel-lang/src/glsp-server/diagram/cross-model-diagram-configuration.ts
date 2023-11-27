@@ -8,7 +8,7 @@ import { injectable } from 'inversify';
 export class CrossModelDiagramConfiguration implements DiagramConfiguration {
    layoutKind = ServerLayoutKind.MANUAL; // we store layout information manually so no automatic layouting is necessary
    needsClientLayout = true; // require layout information from client
-   animatedUpdate = true; // use animtations during state updates
+   animatedUpdate = true; // use animations during state updates
 
    typeMapping = getDefaultMapping();
    shapeTypeHints = [

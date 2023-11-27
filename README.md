@@ -63,7 +63,7 @@ Run the example as [described above](#running-the-application).
 
 Any code changes will be automatically detected and the application will be re-compiled.
 If you only made changes to the frontend or plugins, simply reloading the running application with `F5` is enough.
-If you also made changes to the backend, you can close and restart the appliaction without manual re-compilation.
+If you also made changes to the backend, you can close and restart the application without manual re-compilation.
 
 ### Developing in Dev Container
 
@@ -83,35 +83,33 @@ Details about the packaging can be configured in `applications/electron-app/elec
 A general overview of the application architecture is provided in the [Architecture Overview](docs/Architecture.md).
 The repository itself contains the following components structured as follows:
 
-```bash
-├── applications
-│   ├── browser-app              # Browser application
-│   └── electron-app             # Electron application
-├── configs
-├── docs                         # Documentation
-├── examples
-│   ├── libraries                # Example libraries referenced in the local npm registry
-│   ├── registry                 # Local npm registry using Verdaccio
-│   └── workspace                # Workspace that can be opened in the tool
-├── extensions                   # VS Code extensions
-│   └── crossmodel-lang          # CrossModel language support (through three servers)
-│       └── src
-│           ├── glsp-server      # Graphical modelling server based on GLSP
-│           ├── language-server  # Textual modelling server based on Langium
-│           ├── model-server     # Custom model server to provide access to the semantic models
-│           ├── extension.ts     # Extension starting the server process and the language client
-│           └── main.ts          # Server process starting up all servers
-└── packages                     # Theia extensions
-        ├── core                 # Core customizations
-        ├── form-client          # Form editor widget connecting to the model server
-        ├── glsp-client          # Diagram configuration and widget using the GLSP server
-        └── product              # Application-level modifications
-```
+    ├── applications
+    │   ├── browser-app              # Browser application
+    │   └── electron-app             # Electron application
+    ├── configs
+    ├── docs                         # Documentation
+    ├── examples
+    │   ├── libraries                # Example libraries referenced in the local npm registry
+    │   ├── registry                 # Local npm registry using Verdaccio
+    │   └── workspace                # Workspace that can be opened in the tool
+    ├── extensions                   # VS Code extensions
+    │   └── crossmodel-lang          # CrossModel language support (through three servers)
+    │       └── src
+    │           ├── glsp-server      # Graphical modelling server based on GLSP
+    │           ├── language-server  # Textual modelling server based on Langium
+    │           ├── model-server     # Custom model server to provide access to the semantic models
+    │           ├── extension.ts     # Extension starting the server process and the language client
+    │           └── main.ts          # Server process starting up all servers
+    └── packages                     # Theia extensions
+            ├── core                 # Core customizations
+            ├── form-client          # Form editor widget connecting to the model server
+            ├── glsp-client          # Diagram configuration and widget using the GLSP server
+            └── product              # Application-level modifications
 
 ## Used libraries and license
 
 -   mui-x : MUI X is open core—base components are MIT-licensed, while more advanced features require a Pro or Premium commercial license. We are currently only using core-base
 -   react-tabs: MIT
--   chevotain: This library is a dependency of langium. To get the Yaml language working in crossmodel an example implementation of the python language of chevrotrain has been used. This example has been modified to make it work for the yaml language.
-    -   https://github.com/Chevrotain/chevrotain
-    -   example that has been used: https://github.com/Chevrotain/chevrotain/tree/master/examples/lexer/python_indentation
+-   chevrotain: This library is a dependency of langium. To get the Yaml language working in crossmodel an example implementation of the python language of chevrotain has been used. This example has been modified to make it work for the yaml language.
+    -   <https://github.com/Chevrotain/chevrotain>
+    -   example that has been used: <https://github.com/Chevrotain/chevrotain/tree/master/examples/lexer/python_indentation>

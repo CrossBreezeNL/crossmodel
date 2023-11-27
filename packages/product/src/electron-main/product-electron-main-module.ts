@@ -7,6 +7,6 @@ import { ContainerModule } from '@theia/core/shared/inversify';
 import { IconContribution } from './icon-contribution';
 
 export default new ContainerModule(bind => {
-    bind(IconContribution).toSelf().inSingletonScope();
-    bind(ElectronMainApplicationContribution).toService(IconContribution);
+   bind(IconContribution).toSelf().inSingletonScope();
+   bind(ElectronMainApplicationContribution).toService(IconContribution);
 });

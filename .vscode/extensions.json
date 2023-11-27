@@ -7,6 +7,7 @@
         "langium.langium-vscode",
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
-        "DavidAnson.vscode-markdownlint"
+        "DavidAnson.vscode-markdownlint",
+        "streetsidesoftware.code-spell-checker"
     ]
 }

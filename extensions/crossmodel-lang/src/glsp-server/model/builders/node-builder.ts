@@ -5,88 +5,88 @@ import { ArgsUtil, GCompartment, GLabel, GNode, GNodeBuilder } from '@eclipse-gl
 import { DiagramNode } from '../../../language-server/generated/ast.js';
 
 export class GEntityNode extends GNode {
-    override type = 'node:entity';
+   override type = 'node:entity';
 
-    static override builder(): GEntityNodeBuilder {
-        return new GEntityNodeBuilder(GEntityNode).type('node:entity');
-    }
+   static override builder(): GEntityNodeBuilder {
+      return new GEntityNodeBuilder(GEntityNode).type('node:entity');
+   }
 }
 
 export class GEntityNodeBuilder extends GNodeBuilder {
-    addNode(node: DiagramNode): this {
-        // Get the reference that the DiagramNode holds to the Entity in the .langium file.
-        const entityRef = node.entity?.ref;
+   addNode(node: DiagramNode): this {
+      // Get the reference that the DiagramNode holds to the Entity in the .langium file.
+      const entityRef = node.entity?.ref;
 
-        // Options which are the same for every node
-        this.addCssClasses('diagram-node', 'entity').layout('vbox').addArgs(ArgsUtil.cornerRadius(3));
+      // Options which are the same for every node
+      this.addCssClasses('diagram-node', 'entity').layout('vbox').addArgs(ArgsUtil.cornerRadius(3));
 
-        // We need the id before we can build the label and childeren.
-        if (this.id === undefined) {
-            throw new Error('Add id to builder before adding the node reference.');
-        }
+      // We need the id before we can build the label and children.
+      if (this.id === undefined) {
+         throw new Error('Add id to builder before adding the node reference.');
+      }
 
-        // Add the label/name of the node
-        const label = GCompartment.builder()
-            .id(`${this.proxy.id}_header`)
-            .layout('hbox')
-            .addLayoutOption('hAlign', 'center')
-            .addCssClass('entity-header-compartment')
-            .add(
-                GLabel.builder()
-                    .text(entityRef?.name_val || 'unresolved')
-                    .id(`${this.proxy.id}_label`)
-                    .addCssClass('entity-header-label')
-                    .build()
-            )
-            .build();
+      // Add the label/name of the node
+      const label = GCompartment.builder()
+         .id(`${this.proxy.id}_header`)
+         .layout('hbox')
+         .addLayoutOption('hAlign', 'center')
+         .addCssClass('entity-header-compartment')
+         .add(
+            GLabel.builder()
+               .text(entityRef?.name_val || 'unresolved')
+               .id(`${this.proxy.id}_label`)
+               .addCssClass('entity-header-label')
+               .build()
+         )
+         .build();
 
-        this.add(label);
+      this.add(label);
 
-        // Add the children of the node
-        if (entityRef !== undefined) {
-            const allAttributesCompartment = GCompartment.builder()
-                .id(`${this.proxy.id}_attributes`)
-                .addCssClass('attributes-compartment')
-                .layout('vbox')
-                .addLayoutOption('hAlign', 'left')
-                .addLayoutOption('paddingBottom', 0);
+      // Add the children of the node
+      if (entityRef !== undefined) {
+         const allAttributesCompartment = GCompartment.builder()
+            .id(`${this.proxy.id}_attributes`)
+            .addCssClass('attributes-compartment')
+            .layout('vbox')
+            .addLayoutOption('hAlign', 'left')
+            .addLayoutOption('paddingBottom', 0);
 
-            // Add the attributes of the entity.
-            for (const attribute of entityRef.attributes) {
-                const attributeCompartment = GCompartment.builder()
-                    .id(`${this.proxy.id}_${attribute.name}_attribute`)
-                    .addCssClass('attribute-compartment')
-                    .layout('hbox')
-                    .addLayoutOption('paddingBottom', 3)
-                    .addLayoutOption('paddingTop', 3);
+         // Add the attributes of the entity.
+         for (const attribute of entityRef.attributes) {
+            const attributeCompartment = GCompartment.builder()
+               .id(`${this.proxy.id}_${attribute.name}_attribute`)
+               .addCssClass('attribute-compartment')
+               .layout('hbox')
+               .addLayoutOption('paddingBottom', 3)
+               .addLayoutOption('paddingTop', 3);
 
-                attributeCompartment.add(
-                    GLabel.builder()
-                        .id(`${this.proxy.id}_${attribute.name}_attribute_name`)
-                        .text(attribute.name_val || '')
-                        .addCssClass('attribute')
-                        .build()
-                );
-                attributeCompartment.add(GLabel.builder().text(' : ').id(`${this.proxy.id}_${attribute.name}_attribute_del`).build());
-                attributeCompartment.add(
-                    GLabel.builder()
-                        .id(`${this.proxy.id}_${attribute.name}_attribute_type`)
-                        .text(attribute.datatype?.toString() || '')
-                        .addCssClass('datatype')
-                        .build()
-                );
+            attributeCompartment.add(
+               GLabel.builder()
+                  .id(`${this.proxy.id}_${attribute.name}_attribute_name`)
+                  .text(attribute.name_val || '')
+                  .addCssClass('attribute')
+                  .build()
+            );
+            attributeCompartment.add(GLabel.builder().text(' : ').id(`${this.proxy.id}_${attribute.name}_attribute_del`).build());
+            attributeCompartment.add(
+               GLabel.builder()
+                  .id(`${this.proxy.id}_${attribute.name}_attribute_type`)
+                  .text(attribute.datatype?.toString() || '')
+                  .addCssClass('datatype')
+                  .build()
+            );
 
-                allAttributesCompartment.add(attributeCompartment.build());
-            }
+            allAttributesCompartment.add(attributeCompartment.build());
+         }
 
-            this.add(allAttributesCompartment.build());
-        }
+         this.add(allAttributesCompartment.build());
+      }
 
-        // The DiagramNode in the langium file holds the coordinates of node
-        this.addLayoutOption('prefWidth', node.width || 100)
-            .addLayoutOption('prefHeight', node.height || 100)
-            .position(node.x || 100, node.y || 100);
+      // The DiagramNode in the langium file holds the coordinates of node
+      this.addLayoutOption('prefWidth', node.width || 100)
+         .addLayoutOption('prefHeight', node.height || 100)
+         .position(node.x || 100, node.y || 100);
 
-        return this;
-    }
+      return this;
+   }
 }

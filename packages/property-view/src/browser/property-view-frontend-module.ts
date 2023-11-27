@@ -11,9 +11,9 @@ import { ModelPropertyWidget } from './model-property-widget';
 import { ModelPropertyWidgetProvider } from './model-property-widget-provider';
 
 export default new ContainerModule((bind, _unbind, _isBound, rebind) => {
-    // To make the property widget working
-    bind(ModelPropertyWidget).toSelf();
-    bind(ModelDataService).toSelf().inSingletonScope();
-    bind(PropertyDataService).toService(ModelDataService);
-    bind(PropertyViewWidgetProvider).to(ModelPropertyWidgetProvider).inSingletonScope();
+   // To make the property widget working
+   bind(ModelPropertyWidget).toSelf();
+   bind(ModelDataService).toSelf().inSingletonScope();
+   bind(PropertyDataService).toService(ModelDataService);
+   bind(PropertyViewWidgetProvider).to(ModelPropertyWidgetProvider).inSingletonScope();
 });

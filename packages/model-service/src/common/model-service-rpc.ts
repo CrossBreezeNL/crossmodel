@@ -3,13 +3,13 @@
  ********************************************************************************/
 
 import {
-    CloseModelArgs,
-    CrossModelRoot,
-    DiagramNodeEntity,
-    ModelUpdatedEvent,
-    OpenModelArgs,
-    SaveModelArgs,
-    UpdateModelArgs
+   CloseModelArgs,
+   CrossModelRoot,
+   DiagramNodeEntity,
+   ModelUpdatedEvent,
+   OpenModelArgs,
+   SaveModelArgs,
+   UpdateModelArgs
 } from '@crossbreeze/protocol';
 import { Event, RpcServer } from '@theia/core';
 
@@ -21,17 +21,17 @@ export const MODEL_SERVICE_PATH = '/services/model-service';
  */
 export const ModelService = Symbol('ModelService');
 export interface ModelService extends RpcServer<ModelServiceClient> {
-    open(args: OpenModelArgs): Promise<CrossModelRoot | undefined>;
-    close(args: CloseModelArgs): Promise<void>;
-    request(uri: string): Promise<CrossModelRoot | undefined>;
-    requestDiagramNodeEntityModel(uri: string, id: string): Promise<DiagramNodeEntity | undefined>;
-    update(args: UpdateModelArgs<CrossModelRoot>): Promise<CrossModelRoot>;
-    save(args: SaveModelArgs<CrossModelRoot>): Promise<void>;
+   open(args: OpenModelArgs): Promise<CrossModelRoot | undefined>;
+   close(args: CloseModelArgs): Promise<void>;
+   request(uri: string): Promise<CrossModelRoot | undefined>;
+   requestDiagramNodeEntityModel(uri: string, id: string): Promise<DiagramNodeEntity | undefined>;
+   update(args: UpdateModelArgs<CrossModelRoot>): Promise<CrossModelRoot>;
+   save(args: SaveModelArgs<CrossModelRoot>): Promise<void>;
 }
 
 export const ModelServiceClient = Symbol('ModelServiceClient');
 export interface ModelServiceClient {
-    getName(): Promise<string>;
-    updateModel(args: ModelUpdatedEvent<CrossModelRoot>): Promise<void>;
-    onUpdate: Event<ModelUpdatedEvent<CrossModelRoot>>;
+   getName(): Promise<string>;
+   updateModel(args: ModelUpdatedEvent<CrossModelRoot>): Promise<void>;
+   onUpdate: Event<ModelUpdatedEvent<CrossModelRoot>>;
 }

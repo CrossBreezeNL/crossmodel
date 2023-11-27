@@ -10,10 +10,7 @@
     "source.fixAll.eslint": true,
     "source.fixAll.markdownlint": true
   },
-  "eslint.validate": [
-    "javascript",
-    "typescript"
-  ],
+  "eslint.validate": ["javascript", "typescript"],
   "search.exclude": {
     "**/node_modules": true,
     "**/out": true,
@@ -56,11 +53,7 @@
       "ul_multi": 3
     },
     "no-inline-html": {
-      "allowed_elements": [
-        "br",
-        "details",
-        "summary"
-      ]
+      "allowed_elements": ["br", "details", "summary"]
     }
   },
   "jest.jestCommandLine": "yarn test",
@@ -68,7 +61,7 @@
   "cSpell.enabled": true,
   "cSpell.words": [
     "Langium",
-    "Chevrotrain",
+    "Chevrotain",
     "CrossModel",
     "Modelserver",
     "CrossBreeze",
@@ -89,7 +82,5 @@
     "typescript",
     "typescriptreact"
   ],
-  "cSpell.ignoreRegExpList": [
-    "/^\\s*import.*from.*/gm"
-  ]
+  "cSpell.ignoreRegExpList": ["/^\\s*import.*from.*/gm"]
 }

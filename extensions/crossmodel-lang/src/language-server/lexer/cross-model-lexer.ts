@@ -75,7 +75,7 @@ export class CrossModelLexer extends DefaultLexer {
 
       // add remaining dedents
       while (indentStack.pop()) {
-         // chevrotrain uses 1-based indices for tokens which Langium transforms into 0-based indices by deducting 1
+         // chevrotain uses 1-based indices for tokens which Langium transforms into 0-based indices by deducting 1
          // see for instance https://github.com/eclipse-langium/langium/blob/eea5bc2/packages/langium/src/utils/cst-util.ts#L49
          const startOffset = text.length || 1;
          const endOffset = text.length || 1;

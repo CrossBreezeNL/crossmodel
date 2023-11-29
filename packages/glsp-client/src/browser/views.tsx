@@ -18,11 +18,6 @@ export class EntityNodeView extends RectangularNodeView {
 
       const classNode: any = (
          <g>
-            <defs>
-               <filter id='dropShadow'>
-                  <feDropShadow dx='0.5' dy='0.5' stdDeviation='0.4' />
-               </filter>
-            </defs>
             <rect x={0} y={0} rx={6} width={Math.max(0, node.bounds.width)} height={Math.max(0, node.bounds.height)} />
 
             {/* The renderChildren function will render SVG objects for the children of the node object. */}

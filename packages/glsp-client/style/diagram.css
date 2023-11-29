@@ -3,49 +3,49 @@
  ********************************************************************************/
 
 :root {
-    --sprotty-background: var(--theia-layout-color3);
-    --sprotty-edge: var(--theia-editor-foreground);
-    --sprotty-border: var(--theia-editor-foreground);
+   --sprotty-background: var(--theia-layout-color3);
+   --sprotty-edge: var(--theia-editor-foreground);
+   --sprotty-border: var(--theia-editor-foreground);
 }
 
 /* Standard sprotty */
 .sprotty {
-    height: 100%;
+   height: 100%;
 }
 
 .sprotty-graph .sprotty-node {
-    fill: inherit;
+   fill: inherit;
 }
 
 .sprotty-graph {
-    font-size: 15pt;
-    height: 100%;
-    background: var(--sprotty-background);
+   font-size: 15pt;
+   height: 100%;
+   background: var(--sprotty-background);
 }
 
 /* Nodes */
 .diagram-node {
-    fill: #fffcdf;
-    stroke: black;
-    filter: url(#dropShadow);
+   fill: #fffcdf;
+   stroke: black;
+   filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.8));
 }
 
 .entity-header {
-    font-weight: bold;
+   font-weight: bold;
 }
 
 .diagram-node > .sprotty-node:not(.selected) {
-    stroke-width: 1px;
+   stroke-width: 1px;
 }
 
 .header-container-diagram-node {
-    stroke: 1;
+   stroke: 1;
 }
 
 .sprotty-node.mouseover:not(.selected) {
-    stroke-width: 3px;
+   stroke-width: 3px;
 }
 
 .sprotty-node.selected {
-    stroke-width: 5px;
+   stroke-width: 5px;
 }

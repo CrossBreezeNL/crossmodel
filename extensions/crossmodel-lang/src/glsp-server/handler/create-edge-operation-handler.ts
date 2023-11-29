@@ -32,7 +32,7 @@ export class CrossModelCreateEdgeOperationHandler extends JsonCreateEdgeOperatio
             const edge: DiagramEdge = {
                $type: DiagramEdge,
                $container: this.modelState.diagramRoot,
-               id: relationship.id,
+               id: this.modelState.idProvider.findNextId(DiagramEdge, relationship.id, this.modelState.diagramRoot),
                relationship: {
                   ref: relationship,
                   $refText: this.modelState.idProvider.getExternalId(relationship) || relationship.id || ''
@@ -58,23 +58,23 @@ export class CrossModelCreateEdgeOperationHandler extends JsonCreateEdgeOperatio
       const source = sourceNode.entity?.ref?.id || sourceNode.entity?.$refText;
       const target = targetNode.entity?.ref?.id || targetNode.entity?.$refText;
 
-      // search for unique file name for the relationship and use file base name as relationship name
-      // if the user doesn't rename any files we should end up with unique names ;-)
-      const dirName = UriUtils.dirname(URI.parse(this.modelState.semanticUri));
-      const targetUri = UriUtils.joinPath(dirName, source + 'To' + target + '.relationship.cm');
-      const uri = Utils.findNewUri(targetUri);
-      const id = UriUtils.basename(uri).split('.')[0];
-
       // create relationship, serialize and re-read to ensure everything is up to date and linked properly
       const relationshipRoot: CrossModelRoot = { $type: 'CrossModelRoot' };
       const relationship: Relationship = {
          $type: Relationship,
          $container: relationshipRoot,
-         id,
+         id: this.modelState.idProvider.findNextId(Relationship, source + 'To' + target),
          type: '1:1',
          parent: { $refText: sourceNode.entity?.$refText || '' },
          child: { $refText: targetNode.entity?.$refText || '' }
       };
+
+      // search for unique file name for the relationship and use file base name as relationship name
+      // if the user doesn't rename any files we should end up with unique names ;-)
+      const dirName = UriUtils.dirname(URI.parse(this.modelState.semanticUri));
+      const targetUri = UriUtils.joinPath(dirName, relationship.id + '.relationship.cm');
+      const uri = Utils.findNewUri(targetUri);
+
       relationshipRoot.relationship = relationship;
       const text = this.modelState.semanticSerializer.serialize(relationshipRoot);
 

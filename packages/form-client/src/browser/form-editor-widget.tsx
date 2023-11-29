@@ -56,11 +56,13 @@ export class FormEditorWidget extends ReactWidget implements NavigatableWidget, 
       this.getResourceUri = this.getResourceUri.bind(this);
       this.loadModel();
 
-      this.formClient.onUpdate(event => {
-         if (event.sourceClientId !== FORM_CLIENT_ID && event.uri === this.getResourceUri().toString()) {
-            this.modelUpdated(event.model);
-         }
-      });
+      this.toDispose.push(
+         this.formClient.onUpdate(event => {
+            if (event.sourceClientId !== FORM_CLIENT_ID && event.uri === this.getResourceUri().toString()) {
+               this.modelUpdated(event.model);
+            }
+         })
+      );
    }
 
    protected async loadModel(): Promise<void> {

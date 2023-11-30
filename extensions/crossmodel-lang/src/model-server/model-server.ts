@@ -75,7 +75,7 @@ export class ModelServer implements Disposable {
       const entity: Entity | undefined = diagramNode?.entity?.ref;
 
       if (!entity?.$container.$document) {
-         throw new Error('No node found with the given id');
+         throw new Error('No node found with the given id: ' + id);
       }
 
       const serializedEntity = toSerializable({

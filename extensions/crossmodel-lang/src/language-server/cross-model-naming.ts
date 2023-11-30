@@ -28,10 +28,10 @@ export interface IdProvider extends NameProvider {
 }
 
 /**
- * A name provider that returns the fully qualified name of a node by default but also exposes methods to get other names:
- * - The local name is just the name of the node itself if it has a name.
- * - The qualified name / document-local name is the name of the node itself plus all it's named parents within the document
- * - The fully qualified is the package name plus the document-local name.
+ * A name provider that returns the fully qualified ID of a node by default but also exposes methods to get other names:
+ * - The Node ID is just the id of the node itself if it has an id.
+ * - The Local ID is the Node ID itself plus the Node ID of all it's parents within the same document.
+ * - The External ID is the Local ID prefixed with the package name.
  */
 export class DefaultIdProvider implements NameProvider, IdProvider {
    constructor(

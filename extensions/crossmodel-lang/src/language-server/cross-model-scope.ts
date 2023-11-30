@@ -83,29 +83,29 @@ export class CrossModelScopeComputation extends DefaultScopeComputation {
       const packageInfo = this.packageManager.getPackageInfoByDocument(document);
       const packageId = packageInfo?.id ?? UNKNOWN_PROJECT_ID;
       const packageName = packageInfo?.referenceName ?? UNKNOWN_PROJECT_REFERENCE;
-      const packageQualifiedName = this.idProvider.getExternalId(node, packageName);
+      const externalId = this.idProvider.getExternalId(node, packageName);
 
       // Export nodes twice: Once for external usage with the fully-qualified name and once for package-local usage.
       // To avoid duplicates in the UI but still allow access to the node through both names we filter the
       // external usage descriptions in the CrossModelCompletionProvider if package-local usage is also available
 
       let description: AstNodeDescription | undefined;
-      if (packageQualifiedName) {
-         description = this.descriptions.createDescription(node, packageQualifiedName, document);
-         exports.push(new PackageExternalAstNodeDescription(packageId, packageQualifiedName, description));
+      if (externalId) {
+         description = this.descriptions.createDescription(node, externalId, document);
+         exports.push(new PackageExternalAstNodeDescription(packageId, externalId, description));
       }
-      const packageLocalName = this.idProvider.getLocalId(node);
-      if (packageLocalName && description) {
-         exports.push(new PackageLocalAstNodeDescription(packageId, packageLocalName, description));
+      const localId = this.idProvider.getLocalId(node);
+      if (localId && description) {
+         exports.push(new PackageLocalAstNodeDescription(packageId, localId, description));
       }
    }
 
    protected override processNode(node: AstNode, document: LangiumDocument, scopes: PrecomputedScopes): void {
       const container = node.$container;
       if (container) {
-         const name = this.idProvider.getNodeId(node);
-         if (name) {
-            scopes.add(container, this.descriptions.createDescription(node, name, document));
+         const id = this.idProvider.getNodeId(node);
+         if (id) {
+            scopes.add(container, this.descriptions.createDescription(node, id, document));
          }
       }
    }

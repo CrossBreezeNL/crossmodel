@@ -67,7 +67,7 @@ export class ModelServer implements Disposable {
       }
 
       for (const node of root.diagram.nodes) {
-         if (node.name === id) {
+         if (node.id === id) {
             diagramNode = node;
          }
       }

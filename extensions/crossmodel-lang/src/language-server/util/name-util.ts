@@ -4,11 +4,11 @@
 
 import { SystemDiagram } from '../generated/ast.js';
 
-export function findAvailableNodeName(container: SystemDiagram, name: string): string {
-   let availableName = name;
+export function findNextId(container: SystemDiagram, proposal: string): string {
+   let nextId = proposal;
    let counter = 1;
-   while (container.nodes.find(node => node.name === availableName)) {
-      availableName = name + counter++;
+   while (container.nodes.find(node => node.id === nextId)) {
+      nextId = proposal + counter++;
    }
-   return availableName;
+   return nextId;
 }

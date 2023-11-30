@@ -24,7 +24,7 @@ export function EntityGeneralForm(_props: EntityGeneralProps): React.ReactElemen
             <label>Name:</label>
             <input
                className='theia-input'
-               value={model.entity.name_val}
+               value={model.entity.name}
                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   dispatch({ type: 'entity:change-name', name: e.target.value ? e.target.value : '' });
                }}

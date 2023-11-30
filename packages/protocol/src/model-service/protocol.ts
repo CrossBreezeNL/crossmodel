@@ -21,24 +21,24 @@ export interface Entity {
    readonly $type: 'Entity';
    attributes: Array<EntityAttribute>;
    description?: string;
+   id?: string;
    name?: string;
-   name_val?: string;
 }
 
 export interface EntityAttribute {
    readonly $type: 'EntityAttribute';
    datatype?: string;
    description?: string;
+   id?: string;
    name?: string;
-   name_val?: string;
 }
 
 export interface Relationship {
    readonly $type: 'Relationship';
    child?: string;
    description?: string;
+   id?: string;
    name?: string;
-   name_val?: string;
    parent?: string;
    type?: string;
 }

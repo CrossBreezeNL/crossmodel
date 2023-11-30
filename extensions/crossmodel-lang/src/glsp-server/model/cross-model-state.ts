@@ -5,7 +5,7 @@ import { DefaultModelState, JsonModelState, ModelState, hasFunctionProp } from '
 import { inject, injectable } from 'inversify';
 import { URI } from 'vscode-uri';
 import { CrossModelLSPServices } from '../../integration.js';
-import { QualifiedNameProvider } from '../../language-server/cross-model-naming.js';
+import { IdProvider } from '../../language-server/cross-model-naming.js';
 import { CrossModelRoot, SystemDiagram } from '../../language-server/generated/ast.js';
 import { ModelService } from '../../model-server/model-service.js';
 import { Serializer } from '../../model-server/serializer.js';
@@ -59,8 +59,8 @@ export class CrossModelState extends DefaultModelState implements JsonModelState
       return this.services.language.serializer.Serializer;
    }
 
-   get nameProvider(): QualifiedNameProvider {
-      return this.services.language.references.QualifiedNameProvider;
+   get idProvider(): IdProvider {
+      return this.services.language.references.IdProvider;
    }
 
    get sourceModel(): CrossModelSourceModel {

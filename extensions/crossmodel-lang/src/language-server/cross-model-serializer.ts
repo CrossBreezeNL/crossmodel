@@ -4,13 +4,11 @@
 
 import { isReference } from 'langium';
 import { Serializer } from '../model-server/serializer.js';
-import { CrossModelServices } from './cross-model-module.js';
 import { CrossModelRoot, Entity, Relationship, SystemDiagram } from './generated/ast.js';
 
 const PROPERTY_ORDER = [
    'id',
    'name',
-   'name_val',
    'datatype',
    'description',
    'attributes',
@@ -44,11 +42,6 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot> {
    // The amount of spaces to use to indent an array.
    static readonly INDENTATION_AMOUNT_ARRAY = 2;
 
-   constructor(
-      protected services: CrossModelServices,
-      protected refNameProvider = services.references.QualifiedNameProvider
-   ) {}
-
    serialize(root: CrossModelRoot): string {
       const newRoot: CrossModelRoot | Entity | Relationship | SystemDiagram = this.toSerializableObject(root);
       return this.serializeValue(newRoot, CrossModelSerializer.INDENTATION_AMOUNT_OBJECT * -1);
@@ -75,14 +68,6 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot> {
             }
 
             const serializedValue = this.serializeValue(value, indentationLevel);
-
-            // TODO Refactor CrossModel language so key is same as property name. Then the following lines can be removed.
-            if (key === 'name_val') {
-               key = 'name';
-            } else if (key === 'name') {
-               key = 'id';
-            }
-
             if (typeof value === 'object') {
                return `${indentation}${key}:${CrossModelSerializer.CHAR_NEWLINE}${serializedValue}`;
             } else {

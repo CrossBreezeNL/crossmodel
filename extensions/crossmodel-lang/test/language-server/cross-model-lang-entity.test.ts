@@ -24,8 +24,8 @@ describe('CrossModel language Entity', () => {
          expect(parsedDocument.parseResult.lexerErrors.length).toBe(0);
          expect(parsedDocument.parseResult.parserErrors.length).toBe(0);
 
+         expect(model.entity?.id).toBe('Customer');
          expect(model.entity?.name).toBe('Customer');
-         expect(model.entity?.name_val).toBe('Customer');
          expect(model.entity?.description).toBe('A customer with whom a transaction has been made.');
       });
    });
@@ -42,8 +42,8 @@ describe('CrossModel language Entity', () => {
          expect(parsedDocument.parseResult.parserErrors.length).toBe(0);
 
          expect(model.entity?.attributes.length).toBe(6);
+         expect(model.entity?.attributes[0].id).toBe('Id');
          expect(model.entity?.attributes[0].name).toBe('Id');
-         expect(model.entity?.attributes[0].name_val).toBe('Id');
          expect(model.entity?.attributes[0].datatype).toBe('int');
       });
 
@@ -56,13 +56,13 @@ describe('CrossModel language Entity', () => {
          expect(parsedDocument.parseResult.lexerErrors.length).toBe(0);
          expect(parsedDocument.parseResult.parserErrors.length).toBe(0);
 
+         expect(model.entity?.id).toBe('Customer');
          expect(model.entity?.name).toBe('Customer');
-         expect(model.entity?.name_val).toBe('Customer');
          expect(model.entity?.description).toBe('A customer with whom a transaction has been made.');
 
          expect(model.entity?.attributes.length).toBe(6);
+         expect(model.entity?.attributes[0].id).toBe('Id');
          expect(model.entity?.attributes[0].name).toBe('Id');
-         expect(model.entity?.attributes[0].name_val).toBe('Id');
          expect(model.entity?.attributes[0].datatype).toBe('int');
       });
 

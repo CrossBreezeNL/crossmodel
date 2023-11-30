@@ -1,5 +1,7 @@
+# keep in sync with .prettierignore if useful
 node_modules
 dist
 out
 lib
 examples
+generated

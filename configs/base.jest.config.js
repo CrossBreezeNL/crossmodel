@@ -15,6 +15,7 @@ module.exports = {
          }
       ],
       ['github-actions', { silent: false }],
-      'summary'
+      'summary',
+      'default'
    ]
 };

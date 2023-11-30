@@ -23,7 +23,7 @@ describe('CrossModel language Diagram', () => {
          expect(parsedDocument.parseResult.lexerErrors.length).toBe(0);
          expect(parsedDocument.parseResult.parserErrors.length).toBe(0);
 
-         expect(model.diagram?.name).toBe('Systemdiagram1');
+         expect(model.diagram?.id).toBe('Systemdiagram1');
       });
 
       test('Diagram with indentation error', async () => {
@@ -50,7 +50,7 @@ describe('CrossModel language Diagram', () => {
 
          expect(model.diagram?.nodes.length).toBe(1);
 
-         expect(node1?.name).toBe('CustomerNode');
+         expect(node1?.id).toBe('CustomerNode');
          expect(isReference(node1?.entity)).toBe(true);
          expect(node1?.entity?.$refText).toBe('Customer');
          expect(node1?.x).toBe(100);
@@ -70,7 +70,7 @@ describe('CrossModel language Diagram', () => {
 
          expect(model.diagram?.edges.length).toBe(1);
 
-         expect(edge1?.name).toBe('OrderCustomerEdge');
+         expect(edge1?.id).toBe('OrderCustomerEdge');
          expect(isReference(edge1?.relationship)).toBe(true);
          expect(edge1?.relationship?.$refText).toBe('Order_Customer');
       });
@@ -89,17 +89,17 @@ describe('CrossModel language Diagram', () => {
          expect(parsedDocument.parseResult.lexerErrors.length).toBe(0);
          expect(parsedDocument.parseResult.parserErrors.length).toBe(0);
 
-         expect(model.diagram?.name_val).toBe('System diagram 1');
+         expect(model.diagram?.name).toBe('System diagram 1');
          expect(model.diagram?.description).toBe('This is a basic diagram with nodes and edges');
          expect(model.diagram?.nodes.length).toBe(1);
          expect(model.diagram?.edges.length).toBe(1);
 
-         expect(node1?.name).toBe('CustomerNode');
+         expect(node1?.id).toBe('CustomerNode');
          expect(isReference(node1?.entity)).toBe(true);
          expect(node1?.entity?.$refText).toBe('Customer');
          expect(node1?.x).toBe(100);
 
-         expect(edge1?.name).toBe('OrderCustomerEdge');
+         expect(edge1?.id).toBe('OrderCustomerEdge');
          expect(isReference(edge1?.relationship)).toBe(true);
          expect(edge1?.relationship?.$refText).toBe('Order_Customer');
       });
@@ -115,17 +115,17 @@ describe('CrossModel language Diagram', () => {
          expect(parsedDocument.parseResult.lexerErrors.length).toBe(0);
          expect(parsedDocument.parseResult.parserErrors.length).toBe(0);
 
-         expect(model.diagram?.name_val).toBe('System diagram 1');
+         expect(model.diagram?.name).toBe('System diagram 1');
          expect(model.diagram?.description).toBe('This is a basic diagram with nodes and edges');
          expect(model.diagram?.nodes.length).toBe(1);
          expect(model.diagram?.edges.length).toBe(1);
 
-         expect(node1?.name).toBe('CustomerNode');
+         expect(node1?.id).toBe('CustomerNode');
          expect(isReference(node1?.entity)).toBe(true);
          expect(node1?.entity?.$refText).toBe('Customer');
          expect(node1?.x).toBe(100);
 
-         expect(edge1?.name).toBe('OrderCustomerEdge');
+         expect(edge1?.id).toBe('OrderCustomerEdge');
          expect(isReference(edge1?.relationship)).toBe(true);
          expect(edge1?.relationship?.$refText).toBe('Order_Customer');
       });

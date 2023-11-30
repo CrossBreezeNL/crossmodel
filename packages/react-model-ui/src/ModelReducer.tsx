@@ -102,7 +102,7 @@ export function ModelReducer(state: ModelState, action: DispatchAction): ModelSt
          break;
 
       case 'entity:change-name':
-         state.model.entity!.name_val = action.name;
+         state.model.entity!.name = action.name;
          break;
 
       case 'entity:change-description':
@@ -122,7 +122,7 @@ export function ModelReducer(state: ModelState, action: DispatchAction): ModelSt
          break;
 
       case 'entity:attribute:change-name':
-         state.model.entity!.attributes[action.attributeIdx].name_val = action.name;
+         state.model.entity!.attributes[action.attributeIdx].name = action.name;
          break;
 
       case 'entity:attribute:add-empty':

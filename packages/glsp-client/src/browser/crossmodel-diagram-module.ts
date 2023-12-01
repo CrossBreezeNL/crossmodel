@@ -6,12 +6,15 @@ import {
    ContainerConfiguration,
    LogLevel,
    TYPES,
+   bindAsService,
    configureDefaultModelElements,
    configureModelElement,
    initializeDiagramContainer
 } from '@eclipse-glsp/client';
+import { GlspSelectionDataService } from '@eclipse-glsp/theia-integration';
 import { Container, ContainerModule } from '@theia/core/shared/inversify';
-import { EntityNode } from './model';
+import { CrossModelGLSPSelectionDataService } from './crossmodel-selection-data-service';
+import { ENTITY_NODE_TYPE, EntityNode } from './model';
 import { EntityNodeView } from './views';
 
 const crossModelDiagramModule = new ContainerModule((bind, unbind, isBound, rebind) => {
@@ -27,7 +30,10 @@ const crossModelDiagramModule = new ContainerModule((bind, unbind, isBound, rebi
    // The glsp-server can send a request to render a specific view given a type, e.g. node:entity
    // The model class holds the client-side model and properties
    // The view class shows how to draw the svg element given the properties of the model class
-   configureModelElement(context, 'node:entity', EntityNode, EntityNodeView);
+   configureModelElement(context, ENTITY_NODE_TYPE, EntityNode, EntityNodeView);
+
+   bindAsService(bind, GlspSelectionDataService, CrossModelGLSPSelectionDataService);
+   bind(TYPES.ISelectionListener).toService(CrossModelGLSPSelectionDataService);
 });
 
 export function createCrossModelDiagramContainer(...containerConfiguration: ContainerConfiguration): Container {

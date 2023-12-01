@@ -2,6 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
+import { ENTITY_NODE_TYPE } from '@crossbreeze/glsp-client/lib/browser/model';
 import { ModelService } from '@crossbreeze/model-service/lib/common';
 import { CrossModelRoot, DiagramNodeEntity } from '@crossbreeze/protocol';
 import { GlspSelection } from '@eclipse-glsp/theia-integration';
@@ -44,8 +45,13 @@ export class ModelDataService implements PropertyDataService {
    }
 
    protected async getSelectedEntity(selection: GlspSelection | undefined): Promise<DiagramNodeEntity | undefined> {
-      if (selection && GlspSelection.is(selection) && selection.sourceUri && selection.selectedElementsIDs.length !== 0) {
-         return this.modelService.requestDiagramNodeEntityModel(selection.sourceUri, selection.selectedElementsIDs[0]);
+      if (!selection || !GlspSelection.is(selection) || !selection.sourceUri || selection.selectedElementsIDs.length === 0) {
+         return undefined;
+      }
+      for (const selectedElementId of selection.selectedElementsIDs) {
+         if (selection.additionalSelectionData?.selectionDataMap.get(selectedElementId) === ENTITY_NODE_TYPE) {
+            return this.modelService.requestDiagramNodeEntityModel(selection.sourceUri, selectedElementId);
+         }
       }
       return undefined;
    }

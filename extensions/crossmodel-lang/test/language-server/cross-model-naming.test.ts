@@ -13,17 +13,17 @@ const cmServices = services.CrossModel;
 const ex1 = 'diagram:';
 const ex2 = `diagram:
     nodes:
-        - id: "nodeA"`;
+        - id: nodeA`;
 const ex3 = `diagram:
     nodes:
-        - id: "nodeA"
-        - id: "nodeA1"`;
+        - id: nodeA
+        - id: nodeA1`;
 const ex4 = `diagram:
     nodes:
-        - id: "nodeA"
-        - id: "nodeA1"
-        - id: "nodeA2"
-        - id: "nodeA4"`;
+        - id: nodeA
+        - id: nodeA1
+        - id: nodeA2
+        - id: nodeA4`;
 
 describe('NameUtil', () => {
    describe('findAvailableNodeName', () => {

@@ -7,9 +7,9 @@ import { ID_PROPERTY } from './cross-model-naming.js';
 import {
    CrossModelAstType,
    DiagramEdge,
+   Mapping,
+   SourceObject,
    SystemDiagram,
-   isDiagramEdge,
-   isDiagramNode,
    isEntity,
    isEntityAttribute,
    isRelationship,
@@ -26,7 +26,9 @@ export function registerValidationChecks(services: CrossModelServices): void {
    const checks: ValidationChecks<CrossModelAstType> = {
       AstNode: validator.checkUniqueId,
       DiagramEdge: validator.checkDiagramEdge,
-      SystemDiagram: validator.checkUniqueIdWithinDiagram
+      SystemDiagram: validator.checkUniqueIdWithinDiagram,
+      Mapping: validator.checkUniqueIdWithinMapping,
+      SourceObject: validator.checkSourceObject
    };
    registry.register(checks, validator);
 }
@@ -53,14 +55,7 @@ export class CrossModelValidator {
    }
 
    protected shouldHaveId(node: AstNode): boolean {
-      return (
-         isEntity(node) ||
-         isEntityAttribute(node) ||
-         isRelationship(node) ||
-         isSystemDiagram(node) ||
-         isDiagramEdge(node) ||
-         isDiagramNode(node)
-      );
+      return isEntity(node) || isEntityAttribute(node) || isRelationship(node) || isSystemDiagram(node);
    }
 
    checkUniqueIdWithinDiagram(diagram: SystemDiagram, accept: ValidationAcceptor): void {
@@ -81,12 +76,29 @@ export class CrossModelValidator {
       }
    }
 
+   checkUniqueIdWithinMapping(mapping: Mapping, accept: ValidationAcceptor): void {
+      const knownIds: string[] = [];
+      for (const node of mapping.sourceObjects) {
+         if (node.id && knownIds.includes(node.id)) {
+            accept('error', 'Must provide a unique id.', { node, property: ID_PROPERTY });
+         } else if (node.id) {
+            knownIds.push(node.id);
+         }
+      }
+   }
+
    checkDiagramEdge(edge: DiagramEdge, accept: ValidationAcceptor): void {
       if (edge.sourceNode?.ref?.entity?.ref?.$type !== edge.relationship?.ref?.parent?.ref?.$type) {
-         accept('error', 'Source must match type of parent', { node: edge, property: 'sourceNode' });
+         accept('error', 'Source must match type of parent.', { node: edge, property: 'sourceNode' });
       }
       if (edge.targetNode?.ref?.entity?.ref?.$type !== edge.relationship?.ref?.child?.ref?.$type) {
-         accept('error', 'Target must match type of child', { node: edge, property: 'targetNode' });
+         accept('error', 'Target must match type of child.', { node: edge, property: 'targetNode' });
+      }
+   }
+
+   checkSourceObject(obj: SourceObject, accept: ValidationAcceptor): void {
+      if (obj.join === 'from' && obj.relations.length > 0) {
+         accept('error', 'Source objects with join type "from" cannot have relations.', { node: obj, property: 'relations' });
       }
    }
 }

@@ -1,0 +1,10 @@
+entity:
+    id: Country
+    name: "Country"
+    attributes:
+        - id: Code
+          name: "Code"
+          datatype: "Varchar"
+        - id: Name
+          name: "name"
+          datatype: "Varchar"

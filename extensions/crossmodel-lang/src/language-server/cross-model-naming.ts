@@ -30,6 +30,8 @@ export interface IdProvider extends NameProvider {
    findNextId(type: string, proposal: string | undefined, container: AstNode): string;
 }
 
+export const QUALIFIED_ID_SEPARATOR = '.';
+
 /**
  * A name provider that returns the fully qualified ID of a node by default but also exposes methods to get other names:
  * - The Node ID is just the id of the node itself if it has an id.
@@ -71,7 +73,7 @@ export class DefaultIdProvider implements NameProvider, IdProvider {
       while (parent) {
          const parentId = this.getNodeId(parent);
          if (parentId) {
-            id = parentId + '.' + id;
+            id = parentId + QUALIFIED_ID_SEPARATOR + id;
          }
          parent = parent.$container;
       }
@@ -90,7 +92,7 @@ export class DefaultIdProvider implements NameProvider, IdProvider {
       if (!localId) {
          return undefined;
       }
-      return packageName + '/' + localId;
+      return packageName + QUALIFIED_ID_SEPARATOR + localId;
    }
 
    getPackageName(node?: AstNode): string {

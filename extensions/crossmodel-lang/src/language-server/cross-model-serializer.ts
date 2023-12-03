@@ -11,20 +11,43 @@ const PROPERTY_ORDER = [
    'name',
    'datatype',
    'description',
+   'entity',
    'attributes',
    'parent',
    'child',
    'type',
    'nodes',
    'edges',
-   'entity',
    'x',
    'y',
    'width',
    'height',
    'relationship',
    'sourceNode',
-   'targetNode'
+   'targetNode',
+   'sources',
+   'target',
+   'object',
+   'join',
+   'relations',
+   'attribute',
+   'source',
+   'conditions'
+];
+
+const ID_OR_IDREF = [
+   'id',
+   'relationship',
+   'entity',
+   'sourceNode',
+   'targetNode',
+   'object',
+   'source',
+   'target',
+   'attribute',
+   'from',
+   'parent',
+   'child'
 ];
 
 /**
@@ -44,34 +67,38 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot> {
 
    serialize(root: CrossModelRoot): string {
       const newRoot: CrossModelRoot | Entity | Relationship | SystemDiagram = this.toSerializableObject(root);
-      return this.serializeValue(newRoot, CrossModelSerializer.INDENTATION_AMOUNT_OBJECT * -1);
+      return this.serializeValue(newRoot, CrossModelSerializer.INDENTATION_AMOUNT_OBJECT * -1, 'root');
    }
 
-   private serializeValue(value: any, indentationLevel: number): string {
+   private serializeValue(value: any, indentationLevel: number, key: string): string {
       if (Array.isArray(value)) {
-         return this.serializeArray(value, indentationLevel);
+         return this.serializeArray(value, indentationLevel, key);
       } else if (typeof value === 'object' && value !== undefined) {
-         return this.serializeObject(value, indentationLevel + CrossModelSerializer.INDENTATION_AMOUNT_OBJECT);
+         return this.serializeObject(value, indentationLevel + CrossModelSerializer.INDENTATION_AMOUNT_OBJECT, key);
       } else {
-         return JSON.stringify(value);
+         return this.isIdOrIdRef(key) ? value : JSON.stringify(value);
       }
    }
 
-   private serializeObject(obj: Record<string, any>, indentationLevel: number): string {
+   private isIdOrIdRef(key: string): boolean {
+      return ID_OR_IDREF.includes(key);
+   }
+
+   private serializeObject(obj: Record<string, any>, indentationLevel: number, key: string): string {
       const indentation = CrossModelSerializer.CHAR_INDENTATION.repeat(indentationLevel);
 
       const serializedProperties = Object.entries(obj)
          .sort((left, right) => PROPERTY_ORDER.indexOf(left[0]) - PROPERTY_ORDER.indexOf(right[0]))
-         .map(([key, value]) => {
+         .map(([propKey, value]) => {
             if (Array.isArray(value) && value.length === 0) {
                return;
             }
 
-            const serializedValue = this.serializeValue(value, indentationLevel);
+            const propValue = this.serializeValue(value, indentationLevel, propKey);
             if (typeof value === 'object') {
-               return `${indentation}${key}:${CrossModelSerializer.CHAR_NEWLINE}${serializedValue}`;
+               return `${indentation}${propKey}:${CrossModelSerializer.CHAR_NEWLINE}${propValue}`;
             } else {
-               return `${indentation}${key}: ${serializedValue}`;
+               return `${indentation}${propKey}: ${propValue}`;
             }
          })
          .filter(item => item !== undefined);
@@ -79,9 +106,9 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot> {
       return serializedProperties.join(CrossModelSerializer.CHAR_NEWLINE);
    }
 
-   private serializeArray(arr: any[], indentationLevel: number): string {
+   private serializeArray(arr: any[], indentationLevel: number, key: string): string {
       const serializedItems = arr
-         .map(item => this.serializeValue(item, indentationLevel))
+         .map(item => this.serializeValue(item, indentationLevel, key))
          .map(item => this.changeCharInString(item, indentationLevel + CrossModelSerializer.INDENTATION_AMOUNT_ARRAY, '-'))
          .join(CrossModelSerializer.CHAR_NEWLINE);
       return serializedItems;

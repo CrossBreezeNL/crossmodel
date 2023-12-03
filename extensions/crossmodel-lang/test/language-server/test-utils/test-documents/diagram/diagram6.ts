@@ -2,13 +2,13 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 export const diagram6 = `diagram:
-    id: "Systemdiagram1"
+    id: Systemdiagram1
     edges:  
-        - id: 'OrderCustomerEdge' 
-          relationship: 'Order_Customer'
+        - id: OrderCustomerEdge
+          relationship: Order_Customer
     nodes:
-        - id: 'CustomerNode'
-          entity: 'Customer'
+        - id: CustomerNode
+          entity: Customer
           x: 100
           y: 100
           height: 100

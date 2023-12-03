@@ -15,18 +15,56 @@ export const CrossModelTerminals = {
     DEDENT: /this_string_does_not_matter_dedent#\$%\^&\*\(\(/,
     INDENT: /this_string_does_not_matter_indent#\$%\^&\*\(\(/,
     SPACES: /this_string_does_not_matter_spaces#\$%\^&\*\(\(/,
+    ID: /[_a-zA-Z][\w_\-~$#@/\d]*/,
 };
 
-export type Identifier = string;
+export type IDReference = string;
 
-export function isIdentifier(item: unknown): item is Identifier {
+export function isIDReference(item: unknown): item is IDReference {
     return typeof item === 'string';
+}
+
+export type JoinType = 'apply' | 'cross-join' | 'from' | 'inner-join' | 'left-join';
+
+export function isJoinType(item: unknown): item is JoinType {
+    return item === 'from' || item === 'inner-join' || item === 'cross-join' || item === 'left-join' || item === 'apply';
+}
+
+export type SourceObjectCondition = JoinCondition | RelationshipCondition;
+
+export const SourceObjectCondition = 'SourceObjectCondition';
+
+export function isSourceObjectCondition(item: unknown): item is SourceObjectCondition {
+    return reflection.isInstance(item, SourceObjectCondition);
+}
+
+export type TargetAttributeSource = NumberLiteral | ReferenceSource | StringLiteral;
+
+export const TargetAttributeSource = 'TargetAttributeSource';
+
+export function isTargetAttributeSource(item: unknown): item is TargetAttributeSource {
+    return reflection.isInstance(item, TargetAttributeSource);
+}
+
+export interface Attribute extends AstNode {
+    readonly $type: 'Attribute' | 'EntityAttribute' | 'SourceObjectAttribute';
+    datatype: string
+    description?: string
+    id: string
+    name?: string
+}
+
+export const Attribute = 'Attribute';
+
+export function isAttribute(item: unknown): item is Attribute {
+    return reflection.isInstance(item, Attribute);
 }
 
 export interface CrossModelRoot extends AstNode {
     readonly $type: 'CrossModelRoot';
     diagram?: SystemDiagram
     entity?: Entity
+    mapping?: Mapping
     relationship?: Relationship
 }
 
@@ -85,19 +123,68 @@ export function isEntity(item: unknown): item is Entity {
     return reflection.isInstance(item, Entity);
 }
 
-export interface EntityAttribute extends AstNode {
-    readonly $container: Entity;
-    readonly $type: 'EntityAttribute';
-    datatype?: string
-    description?: string
-    id?: string
-    name?: string
+export interface JoinCondition extends AstNode {
+    readonly $container: SourceObjectRelations;
+    readonly $type: 'JoinCondition';
+    expression: JoinExpression
 }
 
-export const EntityAttribute = 'EntityAttribute';
+export const JoinCondition = 'JoinCondition';
 
-export function isEntityAttribute(item: unknown): item is EntityAttribute {
-    return reflection.isInstance(item, EntityAttribute);
+export function isJoinCondition(item: unknown): item is JoinCondition {
+    return reflection.isInstance(item, JoinCondition);
+}
+
+export interface JoinExpression extends AstNode {
+    readonly $container: JoinCondition;
+    readonly $type: 'JoinExpression';
+    operator: '='
+    source: Reference<SourceObjectAttribute>
+    target: Reference<SourceObjectAttribute>
+}
+
+export const JoinExpression = 'JoinExpression';
+
+export function isJoinExpression(item: unknown): item is JoinExpression {
+    return reflection.isInstance(item, JoinExpression);
+}
+
+export interface Mapping extends AstNode {
+    readonly $container: CrossModelRoot;
+    readonly $type: 'Mapping';
+    id: string
+    sourceObjects: Array<SourceObject>
+    target: TargetMapping
+}
+
+export const Mapping = 'Mapping';
+
+export function isMapping(item: unknown): item is Mapping {
+    return reflection.isInstance(item, Mapping);
+}
+
+export interface NumberLiteral extends AstNode {
+    readonly $container: TargetAttribute;
+    readonly $type: 'NumberLiteral';
+    value: number
+}
+
+export const NumberLiteral = 'NumberLiteral';
+
+export function isNumberLiteral(item: unknown): item is NumberLiteral {
+    return reflection.isInstance(item, NumberLiteral);
+}
+
+export interface ReferenceSource extends AstNode {
+    readonly $container: TargetAttribute;
+    readonly $type: 'ReferenceSource';
+    value: Reference<SourceObjectAttribute>
+}
+
+export const ReferenceSource = 'ReferenceSource';
+
+export function isReferenceSource(item: unknown): item is ReferenceSource {
+    return reflection.isInstance(item, ReferenceSource);
 }
 
 export interface Relationship extends AstNode {
@@ -117,6 +204,58 @@ export function isRelationship(item: unknown): item is Relationship {
     return reflection.isInstance(item, Relationship);
 }
 
+export interface RelationshipCondition extends AstNode {
+    readonly $container: SourceObjectRelations;
+    readonly $type: 'RelationshipCondition';
+    relationship: Reference<Relationship>
+}
+
+export const RelationshipCondition = 'RelationshipCondition';
+
+export function isRelationshipCondition(item: unknown): item is RelationshipCondition {
+    return reflection.isInstance(item, RelationshipCondition);
+}
+
+export interface SourceObject extends AstNode {
+    readonly $container: Mapping;
+    readonly $type: 'SourceObject';
+    id: string
+    join: JoinType
+    object: Reference<Entity>
+    relations: Array<SourceObjectRelations>
+}
+
+export const SourceObject = 'SourceObject';
+
+export function isSourceObject(item: unknown): item is SourceObject {
+    return reflection.isInstance(item, SourceObject);
+}
+
+export interface SourceObjectRelations extends AstNode {
+    readonly $container: SourceObject;
+    readonly $type: 'SourceObjectRelations';
+    conditions: Array<SourceObjectCondition>
+    source: Reference<SourceObject>
+}
+
+export const SourceObjectRelations = 'SourceObjectRelations';
+
+export function isSourceObjectRelations(item: unknown): item is SourceObjectRelations {
+    return reflection.isInstance(item, SourceObjectRelations);
+}
+
+export interface StringLiteral extends AstNode {
+    readonly $container: TargetAttribute;
+    readonly $type: 'StringLiteral';
+    value: string
+}
+
+export const StringLiteral = 'StringLiteral';
+
+export function isStringLiteral(item: unknown): item is StringLiteral {
+    return reflection.isInstance(item, StringLiteral);
+}
+
 export interface SystemDiagram extends AstNode {
     readonly $container: CrossModelRoot;
     readonly $type: 'SystemDiagram';
@@ -133,24 +272,99 @@ export function isSystemDiagram(item: unknown): item is SystemDiagram {
     return reflection.isInstance(item, SystemDiagram);
 }
 
+export interface TargetAttribute extends AstNode {
+    readonly $container: TargetMapping;
+    readonly $type: 'TargetAttribute';
+    attribute: Reference<EntityAttribute>
+    source: TargetAttributeSource
+}
+
+export const TargetAttribute = 'TargetAttribute';
+
+export function isTargetAttribute(item: unknown): item is TargetAttribute {
+    return reflection.isInstance(item, TargetAttribute);
+}
+
+export interface TargetMapping extends AstNode {
+    readonly $container: Mapping;
+    readonly $type: 'TargetMapping';
+    attributes: Array<TargetAttribute>
+    entity: Reference<Entity>
+}
+
+export const TargetMapping = 'TargetMapping';
+
+export function isTargetMapping(item: unknown): item is TargetMapping {
+    return reflection.isInstance(item, TargetMapping);
+}
+
+export interface EntityAttribute extends Attribute {
+    readonly $container: Entity;
+    readonly $type: 'EntityAttribute';
+}
+
+export const EntityAttribute = 'EntityAttribute';
+
+export function isEntityAttribute(item: unknown): item is EntityAttribute {
+    return reflection.isInstance(item, EntityAttribute);
+}
+
+export interface SourceObjectAttribute extends Attribute {
+    readonly $type: 'SourceObjectAttribute';
+}
+
+export const SourceObjectAttribute = 'SourceObjectAttribute';
+
+export function isSourceObjectAttribute(item: unknown): item is SourceObjectAttribute {
+    return reflection.isInstance(item, SourceObjectAttribute);
+}
+
 export type CrossModelAstType = {
+    Attribute: Attribute
     CrossModelRoot: CrossModelRoot
     DiagramEdge: DiagramEdge
     DiagramNode: DiagramNode
     Entity: Entity
     EntityAttribute: EntityAttribute
+    JoinCondition: JoinCondition
+    JoinExpression: JoinExpression
+    Mapping: Mapping
+    NumberLiteral: NumberLiteral
+    ReferenceSource: ReferenceSource
     Relationship: Relationship
+    RelationshipCondition: RelationshipCondition
+    SourceObject: SourceObject
+    SourceObjectAttribute: SourceObjectAttribute
+    SourceObjectCondition: SourceObjectCondition
+    SourceObjectRelations: SourceObjectRelations
+    StringLiteral: StringLiteral
     SystemDiagram: SystemDiagram
+    TargetAttribute: TargetAttribute
+    TargetAttributeSource: TargetAttributeSource
+    TargetMapping: TargetMapping
 }
 
 export class CrossModelAstReflection extends AbstractAstReflection {
 
     getAllTypes(): string[] {
-        return ['CrossModelRoot', 'DiagramEdge', 'DiagramNode', 'Entity', 'EntityAttribute', 'Relationship', 'SystemDiagram'];
+        return ['Attribute', 'CrossModelRoot', 'DiagramEdge', 'DiagramNode', 'Entity', 'EntityAttribute', 'JoinCondition', 'JoinExpression', 'Mapping', 'NumberLiteral', 'ReferenceSource', 'Relationship', 'RelationshipCondition', 'SourceObject', 'SourceObjectAttribute', 'SourceObjectCondition', 'SourceObjectRelations', 'StringLiteral', 'SystemDiagram', 'TargetAttribute', 'TargetAttributeSource', 'TargetMapping'];
     }
 
     protected override computeIsSubtype(subtype: string, supertype: string): boolean {
         switch (subtype) {
+            case EntityAttribute:
+            case SourceObjectAttribute: {
+                return this.isSubtype(Attribute, supertype);
+            }
+            case JoinCondition:
+            case RelationshipCondition: {
+                return this.isSubtype(SourceObjectCondition, supertype);
+            }
+            case NumberLiteral:
+            case ReferenceSource:
+            case StringLiteral: {
+                return this.isSubtype(TargetAttributeSource, supertype);
+            }
             default: {
                 return false;
             }
@@ -160,7 +374,8 @@ export class CrossModelAstReflection extends AbstractAstReflection {
     getReferenceType(refInfo: ReferenceInfo): string {
         const referenceId = `${refInfo.container.$type}:${refInfo.property}`;
         switch (referenceId) {
-            case 'DiagramEdge:relationship': {
+            case 'DiagramEdge:relationship':
+            case 'RelationshipCondition:relationship': {
                 return Relationship;
             }
             case 'DiagramEdge:sourceNode':
@@ -169,8 +384,21 @@ export class CrossModelAstReflection extends AbstractAstReflection {
             }
             case 'DiagramNode:entity':
             case 'Relationship:child':
-            case 'Relationship:parent': {
+            case 'Relationship:parent':
+            case 'SourceObject:object':
+            case 'TargetMapping:entity': {
                 return Entity;
+            }
+            case 'JoinExpression:source':
+            case 'JoinExpression:target':
+            case 'ReferenceSource:value': {
+                return SourceObjectAttribute;
+            }
+            case 'SourceObjectRelations:source': {
+                return SourceObject;
+            }
+            case 'TargetAttribute:attribute': {
+                return EntityAttribute;
             }
             default: {
                 throw new Error(`${referenceId} is not a valid reference id.`);
@@ -188,12 +416,44 @@ export class CrossModelAstReflection extends AbstractAstReflection {
                     ]
                 };
             }
+            case 'Mapping': {
+                return {
+                    name: 'Mapping',
+                    mandatory: [
+                        { name: 'sourceObjects', type: 'array' }
+                    ]
+                };
+            }
+            case 'SourceObject': {
+                return {
+                    name: 'SourceObject',
+                    mandatory: [
+                        { name: 'relations', type: 'array' }
+                    ]
+                };
+            }
+            case 'SourceObjectRelations': {
+                return {
+                    name: 'SourceObjectRelations',
+                    mandatory: [
+                        { name: 'conditions', type: 'array' }
+                    ]
+                };
+            }
             case 'SystemDiagram': {
                 return {
                     name: 'SystemDiagram',
                     mandatory: [
                         { name: 'edges', type: 'array' },
                         { name: 'nodes', type: 'array' }
+                    ]
+                };
+            }
+            case 'TargetMapping': {
+                return {
+                    name: 'TargetMapping',
+                    mandatory: [
+                        { name: 'attributes', type: 'array' }
                     ]
                 };
             }

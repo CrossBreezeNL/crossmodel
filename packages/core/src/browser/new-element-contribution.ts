@@ -1,6 +1,7 @@
 /** ******************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
+import { quote, toId } from '@crossbreeze/protocol';
 import { Command, CommandContribution, CommandRegistry, MaybePromise, MenuContribution, MenuModelRegistry, URI, nls } from '@theia/core';
 import { CommonMenus, DialogError, codicon, open } from '@theia/core/lib/browser';
 import { TabBarToolbarRegistry } from '@theia/core/lib/browser/shell/tab-bar-toolbar';
@@ -20,18 +21,26 @@ interface NewElementTemplate extends Command {
 }
 
 const INITIAL_ENTITY_CONTENT = `entity:
-    id: "\${name}"
-    name: "\${name}"`;
+    id: \${id}
+    name: \${name}`;
 
 const INITIAL_RELATIONSHIP_CONTENT = `relationship:
-    id: "\${name}"
+    id: \${id}
     parent: 
     child: 
     type: "1:1"`;
 
 const INITIAL_DIAGRAM_CONTENT = `diagram:
-    id: "\${name}"
-    name: "\${name}"`;
+    id: \${id}
+    name: \${name}`;
+
+const INITIAL_MAPPING_CONTENT = `mapping:
+   id: \${id}
+   sources:
+      - id: Source
+   target:
+      entity: 
+      attributes: `;
 
 const TEMPLATE_CATEGORY = 'New Element';
 
@@ -42,7 +51,7 @@ const NEW_ELEMENT_TEMPLATES: NewElementTemplate[] = [
       fileExtension: '.entity.cm',
       category: TEMPLATE_CATEGORY,
       iconClass: codicon('git-commit'),
-      content: name => INITIAL_ENTITY_CONTENT.toString().replace(/\$\{name\}/gi, name)
+      content: name => INITIAL_ENTITY_CONTENT.replace(/\$\{name\}/gi, quote(name)).replace(/\$\{id\}/gi, toId(name))
    },
    {
       id: 'crossbreeze.new.relationship',
@@ -50,7 +59,7 @@ const NEW_ELEMENT_TEMPLATES: NewElementTemplate[] = [
       fileExtension: '.relationship.cm',
       category: TEMPLATE_CATEGORY,
       iconClass: codicon('git-compare'),
-      content: name => INITIAL_RELATIONSHIP_CONTENT.toString().replace(/\$\{name\}/gi, name)
+      content: name => INITIAL_RELATIONSHIP_CONTENT.replace(/\$\{name\}/gi, quote(name)).replace(/\$\{id\}/gi, toId(name))
    },
    {
       id: 'crossbreeze.new.diagram',
@@ -58,7 +67,15 @@ const NEW_ELEMENT_TEMPLATES: NewElementTemplate[] = [
       fileExtension: '.diagram.cm',
       category: TEMPLATE_CATEGORY,
       iconClass: codicon('type-hierarchy-sub'),
-      content: name => INITIAL_DIAGRAM_CONTENT.toString().replace(/\$\{name\}/gi, name)
+      content: name => INITIAL_DIAGRAM_CONTENT.replace(/\$\{name\}/gi, quote(name)).replace(/\$\{id\}/gi, toId(name))
+   },
+   {
+      id: 'crossbreeze.new.mapping',
+      label: 'Mapping',
+      fileExtension: '.mapping.cm',
+      category: TEMPLATE_CATEGORY,
+      iconClass: codicon('group-by-ref-type'),
+      content: name => INITIAL_MAPPING_CONTENT.replace(/\$\{name\}/gi, quote(name)).replace(/\$\{id\}/gi, toId(name))
    }
 ];
 

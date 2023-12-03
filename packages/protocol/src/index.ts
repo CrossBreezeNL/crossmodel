@@ -4,3 +4,4 @@
 export * from './glsp/actions';
 export * from './integration';
 export * from './model-service/protocol';
+export * from './util';

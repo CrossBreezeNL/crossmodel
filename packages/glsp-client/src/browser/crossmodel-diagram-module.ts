@@ -11,9 +11,10 @@ import {
    configureModelElement,
    initializeDiagramContainer
 } from '@eclipse-glsp/client';
-import { GlspSelectionDataService } from '@eclipse-glsp/theia-integration';
+import { TheiaGLSPSelectionForwarder } from '@eclipse-glsp/theia-integration';
 import { Container, ContainerModule } from '@theia/core/shared/inversify';
 import { CrossModelGLSPSelectionDataService } from './crossmodel-selection-data-service';
+import { CrossModelSelectionDataService, CrossModelTheiaGLSPSelectionForwarder } from './crossmodel-selection-forwarder';
 import { ENTITY_NODE_TYPE, EntityNode } from './model';
 import { EntityNodeView } from './views';
 
@@ -32,8 +33,10 @@ const crossModelDiagramModule = new ContainerModule((bind, unbind, isBound, rebi
    // The view class shows how to draw the svg element given the properties of the model class
    configureModelElement(context, ENTITY_NODE_TYPE, EntityNode, EntityNodeView);
 
-   bindAsService(bind, GlspSelectionDataService, CrossModelGLSPSelectionDataService);
-   bind(TYPES.ISelectionListener).toService(CrossModelGLSPSelectionDataService);
+   bindAsService(bind, CrossModelSelectionDataService, CrossModelGLSPSelectionDataService);
+
+   bind(CrossModelTheiaGLSPSelectionForwarder).toSelf().inSingletonScope();
+   rebind(TheiaGLSPSelectionForwarder).toService(CrossModelTheiaGLSPSelectionForwarder);
 });
 
 export function createCrossModelDiagramContainer(...containerConfiguration: ContainerConfiguration): Container {
@@ -41,5 +44,5 @@ export function createCrossModelDiagramContainer(...containerConfiguration: Cont
 }
 
 export function initializeCrossModelDiagramContainer(container: Container, ...containerConfiguration: ContainerConfiguration): Container {
-   return initializeDiagramContainer(container, crossModelDiagramModule, ...containerConfiguration);
+   return initializeDiagramContainer(container, ...containerConfiguration, crossModelDiagramModule);
 }

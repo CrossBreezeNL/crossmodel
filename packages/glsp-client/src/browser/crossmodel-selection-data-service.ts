@@ -1,25 +1,21 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { GModelRoot, ISelectionListener } from '@eclipse-glsp/client';
-import { GlspSelectionData, GlspSelectionDataService } from '@eclipse-glsp/theia-integration';
+import { GModelElement, GModelRoot } from '@eclipse-glsp/client';
+import { GlspSelectionData } from '@eclipse-glsp/theia-integration';
 import { isDefined } from '@theia/core';
 import { injectable } from '@theia/core/shared/inversify';
+import { CrossModelSelectionDataService } from './crossmodel-selection-forwarder';
 
 @injectable()
-export class CrossModelGLSPSelectionDataService extends GlspSelectionDataService implements ISelectionListener {
-   protected root?: Readonly<GModelRoot>;
-
-   selectionChanged(root: Readonly<GModelRoot>, selectedElements: string[], deselectedElements?: string[] | undefined): void {
-      this.root = root;
+export class CrossModelGLSPSelectionDataService extends CrossModelSelectionDataService {
+   async getSelectionData(root: Readonly<GModelRoot>, selectedElementIds: string[]): Promise<GlspSelectionData> {
+      return getSelectionDataFor(selectedElementIds.map(id => root.index.getById(id)).filter(isDefined));
    }
+}
 
-   async getSelectionData(selectedElementIds: string[]): Promise<GlspSelectionData> {
-      const selectionDataMap = new Map<string, string>();
-      selectedElementIds
-         .map(elementId => this.root?.index.getById(elementId))
-         .filter(isDefined)
-         .forEach(element => selectionDataMap.set(element.id, element.type));
-      return { selectionDataMap };
-   }
+export function getSelectionDataFor(selection: GModelElement[]): GlspSelectionData {
+   const selectionDataMap = new Map<string, string>();
+   selection.forEach(element => selectionDataMap.set(element.id, element.type));
+   return { selectionDataMap };
 }

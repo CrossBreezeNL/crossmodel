@@ -10,7 +10,7 @@ import { PropertyViewContentWidget } from '@theia/property-view/lib/browser/prop
 import { ModelService } from '@crossbreeze/model-service/lib/common';
 import { CrossModelRoot, isDiagramNodeEntity } from '@crossbreeze/protocol';
 import { EntityPropertyView, withModelProvider } from '@crossbreeze/react-model-ui';
-import { GLSPDiagramWidget, GlspSelection } from '@eclipse-glsp/theia-integration';
+import { GLSPDiagramWidget, GlspSelection, getDiagramWidget } from '@eclipse-glsp/theia-integration';
 import { ApplicationShell } from '@theia/core/lib/browser/shell/application-shell';
 import { inject, injectable } from '@theia/core/shared/inversify';
 import { PROPERTY_CLIENT_ID } from './model-data-service';
@@ -39,6 +39,11 @@ export class ModelPropertyWidget extends ReactWidget implements PropertyViewCont
    }
 
    async updatePropertyViewContent(propertyDataService?: PropertyDataService, selection?: GlspSelection | undefined): Promise<void> {
+      const activeWidget = getDiagramWidget(this.shell);
+      if (activeWidget?.options.uri === this.uri && this.uri !== selection?.sourceUri) {
+         // only react to selection of active widget
+         return;
+      }
       this.model = undefined;
 
       if (propertyDataService) {

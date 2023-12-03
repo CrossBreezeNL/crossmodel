@@ -32,6 +32,7 @@
   "dependencies": {
     "@crossbreeze/core": "0.0.0",
     "@crossbreeze/protocol": "0.0.0",
+    "@eclipse-glsp/client": "2.0.0",
     "@eclipse-glsp/theia-integration": "2.0.0",
     "@theia/core": "1.43.1",
     "@theia/filesystem": "1.43.1",

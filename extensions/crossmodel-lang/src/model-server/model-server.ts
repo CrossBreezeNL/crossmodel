@@ -75,7 +75,7 @@ export class ModelServer implements Disposable {
       const entity: Entity | undefined = diagramNode?.entity?.ref;
 
       if (!entity?.$container.$document) {
-         throw new Error('No node found with the given id: ' + id);
+         throw new Error('No node found with the given id: ' + id + ' (in ' + uri + ')');
       }
 
       const serializedEntity = toSerializable({
@@ -112,7 +112,8 @@ export class ModelServer implements Disposable {
             this.connection.sendNotification(OnUpdated, {
                uri: args.uri,
                model: toSerializable(event.model) as CrossModelRoot,
-               sourceClientId: event.sourceClientId
+               sourceClientId: event.sourceClientId,
+               reason: event.reason
             })
          )
       );

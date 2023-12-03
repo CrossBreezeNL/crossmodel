@@ -21,6 +21,11 @@ import { CrossModelLanguageMetaData } from '../language-server/generated/module.
 import { AddedSharedModelServices } from './model-module.js';
 import { OpenableTextDocuments } from './openable-text-documents.js';
 
+export interface UpdateInfo {
+   changed: URI[];
+   deleted: URI[];
+}
+
 /**
  * A manager class that supports handling documents with a simple open-update-save/close lifecycle.
  *
@@ -32,6 +37,8 @@ export class OpenTextDocumentManager {
    protected langiumDocs: LangiumDocuments;
    protected documentBuilder: DocumentBuilder;
 
+   protected lastUpdate?: UpdateInfo;
+
    constructor(services: AddedSharedModelServices & LangiumDefaultSharedServices) {
       this.textDocuments = services.workspace.TextDocuments;
       this.fileSystemProvider = services.workspace.FileSystemProvider;
@@ -42,6 +49,9 @@ export class OpenTextDocumentManager {
          this.open({ clientId: event.clientId, uri: event.document.uri, languageId: event.document.languageId })
       );
       this.textDocuments.onDidClose(event => this.close({ clientId: event.clientId, uri: event.document.uri }));
+      this.documentBuilder.onUpdate((changed, deleted) => {
+         this.lastUpdate = { changed, deleted };
+      });
    }
 
    /**
@@ -72,11 +82,17 @@ export class OpenTextDocumentManager {
          const changedDocument = allChangedDocuments.find(document => document.uri.toString() === uri);
          if (changedDocument) {
             const sourceClientId = this.getSourceClientId(changedDocument, allChangedDocuments);
-            listener({
+            const event: ModelUpdatedEvent<T> = {
                model: changedDocument.parseResult.value as T,
                sourceClientId,
-               uri: changedDocument.textDocument.uri
-            });
+               uri: changedDocument.textDocument.uri,
+               reason: this.lastUpdate?.changed.includes(changedDocument.uri)
+                  ? 'changed'
+                  : this.lastUpdate?.deleted.includes(changedDocument.uri)
+                    ? 'deleted'
+                    : 'updated'
+            };
+            listener(event);
          }
       });
    }
@@ -133,7 +149,7 @@ export class OpenTextDocumentManager {
    }
 
    protected createDummyDocument(uri: string): TextDocumentItem {
-      return TextDocumentItem.create(this.normalizedUri(uri), CrossModelLanguageMetaData.languageId, 1, '');
+      return TextDocumentItem.create(this.normalizedUri(uri), CrossModelLanguageMetaData.languageId, 0, '');
    }
 
    protected async createDocumentFromFileSystem(
@@ -142,7 +158,7 @@ export class OpenTextDocumentManager {
    ): Promise<TextDocumentItem> {
       const vscUri = URI.parse(uri);
       const content = this.fileSystemProvider.readFileSync(vscUri);
-      return TextDocumentItem.create(vscUri.toString(), languageId, 1, content.toString());
+      return TextDocumentItem.create(vscUri.toString(), languageId, 0, content.toString());
    }
 
    protected normalizedUri(uri: string): string {

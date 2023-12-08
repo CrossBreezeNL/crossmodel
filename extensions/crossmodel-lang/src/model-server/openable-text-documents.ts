@@ -25,7 +25,7 @@ import {
 } from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { URI } from 'vscode-uri';
-import { ClientLogger } from '../language-server/cross-model-client-logger.js';
+import { CrossModelSharedServices } from '../language-server/cross-model-module.js';
 
 export const LANGUAGE_CLIENT_ID = 'language-client';
 
@@ -42,7 +42,8 @@ export class OpenableTextDocuments<T extends TextDocument> extends TextDocuments
 
    public constructor(
       protected configuration: TextDocumentsConfiguration<T>,
-      protected logger: ClientLogger
+      protected services: CrossModelSharedServices,
+      protected logger = services.logger.ClientLogger
    ) {
       super(configuration);
    }
@@ -95,7 +96,8 @@ export class OpenableTextDocuments<T extends TextDocument> extends TextDocuments
       (<any>connection).__textDocumentSync = TextDocumentSyncKind.Incremental;
       const disposables: Disposable[] = [];
       disposables.push(
-         connection.onDidOpenTextDocument((event: DidOpenTextDocumentParams) => {
+         connection.onDidOpenTextDocument(async (event: DidOpenTextDocumentParams) => {
+            await this.services.workspace.WorkspaceManager.workspaceInitialized;
             this.notifyDidOpenTextDocument(event);
          })
       );

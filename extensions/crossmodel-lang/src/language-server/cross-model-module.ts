@@ -80,6 +80,9 @@ export interface CrossModelAddedSharedServices {
    logger: {
       ClientLogger: ClientLogger;
    };
+   lsp: {
+      /* override */ LanguageServer: CrossModelLanguageServer;
+   };
 }
 
 export const CrossModelSharedServices = Symbol('CrossModelSharedServices');
@@ -96,7 +99,7 @@ export const CrossModelSharedModule: Module<
       WorkspaceManager: services => new CrossModelWorkspaceManager(services),
       PackageManager: services => new CrossModelPackageManager(services),
       LangiumDocuments: services => new CrossModelLangiumDocuments(services),
-      TextDocuments: services => new OpenableTextDocuments(TextDocument, services.logger.ClientLogger),
+      TextDocuments: services => new OpenableTextDocuments(TextDocument, services),
       TextDocumentManager: services => new OpenTextDocumentManager(services),
       DocumentBuilder: services => new CrossModelDocumentBuilder(services)
    },

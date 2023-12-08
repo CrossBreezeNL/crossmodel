@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { AstNode, DefaultWorkspaceManager, FileSystemNode, LangiumDocument } from 'langium';
+import { AstNode, DefaultWorkspaceManager, Deferred, FileSystemNode, LangiumDocument } from 'langium';
 import { CancellationToken, Emitter, Event, WorkspaceFolder } from 'vscode-languageserver';
 import { URI, Utils } from 'vscode-uri';
 import { CrossModelSharedServices } from './cross-model-module.js';
@@ -14,6 +14,8 @@ import { CrossModelSharedServices } from './cross-model-module.js';
  */
 export class CrossModelWorkspaceManager extends DefaultWorkspaceManager {
    protected onWorkspaceInitializedEmitter = new Emitter<URI[]>();
+   protected workspaceInitializedDeferred = new Deferred<URI[]>();
+   workspaceInitialized = this.workspaceInitializedDeferred.promise;
 
    constructor(
       protected services: CrossModelSharedServices,
@@ -24,9 +26,15 @@ export class CrossModelWorkspaceManager extends DefaultWorkspaceManager {
    }
 
    override async initializeWorkspace(folders: WorkspaceFolder[], cancelToken?: CancellationToken | undefined): Promise<void> {
-      await super.initializeWorkspace(folders, cancelToken);
-      this.logger.info('Workspace Initialized');
-      this.onWorkspaceInitializedEmitter.fire((this.folders || []).map(folder => this.getRootFolder(folder)));
+      try {
+         await super.initializeWorkspace(folders, cancelToken);
+         this.logger.info('Workspace Initialized');
+         const uris = this.folders?.map(folder => this.getRootFolder(folder)) || [];
+         this.workspaceInitializedDeferred.resolve(uris);
+         this.onWorkspaceInitializedEmitter.fire(uris);
+      } catch (error) {
+         this.workspaceInitializedDeferred.reject(error);
+      }
    }
 
    get onWorkspaceInitialized(): Event<URI[]> {

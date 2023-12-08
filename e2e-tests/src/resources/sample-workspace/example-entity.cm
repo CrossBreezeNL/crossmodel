@@ -1,14 +1,14 @@
 entity:
-    id: "ExampleEntity"
+    id: ExampleEntity
     name: "Example Entity"
     description: "An example entity"
     attributes:
-      - id: "Id"
+      - id: Id
         name: "Id"
         datatype: "Integer"
-      - id: "FirstAttribute"
+      - id: FirstAttribute
         name: "First Attribute"
         datatype: "Varchar"
-      - id: "SecondAttribute"
+      - id: SecondAttribute
         name: "Second Attribute"
         datatype: "Varchar"

@@ -3,15 +3,14 @@
  ********************************************************************************/
 import { AstNode, ValidationAcceptor, ValidationChecks } from 'langium';
 import type { CrossModelServices } from './cross-model-module.js';
-import { ID_PROPERTY } from './cross-model-naming.js';
+import { ID_PROPERTY, IdentifiableAstNode } from './cross-model-naming.js';
 import {
    CrossModelAstType,
    DiagramEdge,
-   Mapping,
    SourceObject,
-   SystemDiagram,
    isEntity,
    isEntityAttribute,
+   isMapping,
    isRelationship,
    isSystemDiagram
 } from './generated/ast.js';
@@ -24,10 +23,8 @@ export function registerValidationChecks(services: CrossModelServices): void {
    const validator = services.validation.CrossModelValidator;
 
    const checks: ValidationChecks<CrossModelAstType> = {
-      AstNode: validator.checkUniqueId,
+      AstNode: validator.checkNode,
       DiagramEdge: validator.checkDiagramEdge,
-      SystemDiagram: validator.checkUniqueIdWithinDiagram,
-      Mapping: validator.checkUniqueIdWithinMapping,
       SourceObject: validator.checkSourceObject
    };
    registry.register(checks, validator);
@@ -39,46 +36,45 @@ export function registerValidationChecks(services: CrossModelServices): void {
 export class CrossModelValidator {
    constructor(protected services: CrossModelServices) {}
 
-   checkUniqueId(node: AstNode, accept: ValidationAcceptor): void {
-      const elementName = this.services.references.IdProvider.getNodeId(node);
-      if (!elementName) {
-         if (this.shouldHaveId(node)) {
-            accept('error', 'Missing required id field', { node, property: ID_PROPERTY });
-         }
+   checkNode(node: AstNode, accept: ValidationAcceptor): void {
+      this.checkUniqueExternalId(node, accept);
+      this.checkUniqueNodeId(node, accept);
+   }
+
+   protected checkUniqueExternalId(node: AstNode, accept: ValidationAcceptor): void {
+      if (!this.isExported(node)) {
+         return;
+      }
+      const externalId = this.services.references.IdProvider.getExternalId(node);
+      if (!externalId) {
+         accept('error', 'Missing required id field', { node, property: ID_PROPERTY });
          return;
       }
       const allElements = Array.from(this.services.shared.workspace.IndexManager.allElements());
-      const duplicates = allElements.filter(description => description.name === elementName);
+      const duplicates = allElements.filter(description => description.name === externalId);
       if (duplicates.length > 1) {
          accept('error', 'Must provide a unique id.', { node, property: ID_PROPERTY });
       }
    }
 
-   protected shouldHaveId(node: AstNode): boolean {
-      return isEntity(node) || isEntityAttribute(node) || isRelationship(node) || isSystemDiagram(node);
+   protected isExported(node: AstNode): boolean {
+      // we export anything with an id from entities and relationships and all root nodes, see CrossModelScopeComputation
+      return isEntity(node) || isEntityAttribute(node) || isRelationship(node) || isSystemDiagram(node) || isMapping(node);
    }
 
-   checkUniqueIdWithinDiagram(diagram: SystemDiagram, accept: ValidationAcceptor): void {
-      const knownIds: string[] = [];
-      for (const node of diagram.nodes) {
-         if (node.id && knownIds.includes(node.id)) {
-            accept('error', 'Must provide a unique id.', { node, property: ID_PROPERTY });
-         } else if (node.id) {
-            knownIds.push(node.id);
-         }
+   protected checkUniqueNodeId(node: AstNode, accept: ValidationAcceptor): void {
+      if (isSystemDiagram(node)) {
+         this.markDuplicateIds(node.edges, accept);
+         this.markDuplicateIds(node.nodes, accept);
       }
-      for (const edge of diagram.edges) {
-         if (edge.id && knownIds.includes(edge.id)) {
-            accept('error', 'Must provide a unique id.', { node: edge, property: ID_PROPERTY });
-         } else if (edge.id) {
-            knownIds.push(edge.id);
-         }
+      if (isMapping(node)) {
+         this.markDuplicateIds(node.sourceObjects, accept);
       }
    }
 
-   checkUniqueIdWithinMapping(mapping: Mapping, accept: ValidationAcceptor): void {
+   protected markDuplicateIds(nodes: IdentifiableAstNode[], accept: ValidationAcceptor): void {
       const knownIds: string[] = [];
-      for (const node of mapping.sourceObjects) {
+      for (const node of nodes) {
          if (node.id && knownIds.includes(node.id)) {
             accept('error', 'Must provide a unique id.', { node, property: ID_PROPERTY });
          } else if (node.id) {

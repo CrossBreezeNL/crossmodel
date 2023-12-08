@@ -9,6 +9,10 @@ import { findDocument } from './util/ast-util.js';
 
 export const ID_PROPERTY = 'id';
 
+export type IdentifiableAstNode = AstNode & {
+   id?: string;
+};
+
 export type IdentifiedAstNode = AstNode & {
    [ID_PROPERTY]: string;
 };

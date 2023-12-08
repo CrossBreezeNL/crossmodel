@@ -73,8 +73,8 @@ export class CrossModelScopeComputation extends DefaultScopeComputation {
    ): Promise<AstNodeDescription[]> {
       const docRoot = document.parseResult.value;
       if (isCrossModelRoot(docRoot) && (docRoot.diagram || docRoot.mapping)) {
-         // we do not export anything from diagrams or mappings, they are self-contained
-         return [];
+         // we do not export anything from diagrams or mappings except their root node
+         super.computeExportsForNode(parentNode, document, () => [], cancelToken);
       }
       return super.computeExportsForNode(parentNode, document, children, cancelToken);
    }

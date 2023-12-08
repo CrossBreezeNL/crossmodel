@@ -7,6 +7,7 @@ import { ID_PROPERTY } from './cross-model-naming.js';
 import {
    CrossModelAstType,
    DiagramEdge,
+   SystemDiagram,
    isDiagramEdge,
    isDiagramNode,
    isEntity,
@@ -24,7 +25,8 @@ export function registerValidationChecks(services: CrossModelServices): void {
 
    const checks: ValidationChecks<CrossModelAstType> = {
       AstNode: validator.checkUniqueId,
-      DiagramEdge: validator.checkDiagramEdge
+      DiagramEdge: validator.checkDiagramEdge,
+      SystemDiagram: validator.checkUniqueIdWithinDiagram
    };
    registry.register(checks, validator);
 }
@@ -59,6 +61,24 @@ export class CrossModelValidator {
          isDiagramEdge(node) ||
          isDiagramNode(node)
       );
+   }
+
+   checkUniqueIdWithinDiagram(diagram: SystemDiagram, accept: ValidationAcceptor): void {
+      const knownIds: string[] = [];
+      for (const node of diagram.nodes) {
+         if (node.id && knownIds.includes(node.id)) {
+            accept('error', 'Must provide a unique id.', { node, property: ID_PROPERTY });
+         } else if (node.id) {
+            knownIds.push(node.id);
+         }
+      }
+      for (const edge of diagram.edges) {
+         if (edge.id && knownIds.includes(edge.id)) {
+            accept('error', 'Must provide a unique id.', { node: edge, property: ID_PROPERTY });
+         } else if (edge.id) {
+            knownIds.push(edge.id);
+         }
+      }
    }
 
    checkDiagramEdge(edge: DiagramEdge, accept: ValidationAcceptor): void {

@@ -1,10 +1,12 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { GLSPClient } from '@eclipse-glsp/protocol';
-import { BaseGLSPClientContribution } from '@eclipse-glsp/theia-integration';
+import { Action, ActionMessage, ActionMessageHandler, ConnectionProvider, GLSPClient, JsonrpcGLSPClient } from '@eclipse-glsp/protocol';
+import { BaseGLSPClientContribution, TheiaJsonrpcGLSPClient } from '@eclipse-glsp/theia-integration';
+import { Emitter } from '@theia/core';
 import { Deferred } from '@theia/core/lib/common/promise-util';
 import { inject, injectable } from '@theia/core/shared/inversify';
+import { Disposable, MessageConnection } from '@theia/core/shared/vscode-languageserver-protocol';
 import { OutputChannelManager } from '@theia/output/lib/browser/output-channel';
 import '../../style/diagram.css';
 import { CrossModelDiagramLanguage } from '../common/crossmodel-diagram-language';
@@ -50,5 +52,34 @@ export class CrossModelClientContribution extends BaseGLSPClientContribution {
       // Only then we actually start and initialize our client connection with the server
       await this.waitForBackendConnected();
       return super.start(glspClient);
+   }
+
+   protected override async createGLSPClient(connectionProvider: ConnectionProvider): Promise<GLSPClient> {
+      return new FixedTheiaJsonrpcGLSPClient({
+         id: this.id,
+         connectionProvider,
+         messageService: this.messageService
+      });
+   }
+}
+
+export class FixedTheiaJsonrpcGLSPClient extends TheiaJsonrpcGLSPClient {
+   protected actionMessageEmitter = new Emitter<ActionMessage<Action>>();
+   protected onActionMessageEvent = this.actionMessageEmitter.event;
+
+   override onActionMessage(handler: ActionMessageHandler, clientId?: string | undefined): Disposable {
+      return this.onActionMessageEvent(msg => {
+         if (!clientId || msg.clientId === clientId) {
+            handler(msg);
+         }
+      });
+   }
+
+   protected override async doCreateConnection(): Promise<MessageConnection> {
+      const connection = await super.doCreateConnection();
+      connection.onNotification(JsonrpcGLSPClient.ActionMessageNotification, msg => {
+         this.actionMessageEmitter.fire(msg);
+      });
+      return connection;
    }
 }

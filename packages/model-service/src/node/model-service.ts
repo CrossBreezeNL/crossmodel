@@ -139,7 +139,7 @@ export class ModelServiceImpl implements ModelService, BackendApplicationContrib
 
    setUpListeners(): void {
       this.connection.onNotification(OnSave, event => {
-         this.client?.updateModel(event);
+         this.client?.updateModel({ ...event, reason: 'saved' });
       });
       this.connection.onNotification(OnUpdated, event => {
          this.client?.updateModel(event);

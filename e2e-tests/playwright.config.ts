@@ -10,9 +10,13 @@ export default defineConfig({
    retries: process.env.CI ? 1 : 0,
    // The number of times to repeat each test, useful for debugging flaky tests
    repeatEach: 1,
-   // Timeout for each test in milliseconds: 60 seconds.
+   // Fixture timeout (for each test) in milliseconds: 60 seconds.
    timeout: 60 * 1000,
    use: {
+      // Timeout for each single action in milliseconds: 5 seconds (make sure it's less hen the fixture timeout, so it will timeout before the whole tests times out)
+      actionTimeout: 5 * 1000,
+      // Timeout for each navigation action in milliseconds: 10 seconds (make sure it's less hen the fixture timeout, so it will timeout before the whole tests times out)
+      navigationTimeout: 10 * 1000,
       baseURL: 'http://localhost:3000',
       browserName: 'chromium',
       screenshot: 'only-on-failure',

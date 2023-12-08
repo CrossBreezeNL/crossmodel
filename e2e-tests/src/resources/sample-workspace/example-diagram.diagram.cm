@@ -1,0 +1,15 @@
+diagram:
+    id: "Example-diagram"
+    name: "Example-diagram"
+    nodes:
+      - id: "ExampleEntityNode"
+        entity: "unknown/ExampleEntity"
+        x: 463.96875
+        y: 251
+        width: 152.28289794921875
+        height: 94
+    edges:
+      - id: "ExampleEntityToExampleEntity"
+        relationship: "unknown/ExampleEntityToExampleEntity"
+        sourceNode: "ExampleEntityNode"
+        targetNode: "ExampleEntityNode"

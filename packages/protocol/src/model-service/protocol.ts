@@ -75,6 +75,7 @@ export interface ModelUpdatedEvent<T> {
    uri: string;
    model: T;
    sourceClientId: string;
+   reason: 'changed' | 'deleted' | 'updated' | 'saved';
 }
 
 export interface ModelSavedEvent<T> {

@@ -7,7 +7,6 @@ import { Command, JsonOperationHandler } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
 import { URI } from 'vscode-uri';
 import { CrossModelRoot, DiagramNode, isCrossModelRoot } from '../../language-server/generated/ast.js';
-import { findNextId } from '../../language-server/util/name-util.js';
 import { CrossModelState } from '../model/cross-model-state.js';
 import { CrossModelCommand } from './cross-model-command.js';
 
@@ -37,7 +36,7 @@ export class CrossModelDropEntityOperationHandler extends JsonOperationHandler {
             const node: DiagramNode = {
                $type: DiagramNode,
                $container: container,
-               id: findNextId(container, root.entity.id + 'Node'),
+               id: this.modelState.idProvider.findNextId(DiagramNode, root.entity.id + 'Node', this.modelState.diagramRoot),
                entity: {
                   $refText: this.modelState.idProvider.getExternalId(root.entity) || root.entity.id || '',
                   ref: root.entity

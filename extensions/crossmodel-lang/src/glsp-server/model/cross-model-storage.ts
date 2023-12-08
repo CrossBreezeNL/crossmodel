@@ -57,7 +57,7 @@ export class CrossModelStorage implements SourceModelStorage, ClientSessionListe
       this.state.setSemanticRoot(rootUri, root);
       this.toDispose.push(
          this.state.modelService.onUpdate<CrossModelRoot>(rootUri, async event => {
-            if (this.state.clientId !== event.sourceClientId) {
+            if (this.state.clientId !== event.sourceClientId || event.reason !== 'changed') {
                this.state.setSemanticRoot(rootUri, event.model);
                this.actionDispatcher.dispatchAll(await this.submissionHandler.submitModel('external'));
             }

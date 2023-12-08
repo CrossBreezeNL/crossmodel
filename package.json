@@ -11,7 +11,7 @@
   "scripts": {
     "build": "lerna run build",
     "clean": "lerna run clean && rimraf node_modules",
-    "format": "yarn prettier-eslint --write '**/*.{ts,tsx,js,cjs,mjs}' '**/package.json'",
+    "format": "yarn prettier-eslint --write '**/*.{ts,tsx,js,cjs,mjs,css}' '**/package.json'",
     "postinstall": "theia check:theia-version",
     "lint": "lerna run lint",
     "prepare": "lerna run prepare",

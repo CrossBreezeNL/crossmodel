@@ -2,7 +2,6 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { ModelService } from '@crossbreeze/model-service/lib/common';
 import { GlspSelection } from '@eclipse-glsp/theia-integration';
 import { inject, injectable } from '@theia/core/shared/inversify';
 import { DefaultPropertyViewWidgetProvider } from '@theia/property-view/lib/browser/property-view-widget-provider';
@@ -16,11 +15,6 @@ export class ModelPropertyWidgetProvider extends DefaultPropertyViewWidgetProvid
    currentNode = '';
 
    @inject(ModelPropertyWidget) protected modelPropertyWidget: ModelPropertyWidget;
-   @inject(ModelService) protected modelService: ModelService;
-
-   constructor() {
-      super();
-   }
 
    override canHandle(selection: GlspSelection | undefined): number {
       // issue with how selection is determined, if the additionalSelectionData is empty we simply delete the property

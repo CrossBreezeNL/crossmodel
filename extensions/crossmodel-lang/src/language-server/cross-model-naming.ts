@@ -2,7 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { AstNode, CstNode, findNodeForProperty, NameProvider } from 'langium';
+import { AstNode, CstNode, findNodeForProperty, isAstNode, NameProvider, streamAst } from 'langium';
 import { CrossModelServices } from './cross-model-module.js';
 import { UNKNOWN_PROJECT_REFERENCE } from './cross-model-package-manager.js';
 import { findDocument } from './util/ast-util.js';
@@ -25,6 +25,9 @@ export interface IdProvider extends NameProvider {
    getNodeId(node?: AstNode): string | undefined;
    getLocalId(node?: AstNode): string | undefined;
    getExternalId(node?: AstNode): string | undefined;
+
+   findNextId(type: string, proposal: string | undefined): string;
+   findNextId(type: string, proposal: string | undefined, container: AstNode): string;
 }
 
 /**
@@ -102,5 +105,39 @@ export class DefaultIdProvider implements NameProvider, IdProvider {
 
    getNameNode(node: AstNode): CstNode | undefined {
       return findNodeForProperty(node.$cstNode, ID_PROPERTY);
+   }
+
+   findNextId(type: string, proposal: string | undefined): string;
+   findNextId(type: string, proposal: string | undefined, container: AstNode): string;
+   findNextId(type: string, proposal: string | undefined, container?: AstNode): string {
+      if (isAstNode(container)) {
+         return this.findNextIdInContainer(type, proposal ?? 'Element', container);
+      }
+      return this.findNextIdInIndex(type, proposal ?? 'Element');
+   }
+
+   protected findNextIdInContainer(type: string, proposal: string, container: AstNode): string {
+      const knownIds = streamAst(container)
+         .filter(node => node.$type === type)
+         .map(this.getNodeId)
+         .nonNullable()
+         .toArray();
+      return this.countToNextId(knownIds, proposal);
+   }
+
+   protected findNextIdInIndex(type: string, proposal: string): string {
+      const knownIds = this.services.shared.workspace.IndexManager.allElements(type)
+         .map(element => element.name)
+         .toArray();
+      return this.countToNextId(knownIds, proposal);
+   }
+
+   protected countToNextId(knownIds: string[], proposal: string): string {
+      let nextId = proposal;
+      let counter = 1;
+      while (knownIds.includes(nextId)) {
+         nextId = proposal + counter++;
+      }
+      return nextId;
    }
 }

@@ -2,26 +2,22 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { ConnectionHandler, RpcConnectionHandler } from '@theia/core';
-import { BackendApplicationContribution } from '@theia/core/lib/node/backend-application';
+import { ConnectionContainerModule } from '@theia/core/lib/node/messaging/connection-container-module';
 import { ContainerModule } from '@theia/core/shared/inversify';
 import { MODEL_SERVICE_PATH, ModelService, ModelServiceClient } from '../common/model-service-rpc';
 import { ModelServiceImpl } from './model-service';
 
-export default new ContainerModule(bind => {
+const frontendScopedConnectionModule = ConnectionContainerModule.create(({ bind, bindBackendService }) => {
    bind(ModelServiceImpl).toSelf().inSingletonScope();
    bind(ModelService).toService(ModelServiceImpl);
-   bind(BackendApplicationContribution).toService(ModelServiceImpl);
-   bind(ConnectionHandler)
-      .toDynamicValue(
-         ctx =>
-            new RpcConnectionHandler<ModelServiceClient>(MODEL_SERVICE_PATH, client => {
-               // get the proxy client representing the frontend client and fulfill connection proxy with our service implementation
-               const server = ctx.container.get<ModelService>(ModelService);
-               server.setClient(client);
-               client.onDidCloseConnection(() => server.dispose());
-               return server;
-            })
-      )
-      .inSingletonScope();
+   bindBackendService<ModelService, ModelServiceClient>(MODEL_SERVICE_PATH, ModelService, (server, client) => {
+      // get the proxy client representing the frontend client and fulfill connection proxy with our service implementation
+      server.setClient(client);
+      client.onDidCloseConnection(() => server.dispose());
+      return server;
+   });
+});
+
+export default new ContainerModule(bind => {
+   bind(ConnectionContainerModule).toConstantValue(frontendScopedConnectionModule);
 });

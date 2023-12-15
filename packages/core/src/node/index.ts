@@ -2,4 +2,3 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 export * from './cm-env-variable-server';
-export * from './integration-util';

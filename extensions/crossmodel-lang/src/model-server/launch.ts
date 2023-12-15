@@ -1,11 +1,12 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { MODELSERVER_PORT_FILE } from '@crossbreeze/protocol';
+import { MODELSERVER_PORT_COMMAND } from '@crossbreeze/protocol';
+import console from 'console';
 import * as net from 'net';
 import * as rpc from 'vscode-jsonrpc/node.js';
 import { URI } from 'vscode-uri';
-import { CrossModelLSPServices, writePortFileToWorkspace } from '../integration.js';
+import { CrossModelLSPServices } from '../integration.js';
 import { ModelServer } from './model-server.js';
 
 const currentConnections: rpc.MessageConnection[] = [];
@@ -31,9 +32,7 @@ export function startModelServer(services: CrossModelLSPServices, workspaceFolde
          return;
       }
       console.log(`[ModelServer] Ready to accept new client requests on port: ${addressInfo.port}`);
-
-      // Write dynamically assigned port to workspace folder to let clients know we are ready to accept connections
-      writePortFileToWorkspace(workspaceFolder, MODELSERVER_PORT_FILE, addressInfo);
+      services.shared.lsp.Connection?.onRequest(MODELSERVER_PORT_COMMAND, () => addressInfo.port);
    });
    netServer.on('error', err => {
       console.error('[ModelServer] Error: ', err);

@@ -1,18 +1,16 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { waitForTemporaryFileContent } from '@crossbreeze/core/lib/node';
 import {
    CloseModel,
    CloseModelArgs,
    CrossModelRoot,
    DiagramNodeEntity,
-   MODELSERVER_PORT_FILE,
+   MODELSERVER_PORT_COMMAND,
    OnSave,
    OnUpdated,
    OpenModel,
    OpenModelArgs,
-   PORT_FOLDER,
    RequestModel,
    RequestModelDiagramNode,
    SaveModel,
@@ -20,11 +18,9 @@ import {
    UpdateModel,
    UpdateModelArgs
 } from '@crossbreeze/protocol';
-import { URI } from '@theia/core';
+import { CommandService, MessageService } from '@theia/core';
 import { Deferred } from '@theia/core/lib/common/promise-util';
-import { BackendApplicationContribution } from '@theia/core/lib/node/backend-application';
 import { inject, injectable } from '@theia/core/shared/inversify';
-import { WorkspaceServer } from '@theia/workspace/lib/common';
 import * as net from 'net';
 import * as rpc from 'vscode-jsonrpc/node';
 import { ModelService, ModelServiceClient } from '../common/model-service-rpc';
@@ -33,33 +29,47 @@ import { ModelService, ModelServiceClient } from '../common/model-service-rpc';
  * Backend service implementation that mainly forwards all requests from the Theia frontend to the model server exposed on a given socket.
  */
 @injectable()
-export class ModelServiceImpl implements ModelService, BackendApplicationContribution {
+export class ModelServiceImpl implements ModelService {
    protected initialized?: Deferred<void>;
    protected connection: rpc.MessageConnection;
    protected client?: ModelServiceClient;
 
-   @inject(WorkspaceServer) protected workspaceServer: WorkspaceServer;
+   @inject(MessageService) protected messageService: MessageService;
+   @inject(CommandService) protected commandService: CommandService;
 
-   initialize(): void {
-      // try to connect to server as early as possible and not only on first request
-      this.initializeServer();
+   setClient(client: ModelServiceClient): void {
+      if (this.client) {
+         this.dispose();
+      }
+      this.client = client;
+      this.initializeServerConnection();
    }
 
-   protected initializeServer(): Promise<void> {
+   protected async initializeServerConnection(): Promise<void> {
       if (this.initialized) {
          return this.initialized.promise;
       }
-      const initialized = new Deferred<void>();
-      this.initialized = initialized;
-      this.waitForPort()
-         .then(port => this.connectToServer(port))
-         .catch(err => initialized.reject(err))
-         .then(() => initialized.resolve())
-         .catch(err => initialized.reject(err));
-      return initialized.promise;
+      this.initialized = new Deferred<void>();
+      const progress = await this.messageService.showProgress({
+         text: 'Connecting to Model Server',
+         options: { cancelable: false }
+      });
+      try {
+         progress.report({ message: 'Waiting for port information...' });
+         const port = await this.findPort();
+         progress.report({ message: 'Waiting for connection on port ' + port + '...' });
+         await this.connectToServer(port);
+         progress.cancel();
+         this.messageService.info('Connected to Model Server on port ' + port, { timeout: 3000 });
+         this.initialized.resolve();
+      } catch (error) {
+         progress.cancel();
+         this.messageService.error('Could not connect to Model Server: ' + error);
+         this.initialized.reject(error);
+      }
    }
 
-   protected async connectToServer(port: number): Promise<void> {
+   protected async connectToServer(port: number): Promise<any> {
       // Create the deferred object which exposes the Promise of the connection with the ModelServer.
       const connected = new Deferred<void>();
 
@@ -71,7 +81,7 @@ export class ModelServiceImpl implements ModelService, BackendApplicationContrib
 
       // Configure connection promise results for the rpc connection.
       this.connection.onClose(() => connected.reject('Connection with the ModelServer was closed.'));
-      this.connection.onError(() => connected.reject('Error occured with the connection to the ModelServer'));
+      this.connection.onError(error => connected.reject('Error occurred with the connection to the ModelServer: ' + JSON.stringify(error)));
 
       // Configure connection promise results for the socket.
       socket.on('ready', () => connected.resolve());
@@ -83,45 +93,56 @@ export class ModelServiceImpl implements ModelService, BackendApplicationContrib
       this.connection.listen();
 
       this.setUpListeners();
+      setTimeout(() => connected.reject('Timeout reached.'), 10000);
       return connected.promise;
    }
 
-   async waitForPort(): Promise<number> {
-      // the automatically assigned port is written by the server to a specific file location
-      // we wait for that file to be available and read the port number out of it
-      // that way we can ensure that the server is ready to accept our connection.
-      const workspace = await this.workspaceServer.getMostRecentlyUsedWorkspace();
-      if (!workspace) {
-         throw new Error('No workspace set.');
-      }
-      const portFile = new URI(workspace).path.join(PORT_FOLDER, MODELSERVER_PORT_FILE).fsPath();
-      const port = await waitForTemporaryFileContent(portFile);
-      console.debug('Found port number in workspace: %d', port);
-      return Number.parseInt(port, 10);
+   protected async findPort(timeout = 500, attempts = -1): Promise<number> {
+      const pendingContent = new Deferred<number>();
+      let counter = 0;
+      const tryQueryingPort = (): void => {
+         setTimeout(async () => {
+            try {
+               const port = await this.commandService.executeCommand<number>(MODELSERVER_PORT_COMMAND);
+               if (port) {
+                  pendingContent.resolve(port);
+               }
+            } catch (error) {
+               counter++;
+               if (attempts >= 0 && counter > attempts) {
+                  pendingContent.reject(error);
+               } else {
+                  tryQueryingPort();
+               }
+            }
+         }, timeout);
+      };
+      tryQueryingPort();
+      return pendingContent.promise;
    }
 
    async open(args: OpenModelArgs): Promise<CrossModelRoot | undefined> {
-      await this.initializeServer();
+      await this.initializeServerConnection();
       return this.connection.sendRequest(OpenModel, args);
    }
 
    async close(args: CloseModelArgs): Promise<void> {
-      await this.initializeServer();
+      await this.initializeServerConnection();
       await this.connection.sendRequest(CloseModel, args);
    }
 
    async request(uri: string): Promise<CrossModelRoot | undefined> {
-      await this.initializeServer();
+      await this.initializeServerConnection();
       return this.connection.sendRequest(RequestModel, uri);
    }
 
    async update(args: UpdateModelArgs<CrossModelRoot>): Promise<CrossModelRoot> {
-      await this.initializeServer();
+      await this.initializeServerConnection();
       return this.connection.sendRequest(UpdateModel, args);
    }
 
    async save(args: SaveModelArgs<CrossModelRoot>): Promise<void> {
-      await this.initializeServer();
+      await this.initializeServerConnection();
       return this.connection.sendRequest(SaveModel, args);
    }
 
@@ -133,23 +154,16 @@ export class ModelServiceImpl implements ModelService, BackendApplicationContrib
    }
 
    async requestDiagramNodeEntityModel(uri: string, id: string): Promise<DiagramNodeEntity | undefined> {
-      await this.initializeServer();
+      await this.initializeServerConnection();
       return this.connection.sendRequest(RequestModelDiagramNode, uri, id);
    }
 
-   setUpListeners(): void {
+   protected setUpListeners(): void {
       this.connection.onNotification(OnSave, event => {
          this.client?.updateModel({ ...event, reason: 'saved' });
       });
       this.connection.onNotification(OnUpdated, event => {
          this.client?.updateModel(event);
       });
-   }
-
-   setClient(client: ModelServiceClient): void {
-      if (this.client) {
-         this.dispose();
-      }
-      this.client = client;
    }
 }

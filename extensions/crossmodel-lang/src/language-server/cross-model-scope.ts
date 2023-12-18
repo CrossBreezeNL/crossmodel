@@ -7,7 +7,7 @@ import { CancellationToken } from 'vscode-jsonrpc';
 import { CrossModelServices } from './cross-model-module.js';
 import { DefaultIdProvider } from './cross-model-naming.js';
 import { CrossModelPackageManager, UNKNOWN_PROJECT_ID, UNKNOWN_PROJECT_REFERENCE } from './cross-model-package-manager.js';
-import { isCrossModelRoot } from './generated/ast.js';
+import { SourceObjectAttribute, isCrossModelRoot, isSourceObject, isTargetMapping } from './generated/ast.js';
 
 /**
  * Custom node description that wraps a given description under a potentially new name and also stores the package id for faster access.
@@ -72,9 +72,9 @@ export class CrossModelScopeComputation extends DefaultScopeComputation {
       cancelToken: CancellationToken = CancellationToken.None
    ): Promise<AstNodeDescription[]> {
       const docRoot = document.parseResult.value;
-      if (isCrossModelRoot(docRoot) && docRoot.diagram) {
-         // we do not export anything from diagrams, they are self-contained
-         return [];
+      if (isCrossModelRoot(docRoot) && (docRoot.diagram || docRoot.mapping)) {
+         // we do not export anything from diagrams or mappings except their root node
+         super.computeExportsForNode(parentNode, document, () => [], cancelToken);
       }
       return super.computeExportsForNode(parentNode, document, children, cancelToken);
    }
@@ -83,13 +83,13 @@ export class CrossModelScopeComputation extends DefaultScopeComputation {
       const packageInfo = this.packageManager.getPackageInfoByDocument(document);
       const packageId = packageInfo?.id ?? UNKNOWN_PROJECT_ID;
       const packageName = packageInfo?.referenceName ?? UNKNOWN_PROJECT_REFERENCE;
-      const externalId = this.idProvider.getExternalId(node, packageName);
 
       // Export nodes twice: Once for external usage with the fully-qualified name and once for package-local usage.
       // To avoid duplicates in the UI but still allow access to the node through both names we filter the
       // external usage descriptions in the CrossModelCompletionProvider if package-local usage is also available
 
       let description: AstNodeDescription | undefined;
+      const externalId = this.idProvider.getExternalId(node, packageName);
       if (externalId) {
          description = this.descriptions.createDescription(node, externalId, document);
          exports.push(new PackageExternalAstNodeDescription(packageId, externalId, description));
@@ -106,6 +106,20 @@ export class CrossModelScopeComputation extends DefaultScopeComputation {
          const id = this.idProvider.getNodeId(node);
          if (id) {
             scopes.add(container, this.descriptions.createDescription(node, id, document));
+            if (isSourceObject(node) && node.object.ref) {
+               // source objects that reference an entity "inherit" their attributes so we expose them locally
+               node.object.ref.attributes.forEach(attribute => {
+                  const description = this.descriptions.createDescription(attribute, id + '.' + attribute.id, document);
+                  scopes.add(container, { ...description, type: SourceObjectAttribute });
+               });
+            }
+         }
+         if (isTargetMapping(node) && node.entity.ref) {
+            // allow short names of attributes within a target mapping
+            node.entity.ref.attributes.forEach(attribute => {
+               const description = this.descriptions.createDescription(attribute, attribute.id, document);
+               scopes.add(container, description);
+            });
          }
       }
    }

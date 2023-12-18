@@ -22,7 +22,7 @@
         "--log-level=debug",
         "--hostname=localhost",
         "--no-cluster",
-        "--root-dir=${workspaceRoot}/examples/yaml-example",
+        "--root-dir=${workspaceRoot}/examples/mapping-example",
         "--app-project-path=${workspaceFolder}/applications/electron-app",
         "--remote-debugging-port=9222",
         "--no-app-auto-install",

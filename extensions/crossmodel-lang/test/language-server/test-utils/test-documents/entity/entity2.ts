@@ -2,25 +2,25 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 export const entity2 = `entity: 
-    id: 'Customer'
+    id: Customer
     name: 'Customer'
     description: 'A customer with whom a transaction has been made.'
     attributes:
-        - id: 'Id'
+        - id: Id
           name: 'Id'
           datatype: 'int'
-        - id: 'FirstName'
+        - id: FirstName
           name: 'FirstName'
           datatype: 'varchar'
-        - id: 'LastName'
+        - id: LastName
           name: 'LastName'
           datatype: 'varchar'
-        - id: 'City' 
+        - id: City
           name: 'City'
           datatype: 'varchar'
-        - id: 'Country'
+        - id: Country
           name: 'Country'
           datatype: 'varchar'
-        - id: 'Phone'
+        - id: Phone
           name: 'Phone'
           datatype: 'varchar'`;

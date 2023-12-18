@@ -1,23 +1,23 @@
 entity:
-    id: "Customer"
+    id: Customer
     name: "Customer"
     description: "A customer with whom a transaction has been made."
     attributes:
-      - id: "Id"
+      - id: Id
         name: "Id"
         datatype: "Integer"
-      - id: "FirstName"
+      - id: FirstName
         name: "FirstName"
         datatype: "Varchar"
-      - id: "LastName"
+      - id: LastName
         name: "LastName"
         datatype: "Varchar"
-      - id: "City"
+      - id: City
         name: "City"
         datatype: "Varchar"
-      - id: "Country"
+      - id: Country
         name: "Country"
         datatype: "Varchar"
-      - id: "Phone"
+      - id: Phone
         name: "Phone"
         datatype: "Varchar"

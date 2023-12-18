@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { GLSP_PORT_FILE } from '@crossbreeze/protocol';
+import { GLSP_PORT_COMMAND } from '@crossbreeze/protocol';
 import { configureELKLayoutModule } from '@eclipse-glsp/layout-elk';
 import {
    LogLevel,
@@ -14,8 +14,9 @@ import {
    defaultSocketLaunchOptions
 } from '@eclipse-glsp/server/node.js';
 import { Container, ContainerModule } from 'inversify';
+import { AddressInfo } from 'net';
 import { URI } from 'vscode-uri';
-import { CrossModelLSPServices, writePortFileToWorkspace } from '../integration.js';
+import { CrossModelLSPServices } from '../integration.js';
 import { CrossModelServices, CrossModelSharedServices } from '../language-server/cross-model-module.js';
 import { CrossModelDiagramModule } from './diagram/cross-model-module.js';
 import { CrossModelLayoutConfigurator } from './layout/cross-model-layout-configurator.js';
@@ -49,14 +50,18 @@ export function startGLSPServer(services: CrossModelLSPServices, workspaceFolder
    launcher.configure(serverModule);
    try {
       const stop = launcher.start(launchOptions);
-      launcher['netServer'].on('listening', () =>
-         // write dynamically assigned port to workspace folder to let clients know we are ready to accept connections
-         writePortFileToWorkspace(workspaceFolder, GLSP_PORT_FILE, launcher['netServer'].address())
+      launcher['netServer'].on(
+         'listening',
+         () => services.shared.lsp.Connection?.onRequest(GLSP_PORT_COMMAND, () => getPort(launcher['netServer'].address()))
       );
       return stop;
    } catch (error) {
       logger.error('Error in GLSP server launcher:', error);
    }
+}
+
+function getPort(address: AddressInfo | string | null): number | undefined {
+   return address && !(typeof address === 'string') ? address.port : undefined;
 }
 
 /**

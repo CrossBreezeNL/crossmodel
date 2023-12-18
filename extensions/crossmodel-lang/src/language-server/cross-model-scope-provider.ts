@@ -1,9 +1,10 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { AstNodeDescription, DefaultScopeProvider, getDocument, ReferenceInfo, Scope, StreamScope } from 'langium';
+import { AstNodeDescription, DefaultScopeProvider, EMPTY_SCOPE, getDocument, ReferenceInfo, Scope, StreamScope } from 'langium';
 import { CrossModelServices } from './cross-model-module.js';
 import { PackageAstNodeDescription, PackageExternalAstNodeDescription } from './cross-model-scope.js';
+import { isTargetAttribute } from './generated/ast.js';
 
 /**
  * A custom scope provider that considers the dependencies between packages to indicate which elements form the global scope
@@ -30,6 +31,11 @@ export class PackageScopeProvider extends DefaultScopeProvider {
    }
 
    protected override getGlobalScope(referenceType: string, context: ReferenceInfo): Scope {
+      if (isTargetAttribute(context.container)) {
+         // target attribute mappings should only access the local scope
+         return EMPTY_SCOPE;
+      }
+
       // the global scope contains all elements known to the language server
       const globalScope = super.getGlobalScope(referenceType, context);
 

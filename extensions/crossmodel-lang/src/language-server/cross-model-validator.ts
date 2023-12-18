@@ -3,15 +3,14 @@
  ********************************************************************************/
 import { AstNode, ValidationAcceptor, ValidationChecks } from 'langium';
 import type { CrossModelServices } from './cross-model-module.js';
-import { ID_PROPERTY } from './cross-model-naming.js';
+import { ID_PROPERTY, IdentifiableAstNode } from './cross-model-naming.js';
 import {
    CrossModelAstType,
    DiagramEdge,
-   SystemDiagram,
-   isDiagramEdge,
-   isDiagramNode,
+   SourceObject,
    isEntity,
    isEntityAttribute,
+   isMapping,
    isRelationship,
    isSystemDiagram
 } from './generated/ast.js';
@@ -24,9 +23,9 @@ export function registerValidationChecks(services: CrossModelServices): void {
    const validator = services.validation.CrossModelValidator;
 
    const checks: ValidationChecks<CrossModelAstType> = {
-      AstNode: validator.checkUniqueId,
+      AstNode: validator.checkNode,
       DiagramEdge: validator.checkDiagramEdge,
-      SystemDiagram: validator.checkUniqueIdWithinDiagram
+      SourceObject: validator.checkSourceObject
    };
    registry.register(checks, validator);
 }
@@ -37,56 +36,65 @@ export function registerValidationChecks(services: CrossModelServices): void {
 export class CrossModelValidator {
    constructor(protected services: CrossModelServices) {}
 
-   checkUniqueId(node: AstNode, accept: ValidationAcceptor): void {
-      const elementName = this.services.references.IdProvider.getNodeId(node);
-      if (!elementName) {
-         if (this.shouldHaveId(node)) {
-            accept('error', 'Missing required id field', { node, property: ID_PROPERTY });
-         }
+   checkNode(node: AstNode, accept: ValidationAcceptor): void {
+      this.checkUniqueExternalId(node, accept);
+      this.checkUniqueNodeId(node, accept);
+   }
+
+   protected checkUniqueExternalId(node: AstNode, accept: ValidationAcceptor): void {
+      if (!this.isExported(node)) {
+         return;
+      }
+      const externalId = this.services.references.IdProvider.getExternalId(node);
+      if (!externalId) {
+         accept('error', 'Missing required id field', { node, property: ID_PROPERTY });
          return;
       }
       const allElements = Array.from(this.services.shared.workspace.IndexManager.allElements());
-      const duplicates = allElements.filter(description => description.name === elementName);
+      const duplicates = allElements.filter(description => description.name === externalId);
       if (duplicates.length > 1) {
          accept('error', 'Must provide a unique id.', { node, property: ID_PROPERTY });
       }
    }
 
-   protected shouldHaveId(node: AstNode): boolean {
-      return (
-         isEntity(node) ||
-         isEntityAttribute(node) ||
-         isRelationship(node) ||
-         isSystemDiagram(node) ||
-         isDiagramEdge(node) ||
-         isDiagramNode(node)
-      );
+   protected isExported(node: AstNode): boolean {
+      // we export anything with an id from entities and relationships and all root nodes, see CrossModelScopeComputation
+      return isEntity(node) || isEntityAttribute(node) || isRelationship(node) || isSystemDiagram(node) || isMapping(node);
    }
 
-   checkUniqueIdWithinDiagram(diagram: SystemDiagram, accept: ValidationAcceptor): void {
+   protected checkUniqueNodeId(node: AstNode, accept: ValidationAcceptor): void {
+      if (isSystemDiagram(node)) {
+         this.markDuplicateIds(node.edges, accept);
+         this.markDuplicateIds(node.nodes, accept);
+      }
+      if (isMapping(node)) {
+         this.markDuplicateIds(node.sourceObjects, accept);
+      }
+   }
+
+   protected markDuplicateIds(nodes: IdentifiableAstNode[], accept: ValidationAcceptor): void {
       const knownIds: string[] = [];
-      for (const node of diagram.nodes) {
+      for (const node of nodes) {
          if (node.id && knownIds.includes(node.id)) {
             accept('error', 'Must provide a unique id.', { node, property: ID_PROPERTY });
          } else if (node.id) {
             knownIds.push(node.id);
          }
       }
-      for (const edge of diagram.edges) {
-         if (edge.id && knownIds.includes(edge.id)) {
-            accept('error', 'Must provide a unique id.', { node: edge, property: ID_PROPERTY });
-         } else if (edge.id) {
-            knownIds.push(edge.id);
-         }
-      }
    }
 
    checkDiagramEdge(edge: DiagramEdge, accept: ValidationAcceptor): void {
       if (edge.sourceNode?.ref?.entity?.ref?.$type !== edge.relationship?.ref?.parent?.ref?.$type) {
-         accept('error', 'Source must match type of parent', { node: edge, property: 'sourceNode' });
+         accept('error', 'Source must match type of parent.', { node: edge, property: 'sourceNode' });
       }
       if (edge.targetNode?.ref?.entity?.ref?.$type !== edge.relationship?.ref?.child?.ref?.$type) {
-         accept('error', 'Target must match type of child', { node: edge, property: 'targetNode' });
+         accept('error', 'Target must match type of child.', { node: edge, property: 'targetNode' });
+      }
+   }
+
+   checkSourceObject(obj: SourceObject, accept: ValidationAcceptor): void {
+      if (obj.join === 'from' && obj.relations.length > 0) {
+         accept('error', 'Source objects with join type "from" cannot have relations.', { node: obj, property: 'relations' });
       }
    }
 }

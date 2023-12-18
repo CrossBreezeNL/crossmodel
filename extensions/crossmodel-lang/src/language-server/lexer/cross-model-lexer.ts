@@ -12,6 +12,8 @@ import { IndentationError } from './cross-model-lexer-error.js';
  * Custom CrossModelLexer to get indentation working.
  */
 export class CrossModelLexer extends DefaultLexer {
+   autoCompleteDedents = true;
+
    /**
     * Tokenize the given text. custom implementation to get indentation working.
     *
@@ -57,7 +59,9 @@ export class CrossModelLexer extends DefaultLexer {
 
       // The lexer does not add trailing dedents at the end of the file
       // this method does it for us
-      this.createTrailingDedentTokens(text, chevrotainResult);
+      if (this.autoCompleteDedents) {
+         this.createTrailingDedentTokens(text, chevrotainResult);
+      }
 
       return chevrotainResult;
    }

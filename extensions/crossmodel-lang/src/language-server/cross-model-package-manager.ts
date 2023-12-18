@@ -8,6 +8,7 @@ import { PackageJson } from 'type-fest';
 import { CancellationToken, WorkspaceFolder } from 'vscode-languageserver';
 import { URI, Utils as UriUtils } from 'vscode-uri';
 import { CrossModelSharedServices } from './cross-model-module.js';
+import { QUALIFIED_ID_SEPARATOR } from './cross-model-naming.js';
 import { Utils } from './util/uri-util.js';
 
 /** Constant for representing an unknown project ID. */
@@ -47,7 +48,7 @@ export function createPackageReferenceName(packageJson?: PackageJson): string {
    // we do not care about the package version as we do not allow to install multiple versions of the same package
    const name = (packageJson?.['alias'] as string | undefined) || packageJson?.name || UNKNOWN_PROJECT_ID;
    // ensure we only have characters that are supported by our ID rule in the grammar and still look good to the user
-   return name.split(' ').join('_').split('.').join('-');
+   return name.split(' ').join('_').split(QUALIFIED_ID_SEPARATOR).join('-');
 }
 
 export function isUnknownPackage(packageId: string): boolean {

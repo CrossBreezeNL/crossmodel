@@ -37,6 +37,7 @@ import { CrossModelSerializer } from './cross-model-serializer.js';
 import { CrossModelValidator, registerValidationChecks } from './cross-model-validator.js';
 import { CrossModelWorkspaceManager } from './cross-model-workspace-manager.js';
 import { CrossModelGeneratedModule, CrossModelGeneratedSharedModule } from './generated/module.js';
+import { createCrossModelCompletionParser } from './lexer/cross-model-completion-parser.js';
 import { CrossModelLexer } from './lexer/cross-model-lexer.js';
 import { CrossModelTokenBuilder } from './lexer/cross-model-token-generator.js';
 
@@ -79,6 +80,9 @@ export interface CrossModelAddedSharedServices {
    logger: {
       ClientLogger: ClientLogger;
    };
+   lsp: {
+      /* override */ LanguageServer: CrossModelLanguageServer;
+   };
 }
 
 export const CrossModelSharedServices = Symbol('CrossModelSharedServices');
@@ -95,7 +99,7 @@ export const CrossModelSharedModule: Module<
       WorkspaceManager: services => new CrossModelWorkspaceManager(services),
       PackageManager: services => new CrossModelPackageManager(services),
       LangiumDocuments: services => new CrossModelLangiumDocuments(services),
-      TextDocuments: services => new OpenableTextDocuments(TextDocument, services.logger.ClientLogger),
+      TextDocuments: services => new OpenableTextDocuments(TextDocument, services),
       TextDocumentManager: services => new OpenTextDocumentManager(services),
       DocumentBuilder: services => new CrossModelDocumentBuilder(services)
    },
@@ -168,7 +172,8 @@ export function createCrossModelModule(
       },
       parser: {
          TokenBuilder: () => new CrossModelTokenBuilder(),
-         Lexer: services => new CrossModelLexer(services)
+         Lexer: services => new CrossModelLexer(services),
+         CompletionParser: services => createCrossModelCompletionParser(services)
       },
       shared: () => context.shared
    };

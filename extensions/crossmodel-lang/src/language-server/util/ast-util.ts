@@ -12,7 +12,7 @@ export function createNodeToEntityReference(root: SystemDiagram): ReferenceInfo 
          $container: root,
          $containerProperty: 'nodes'
       },
-      property: 'for'
+      property: 'entity'
    };
 }
 

@@ -32,7 +32,7 @@ describe('CrossModelLexer', () => {
             $container: crossModelRoot,
             $type: 'Entity',
             description: 'Test description',
-            id: 'test id',
+            id: 'testId',
             name: 'test Name',
             attributes: []
          };
@@ -40,8 +40,8 @@ describe('CrossModelLexer', () => {
          crossModelRootWithoutAttributes = _.cloneDeep(crossModelRoot);
 
          crossModelRoot.entity.attributes = [
-            { $container: crossModelRoot.entity, $type: 'EntityAttribute', id: 'Attribute 1', datatype: 'Datatype Attribute 1' },
-            { $container: crossModelRoot.entity, $type: 'EntityAttribute', id: 'Attribute 2', datatype: 'Datatype Attribute 2' }
+            { $container: crossModelRoot.entity, $type: 'EntityAttribute', id: 'Attribute1', datatype: 'Datatype Attribute 1' },
+            { $container: crossModelRoot.entity, $type: 'EntityAttribute', id: 'Attribute2', datatype: 'Datatype Attribute 2' }
          ];
 
          crossModelRootWithAttributesDifPlace.entity = {
@@ -49,12 +49,12 @@ describe('CrossModelLexer', () => {
             $type: 'Entity',
             description: 'Test description',
             attributes: [],
-            id: 'test id',
+            id: 'testId',
             name: 'test Name'
          };
          crossModelRootWithAttributesDifPlace.entity.attributes = [
-            { $container: crossModelRoot.entity, $type: 'EntityAttribute', id: 'Attribute 1', datatype: 'Datatype Attribute 1' },
-            { $container: crossModelRoot.entity, $type: 'EntityAttribute', id: 'Attribute 2', datatype: 'Datatype Attribute 2' }
+            { $container: crossModelRoot.entity, $type: 'EntityAttribute', id: 'Attribute1', datatype: 'Datatype Attribute 1' },
+            { $container: crossModelRoot.entity, $type: 'EntityAttribute', id: 'Attribute2', datatype: 'Datatype Attribute 2' }
          ];
       });
 
@@ -112,7 +112,7 @@ describe('CrossModelLexer', () => {
             $container: crossModelRoot,
             $type: 'Relationship',
             description: 'Test description',
-            id: 'test id',
+            id: 'testId',
             name: 'test Name',
             parent: ref1,
             child: ref2,
@@ -164,7 +164,7 @@ describe('CrossModelLexer', () => {
                $container: crossModelRoot,
                $type: 'Relationship',
                description: 'Test description',
-               id: 'test id',
+               id: 'testId',
                name: 'test Name',
                parent: ref1,
                child: ref2,
@@ -176,7 +176,7 @@ describe('CrossModelLexer', () => {
             $container: crossModelRoot,
             $type: 'SystemDiagram',
             description: 'Test description',
-            id: 'test id',
+            id: 'testId',
             name: 'test Name',
             nodes: [],
             edges: []
@@ -225,54 +225,54 @@ describe('CrossModelLexer', () => {
 });
 
 const expected_result = `entity:
-    id: "test id"
+    id: testId
     name: "test Name"
     description: "Test description"
     attributes:
-      - id: "Attribute 1"
+      - id: Attribute1
         datatype: "Datatype Attribute 1"
-      - id: "Attribute 2"
+      - id: Attribute2
         datatype: "Datatype Attribute 2"`;
 const expected_result2 = `entity:
-    id: "test id"
+    id: testId
     name: "test Name"
     description: "Test description"`;
 const expected_result3 = `entity:
-    id: "test id"
+    id: testId
     name: "test Name"
     description: "Test description"
     attributes:
-      - id: "Attribute 1"
+      - id: Attribute1
         datatype: "Datatype Attribute 1"
-      - id: "Attribute 2"
+      - id: Attribute2
         datatype: "Datatype Attribute 2"`;
 
 const expected_result4 = `relationship:
-    id: "test id"
+    id: testId
     name: "test Name"
     description: "Test description"
-    parent: "Ref1"
-    child: "Ref2"
+    parent: Ref1
+    child: Ref2
     type: "n:m"`;
 const expected_result5 = `diagram:
-    id: "test id"
+    id: testId
     name: "test Name"
     description: "Test description"
     nodes:
-      - id: "Node1"
+      - id: Node1
         name: "Node 1"
-        entity: "Ref1"
+        entity: Ref1
         x: 100
         y: 101
         width: 102
         height: 102
-      - id: "Node2"
+      - id: Node2
         name: "Node 2"
-        entity: "Ref2"
+        entity: Ref2
         x: 100
         y: 101
         width: 102
         height: 102
     edges:
-      - id: "Edge1"
-        relationship: "Ref3"`;
+      - id: Edge1
+        relationship: Ref3`;

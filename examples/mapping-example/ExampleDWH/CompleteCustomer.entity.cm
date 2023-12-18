@@ -1,0 +1,16 @@
+entity:
+    id: CompleteCustomer
+    name: "CompleteCustomer"
+    attributes:
+        - id: Name
+          name: "Name"
+          datatype: "Varchar"
+        - id: Country
+          name: "Country"
+          datatype: "Varchar"
+        - id: FixedNumber
+          name: "FixedNumber"
+          datatype: "Integer"
+        - id: FixedString
+          name: "FixedString"
+          datatype: "Varchar"

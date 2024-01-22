@@ -5,9 +5,20 @@
 import { AstNode, AstNodeDescription, DefaultScopeComputation, LangiumDocument, PrecomputedScopes, streamAllContents } from 'langium';
 import { CancellationToken } from 'vscode-jsonrpc';
 import { CrossModelServices } from './cross-model-module.js';
-import { DefaultIdProvider } from './cross-model-naming.js';
+import { DefaultIdProvider, combineIds } from './cross-model-naming.js';
 import { CrossModelPackageManager, UNKNOWN_PROJECT_ID, UNKNOWN_PROJECT_REFERENCE } from './cross-model-package-manager.js';
-import { SourceObjectAttribute, isCrossModelRoot, isSourceObject, isTargetMapping } from './generated/ast.js';
+import {
+   EntityNode,
+   EntityNodeAttribute,
+   SourceObject,
+   SourceObjectAttribute,
+   TargetObject,
+   TargetObjectAttribute,
+   isEntityNode,
+   isSourceObject,
+   isTargetObject
+} from './generated/ast.js';
+import { findDocument, setAttributes, setImplicitId, setOwner } from './util/ast-util.js';
 
 /**
  * Custom node description that wraps a given description under a potentially new name and also stores the package id for faster access.
@@ -48,6 +59,12 @@ export function isExternalDescriptionForLocalPackage(description: AstNodeDescrip
    return packageId !== undefined && description instanceof PackageExternalAstNodeDescription && description.packageId === packageId;
 }
 
+export function getLocalName(description: AstNodeDescription): string {
+   return description instanceof PackageExternalAstNodeDescription
+      ? getLocalName(description.delegate) ?? description.name
+      : description.name;
+}
+
 /**
  * A scope computer that performs the following customizations:
  * - Avoid exporting any nodes from diagrams, they are self-contained and do not need to be externally accessible.
@@ -71,11 +88,6 @@ export class CrossModelScopeComputation extends DefaultScopeComputation {
       children: (root: AstNode) => Iterable<AstNode> = streamAllContents,
       cancelToken: CancellationToken = CancellationToken.None
    ): Promise<AstNodeDescription[]> {
-      const docRoot = document.parseResult.value;
-      if (isCrossModelRoot(docRoot) && (docRoot.diagram || docRoot.mapping)) {
-         // we do not export anything from diagrams or mappings except their root node
-         super.computeExportsForNode(parentNode, document, () => [], cancelToken);
-      }
       return super.computeExportsForNode(parentNode, document, children, cancelToken);
    }
 
@@ -89,14 +101,15 @@ export class CrossModelScopeComputation extends DefaultScopeComputation {
       // external usage descriptions in the CrossModelCompletionProvider if package-local usage is also available
 
       let description: AstNodeDescription | undefined;
-      const externalId = this.idProvider.getExternalId(node, packageName);
-      if (externalId) {
-         description = this.descriptions.createDescription(node, externalId, document);
-         exports.push(new PackageExternalAstNodeDescription(packageId, externalId, description));
-      }
       const localId = this.idProvider.getLocalId(node);
-      if (localId && description) {
+      if (localId) {
+         description = this.descriptions.createDescription(node, localId, document);
          exports.push(new PackageLocalAstNodeDescription(packageId, localId, description));
+      }
+
+      const externalId = this.idProvider.getExternalId(node, packageName);
+      if (externalId && description) {
+         exports.push(new PackageExternalAstNodeDescription(packageId, externalId, description));
       }
    }
 
@@ -106,21 +119,52 @@ export class CrossModelScopeComputation extends DefaultScopeComputation {
          const id = this.idProvider.getNodeId(node);
          if (id) {
             scopes.add(container, this.descriptions.createDescription(node, id, document));
-            if (isSourceObject(node) && node.object.ref) {
-               // source objects that reference an entity "inherit" their attributes so we expose them locally
-               node.object.ref.attributes.forEach(attribute => {
-                  const description = this.descriptions.createDescription(attribute, id + '.' + attribute.id, document);
-                  scopes.add(container, { ...description, type: SourceObjectAttribute });
-               });
+            if (isEntityNode(node)) {
+               this.processEntityNode(node, id, document).forEach(description => scopes.add(container, description));
+            } else if (isSourceObject(node)) {
+               this.processSourceObject(node, id, document).forEach(description => scopes.add(container, description));
             }
          }
-         if (isTargetMapping(node) && node.entity.ref) {
-            // allow short names of attributes within a target mapping
-            node.entity.ref.attributes.forEach(attribute => {
-               const description = this.descriptions.createDescription(attribute, attribute.id, document);
-               scopes.add(container, description);
-            });
+         if (isTargetObject(node) && node.entity?.ref?.id) {
+            this.processTargetObject(node, node.entity?.ref.id, document).forEach(description => scopes.add(container, description));
          }
       }
+   }
+
+   protected processEntityNode(node: EntityNode, nodeId: string, document: LangiumDocument): AstNodeDescription[] {
+      try {
+         // TODO: Check if this is still necessary
+         if (node.entity?.ref) {
+            findDocument(node.entity.ref);
+         }
+      } catch (error) {
+         console.error(error);
+         return [];
+      }
+      const attributes =
+         node.entity?.ref?.attributes.map<EntityNodeAttribute>(attribute => setOwner({ ...attribute, $type: EntityNodeAttribute }, node)) ??
+         [];
+      setAttributes(node, attributes);
+      return attributes.map(attribute => this.descriptions.createDescription(attribute, combineIds(nodeId, attribute.id), document));
+   }
+
+   protected processSourceObject(node: SourceObject, nodeId: string, document: LangiumDocument): AstNodeDescription[] {
+      const attributes =
+         node.entity?.ref?.attributes.map<SourceObjectAttribute>(attribute =>
+            setOwner({ ...attribute, $type: SourceObjectAttribute }, node)
+         ) ?? [];
+      setAttributes(node, attributes);
+      return attributes.map(attribute => this.descriptions.createDescription(attribute, combineIds(nodeId, attribute.id), document));
+   }
+
+   protected processTargetObject(node: TargetObject, nodeId: string, document: LangiumDocument): AstNodeDescription[] {
+      const attributes =
+         node.entity?.ref?.attributes.map<TargetObjectAttribute>(attribute =>
+            setOwner({ ...attribute, $type: TargetObjectAttribute }, node)
+         ) ?? [];
+      setImplicitId(node, nodeId);
+      setAttributes(node, attributes);
+      // for target attributes, we use simple names and not object-qualified ones
+      return attributes.map(attribute => this.descriptions.createDescription(attribute, attribute.id, document));
    }
 }

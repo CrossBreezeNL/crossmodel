@@ -9,7 +9,7 @@ import { inject, injectable } from '@theia/core/shared/inversify';
 import { Disposable, MessageConnection } from '@theia/core/shared/vscode-languageserver-protocol';
 import { OutputChannelManager } from '@theia/output/lib/browser/output-channel';
 import '../../style/diagram.css';
-import { CrossModelDiagramLanguage } from '../common/crossmodel-diagram-language';
+import { CrossModelLanguageContributionId } from '../common/crossmodel-diagram-language';
 
 /** The message the GLSP server outputs as soon as it is properly connected through a socket. */
 export const CLIENT_CONNECTION_READY_MSG = 'Starting GLSP server connection';
@@ -22,8 +22,7 @@ export const CLIENT_CONNECTION_READY_MSG = 'Starting GLSP server connection';
 export class CrossModelClientContribution extends BaseGLSPClientContribution {
    @inject(OutputChannelManager) protected outputChannelManager: OutputChannelManager;
 
-   readonly id = CrossModelDiagramLanguage.contributionId;
-   readonly fileExtensions = CrossModelDiagramLanguage.fileExtensions;
+   readonly id = CrossModelLanguageContributionId;
 
    protected async waitForBackendConnected(): Promise<void> {
       // We know that our VS Code extension outputs any log on a channel called 'CrossModel'

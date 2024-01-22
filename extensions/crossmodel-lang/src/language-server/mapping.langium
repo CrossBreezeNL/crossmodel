@@ -2,30 +2,33 @@ import 'terminals'
 import 'entity'
 import 'relationship'
 
+interface SourceObjectAttribute extends Attribute {
+}
+
+interface TargetObjectAttribute extends Attribute {
+}
+
 Mapping:
     'mapping' ':'
         INDENT
             'id' ':' id=ID
-            'sources' ':'
+            ('sources' ':'
                 INDENT 
-                    sourceObjects+=SourceObject+
-                DEDENT
-            'target' ':' target=TargetMapping
+                    sources+=SourceObject*
+                DEDENT)?
+            'target' ':' target=TargetObject
         DEDENT
 ;
 
 SourceObject:
     '-' 'id' ':' id=ID 
-        'object' ':' object=[Entity:IDReference]  // implied attributes through entity
+        'entity' ':' entity=[Entity:IDReference] // implies attributes through entity
         'join' ':' join=JoinType 
         ('relations' ':'
             INDENT
                 relations+=SourceObjectRelations*     
             DEDENT)?
 ;
-
-interface SourceObjectAttribute extends Attribute {
-}
 
 JoinType returns string: 'from' | 'inner-join' | 'cross-join' | 'left-join' | 'apply';
 
@@ -51,22 +54,25 @@ JoinExpression:
     source=[SourceObjectAttribute:IDReference] operator='=' target=[SourceObjectAttribute:IDReference]
 ;
 
-TargetMapping:
+TargetObject:
     INDENT
-        'entity' ':' entity=[Entity:IDReference]
-        'attributes' ':'
+        'entity' ':' entity=[Entity:IDReference] // implies attributes through entity
+        ('mappings' ':'
             INDENT 
-                attributes+=TargetAttribute*     
-            DEDENT
+                mappings+=AttributeMapping*     
+            DEDENT)?
     DEDENT
 ;
 
-TargetAttribute:
-    '-' 'attribute' ':' attribute=[EntityAttribute:IDReference] 
-        'source' ':' source=TargetAttributeSource
+AttributeMapping:
+    '-' 'attribute' ':' attribute=AttributeMappingTarget
+        'source' ':' source=AttributeMappingSource
 ;
 
-TargetAttributeSource:
+AttributeMappingTarget:
+    value=[TargetObjectAttribute:IDReference];
+
+AttributeMappingSource:
     {infer ReferenceSource} value=[SourceObjectAttribute:IDReference] |
     {infer NumberLiteral} value=NUMBER |
     {infer StringLiteral} value=STRING

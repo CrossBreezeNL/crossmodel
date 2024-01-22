@@ -172,7 +172,7 @@ describe('CrossModelLexer', () => {
             }
          };
 
-         crossModelRoot.diagram = {
+         crossModelRoot.systemDiagram = {
             $container: crossModelRoot,
             $type: 'SystemDiagram',
             description: 'Test description',
@@ -182,10 +182,10 @@ describe('CrossModelLexer', () => {
             edges: []
          };
 
-         crossModelRoot.diagram.nodes = [
+         crossModelRoot.systemDiagram.nodes = [
             {
-               $container: crossModelRoot.diagram,
-               $type: 'DiagramNode',
+               $container: crossModelRoot.systemDiagram,
+               $type: 'EntityNode',
                x: 100,
                y: 101,
                width: 102,
@@ -195,8 +195,8 @@ describe('CrossModelLexer', () => {
                name: 'Node 1'
             },
             {
-               $container: crossModelRoot.diagram,
-               $type: 'DiagramNode',
+               $container: crossModelRoot.systemDiagram,
+               $type: 'EntityNode',
                x: 100,
                y: 101,
                width: 102,
@@ -207,10 +207,10 @@ describe('CrossModelLexer', () => {
             }
          ];
 
-         crossModelRoot.diagram.edges = [
+         crossModelRoot.systemDiagram.edges = [
             {
-               $container: crossModelRoot.diagram,
-               $type: 'DiagramEdge',
+               $container: crossModelRoot.systemDiagram,
+               $type: 'RelationshipEdge',
                relationship: ref3,
                id: 'Edge1'
             }
@@ -254,7 +254,7 @@ const expected_result4 = `relationship:
     parent: Ref1
     child: Ref2
     type: "n:m"`;
-const expected_result5 = `diagram:
+const expected_result5 = `systemDiagram:
     id: testId
     name: "test Name"
     description: "Test description"

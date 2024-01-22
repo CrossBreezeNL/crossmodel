@@ -1,18 +1,172 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { AstNode, LangiumDocument, Reference, ReferenceInfo, findRootNode } from 'langium';
-import { DiagramNode, SystemDiagram } from '../generated/ast.js';
+import { AstNode, AstNodeDescription, LangiumDocument, Reference, ReferenceInfo, findRootNode, isAstNodeDescription } from 'langium';
+import { ID_PROPERTY, IdProvider } from '../cross-model-naming.js';
+import { getLocalName } from '../cross-model-scope.js';
+import {
+   Attribute,
+   AttributeMapping,
+   AttributeMappingTarget,
+   CrossModelRoot,
+   Entity,
+   EntityNode,
+   EntityNodeAttribute,
+   Mapping,
+   NumberLiteral,
+   ReferenceSource,
+   Relationship,
+   SourceObject,
+   SourceObjectAttribute,
+   StringLiteral,
+   SystemDiagram,
+   TargetObject,
+   TargetObjectAttribute
+} from '../generated/ast.js';
 
-export function createNodeToEntityReference(root: SystemDiagram): ReferenceInfo {
+export const IMPLICIT_ATTRIBUTES_PROPERTY = '$attributes';
+export const IMPLICIT_OWNER_PROPERTY = '$owner';
+export const IMPLICIT_ID_PROPERTY = '$id';
+
+export function getAttributes(node: EntityNode): EntityNodeAttribute[];
+export function getAttributes(node: SourceObject): SourceObjectAttribute[];
+export function getAttributes(node: TargetObject): TargetObjectAttribute[];
+export function getAttributes<T>(node: any): T[] {
+   return (node[IMPLICIT_ATTRIBUTES_PROPERTY] as T[]) ?? [];
+}
+
+export function setAttributes(node: EntityNode, attributes: EntityNodeAttribute[]): void;
+export function setAttributes(node: SourceObject, attributes: SourceObjectAttribute[]): void;
+export function setAttributes(node: TargetObject, attributes: TargetObjectAttribute[]): void;
+export function setAttributes(node: object, attributes: Attribute[]): void {
+   (node as any)[IMPLICIT_ATTRIBUTES_PROPERTY] = attributes;
+}
+
+export function getOwner(node: EntityNodeAttribute): EntityNode;
+export function getOwner(node: SourceObjectAttribute): SourceObject;
+export function getOwner(node: TargetObjectAttribute): TargetObject;
+export function getOwner(node?: AstNode): AstNode | undefined;
+export function getOwner<T>(node: any): T | undefined {
+   return node?.[IMPLICIT_OWNER_PROPERTY] as T;
+}
+
+export function setOwner(attribute: EntityNodeAttribute, owner: EntityNode): EntityNodeAttribute;
+export function setOwner(attribute: SourceObjectAttribute, owner: SourceObject): SourceObjectAttribute;
+export function setOwner(attribute: TargetObjectAttribute, owner: TargetObject): TargetObjectAttribute;
+export function setOwner<T>(attribute: T, owner: object): T {
+   (attribute as any)[IMPLICIT_OWNER_PROPERTY] = owner;
+   return attribute;
+}
+
+export function setImplicitId(node: any, id: string): void {
+   node[ID_PROPERTY] = id;
+   node[IMPLICIT_ID_PROPERTY] = true;
+}
+
+export function removeImplicitProperties(node: any): void {
+   delete node[IMPLICIT_ATTRIBUTES_PROPERTY];
+   delete node[IMPLICIT_OWNER_PROPERTY];
+   if (node[IMPLICIT_ID_PROPERTY] === true) {
+      delete node[ID_PROPERTY];
+      delete node[IMPLICIT_ID_PROPERTY];
+   }
+}
+
+export function isImplicitProperty(prop: string, obj: any): boolean {
+   return (
+      prop === IMPLICIT_ATTRIBUTES_PROPERTY ||
+      prop === IMPLICIT_OWNER_PROPERTY ||
+      prop === IMPLICIT_ID_PROPERTY ||
+      (obj[IMPLICIT_ID_PROPERTY] === true && prop === ID_PROPERTY)
+   );
+}
+
+export function createEntityNodeReference(root: SystemDiagram): ReferenceInfo {
    return {
       reference: {} as Reference,
       container: {
-         $type: DiagramNode,
+         $type: EntityNode,
          $container: root,
          $containerProperty: 'nodes'
       },
       property: 'entity'
+   };
+}
+
+export function createSourceObjectReference(root: Mapping): ReferenceInfo {
+   return {
+      reference: {} as Reference,
+      container: {
+         $type: SourceObject,
+         $container: root,
+         $containerProperty: 'sources'
+      },
+      property: 'entity'
+   };
+}
+
+export function createSourceObject(entity: Entity | AstNodeDescription, container: Mapping, idProvider: IdProvider): SourceObject {
+   const entityId = isAstNodeDescription(entity)
+      ? getLocalName(entity)
+      : entity.id ?? idProvider.getLocalId(entity) ?? entity.name ?? 'unknown';
+   const ref = isAstNodeDescription(entity) ? undefined : entity;
+   const $refText = isAstNodeDescription(entity) ? entity.name : idProvider.getExternalId(entity) || entity.id || '';
+   return {
+      $type: SourceObject,
+      $container: container,
+      id: idProvider.findNextId(SourceObject, entityId + 'SourceObject', container),
+      entity: { $refText, ref },
+      join: 'from',
+      relations: []
+   };
+}
+
+export function createAttributeMapping(
+   container: TargetObject,
+   source: string | number,
+   targetId: string,
+   asLiteral = false
+): AttributeMapping {
+   const mapping = {
+      $type: AttributeMapping,
+      $container: container
+   } as AttributeMapping;
+   mapping.source = asLiteral || typeof source === 'number' ? createLiteral(mapping, source) : createReferenceSource(mapping, source);
+   mapping.attribute = createAttributeMappingTarget(mapping, targetId);
+   return mapping;
+}
+
+export function createLiteral(container: AttributeMapping, value: string): StringLiteral;
+export function createLiteral(container: AttributeMapping, value: number): NumberLiteral;
+export function createLiteral(container: AttributeMapping, value: string | number): NumberLiteral | StringLiteral;
+export function createLiteral(container: AttributeMapping, value: string | number): NumberLiteral | StringLiteral {
+   if (typeof value === 'string') {
+      return {
+         $type: StringLiteral,
+         $container: container,
+         value: value.startsWith('"') && value.endsWith('"') ? value.slice(1, -1) : value
+      };
+   }
+   return {
+      $type: NumberLiteral,
+      $container: container,
+      value
+   };
+}
+
+export function createReferenceSource(container: AttributeMapping, sourceId: string): ReferenceSource {
+   return {
+      $container: container,
+      $type: ReferenceSource,
+      value: { $refText: sourceId }
+   };
+}
+
+export function createAttributeMappingTarget(container: AttributeMapping, targetId: string): AttributeMappingTarget {
+   return {
+      $container: container,
+      $type: AttributeMappingTarget,
+      value: { $refText: targetId }
    };
 }
 
@@ -26,4 +180,20 @@ export function findDocument<T extends AstNode = AstNode>(node: AstNode): Langiu
    const rootNode = findRootNode(node);
    const result = rootNode.$document;
    return result ? <LangiumDocument<T>>result : undefined;
+}
+
+export function fixDocument<T extends AstNode = AstNode>(node: T | undefined, document: LangiumDocument<T> | undefined): T | undefined {
+   if (!node || !document) {
+      return node;
+   }
+   const rootNode = findRootNode(node);
+   if (!rootNode.$document) {
+      (rootNode as any).$document = document;
+   }
+   return node;
+}
+
+export function findSemanticRoot(document: LangiumDocument<CrossModelRoot>): Entity | Mapping | Relationship | SystemDiagram | undefined {
+   const root = document.parseResult.value;
+   return root.entity ?? root.mapping ?? root.relationship ?? root.systemDiagram;
 }

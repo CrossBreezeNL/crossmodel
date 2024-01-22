@@ -1,31 +1,35 @@
 mapping:
     id: CompleteCustomer_Example
     sources:
-        - id: Customer
-          object: ExampleCRM.Customer
-          join: from
-        - id: Address
-          object: ExampleCRM.Address
-          join: left-join
-          relations:
-            - source: Customer
-              conditions:
-                - join: Address.CustomerID = Customer.Id
-        - id: Country
-          object: ExampleMasterdata.Country
-          join: left-join
-          relations:
-            - source: Address
-              conditions:
-                - join: Country.Code = Address.CountryCode
+      - id: Customer
+        entity: ExampleCRM.Customer
+        join: from
+      - id: Address
+        entity: ExampleCRM.Address
+        join: left-join
+        relations:
+          - source: Customer
+            conditions:
+              - join: Address.CustomerID = Customer.Id
+      - id: Country
+        entity: ExampleMasterdata.Country
+        join: left-join
+        relations:
+          - source: Address
+            conditions:
+              - join: Country.Code = Address.CountryCode
+      - id: AddressSourceObject
+        entity: ExampleCRM.Address
+        join: from
+      - id: CalcAgeSourceObject
+        entity: CalcAge
+        join: from
     target:
         entity: CompleteCustomer
-        attributes:
-            - attribute: Name
-              source: Customer.LastName
-            - attribute: Country
-              source: Country.Code
-            - attribute: FixedNumber
-              source: 1337
-            - attribute: FixedString
-              source: "Fixed String"
+        mappings:
+          - attribute: FixedNumber
+            source: 1337
+          - attribute: FixedString
+            source: "Fixed String"
+          - attribute: Name
+            source: Address.CountryCode

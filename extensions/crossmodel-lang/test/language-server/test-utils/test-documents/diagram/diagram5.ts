@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-export const diagram5 = `diagram:
+export const diagram5 = `systemDiagram:
     id: Systemdiagram1
     name: "System diagram 1"
     description: "This is a basic diagram with nodes and edges"

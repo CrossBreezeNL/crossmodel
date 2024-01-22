@@ -5,7 +5,7 @@
 import { AstNode, CstNode, findNodeForProperty, isAstNode, NameProvider, streamAst } from 'langium';
 import { CrossModelServices } from './cross-model-module.js';
 import { UNKNOWN_PROJECT_REFERENCE } from './cross-model-package-manager.js';
-import { findDocument } from './util/ast-util.js';
+import { findDocument, getOwner } from './util/ast-util.js';
 
 export const ID_PROPERTY = 'id';
 
@@ -35,6 +35,10 @@ export interface IdProvider extends NameProvider {
 }
 
 export const QUALIFIED_ID_SEPARATOR = '.';
+
+export function combineIds(...ids: string[]): string {
+   return ids.join(QUALIFIED_ID_SEPARATOR);
+}
 
 /**
  * A name provider that returns the fully qualified ID of a node by default but also exposes methods to get other names:
@@ -73,13 +77,13 @@ export class DefaultIdProvider implements NameProvider, IdProvider {
       if (!id) {
          return undefined;
       }
-      let parent = node.$container;
+      let parent = this.getParent(node);
       while (parent) {
          const parentId = this.getNodeId(parent);
          if (parentId) {
-            id = parentId + QUALIFIED_ID_SEPARATOR + id;
+            id = combineIds(parentId, id);
          }
-         parent = parent.$container;
+         parent = this.getParent(parent);
       }
       return id;
    }
@@ -96,7 +100,7 @@ export class DefaultIdProvider implements NameProvider, IdProvider {
       if (!localId) {
          return undefined;
       }
-      return packageName + QUALIFIED_ID_SEPARATOR + localId;
+      return combineIds(packageName, localId);
    }
 
    getPackageName(node?: AstNode): string {
@@ -120,6 +124,10 @@ export class DefaultIdProvider implements NameProvider, IdProvider {
          return this.findNextIdInContainer(type, proposal ?? 'Element', container);
       }
       return this.findNextIdInIndex(type, proposal ?? 'Element');
+   }
+
+   protected getParent(node: AstNode): AstNode | undefined {
+      return getOwner(node) ?? node.$container;
    }
 
    protected findNextIdInContainer(type: string, proposal: string, container: AstNode): string {

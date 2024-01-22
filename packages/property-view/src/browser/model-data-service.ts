@@ -2,9 +2,8 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { ENTITY_NODE_TYPE } from '@crossbreeze/glsp-client/lib/browser/model';
 import { ModelService } from '@crossbreeze/model-service/lib/common';
-import { DiagramNodeEntity } from '@crossbreeze/protocol';
+import { DiagramNodeEntity, ENTITY_NODE_TYPE } from '@crossbreeze/protocol';
 import { GlspSelection } from '@eclipse-glsp/theia-integration';
 import { inject, injectable } from '@theia/core/shared/inversify';
 import { PropertyDataService } from '@theia/property-view/lib/browser/property-data-service';

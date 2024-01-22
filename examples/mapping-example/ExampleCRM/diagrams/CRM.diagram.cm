@@ -1,4 +1,4 @@
-diagram:
+systemDiagram:
     id: CRM
     name: "CRM"
     description: "Shows the complete CRM"

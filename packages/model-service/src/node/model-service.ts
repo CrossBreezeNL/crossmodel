@@ -6,6 +6,8 @@ import {
    CloseModelArgs,
    CrossModelRoot,
    DiagramNodeEntity,
+   FindRootReferenceName,
+   FindRootReferenceNameArgs,
    MODELSERVER_PORT_COMMAND,
    OnSave,
    OnUpdated,
@@ -156,6 +158,11 @@ export class ModelServiceImpl implements ModelService {
    async requestDiagramNodeEntityModel(uri: string, id: string): Promise<DiagramNodeEntity | undefined> {
       await this.initializeServerConnection();
       return this.connection.sendRequest(RequestModelDiagramNode, uri, id);
+   }
+
+   async findRootReferenceName(args: FindRootReferenceNameArgs): Promise<string | undefined> {
+      await this.initializeServerConnection();
+      return this.connection.sendRequest(FindRootReferenceName, args);
    }
 
    protected setUpListeners(): void {

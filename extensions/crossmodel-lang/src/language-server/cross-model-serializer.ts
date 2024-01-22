@@ -4,7 +4,23 @@
 
 import { isReference } from 'langium';
 import { Serializer } from '../model-server/serializer.js';
-import { CrossModelRoot, Entity, Relationship, SystemDiagram } from './generated/ast.js';
+import {
+   AttributeMappingSource,
+   AttributeMappingTarget,
+   CrossModelRoot,
+   Entity,
+   JoinExpression,
+   Mapping,
+   Relationship,
+   SystemDiagram,
+   isAttributeMappingSource,
+   isAttributeMappingTarget,
+   isJoinExpression,
+   isNumberLiteral,
+   isReferenceSource,
+   isStringLiteral
+} from './generated/ast.js';
+import { isImplicitProperty } from './util/ast-util.js';
 
 const PROPERTY_ORDER = [
    'id',
@@ -30,6 +46,7 @@ const PROPERTY_ORDER = [
    'object',
    'join',
    'relations',
+   'mappings',
    'attribute',
    'source',
    'conditions'
@@ -46,9 +63,14 @@ const ID_OR_IDREF = [
    'target',
    'attribute',
    'from',
+   'join',
    'parent',
-   'child'
+   'child',
+   'value'
 ];
+
+/** Mapping from JavaScript property keys (AST) to YAML property keys (Grammar). */
+const PROPERTY_TO_KEY_MAP = new Map([['expression', 'join']]);
 
 /**
  * Hand-written AST serializer as there is currently no out-of-the box serializer from Langium, but it is on the roadmap.
@@ -66,7 +88,7 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot> {
    static readonly INDENTATION_AMOUNT_ARRAY = 2;
 
    serialize(root: CrossModelRoot): string {
-      const newRoot: CrossModelRoot | Entity | Relationship | SystemDiagram = this.toSerializableObject(root);
+      const newRoot: CrossModelRoot | Entity | Relationship | SystemDiagram | Mapping = this.toSerializableObject(root);
       return this.serializeValue(newRoot, CrossModelSerializer.INDENTATION_AMOUNT_OBJECT * -1, 'root');
    }
 
@@ -89,13 +111,14 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot> {
 
       const serializedProperties = Object.entries(obj)
          .sort((left, right) => PROPERTY_ORDER.indexOf(left[0]) - PROPERTY_ORDER.indexOf(right[0]))
-         .map(([propKey, value]) => {
-            if (Array.isArray(value) && value.length === 0) {
+         .map(([objKey, objValue]) => {
+            if (Array.isArray(objValue) && objValue.length === 0) {
                return;
             }
 
-            const propValue = this.serializeValue(value, indentationLevel, propKey);
-            if (typeof value === 'object') {
+            const propKey = this.serializeKey(objKey);
+            const propValue = this.serializeValue(objValue, indentationLevel, propKey);
+            if (typeof objValue === 'object') {
                return `${indentation}${propKey}:${CrossModelSerializer.CHAR_NEWLINE}${propValue}`;
             } else {
                return `${indentation}${propKey}: ${propValue}`;
@@ -104,6 +127,10 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot> {
          .filter(item => item !== undefined);
 
       return serializedProperties.join(CrossModelSerializer.CHAR_NEWLINE);
+   }
+
+   private serializeKey(property: string): string {
+      return PROPERTY_TO_KEY_MAP.get(property) ?? property;
    }
 
    private serializeArray(arr: any[], indentationLevel: number, key: string): string {
@@ -131,8 +158,21 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot> {
     * @returns serializable semantic object
     */
    toSerializableObject<T extends object>(obj: T): T {
+      // preprocess some objects that need special serialization
+      if (isAttributeMappingSource(obj)) {
+         // sources are simply serialized as their value instead of object structure
+         return this.serializeAttributeMappingSource(obj);
+      }
+      if (isAttributeMappingTarget(obj)) {
+         // sources are simply serialized as their value instead of object structure
+         return this.serializeAttributeMappingTarget(obj);
+      }
+      if (isJoinExpression(obj)) {
+         // expressions are serialized not as the object tree but as user-level expression
+         return this.serializeJoinExpression(obj);
+      }
       return <T>Object.entries(obj)
-         .filter(([key, value]) => !key.startsWith('$'))
+         .filter(([key, value]) => !key.startsWith('$') && !isImplicitProperty(key, obj))
          .reduce((acc, [key, value]) => ({ ...acc, [key]: this.cleanValue(value) }), {});
    }
 
@@ -155,5 +195,26 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot> {
          return value.$refText;
       }
       return value;
+   }
+
+   private serializeAttributeMappingSource(obj: AttributeMappingSource): any {
+      if (isReferenceSource(obj)) {
+         return this.resolvedValue(obj.value);
+      }
+      if (isNumberLiteral(obj)) {
+         return obj.value;
+      }
+      if (isStringLiteral(obj)) {
+         return JSON.stringify(obj.value);
+      }
+      return '';
+   }
+
+   private serializeAttributeMappingTarget(obj: AttributeMappingTarget): any {
+      return this.resolvedValue(obj.value);
+   }
+
+   private serializeJoinExpression(obj: JoinExpression): any {
+      return this.resolvedValue(obj.source) + ' ' + obj.operator + ' ' + this.resolvedValue(obj.target);
    }
 }

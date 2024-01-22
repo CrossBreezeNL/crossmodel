@@ -4,13 +4,13 @@
 import { describe, expect, test } from '@jest/globals';
 import { EmptyFileSystem } from 'langium';
 import { createCrossModelServices } from '../../src/language-server/cross-model-module.js';
-import { CrossModelRoot, DiagramNode } from '../../src/language-server/generated/ast.js';
+import { CrossModelRoot, EntityNode } from '../../src/language-server/generated/ast.js';
 import { parseDocument } from './test-utils/utils.js';
 
 const services = createCrossModelServices({ ...EmptyFileSystem });
 const cmServices = services.CrossModel;
 
-const ex1 = 'diagram:';
+const ex1 = 'systemDiagram:';
 const ex2 = `diagram:
     nodes:
         - id: nodeA`;
@@ -30,13 +30,13 @@ describe('NameUtil', () => {
       test('should return given name if unique', async () => {
          const document = await parseDocument<CrossModelRoot>(cmServices, ex1);
 
-         expect(cmServices.references.IdProvider.findNextId(DiagramNode, 'nodeA', document.parseResult.value.diagram!)).toBe('nodeA');
+         expect(cmServices.references.IdProvider.findNextId(EntityNode, 'nodeA', document.parseResult.value.systemDiagram!)).toBe('nodeA');
       });
 
       test('should return unique name if given is taken', async () => {
          const document = await parseDocument<CrossModelRoot>(cmServices, ex2);
 
-         const result = cmServices.references.IdProvider.findNextId(DiagramNode, 'nodeA', document.parseResult.value.diagram!);
+         const result = cmServices.references.IdProvider.findNextId(EntityNode, 'nodeA', document.parseResult.value.systemDiagram!);
 
          expect(result).toBe('nodeA1');
       });
@@ -44,13 +44,13 @@ describe('NameUtil', () => {
       test('should properly count up if name is taken', async () => {
          const document = await parseDocument<CrossModelRoot>(cmServices, ex3);
 
-         expect(cmServices.references.IdProvider.findNextId(DiagramNode, 'nodeA', document.parseResult.value.diagram!)).toBe('nodeA2');
+         expect(cmServices.references.IdProvider.findNextId(EntityNode, 'nodeA', document.parseResult.value.systemDiagram!)).toBe('nodeA2');
       });
 
       test('should find lowest count if multiple are taken', async () => {
          const document = await parseDocument<CrossModelRoot>(cmServices, ex4);
 
-         expect(cmServices.references.IdProvider.findNextId(DiagramNode, 'nodeA', document.parseResult.value.diagram!)).toBe('nodeA3');
+         expect(cmServices.references.IdProvider.findNextId(EntityNode, 'nodeA', document.parseResult.value.systemDiagram!)).toBe('nodeA3');
       });
    });
 });

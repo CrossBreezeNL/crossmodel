@@ -6,6 +6,8 @@ import {
    CloseModel,
    CloseModelArgs,
    CrossModelRoot,
+   FindRootReferenceName,
+   FindRootReferenceNameArgs,
    OnSave,
    OnUpdated,
    OpenModel,
@@ -17,7 +19,7 @@ import {
    UpdateModel,
    UpdateModelArgs
 } from '@crossbreeze/protocol';
-import { isReference } from 'langium';
+import { URI, isReference } from 'langium';
 import { Disposable } from 'vscode-jsonrpc';
 import * as rpc from 'vscode-jsonrpc/node.js';
 import { CrossModelRoot as CrossModelRootAst, DiagramNode, Entity, isCrossModelRoot } from '../language-server/generated/ast.js';
@@ -44,6 +46,7 @@ export class ModelServer implements Disposable {
       this.toDispose.push(connection.onRequest(CloseModel, args => this.closeModel(args)));
       this.toDispose.push(connection.onRequest(RequestModel, uri => this.requestModel(uri)));
       this.toDispose.push(connection.onRequest(RequestModelDiagramNode, (uri, id) => this.requestModelDiagramNode(uri, id)));
+      this.toDispose.push(connection.onRequest(FindRootReferenceName, args => this.findReferenceName(args)));
       this.toDispose.push(connection.onRequest(UpdateModel, args => this.updateModel(args)));
       this.toDispose.push(connection.onRequest(SaveModel, args => this.saveModel(args)));
    }
@@ -62,12 +65,12 @@ export class ModelServer implements Disposable {
       const root = (await this.modelService.request(uri)) as CrossModelRootAst;
       let diagramNode: DiagramNode | undefined;
 
-      if (!root || !root.diagram) {
+      if (!root || !root.systemDiagram) {
          throw new Error('Something went wrong loading the diagram');
       }
 
-      for (const node of root.diagram.nodes) {
-         if (node.id === id) {
+      for (const node of root.systemDiagram.nodes) {
+         if (this.modelService.getId(node, URI.parse(uri)) === id) {
             diagramNode = node;
          }
       }
@@ -87,6 +90,10 @@ export class ModelServer implements Disposable {
          uri: entity.$container.$document.uri.toString(),
          model: serializedEntity
       };
+   }
+
+   protected async findReferenceName(args: FindRootReferenceNameArgs): Promise<string | undefined> {
+      return this.modelService.findRootReferenceName(args);
    }
 
    protected async openModel(args: OpenModelArgs): Promise<CrossModelRoot | undefined> {

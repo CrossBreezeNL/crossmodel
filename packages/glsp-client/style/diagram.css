@@ -6,6 +6,8 @@
    --sprotty-background: var(--theia-layout-color3);
    --sprotty-edge: var(--theia-editor-foreground);
    --sprotty-border: var(--theia-editor-foreground);
+
+   --background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30"><g><line x1="10" y1="15" x2="20" y2="15" stroke="black" stroke-width="1" stroke-linecap="round" stroke-opacity="0.15" /><line x1="15" y1="10" x2="15" y2="20" stroke="black" stroke-width="1" stroke-linecap="round" stroke-opacity="0.15" /></g></svg>');
 }
 
 /* Standard sprotty */
@@ -13,39 +15,105 @@
    height: 100%;
 }
 
-.sprotty-graph .sprotty-node {
-   fill: inherit;
+.sprotty .literal-creation {
+   cursor: context-menu !important;
+}
+
+.feedback-edge {
+   pointer-events: none;
 }
 
 .sprotty-graph {
    font-size: 15pt;
    height: 100%;
    background: var(--sprotty-background);
+   background-image: var(--background-image);
+   background-size: 11px;
+}
+
+.sprotty text {
+   font-family: monospace;
+}
+
+.sprotty-edge {
+   stroke: #6d6d6d;
+   stroke-width: 2px;
 }
 
 /* Nodes */
-.diagram-node {
-   fill: #fffcdf;
-   stroke: black;
-   filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.8));
+.sprotty-node:not(.selected, .mouseover) {
+   fill: #fbfaff;
+   stroke: #a8a1c5;
+   stroke-width: 2px;
+   /* filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.8)); */
 }
 
-.entity-header {
+.source-object .sprotty-node:not(.selected, .mouseover) {
+   stroke: #a1c5a5;
+   fill: #fefffe;
+}
+
+.source-object.string-literal .sprotty-node:not(.selected, .mouseover) {
+   stroke: #cb7575;
+   fill: #fff9f9;
+}
+
+.source-object.number-literal .sprotty-node:not(.selected, .mouseover) {
+   stroke: #5877e5;
+   fill: #fcfdff;
+}
+
+.header-label {
    font-weight: bold;
+   letter-spacing: 0.5px;
 }
 
-.diagram-node > .sprotty-node:not(.selected) {
-   stroke-width: 1px;
+.attribute {
+   stroke: none;
+   fill: transparent;
 }
 
-.header-container-diagram-node {
-   stroke: 1;
+.attribute.mouseover,
+.sprotty-node.mouseover:not(.selected),
+.sprotty-edge.mouseover:not(.selected) {
+   stroke: var(--theia-focusBorder);
+   stroke-width: 2px;
+   opacity: 1;
 }
 
-.sprotty-node.mouseover:not(.selected) {
-   stroke-width: 3px;
+.sprotty-node.selected,
+.sprotty-edge.selected {
+   stroke: var(--theia-focusBorder);
+   stroke-width: 2px;
+   stroke-dasharray: 6px 3px;
 }
 
+.attribute.mouseover,
+.sprotty-node.mouseover:not(.selected),
 .sprotty-node.selected {
-   stroke-width: 5px;
+   fill: #f3faff;
+   stroke-width: 2px;
+}
+
+.sprotty[id^='system-diagram'] .tool-palette {
+   top: 11px;
+   right: 11px;
+   width: 150px;
+   border: 1px solid #d7d7d7;
+}
+
+.sprotty[id^='system-diagram'] .tool-palette .palette-header,
+.sprotty[id^='system-diagram'] .tool-palette .group-header,
+.sprotty[id^='system-diagram'] .minimize-palette-button {
+   display: none;
+}
+
+/* we know there is only the 1:1 relationship tool for now, if we ever need more styling, better to create a complete custom toolbar */
+.sprotty[id^='system-diagram'] .tool-palette .tool-button::before {
+   margin-right: var(--theia-ui-padding);
+   font-size: var(--theia-icon-size);
+   font: normal normal normal 16px/1 codicon;
+   content: '\eafd';
+   -webkit-font-smoothing: antialiased;
+   -moz-osx-font-smoothing: grayscale;
 }

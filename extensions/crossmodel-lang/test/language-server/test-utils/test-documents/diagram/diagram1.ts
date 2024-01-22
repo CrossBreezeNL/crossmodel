@@ -1,5 +1,5 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-export const diagram1 = `diagram:
+export const diagram1 = `systemDiagram:
     id: Systemdiagram1`;

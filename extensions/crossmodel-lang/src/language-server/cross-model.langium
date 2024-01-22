@@ -1,13 +1,12 @@
 grammar CrossModel
 
-import 'terminals'
 import 'entity'
 import 'relationship'
-import 'diagram'
+import 'system-diagram'
 import 'mapping'
 
 entry CrossModelRoot:
     (entity=Entity | 
     relationship=Relationship | 
-    diagram=SystemDiagram |
+    systemDiagram=SystemDiagram |
     mapping=Mapping)?;

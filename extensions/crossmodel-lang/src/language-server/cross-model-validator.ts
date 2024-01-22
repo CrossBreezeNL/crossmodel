@@ -6,7 +6,7 @@ import type { CrossModelServices } from './cross-model-module.js';
 import { ID_PROPERTY, IdentifiableAstNode } from './cross-model-naming.js';
 import {
    CrossModelAstType,
-   DiagramEdge,
+   RelationshipEdge,
    SourceObject,
    isEntity,
    isEntityAttribute,
@@ -24,7 +24,7 @@ export function registerValidationChecks(services: CrossModelServices): void {
 
    const checks: ValidationChecks<CrossModelAstType> = {
       AstNode: validator.checkNode,
-      DiagramEdge: validator.checkDiagramEdge,
+      RelationshipEdge: validator.checkRelationshipEdge,
       SourceObject: validator.checkSourceObject
    };
    registry.register(checks, validator);
@@ -68,7 +68,7 @@ export class CrossModelValidator {
          this.markDuplicateIds(node.nodes, accept);
       }
       if (isMapping(node)) {
-         this.markDuplicateIds(node.sourceObjects, accept);
+         this.markDuplicateIds(node.sources, accept);
       }
    }
 
@@ -83,7 +83,7 @@ export class CrossModelValidator {
       }
    }
 
-   checkDiagramEdge(edge: DiagramEdge, accept: ValidationAcceptor): void {
+   checkRelationshipEdge(edge: RelationshipEdge, accept: ValidationAcceptor): void {
       if (edge.sourceNode?.ref?.entity?.ref?.$type !== edge.relationship?.ref?.parent?.ref?.$type) {
          accept('error', 'Source must match type of parent.', { node: edge, property: 'sourceNode' });
       }

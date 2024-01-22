@@ -45,7 +45,7 @@ test.describe('CrossModel Explorer View', () => {
       expect(await menu.isOpen()).toBe(true);
       // Expect the Code and Form editor to be in the Open With menu option.
       expect(await menu.menuItemByNamePath('Open With', 'Code Editor')).toBeDefined();
-      expect(await menu.menuItemByNamePath('Open With', 'CrossModel Diagram')).toBeDefined();
+      expect(await menu.menuItemByNamePath('Open With', 'System Diagram')).toBeDefined();
       await menu.close();
    });
 });

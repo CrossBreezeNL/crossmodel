@@ -9,11 +9,11 @@ import { ForwardingChannel } from '@theia/core/lib/common/message-rpc/channel';
 import { Deferred } from '@theia/core/lib/common/promise-util';
 import { inject, injectable } from '@theia/core/shared/inversify';
 import * as net from 'net';
-import { CrossModelDiagramLanguage } from '../common/crossmodel-diagram-language';
+import { CrossModelLanguageContributionId } from '../common/crossmodel-diagram-language';
 
 @injectable()
 export class CrossModelDiagramGLSPConnectionHandler implements ConnectionHandler {
-   path = GLSPContribution.servicePath + '/' + CrossModelDiagramLanguage.contributionId;
+   path = GLSPContribution.servicePath + '/' + CrossModelLanguageContributionId;
 
    @inject(MessageService) protected messageService: MessageService;
    @inject(CommandService) protected commandService: CommandService;

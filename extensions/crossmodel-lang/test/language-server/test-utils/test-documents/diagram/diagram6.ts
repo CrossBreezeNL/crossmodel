@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-export const diagram6 = `diagram:
+export const diagram6 = `systemDiagram:
     id: Systemdiagram1
     edges:  
         - id: OrderCustomerEdge

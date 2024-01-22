@@ -2,7 +2,6 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 import { GLSP_PORT_COMMAND } from '@crossbreeze/protocol';
-import { configureELKLayoutModule } from '@eclipse-glsp/layout-elk';
 import {
    LogLevel,
    LoggerFactory,
@@ -18,8 +17,8 @@ import { AddressInfo } from 'net';
 import { URI } from 'vscode-uri';
 import { CrossModelLSPServices } from '../integration.js';
 import { CrossModelServices, CrossModelSharedServices } from '../language-server/cross-model-module.js';
-import { CrossModelDiagramModule } from './diagram/cross-model-module.js';
-import { CrossModelLayoutConfigurator } from './layout/cross-model-layout-configurator.js';
+import { MappingDiagramModule } from './mapping-diagram/mapping-diagram-module.js';
+import { SystemDiagramModule } from './system-diagram/system-diagram-module.js';
 
 /**
  * Launches a GLSP server with access to the given language services on the default port.
@@ -39,11 +38,10 @@ export function startGLSPServer(services: CrossModelLSPServices, workspaceFolder
    const appContainer = new Container();
    appContainer.load(appModule, lspModule);
 
-   // use Eclipse Layout Kernel with our custom layered layout configuration
-   const elkLayoutModule = configureELKLayoutModule({ algorithms: ['layered'], layoutConfigurator: CrossModelLayoutConfigurator });
-
    // create server module with our cross model diagram
-   const serverModule = new ServerModule().configureDiagramModule(new CrossModelDiagramModule(), elkLayoutModule);
+   const serverModule = new ServerModule()
+      .configureDiagramModule(new SystemDiagramModule())
+      .configureDiagramModule(new MappingDiagramModule());
 
    const logger = appContainer.get<LoggerFactory>(LoggerFactory)('CrossModelServer');
    const launcher = appContainer.resolve<SocketServerLauncher>(SocketServerLauncher);
@@ -58,6 +56,9 @@ export function startGLSPServer(services: CrossModelLSPServices, workspaceFolder
    } catch (error) {
       logger.error('Error in GLSP server launcher:', error);
    }
+
+   // Attach a generic unhandled rejection handler to prevent the process from crashing in case of an error
+   process.on('unhandledRejection', error => console.log('Unhandled rejection', error));
 }
 
 function getPort(address: AddressInfo | string | null): number | undefined {

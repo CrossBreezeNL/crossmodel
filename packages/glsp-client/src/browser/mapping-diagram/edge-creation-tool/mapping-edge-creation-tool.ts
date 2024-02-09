@@ -11,7 +11,6 @@ import {
    CursorCSS,
    EdgeCreationTool,
    EdgeCreationToolMouseListener,
-   EnableDefaultToolsAction,
    FeedbackEdgeEndMovingMouseListener,
    GConnectableElement,
    GLSPActionDispatcher,
@@ -40,6 +39,7 @@ import {
 import { injectable } from 'inversify';
 import { AttributeCompartment } from '../../model';
 import { SourceObjectNode, TargetObjectNode } from '../model';
+import { ExtendedEnableDefaultToolsAction } from './actions';
 import { LiteralCreationPalette } from './literal-creation-tool';
 
 export type AttributeParent = 'target-object' | 'source-object';
@@ -185,7 +185,7 @@ export class MappingEdgeCreationToolMouseListener extends EdgeCreationToolMouseL
                visible: true,
                contextElementsId: [this.source]
             }),
-            EnableDefaultToolsAction.create()
+            ExtendedEnableDefaultToolsAction.create({ focusGraph: false })
          ];
       }
       return super.nonDraggingMouseUp(element, event);

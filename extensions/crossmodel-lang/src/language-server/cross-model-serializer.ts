@@ -2,6 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
+import { quote } from '@crossbreeze/protocol';
 import { isReference } from 'langium';
 import { Serializer } from '../model-server/serializer.js';
 import {
@@ -205,7 +206,7 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot> {
          return obj.value;
       }
       if (isStringLiteral(obj)) {
-         return JSON.stringify(obj.value);
+         return quote(obj.value);
       }
       return '';
    }

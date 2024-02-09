@@ -1,7 +1,13 @@
 /********************************************************************************
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
-import { SOURCE_NUMBER_NODE_TYPE, SOURCE_OBJECT_NODE_TYPE, SOURCE_STRING_NODE_TYPE, TARGET_OBJECT_NODE_TYPE } from '@crossbreeze/protocol';
+import {
+   SOURCE_NUMBER_NODE_TYPE,
+   SOURCE_OBJECT_NODE_TYPE,
+   SOURCE_STRING_NODE_TYPE,
+   TARGET_OBJECT_NODE_TYPE,
+   quote
+} from '@crossbreeze/protocol';
 import { ArgsUtil, GNode, GNodeBuilder } from '@eclipse-glsp/server';
 import { NumberLiteral, SourceObject, StringLiteral, TargetObject } from '../../../language-server/generated/ast.js';
 import { getAttributes } from '../../../language-server/util/ast-util.js';
@@ -78,7 +84,7 @@ export class GStringLiteralNodeBuilder extends GNodeBuilder<GStringLiteralNode> 
 
       this.addCssClasses('diagram-node', 'source-object', 'string-literal');
 
-      this.add(createHeader(JSON.stringify(node.value), this.proxy.id));
+      this.add(createHeader(quote(node.value), this.proxy.id));
 
       this.layout('vbox')
          .addArgs(ArgsUtil.cornerRadius(3))

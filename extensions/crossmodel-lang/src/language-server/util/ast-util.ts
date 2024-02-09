@@ -1,6 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
+import { unquote } from '@crossbreeze/protocol';
 import { AstNode, AstNodeDescription, LangiumDocument, Reference, ReferenceInfo, findRootNode, isAstNodeDescription } from 'langium';
 import { ID_PROPERTY, IdProvider } from '../cross-model-naming.js';
 import { getLocalName } from '../cross-model-scope.js';
@@ -144,7 +145,7 @@ export function createLiteral(container: AttributeMapping, value: string | numbe
       return {
          $type: StringLiteral,
          $container: container,
-         value: value.startsWith('"') && value.endsWith('"') ? value.slice(1, -1) : value
+         value: unquote(value)
       };
    }
    return {

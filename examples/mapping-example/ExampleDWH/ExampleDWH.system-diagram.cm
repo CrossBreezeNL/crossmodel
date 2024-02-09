@@ -1,0 +1,16 @@
+systemDiagram:
+    id: ExampleDWH
+    name: "ExampleDWH"
+    nodes:
+      - id: CalcAgeNode
+        entity: ExampleDWH.CalcAge
+        x: 195.046875
+        y: 262
+        width: 10
+        height: 10
+      - id: CompleteCustomerNode
+        entity: ExampleDWH.CompleteCustomer
+        x: 594
+        y: 264
+        width: 148.649658203125
+        height: 116

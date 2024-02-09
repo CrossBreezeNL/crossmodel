@@ -26,7 +26,7 @@ export class MappingDiagramLayoutEngine implements LayoutEngine {
       const marginBetweenSourceNodes = 20;
       const marginBetweenSourceAndTarget = 300;
       const sourceNodes = index.getAllByClass(GNode).filter(node => node.type !== TARGET_OBJECT_NODE_TYPE);
-      sourceNodes.toSorted(this.getSourceNodeOrderFunction()).forEach(node => {
+      [...sourceNodes].sort(this.getSourceNodeOrderFunction()).forEach(node => {
          node.position = { x: 0, y: offset };
          maxSourceWidth = Math.max(maxSourceWidth, node.size.width);
          offset += node.size.height + marginBetweenSourceNodes;
@@ -56,8 +56,8 @@ export class MappingDiagramLayoutEngine implements LayoutEngine {
       const target = this.modelState.mapping.target;
       const index = this.modelState.index;
 
-      const sourceNodeOrder = target.mappings
-         .toSorted((left, right) => (left.attribute.value.ref?.$containerIndex ?? 0) - (right.attribute.value.ref?.$containerIndex ?? 0))
+      const sourceNodeOrder = [...target.mappings]
+         .sort((left, right) => (left.attribute.value.ref?.$containerIndex ?? 0) - (right.attribute.value.ref?.$containerIndex ?? 0))
          .map(mapping =>
             isReferenceSource(mapping.source) ? index.createId(getOwner(mapping.source.value.ref)) : index.createId(mapping.source)
          );

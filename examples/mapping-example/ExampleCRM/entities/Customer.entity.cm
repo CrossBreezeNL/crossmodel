@@ -20,3 +20,6 @@ entity:
         - id: Phone
           name: "Phone"
           datatype: "Varchar"
+        - id: BirthDate
+          name: "BirthDate"
+          datatype: "DateTime"

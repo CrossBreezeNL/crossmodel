@@ -1,0 +1,28 @@
+mapping:
+    id: CompleteCustomerMapping
+    sources:
+      - id: CustomerSourceObject
+        entity: ExampleCRM.Customer
+        join: from
+      - id: CalcAgeSourceObject
+        entity: ExampleDWH.CalcAge
+        join: apply
+        relations:
+          - source: CustomerSourceObject
+            conditions:
+              - join: CalcAgeSourceObject.BirthDate = CustomerSourceObject.BirthDate
+    target:
+        entity: ExampleDWH.CompleteCustomer
+        mappings:
+          - attribute: Country
+            source: CustomerSourceObject.Country
+          - attribute: FixedNumber
+            source: 1
+          - attribute: FixedString
+            source: "Hoppa"
+          - attribute: Name
+            source: CustomerSourceObject.FirstName
+          - attribute: Age
+            source: CalcAgeSourceObject.Age
+          - attribute: Age
+            source: CalcAgeSourceObject.Age

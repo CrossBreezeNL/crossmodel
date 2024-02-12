@@ -61,7 +61,7 @@ export class ModelService {
     *
     * @param uri document URI
     */
-   async open(args: OpenModelArgs): Promise<void> {
+   async open(args: OpenModelArgs): Promise<Disposable> {
       return this.documentManager.open(args);
    }
 

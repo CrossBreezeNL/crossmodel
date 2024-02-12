@@ -40,6 +40,7 @@ import { CrossModelGeneratedModule, CrossModelGeneratedSharedModule } from './ge
 import { createCrossModelCompletionParser } from './lexer/cross-model-completion-parser.js';
 import { CrossModelLexer } from './lexer/cross-model-lexer.js';
 import { CrossModelTokenBuilder } from './lexer/cross-model-token-generator.js';
+import { CrossModelLinker } from './references/cross-model-linker.js';
 
 /***************************
  * Shared Module
@@ -128,6 +129,7 @@ export interface CrossModelModuleContext {
 export interface CrossModelAddedServices {
    references: {
       IdProvider: DefaultIdProvider;
+      Linker: CrossModelLinker;
    };
    validation: {
       CrossModelValidator: CrossModelValidator;
@@ -158,7 +160,8 @@ export function createCrossModelModule(
          ScopeComputation: services => new CrossModelScopeComputation(services),
          ScopeProvider: services => new CrossModelScopeProvider(services),
          IdProvider: services => new DefaultIdProvider(services),
-         NameProvider: services => services.references.IdProvider
+         NameProvider: services => services.references.IdProvider,
+         Linker: services => new CrossModelLinker(services)
       },
       validation: {
          CrossModelValidator: services => new CrossModelValidator(services)

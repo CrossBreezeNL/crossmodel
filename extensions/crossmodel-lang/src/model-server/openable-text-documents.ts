@@ -232,8 +232,10 @@ export class OpenableTextDocuments<T extends TextDocument> extends TextDocuments
       }
    }
 
-   getChangeSource(uri: string, version: number): string | undefined {
-      return this.__changeHistory.get(uri)?.[version];
+   getChangeSource(uri: string, version?: number): string | undefined {
+      const history = this.__changeHistory.get(uri);
+      // given version or last entry
+      return version ? history?.[version] : history?.at(-1);
    }
 
    isOpen(uri: string): boolean {

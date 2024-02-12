@@ -7,7 +7,6 @@ import {
    ClientSession,
    ClientSessionListener,
    ClientSessionManager,
-   Disposable,
    DisposableCollection,
    GLSPServerError,
    Logger,
@@ -48,18 +47,29 @@ export class CrossModelStorage implements SourceModelStorage, ClientSessionListe
       // load semantic model from document in language model service
       const sourceUri = this.getSourceUri(action);
       const rootUri = URI.file(sourceUri).toString();
-      await this.state.modelService.open({ uri: rootUri, clientId: this.state.clientId });
-      this.toDispose.push(Disposable.create(() => this.state.modelService.close({ uri: rootUri, clientId: this.state.clientId })));
-      const root = await this.state.modelService.request(rootUri, isCrossModelRoot);
-      this.state.setSemanticRoot(rootUri, root);
+      const root = await this.update(rootUri);
+      if (!root) {
+         return;
+      }
+      this.toDispose.push(await this.state.modelService.open({ uri: rootUri, clientId: this.state.clientId }));
       this.toDispose.push(
          this.state.modelService.onUpdate<CrossModelRoot>(rootUri, async event => {
             if (this.state.clientId !== event.sourceClientId || event.reason !== 'changed') {
-               this.state.setSemanticRoot(rootUri, event.model);
+               await this.update(rootUri, event.model);
                this.actionDispatcher.dispatchAll(await this.submissionHandler.submitModel('external'));
             }
          })
       );
+   }
+
+   protected async update(uri: string, root?: CrossModelRoot): Promise<CrossModelRoot | undefined> {
+      const newRoot = root ?? (await this.state.modelService.request(uri, isCrossModelRoot));
+      if (newRoot) {
+         this.state.setSemanticRoot(uri, newRoot);
+      } else {
+         this.logger.error('Could not find model for ' + uri);
+      }
+      return newRoot;
    }
 
    saveSourceModel(action: SaveModelAction): MaybePromise<void> {

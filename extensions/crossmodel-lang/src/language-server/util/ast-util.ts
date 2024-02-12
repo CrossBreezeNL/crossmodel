@@ -174,10 +174,11 @@ export function createAttributeMappingTarget(container: AttributeMapping, target
 /**
  * Retrieve the document in which the given AST node is contained. A reference to the document is
  * usually held by the root node of the AST.
- *
- * @throws an error if the node is not contained in a document.
  */
-export function findDocument<T extends AstNode = AstNode>(node: AstNode): LangiumDocument<T> | undefined {
+export function findDocument<T extends AstNode = AstNode>(node?: AstNode): LangiumDocument<T> | undefined {
+   if (!node) {
+      return undefined;
+   }
    const rootNode = findRootNode(node);
    const result = rootNode.$document;
    return result ? <LangiumDocument<T>>result : undefined;
@@ -197,4 +198,8 @@ export function fixDocument<T extends AstNode = AstNode>(node: T | undefined, do
 export function findSemanticRoot(document: LangiumDocument<CrossModelRoot>): Entity | Mapping | Relationship | SystemDiagram | undefined {
    const root = document.parseResult.value;
    return root.entity ?? root.mapping ?? root.relationship ?? root.systemDiagram;
+}
+
+export function hasSemanticRoot<T>(document: LangiumDocument<any>, guard: (item: unknown) => item is T): boolean {
+   return guard(findSemanticRoot(document));
 }

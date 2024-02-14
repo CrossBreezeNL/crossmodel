@@ -27,9 +27,15 @@ mapping:
     target:
         entity: CompleteCustomer
         mappings:
+          - attribute: Name
+            source: Customer.FirstName
+          - attribute: Name
+            source: Customer.LastName
+          - attribute: Country
+            source: Country.Name
+          - attribute: Age
+            source: CalcAgeSourceObject.Age
           - attribute: FixedNumber
             source: 1337
           - attribute: FixedString
             source: "Fixed String"
-          - attribute: Name
-            source: Address.CountryCode

@@ -4,7 +4,8 @@
 import { AstNodeDescription, DefaultScopeProvider, EMPTY_SCOPE, getDocument, ReferenceInfo, Scope, StreamScope } from 'langium';
 import { CrossModelServices } from './cross-model-module.js';
 import { PackageAstNodeDescription, PackageExternalAstNodeDescription } from './cross-model-scope.js';
-import { isTargetAttribute } from './generated/ast.js';
+import { isAttributeMapping } from './generated/ast.js';
+import { fixDocument } from './util/ast-util.js';
 
 /**
  * A custom scope provider that considers the dependencies between packages to indicate which elements form the global scope
@@ -31,7 +32,7 @@ export class PackageScopeProvider extends DefaultScopeProvider {
    }
 
    protected override getGlobalScope(referenceType: string, context: ReferenceInfo): Scope {
-      if (isTargetAttribute(context.container)) {
+      if (isAttributeMapping(context.container)) {
          // target attribute mappings should only access the local scope
          return EMPTY_SCOPE;
       }
@@ -65,4 +66,18 @@ export class PackageScopeProvider extends DefaultScopeProvider {
    }
 }
 
-export class CrossModelScopeProvider extends PackageScopeProvider {}
+export class CrossModelScopeProvider extends PackageScopeProvider {
+   override getScope(context: ReferenceInfo): Scope {
+      try {
+         return super.getScope(this.fixContext(context));
+      } catch (error) {
+         return EMPTY_SCOPE;
+      }
+   }
+
+   protected fixContext(context: ReferenceInfo): ReferenceInfo {
+      // for some reason the document is not always properly set on the container node
+      fixDocument(context.container, context.container.$cstNode?.root.astNode.$document);
+      return context;
+   }
+}

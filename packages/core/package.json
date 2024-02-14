@@ -30,6 +30,7 @@
     "watch": "tsc -w"
   },
   "dependencies": {
+    "@crossbreeze/model-service": "^1.0.0",
     "@crossbreeze/protocol": "0.0.0",
     "@theia/core": "1.43.1",
     "@theia/markers": "1.43.1",

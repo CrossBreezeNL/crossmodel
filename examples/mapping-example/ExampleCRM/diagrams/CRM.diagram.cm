@@ -1,22 +1,32 @@
-diagram:
+systemDiagram:
     id: CRM
     name: "CRM"
     description: "Shows the complete CRM"
     nodes:
       - id: CustomerNode
         entity: Customer
-        x: 325.5893891316664
-        y: 261.8195919791379
-        width: 122.22364807128906
-        height: 151
+        x: 363
+        y: 264
+        width: 141.7887420654297
+        height: 176
       - id: OrderNode
         entity: Order
-        x: 649.4416344093675
-        y: 274.85224527770106
-        width: 139.6079559326172
-        height: 132
+        x: 649
+        y: 275
+        width: 148.649658203125
+        height: 147
+      - id: AddressNode
+        entity: ExampleCRM.Address
+        x: 88
+        y: 297
+        width: 159.649658203125
+        height: 96
     edges:
       - id: CustomerToOrder
         relationship: Order_Customer
         sourceNode: CustomerNode
         targetNode: OrderNode
+      - id: AddressToCustomer
+        relationship: ExampleCRM.Address_Customer
+        sourceNode: AddressNode
+        targetNode: CustomerNode

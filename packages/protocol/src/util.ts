@@ -23,6 +23,12 @@ export function quote(text: string, quoteChar = '"', replaceChar = "'"): string 
    );
 }
 
+export function unquote(text: string, quoteChar = '"'): string {
+   const start = text.startsWith(quoteChar) ? 1 : undefined;
+   const end = text.endsWith(quoteChar) ? -1 : undefined;
+   return text.slice(start, end);
+}
+
 export function toId(text: string): string {
    if (CrossModelRegex.ID.test(text)) {
       return text;

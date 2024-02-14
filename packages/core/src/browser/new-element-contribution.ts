@@ -1,11 +1,13 @@
 /** ******************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { quote, toId } from '@crossbreeze/protocol';
+import { ModelService } from '@crossbreeze/model-service/lib/common';
+import { ModelFileExtensions, quote, toId } from '@crossbreeze/protocol';
 import { Command, CommandContribution, CommandRegistry, MaybePromise, MenuContribution, MenuModelRegistry, URI, nls } from '@theia/core';
 import { CommonMenus, DialogError, codicon, open } from '@theia/core/lib/browser';
 import { TabBarToolbarRegistry } from '@theia/core/lib/browser/shell/tab-bar-toolbar';
-import { injectable } from '@theia/core/shared/inversify';
+import { inject, injectable } from '@theia/core/shared/inversify';
+import { EditorContextMenu } from '@theia/editor/lib/browser';
 import { FileStat } from '@theia/filesystem/lib/common/files';
 import { FileNavigatorContribution, NavigatorContextMenu } from '@theia/navigator/lib/browser/navigator-contribution';
 import { WorkspaceCommandContribution } from '@theia/workspace/lib/browser/workspace-commands';
@@ -30,7 +32,7 @@ const INITIAL_RELATIONSHIP_CONTENT = `relationship:
     child: 
     type: "1:1"`;
 
-const INITIAL_DIAGRAM_CONTENT = `diagram:
+const INITIAL_DIAGRAM_CONTENT = `systemDiagram:
     id: \${id}
     name: \${name}`;
 
@@ -40,7 +42,7 @@ const INITIAL_MAPPING_CONTENT = `mapping:
       - id: Source
    target:
       entity: 
-      attributes: `;
+      mappings: `;
 
 const TEMPLATE_CATEGORY = 'New Element';
 
@@ -48,7 +50,7 @@ const NEW_ELEMENT_TEMPLATES: NewElementTemplate[] = [
    {
       id: 'crossbreeze.new.entity',
       label: 'Entity',
-      fileExtension: '.entity.cm',
+      fileExtension: ModelFileExtensions.Entity,
       category: TEMPLATE_CATEGORY,
       iconClass: codicon('git-commit'),
       content: name => INITIAL_ENTITY_CONTENT.replace(/\$\{name\}/gi, quote(name)).replace(/\$\{id\}/gi, toId(name))
@@ -56,15 +58,15 @@ const NEW_ELEMENT_TEMPLATES: NewElementTemplate[] = [
    {
       id: 'crossbreeze.new.relationship',
       label: 'Relationship',
-      fileExtension: '.relationship.cm',
+      fileExtension: ModelFileExtensions.Relationship,
       category: TEMPLATE_CATEGORY,
       iconClass: codicon('git-compare'),
       content: name => INITIAL_RELATIONSHIP_CONTENT.replace(/\$\{name\}/gi, quote(name)).replace(/\$\{id\}/gi, toId(name))
    },
    {
-      id: 'crossbreeze.new.diagram',
-      label: 'Diagram',
-      fileExtension: '.diagram.cm',
+      id: 'crossbreeze.new.system-diagram',
+      label: 'SystemDiagram',
+      fileExtension: ModelFileExtensions.SystemDiagram,
       category: TEMPLATE_CATEGORY,
       iconClass: codicon('type-hierarchy-sub'),
       content: name => INITIAL_DIAGRAM_CONTENT.replace(/\$\{name\}/gi, quote(name)).replace(/\$\{id\}/gi, toId(name))
@@ -72,7 +74,7 @@ const NEW_ELEMENT_TEMPLATES: NewElementTemplate[] = [
    {
       id: 'crossbreeze.new.mapping',
       label: 'Mapping',
-      fileExtension: '.mapping.cm',
+      fileExtension: ModelFileExtensions.Mapping,
       category: TEMPLATE_CATEGORY,
       iconClass: codicon('group-by-ref-type'),
       content: name => INITIAL_MAPPING_CONTENT.replace(/\$\{name\}/gi, quote(name)).replace(/\$\{id\}/gi, toId(name))
@@ -81,8 +83,15 @@ const NEW_ELEMENT_TEMPLATES: NewElementTemplate[] = [
 
 const ID_REGEX = /^[_a-zA-Z@][\w_\-@/#]*$/; /* taken from the langium file, in newer Langium versions constants may be generated. */
 
+const DERIVE_MAPPING_FROM_ENTITY: Command = {
+   id: 'crossmodel.mapping',
+   label: 'Derive Mapping'
+};
+
 @injectable()
 export class CrossModelWorkspaceContribution extends WorkspaceCommandContribution implements MenuContribution, CommandContribution {
+   @inject(ModelService) modelService: ModelService;
+
    override registerCommands(commands: CommandRegistry): void {
       super.registerCommands(commands);
       for (const template of NEW_ELEMENT_TEMPLATES) {
@@ -91,6 +100,15 @@ export class CrossModelWorkspaceContribution extends WorkspaceCommandContributio
             this.newWorkspaceRootUriAwareCommandHandler({ execute: uri => this.createNewElementFile(uri, template) })
          );
       }
+
+      commands.registerCommand(
+         DERIVE_MAPPING_FROM_ENTITY,
+         this.newWorkspaceRootUriAwareCommandHandler({
+            execute: uri => this.deriveNewMappingFile(uri),
+            isEnabled: uri => ModelFileExtensions.isEntityFile(uri.path.base),
+            isVisible: uri => ModelFileExtensions.isEntityFile(uri.path.base)
+         })
+      );
    }
 
    registerMenus(registry: MenuModelRegistry): void {
@@ -104,6 +122,11 @@ export class CrossModelWorkspaceContribution extends WorkspaceCommandContributio
          });
       }
 
+      registry.registerMenuAction(NavigatorContextMenu.NAVIGATION, {
+         commandId: DERIVE_MAPPING_FROM_ENTITY.id,
+         label: DERIVE_MAPPING_FROM_ENTITY.label + '...'
+      });
+
       // main menu bar
       registry.registerSubmenu(NEW_ELEMENT_MAIN_MENU, TEMPLATE_CATEGORY);
       for (const [id, template] of NEW_ELEMENT_TEMPLATES.entries()) {
@@ -112,6 +135,47 @@ export class CrossModelWorkspaceContribution extends WorkspaceCommandContributio
             label: template.label + '...',
             order: id.toString()
          });
+      }
+
+      // editor context menu
+      registry.registerMenuAction(EditorContextMenu.COMMANDS, { commandId: DERIVE_MAPPING_FROM_ENTITY.id });
+   }
+
+   protected async deriveNewMappingFile(uri: URI): Promise<void> {
+      const parent = await this.getDirectory(uri);
+      if (parent) {
+         const parentUri = parent.resource;
+         const dialog = new WorkspaceInputDialog(
+            {
+               title: 'New Mapping...',
+               parentUri: parentUri,
+               initialValue: 'NewMapping',
+               placeholder: 'NewMapping',
+               validate: newName => this.validateElementFileName(newName, parent, ModelFileExtensions.Mapping)
+            },
+            this.labelProvider
+         );
+         const selectedSource = await dialog.open();
+         if (selectedSource) {
+            const fileName = this.applyFileExtension(selectedSource, ModelFileExtensions.Mapping);
+            const baseFileName = this.removeFileExtension(selectedSource, ModelFileExtensions.Mapping);
+            const fileUri = parentUri.resolve(fileName);
+
+            const targetRef = await this.modelService.findRootReferenceName({ source: fileUri.path.fsPath(), target: uri.path.fsPath() });
+            if (!targetRef) {
+               this.messageService.error('Could not detect target element at ' + uri.path.fsPath());
+               return;
+            }
+
+            const mappingName = baseFileName.charAt(0).toUpperCase() + baseFileName.substring(1);
+            const content = `mapping:
+            id: ${mappingName}
+            target:
+               entity: ${targetRef}`;
+            await this.fileService.create(fileUri, content);
+            this.fireCreateNewFile({ parent: parentUri, uri: fileUri });
+            open(this.openerService, fileUri);
+         }
       }
    }
 
@@ -125,14 +189,14 @@ export class CrossModelWorkspaceContribution extends WorkspaceCommandContributio
                parentUri: parentUri,
                initialValue: 'New' + template.label,
                placeholder: 'New ' + template.label,
-               validate: newName => this.validateElementFileName(newName, parent, template)
+               validate: newName => this.validateElementFileName(newName, parent, template.fileExtension)
             },
             this.labelProvider
          );
          const name = await dialog.open();
          if (name) {
-            const fileName = this.applyFileExtension(name, template);
-            const baseFileName = this.removeFileExtension(name, template);
+            const fileName = this.applyFileExtension(name, template.fileExtension);
+            const baseFileName = this.removeFileExtension(name, template.fileExtension);
             const elementName = baseFileName.charAt(0).toUpperCase() + baseFileName.substring(1);
             const content = typeof template.content === 'string' ? template.content : template.content(elementName);
             const fileUri = parentUri.resolve(fileName);
@@ -143,7 +207,7 @@ export class CrossModelWorkspaceContribution extends WorkspaceCommandContributio
       }
    }
 
-   protected validateElementFileName(name: string, parent: FileStat, template: NewElementTemplate): MaybePromise<DialogError> {
+   protected validateElementFileName(name: string, parent: FileStat, fileExtension: string): MaybePromise<DialogError> {
       // default behavior for empty strings is like cancel
       if (!name) {
          return '';
@@ -153,15 +217,15 @@ export class CrossModelWorkspaceContribution extends WorkspaceCommandContributio
          return nls.localizeByDefault(`'${name}' is not a valid name, must match: ${ID_REGEX}.`);
       }
       // automatically apply file extension for better UX
-      return this.validateFileName(this.applyFileExtension(name, template), parent, true);
+      return this.validateFileName(this.applyFileExtension(name, fileExtension), parent, true);
    }
 
-   protected applyFileExtension(name: string, template: NewElementTemplate): string {
-      return name.endsWith(template.fileExtension) ? name : name + template.fileExtension;
+   protected applyFileExtension(name: string, fileExtension: string): string {
+      return name.endsWith(fileExtension) ? name : name + fileExtension;
    }
 
-   protected removeFileExtension(name: string, template: NewElementTemplate): string {
-      return name.endsWith(template.fileExtension) ? name.slice(0, -template.fileExtension.length) : name;
+   protected removeFileExtension(name: string, fileExtension: string): string {
+      return name.endsWith(fileExtension) ? name.slice(0, -fileExtension.length) : name;
    }
 }
 

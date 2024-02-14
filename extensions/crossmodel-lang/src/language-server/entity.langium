@@ -26,7 +26,7 @@ interface EntityAttribute extends Attribute {}
 
 EntityAttributes infers Entity:
     INDENT 
-        (attributes+=EntityAttribute)*     
+        (attributes+=EntityAttribute)*
     DEDENT;
 
 EntityAttribute returns EntityAttribute:

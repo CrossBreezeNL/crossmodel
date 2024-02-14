@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-export const diagram2 = `diagram:
+export const diagram2 = `systemDiagram:
     id: Systemdiagram1
     nodes:
       - id: CustomerNode

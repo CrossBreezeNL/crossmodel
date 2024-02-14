@@ -1,48 +1,24 @@
 /********************************************************************************
- * Copyright (c) 2023 CrossBreeze.
+ * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
-import {
-   ConsoleLogger,
-   ContainerConfiguration,
-   LogLevel,
-   TYPES,
-   bindAsService,
-   configureDefaultModelElements,
-   configureModelElement,
-   initializeDiagramContainer
-} from '@eclipse-glsp/client';
+
+import { ConsoleLogger, LogLevel, SetViewportAction, TYPES, bindAsService, configureActionHandler } from '@eclipse-glsp/client';
 import { TheiaGLSPSelectionForwarder } from '@eclipse-glsp/theia-integration';
-import { Container, ContainerModule } from '@theia/core/shared/inversify';
+import { ContainerModule, interfaces } from '@theia/core/shared/inversify';
+import { GridAlignmentHandler } from './crossmodel-grid-handler';
+import { CrossModelGridSnapper } from './crossmodel-grid-snapper';
 import { CrossModelGLSPSelectionDataService } from './crossmodel-selection-data-service';
 import { CrossModelSelectionDataService, CrossModelTheiaGLSPSelectionForwarder } from './crossmodel-selection-forwarder';
-import { ENTITY_NODE_TYPE, EntityNode } from './model';
-import { EntityNodeView } from './views';
 
-const crossModelDiagramModule = new ContainerModule((bind, unbind, isBound, rebind) => {
-   rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
-   rebind(TYPES.LogLevel).toConstantValue(LogLevel.warn);
-   const context = { bind, unbind, isBound, rebind };
-
-   // Use GLSP default model elements and their views
-   // For example the model element with type 'node' (DefaultTypes.NODE) is represented by an SNode and rendered as RoundedCornerNodeView
-   configureDefaultModelElements(context);
-
-   // Bind views that can be rendered by the client-side
-   // The glsp-server can send a request to render a specific view given a type, e.g. node:entity
-   // The model class holds the client-side model and properties
-   // The view class shows how to draw the svg element given the properties of the model class
-   configureModelElement(context, ENTITY_NODE_TYPE, EntityNode, EntityNodeView);
-
-   bindAsService(bind, CrossModelSelectionDataService, CrossModelGLSPSelectionDataService);
-
-   bind(CrossModelTheiaGLSPSelectionForwarder).toSelf().inSingletonScope();
-   rebind(TheiaGLSPSelectionForwarder).toService(CrossModelTheiaGLSPSelectionForwarder);
-});
-
-export function createCrossModelDiagramContainer(...containerConfiguration: ContainerConfiguration): Container {
-   return initializeCrossModelDiagramContainer(new Container(), ...containerConfiguration);
-}
-
-export function initializeCrossModelDiagramContainer(container: Container, ...containerConfiguration: ContainerConfiguration): Container {
-   return initializeDiagramContainer(container, ...containerConfiguration, crossModelDiagramModule);
+export function createCrossModelDiagramModule(registry: interfaces.ContainerModuleCallBack): ContainerModule {
+   return new ContainerModule((bind, unbind, isBound, rebind, unbindAsync, onActivation, onDeactivation) => {
+      rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
+      rebind(TYPES.LogLevel).toConstantValue(LogLevel.warn);
+      bindAsService(bind, CrossModelSelectionDataService, CrossModelGLSPSelectionDataService);
+      bind(CrossModelTheiaGLSPSelectionForwarder).toSelf().inSingletonScope();
+      rebind(TheiaGLSPSelectionForwarder).toService(CrossModelTheiaGLSPSelectionForwarder);
+      bind(TYPES.ISnapper).to(CrossModelGridSnapper);
+      configureActionHandler({ bind, isBound }, SetViewportAction.KIND, GridAlignmentHandler);
+      registry(bind, unbind, isBound, rebind, unbindAsync, onActivation, onDeactivation);
+   });
 }

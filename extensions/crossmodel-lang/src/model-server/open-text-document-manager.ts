@@ -81,7 +81,8 @@ export class OpenTextDocumentManager {
       return this.documentBuilder.onBuildPhase(DocumentState.Validated, (allChangedDocuments, _token) => {
          const changedDocument = allChangedDocuments.find(document => document.uri.toString() === uri);
          if (changedDocument) {
-            const sourceClientId = this.getSourceClientId(changedDocument, allChangedDocuments);
+            const buildTrigger = allChangedDocuments.find(document => document.uri.toString() === this.lastUpdate?.changed?.[0].toString());
+            const sourceClientId = this.getSourceClientId(buildTrigger ?? changedDocument, allChangedDocuments);
             const event: ModelUpdatedEvent<T> = {
                model: changedDocument.parseResult.value as T,
                sourceClientId,
@@ -109,12 +110,13 @@ export class OpenTextDocumentManager {
       );
    }
 
-   async open(args: OpenModelArgs): Promise<void> {
+   async open(args: OpenModelArgs): Promise<Disposable> {
       // only create a dummy document if it is already open as we use the synced state anyway
       const textDocument = this.isOpen(args.uri)
          ? this.createDummyDocument(args.uri)
          : await this.createDocumentFromFileSystem(args.uri, args.languageId);
       this.textDocuments.notifyDidOpenTextDocument({ textDocument }, args.clientId);
+      return Disposable.create(() => this.close(args));
    }
 
    async close(args: CloseModelArgs): Promise<void> {

@@ -8,6 +8,9 @@ entity:
         - id: Country
           name: "Country"
           datatype: "Varchar"
+        - id: Age
+          name: "Age"
+          datatype: "Integer"
         - id: FixedNumber
           name: "FixedNumber"
           datatype: "Integer"

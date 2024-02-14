@@ -2,11 +2,21 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { CloseModelArgs, ModelSavedEvent, ModelUpdatedEvent, OpenModelArgs, SaveModelArgs, UpdateModelArgs } from '@crossbreeze/protocol';
-import { AstNode, Deferred, DocumentState, isAstNode } from 'langium';
+import {
+   CloseModelArgs,
+   FindRootReferenceNameArgs,
+   ModelSavedEvent,
+   ModelUpdatedEvent,
+   OpenModelArgs,
+   SaveModelArgs,
+   UpdateModelArgs
+} from '@crossbreeze/protocol';
+import { AstNode, Deferred, DocumentState, LangiumDocument, isAstNode } from 'langium';
 import { Disposable, OptionalVersionedTextDocumentIdentifier, Range, TextDocumentEdit, TextEdit, uinteger } from 'vscode-languageserver';
 import { URI } from 'vscode-uri';
-import { CrossModelSharedServices } from '../language-server/cross-model-module.js';
+import { CrossModelServices, CrossModelSharedServices } from '../language-server/cross-model-module.js';
+import { CrossModelRoot } from '../language-server/generated/ast.js';
+import { findSemanticRoot } from '../language-server/util/ast-util.js';
 import { LANGUAGE_CLIENT_ID } from './openable-text-documents.js';
 
 /**
@@ -51,7 +61,7 @@ export class ModelService {
     *
     * @param uri document URI
     */
-   async open(args: OpenModelArgs): Promise<void> {
+   async open(args: OpenModelArgs): Promise<Disposable> {
       return this.documentManager.open(args);
    }
 
@@ -166,5 +176,29 @@ export class ModelService {
    protected serialize(uri: URI, model: AstNode): string {
       const serializer = this.shared.ServiceRegistry.getServices(uri).serializer.Serializer;
       return serializer.serialize(model);
+   }
+
+   getId(node: AstNode, uri = node.$document?.uri): string | undefined {
+      if (uri) {
+         const services = this.shared.ServiceRegistry.getServices(uri) as CrossModelServices;
+         return services.references.IdProvider.getLocalId(node);
+      }
+      return undefined;
+   }
+
+   async findRootReferenceName(args: FindRootReferenceNameArgs): Promise<string | undefined> {
+      const targetUri = URI.parse(args.target);
+      if (!this.documents.hasDocument(targetUri)) {
+         return;
+      }
+      const targetDoc = this.documents.getOrCreateDocument(targetUri) as LangiumDocument<CrossModelRoot>;
+      const targetRoot = findSemanticRoot(targetDoc);
+
+      // decide which name to use based on how the documents relate to each other
+      const sourceUri = URI.parse(args.source);
+      const packageManager = this.shared.workspace.PackageManager;
+      const services = this.shared.ServiceRegistry.getServices(sourceUri) as CrossModelServices;
+      const useExternal = packageManager.getPackageIdByUri(sourceUri) === this.shared.workspace.PackageManager.getPackageIdByUri(targetUri);
+      return useExternal ? services.references.IdProvider.getExternalId(targetRoot) : services.references.IdProvider.getLocalId(targetRoot);
    }
 }

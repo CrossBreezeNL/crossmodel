@@ -2,11 +2,22 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
+import { ModelFileExtensions } from '@crossbreeze/protocol';
 import { GLSPDiagramLanguage } from '@eclipse-glsp/theia-integration/lib/common';
 
-export const CrossModelDiagramLanguage: GLSPDiagramLanguage = {
-   contributionId: 'crossmodel-contribution',
-   label: 'CrossModel Diagram',
-   diagramType: 'crossmodel-diagram',
-   fileExtensions: ['.diagram.cm']
+// use same contributionId for all languages to ensure we communicate with the same GLSP server
+export const CrossModelLanguageContributionId = 'crossmodel-contribution';
+
+export const SystemDiagramLanguage: GLSPDiagramLanguage = {
+   contributionId: CrossModelLanguageContributionId,
+   label: 'System Diagram',
+   diagramType: 'system-diagram',
+   fileExtensions: [ModelFileExtensions.Diagram, ModelFileExtensions.SystemDiagram]
+};
+
+export const MappingDiagramLanguage: GLSPDiagramLanguage = {
+   contributionId: CrossModelLanguageContributionId,
+   label: 'Mapping Diagram',
+   diagramType: 'mapping-diagram',
+   fileExtensions: [ModelFileExtensions.Mapping, ModelFileExtensions.MappingDiagram]
 };

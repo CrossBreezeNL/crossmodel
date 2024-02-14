@@ -1,0 +1,10 @@
+entity:
+    id: CalcAge
+    name: "CalcAge"
+    attributes:
+        - id: BirthDate
+          name: "BirthDate"
+          datatype: "Integer"
+        - id: Age
+          name: "Age"
+          datatype: "Integer"

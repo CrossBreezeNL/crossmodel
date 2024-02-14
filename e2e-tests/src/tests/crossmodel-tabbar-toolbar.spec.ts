@@ -84,7 +84,7 @@ test.describe('CrossModel TabBar Toolbar', () => {
 
    test('create new diagram from tabbar toolbar', async () => {
       // Get the new-entity toolbar item.
-      const tabBarToolbarNewEntity = await tabBarToolbar.toolBarItem('crossbreeze.new.diagram.toolbar');
+      const tabBarToolbarNewEntity = await tabBarToolbar.toolBarItem('crossbreeze.new.system-diagram.toolbar');
       expect(tabBarToolbarNewEntity).toBeDefined();
       if (tabBarToolbarNewEntity) {
          // expect(await tabBarToolbarNewEntity.isEnabled()).toBe(true);
@@ -95,7 +95,7 @@ test.describe('CrossModel TabBar Toolbar', () => {
          // Wait for the New Entity dialog to popup.
          newDiagramDialog.waitForVisible();
          // Check the title of the dialog.
-         expect(await newDiagramDialog.title()).toBe('New Diagram...');
+         expect(await newDiagramDialog.title()).toBe('New SystemDiagram...');
          // Set the name for the new entity.
          await newDiagramDialog.enterSingleInput('diagram-created-from-tabbar-toolbar');
          // Wait until we can click the main button.
@@ -106,9 +106,9 @@ test.describe('CrossModel TabBar Toolbar', () => {
          await newDiagramDialog.waitForClosed();
 
          explorer = await app.openView(CrossModelExplorerView);
-         const file = await explorer.getFileStatNodeByLabel('diagram-created-from-tabbar-toolbar.diagram.cm');
+         const file = await explorer.getFileStatNodeByLabel('diagram-created-from-tabbar-toolbar.system-diagram.cm');
          expect(file).toBeDefined();
-         expect(await file.label()).toBe('diagram-created-from-tabbar-toolbar.diagram.cm');
+         expect(await file.label()).toBe('diagram-created-from-tabbar-toolbar.system-diagram.cm');
       }
    });
 });

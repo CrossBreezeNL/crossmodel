@@ -45,8 +45,11 @@
   },
   "theiaExtensions": [
     {
-      "frontend": "lib/browser/crossmodel-diagram-frontend-module",
+      "frontend": "lib/browser/system-diagram/system-diagram-frontend-module",
       "backend": "lib/node/crossmodel-backend-module"
+    },
+    {
+      "frontend": "lib/browser/mapping-diagram/mapping-diagram-frontend-module"
     }
   ]
 }

@@ -1,9 +1,15 @@
 /********************************************************************************
- * Copyright (c) 2023 CrossBreeze.
+ * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 
-import { RectangularNode } from 'sprotty/lib';
+import { ATTRIBUTE_COMPARTMENT_TYPE } from '@crossbreeze/protocol';
+import { GCompartment, GModelElement, Hoverable, Selectable, isSelectable } from '@eclipse-glsp/client';
 
-export const ENTITY_NODE_TYPE = 'node:entity';
+export class AttributeCompartment extends GCompartment implements Selectable, Hoverable {
+   hoverFeedback: boolean;
+   selected: boolean;
 
-export class EntityNode extends RectangularNode {}
+   static is(element?: GModelElement): element is AttributeCompartment {
+      return !!element && isSelectable(element) && element.type === ATTRIBUTE_COMPARTMENT_TYPE;
+   }
+}

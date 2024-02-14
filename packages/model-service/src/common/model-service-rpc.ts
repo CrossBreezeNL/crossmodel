@@ -6,6 +6,7 @@ import {
    CloseModelArgs,
    CrossModelRoot,
    DiagramNodeEntity,
+   FindRootReferenceNameArgs,
    ModelUpdatedEvent,
    OpenModelArgs,
    SaveModelArgs,
@@ -25,6 +26,7 @@ export interface ModelService extends RpcServer<ModelServiceClient> {
    close(args: CloseModelArgs): Promise<void>;
    request(uri: string): Promise<CrossModelRoot | undefined>;
    requestDiagramNodeEntityModel(uri: string, id: string): Promise<DiagramNodeEntity | undefined>;
+   findRootReferenceName(args: FindRootReferenceNameArgs): Promise<string | undefined>;
    update(args: UpdateModelArgs<CrossModelRoot>): Promise<CrossModelRoot>;
    save(args: SaveModelArgs<CrossModelRoot>): Promise<void>;
 }

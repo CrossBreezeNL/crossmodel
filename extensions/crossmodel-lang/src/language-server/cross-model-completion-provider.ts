@@ -18,6 +18,7 @@ import { CompletionItemKind, InsertTextFormat } from 'vscode-languageserver-prot
 import type { Range } from 'vscode-languageserver-types';
 import { CrossModelServices } from './cross-model-module.js';
 import { isExternalDescriptionForLocalPackage } from './cross-model-scope.js';
+import { fixDocument } from './util/ast-util.js';
 
 /**
  * Custom completion provider that only shows the short options to the user if a longer, fully-qualified version is also available.
@@ -47,13 +48,7 @@ export class CrossModelCompletionProvider extends DefaultCompletionProvider {
 
    protected fixCompletionNode(context: CompletionContext): CompletionContext {
       // for some reason the document is not always properly set on the node
-      let node = context.node;
-      while (node) {
-         if (!node.$document) {
-            (context.node as any).$document = context.document;
-         }
-         node = node.$container;
-      }
+      fixDocument(context.node, context.document);
       return context;
    }
 

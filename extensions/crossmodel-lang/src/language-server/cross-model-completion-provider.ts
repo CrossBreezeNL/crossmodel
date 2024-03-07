@@ -18,6 +18,7 @@ import { CompletionItemKind, InsertTextFormat } from 'vscode-languageserver-prot
 import type { Range } from 'vscode-languageserver-types';
 import { CrossModelServices } from './cross-model-module.js';
 import { isExternalDescriptionForLocalPackage } from './cross-model-scope.js';
+import { RelationshipAttribute, isRelationshipAttribute } from './generated/ast.js';
 import { fixDocument } from './util/ast-util.js';
 
 /**
@@ -182,8 +183,25 @@ export class CrossModelCompletionProvider extends DefaultCompletionProvider {
    }
 
    protected override filterCrossReference(context: CompletionContext, description: AstNodeDescription): boolean {
-      // we want to keep fully qualified names in the scope so we can do proper linking
-      // but want to hide it from the user for local options, i.e., if we are in the same project we can skip the project name
-      return !isExternalDescriptionForLocalPackage(description, this.packageId) && super.filterCrossReference(context, description);
+      if (isRelationshipAttribute(context.node)) {
+         return this.filterRelationshipAttribute(context.node, context, description);
+      }
+      if (isExternalDescriptionForLocalPackage(description, this.packageId)) {
+         // we want to keep fully qualified names in the scope so we can do proper linking
+         // but want to hide it from the user for local options, i.e., if we are in the same project we can skip the project name
+         return false;
+      }
+      return super.filterCrossReference(context, description);
+   }
+
+   protected filterRelationshipAttribute(node: RelationshipAttribute, context: CompletionContext, desc: AstNodeDescription): boolean {
+      // only show relevant attributes depending on the parent or child context
+      if (context.features.find(feature => feature.property === 'child')) {
+         return desc.name.startsWith(node.$container.child?.$refText + '.');
+      }
+      if (context.features.find(feature => feature.property === 'parent')) {
+         return desc.name.startsWith(node.$container.parent?.$refText + '.');
+      }
+      return true;
    }
 }

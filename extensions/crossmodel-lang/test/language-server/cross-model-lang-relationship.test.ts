@@ -3,20 +3,32 @@
  ********************************************************************************/
 
 import { describe, expect, test } from '@jest/globals';
-import { EmptyFileSystem, isReference } from 'langium';
+import { isReference } from 'langium';
 
-import { relationship1, relationship2 } from './test-utils/test-documents/relationship/index.js';
-import { parseDocument } from './test-utils/utils.js';
+import {
+   relationship1,
+   relationship2,
+   relationship_with_attribute,
+   relationship_with_attribute_wrong_entity,
+   relationship_with_duplicate_attributes
+} from './test-utils/test-documents/relationship/index.js';
+import { createCrossModelTestServices, parseAndForgetDocument, parseDocuments } from './test-utils/utils.js';
 
-import { createCrossModelServices } from '../../src/language-server/cross-model-module.js';
 import { CrossModelRoot } from '../../src/language-server/generated/ast.js';
+import { address } from './test-utils/test-documents/entity/address.js';
+import { customer } from './test-utils/test-documents/entity/customer.js';
+import { order } from './test-utils/test-documents/entity/order.js';
 
-const services = createCrossModelServices({ ...EmptyFileSystem }).CrossModel;
+const services = createCrossModelTestServices();
 
 describe('CrossModel language Relationship', () => {
+   beforeAll(() => {
+      parseDocuments(services, [order, customer, address]);
+   });
+
    test('Simple file for relationship', async () => {
       const document = relationship1;
-      const parsedDocument = await parseDocument(services, document);
+      const parsedDocument = await parseAndForgetDocument(services, document);
       const model = parsedDocument.parseResult.value as CrossModelRoot;
 
       expect(model).toHaveProperty('relationship');
@@ -36,11 +48,47 @@ describe('CrossModel language Relationship', () => {
 
    test('relationship with indentation error', async () => {
       const document = relationship2;
-      const parsedDocument = await parseDocument(services, document);
+      const parsedDocument = await parseAndForgetDocument(services, document);
       const model = parsedDocument.parseResult.value as CrossModelRoot;
 
       expect(model).toHaveProperty('relationship');
       expect(parsedDocument.parseResult.lexerErrors.length).toBe(0);
       expect(parsedDocument.parseResult.parserErrors.length).toBe(1);
+   });
+
+   test('relationship with attributes', async () => {
+      const parsedDocument = await parseAndForgetDocument(services, relationship_with_attribute, {
+         validation: true
+      });
+      const model = parsedDocument.parseResult.value as CrossModelRoot;
+
+      expect(model).toHaveProperty('relationship');
+      expect(parsedDocument.parseResult.lexerErrors.length).toBe(0);
+      expect(parsedDocument.parseResult.parserErrors.length).toBe(0);
+      expect(parsedDocument.diagnostics).toHaveLength(0);
+   });
+
+   test('relationship with wrong entity', async () => {
+      const parsedDocument = await parseAndForgetDocument(services, relationship_with_attribute_wrong_entity, {
+         validation: true
+      });
+      const model = parsedDocument.parseResult.value as CrossModelRoot;
+
+      expect(model).toHaveProperty('relationship');
+      expect(parsedDocument.parseResult.lexerErrors.length).toBe(0);
+      expect(parsedDocument.parseResult.parserErrors.length).toBe(0);
+      expect(parsedDocument.diagnostics).toHaveLength(1);
+   });
+
+   test('relationship with duplicates', async () => {
+      const parsedDocument = await parseAndForgetDocument(services, relationship_with_duplicate_attributes, {
+         validation: true
+      });
+      const model = parsedDocument.parseResult.value as CrossModelRoot;
+
+      expect(model).toHaveProperty('relationship');
+      expect(parsedDocument.parseResult.lexerErrors.length).toBe(0);
+      expect(parsedDocument.parseResult.parserErrors.length).toBe(0);
+      expect(parsedDocument.diagnostics).toHaveLength(2);
    });
 });

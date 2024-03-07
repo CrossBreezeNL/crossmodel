@@ -116,7 +116,8 @@ describe('CrossModelLexer', () => {
             name: 'test Name',
             parent: ref1,
             child: ref2,
-            type: 'n:m'
+            type: 'n:m',
+            attributes: []
          };
       });
 
@@ -168,7 +169,8 @@ describe('CrossModelLexer', () => {
                name: 'test Name',
                parent: ref1,
                child: ref2,
-               type: 'n:m'
+               type: 'n:m',
+               attributes: []
             }
          };
 

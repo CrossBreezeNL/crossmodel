@@ -27,6 +27,10 @@ import { fixDocument } from './util/ast-util.js';
 export class CrossModelCompletionProvider extends DefaultCompletionProvider {
    protected packageId?: string;
 
+   readonly completionOptions = {
+      triggerCharacters: ['\n', ' ']
+   };
+
    constructor(
       services: CrossModelServices,
       protected packageManager = services.shared.workspace.PackageManager
@@ -51,6 +55,14 @@ export class CrossModelCompletionProvider extends DefaultCompletionProvider {
       // for some reason the document is not always properly set on the node
       fixDocument(context.node, context.document);
       return context;
+   }
+
+   protected override filterKeyword(context: CompletionContext, keyword: GrammarAST.Keyword): boolean {
+      return super.filterKeyword(context, keyword) && this.isUndefinedProperty(context.node, keyword.value);
+   }
+
+   protected isUndefinedProperty(obj: any, property: string): boolean {
+      return obj?.[property] === undefined || (Array.isArray(obj[property]) && obj[property].length === 0);
    }
 
    protected completionForAssignment(

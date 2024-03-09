@@ -51,7 +51,7 @@ export interface Attribute extends AstNode {
     datatype: string
     description?: string
     id: string
-    name?: string
+    name: string
 }
 
 export const Attribute = 'Attribute';
@@ -104,7 +104,7 @@ export interface Entity extends AstNode {
     readonly $type: 'Entity';
     attributes: Array<EntityAttribute>
     description?: string
-    id?: string
+    id: string
     name?: string
 }
 
@@ -118,13 +118,13 @@ export interface EntityNode extends AstNode {
     readonly $container: SystemDiagram;
     readonly $type: 'EntityNode';
     description?: string
-    entity?: Reference<Entity>
-    height?: number
-    id?: string
+    entity: Reference<Entity>
+    height: number
+    id: string
     name?: string
-    width?: number
-    x?: number
-    y?: number
+    width: number
+    x: number
+    y: number
 }
 
 export const EntityNode = 'EntityNode';
@@ -201,12 +201,12 @@ export interface Relationship extends AstNode {
     readonly $container: CrossModelRoot;
     readonly $type: 'Relationship';
     attributes: Array<RelationshipAttribute>
-    child?: Reference<Entity>
+    child: Reference<Entity>
     description?: string
-    id?: string
+    id: string
     name?: string
-    parent?: Reference<Entity>
-    type?: string
+    parent: Reference<Entity>
+    type: string
 }
 
 export const Relationship = 'Relationship';
@@ -219,7 +219,6 @@ export interface RelationshipAttribute extends AstNode {
     readonly $container: Relationship;
     readonly $type: 'RelationshipAttribute';
     child: Reference<Attribute>
-    description?: string
     parent: Reference<Attribute>
 }
 
@@ -244,10 +243,10 @@ export function isRelationshipCondition(item: unknown): item is RelationshipCond
 export interface RelationshipEdge extends AstNode {
     readonly $container: SystemDiagram;
     readonly $type: 'RelationshipEdge';
-    id?: string
-    relationship?: Reference<Relationship>
-    sourceNode?: Reference<EntityNode>
-    targetNode?: Reference<EntityNode>
+    id: string
+    relationship: Reference<Relationship>
+    sourceNode: Reference<EntityNode>
+    targetNode: Reference<EntityNode>
 }
 
 export const RelationshipEdge = 'RelationshipEdge';

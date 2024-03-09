@@ -4,7 +4,7 @@
 
 /** Valid relationship with attribute */
 export const relationship_with_attribute = `relationship: 
-    id: Order_Customer
+    id: Order_CustomerWithAttribute
     parent: Customer
     child: Order
     type: "1:1"
@@ -14,7 +14,7 @@ export const relationship_with_attribute = `relationship:
 
 /** Relationship with invalid attribute (wrong entity) */
 export const relationship_with_attribute_wrong_entity = `relationship: 
-    id: Order_Customer
+    id: Order_CustomerWithAttributeWrongEntity
     parent: Customer
     child: Order
     type: "1:1"
@@ -24,7 +24,7 @@ export const relationship_with_attribute_wrong_entity = `relationship:
 
 /** Relationship with invalid attribute (duplicates) */
 export const relationship_with_duplicate_attributes = `relationship: 
-    id: Order_Customer
+    id: Order_CustomerWithDuplicateAttributes
     parent: Customer
     child: Order
     type: "1:1"

@@ -95,9 +95,7 @@ export class CrossModelValidator {
          if (attribute.parent.ref) {
             if (attribute.parent?.ref?.$container !== relationship.parent?.ref) {
                accept('error', 'Not a valid parent attribute.', { node: attribute, property: 'parent' });
-            }
-            if (usedParentAttributes.includes(attribute.parent.ref)) {
-               // duplicate detected
+            } else if (usedParentAttributes.includes(attribute.parent.ref)) {
                accept('error', 'Each parent attribute can only be referenced once.', { node: attribute, property: 'parent' });
             } else {
                usedParentAttributes.push(attribute.parent.ref);
@@ -106,9 +104,7 @@ export class CrossModelValidator {
          if (attribute.child.ref) {
             if (attribute.child?.ref?.$container !== relationship.child?.ref) {
                accept('error', 'Not a valid child attribute.', { node: attribute, property: 'child' });
-            }
-            if (usedChildAttributes.includes(attribute.child.ref)) {
-               // duplicate detected
+            } else if (usedChildAttributes.includes(attribute.child.ref)) {
                accept('error', 'Each child attribute can only be referenced once.', { node: attribute, property: 'child' });
             } else {
                usedChildAttributes.push(attribute.child.ref);

@@ -5,23 +5,21 @@ import 'entity'
 Relationship:
     'relationship' ':' 
         INDENT
-        (
-            'id' ':' id=ID |
-            'name' ':'  name=STRING |
-            'description' ':' description=STRING |
-            'parent' ':' parent=[Entity:IDReference] |
-            'child' ':' child=[Entity:IDReference] |
-            'type' ':' type=STRING |
+            'id' ':' id=ID
+            ('name' ':'  name=STRING)?
+            ('description' ':' description=STRING)?
+            'parent' ':' parent=[Entity:IDReference]
+            'child' ':' child=[Entity:IDReference]
+            'type' ':' type=STRING
             ('attributes' ':'
                 INDENT 
-                    attributes+=RelationshipAttribute+
-                DEDENT)
-        )*
+                    ('-' attributes+=RelationshipAttribute)+
+                DEDENT
+            )?
         DEDENT
 ;
  
 RelationshipAttribute:
-    '-' 'parent' ':' parent=[Attribute:IDReference]
-        'child' ':' child=[Attribute:IDReference]
-        ('description' ':' description=STRING)?
+    'parent' ':' parent=[Attribute:IDReference]
+    'child' ':' child=[Attribute:IDReference]
 ;

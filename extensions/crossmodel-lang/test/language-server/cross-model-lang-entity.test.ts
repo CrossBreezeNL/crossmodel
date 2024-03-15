@@ -3,77 +3,45 @@
  ********************************************************************************/
 
 import { describe, expect, test } from '@jest/globals';
-import { EmptyFileSystem } from 'langium';
 
 import { entity1, entity2, entity3, entity4 } from './test-utils/test-documents/entity/index.js';
-import { parseDocument } from './test-utils/utils.js';
+import { createCrossModelTestServices, parseEntity } from './test-utils/utils.js';
 
-import { createCrossModelServices } from '../../src/language-server/cross-model-module.js';
-import { CrossModelRoot } from '../../src/language-server/generated/ast.js';
-
-const services = createCrossModelServices({ ...EmptyFileSystem }).CrossModel;
+const services = createCrossModelTestServices();
 
 describe('CrossModel language Entity', () => {
    describe('Without attributes', () => {
       test('Simple file for entity', async () => {
-         const document = entity1;
-         const parsedDocument = await parseDocument(services, document);
-         const model = parsedDocument.parseResult.value as CrossModelRoot;
-
-         expect(model).toHaveProperty('entity');
-         expect(parsedDocument.parseResult.lexerErrors.length).toBe(0);
-         expect(parsedDocument.parseResult.parserErrors.length).toBe(0);
-
-         expect(model.entity?.id).toBe('Customer');
-         expect(model.entity?.name).toBe('Customer');
-         expect(model.entity?.description).toBe('A customer with whom a transaction has been made.');
+         const entity = await parseEntity({ services, text: entity1 });
+         expect(entity.id).toBe('Customer');
+         expect(entity.name).toBe('Customer');
+         expect(entity.description).toBe('A customer with whom a transaction has been made.');
       });
    });
 
    describe('With attributes', () => {
       test('entity with attributes', async () => {
-         const document = entity2;
-         const parsedDocument = await parseDocument(services, document);
-         const model = parsedDocument.parseResult.value as CrossModelRoot;
-
-         expect(model).toHaveProperty('entity');
-
-         expect(parsedDocument.parseResult.lexerErrors.length).toBe(0);
-         expect(parsedDocument.parseResult.parserErrors.length).toBe(0);
-
-         expect(model.entity?.attributes.length).toBe(6);
-         expect(model.entity?.attributes[0].id).toBe('Id');
-         expect(model.entity?.attributes[0].name).toBe('Id');
-         expect(model.entity?.attributes[0].datatype).toBe('int');
+         const entity = await parseEntity({ services, text: entity2 });
+         expect(entity.attributes.length).toBe(6);
+         expect(entity.attributes[0].id).toBe('Id');
+         expect(entity.attributes[0].name).toBe('Id');
+         expect(entity.attributes[0].datatype).toBe('int');
       });
 
       test('entity with attributes coming before the description and name', async () => {
-         const document = entity4;
-         const parsedDocument = await parseDocument(services, document);
-         const model = parsedDocument.parseResult.value as CrossModelRoot;
+         const entity = await parseEntity({ services, text: entity4 }, { parserErrors: 2 });
+         expect(entity.id).toBe('Customer');
+         expect(entity.name).toBeUndefined();
+         expect(entity.description).toBeUndefined();
 
-         expect(model).toHaveProperty('entity');
-         expect(parsedDocument.parseResult.lexerErrors.length).toBe(0);
-         expect(parsedDocument.parseResult.parserErrors.length).toBe(0);
-
-         expect(model.entity?.id).toBe('Customer');
-         expect(model.entity?.name).toBe('Customer');
-         expect(model.entity?.description).toBe('A customer with whom a transaction has been made.');
-
-         expect(model.entity?.attributes.length).toBe(6);
-         expect(model.entity?.attributes[0].id).toBe('Id');
-         expect(model.entity?.attributes[0].name).toBe('Id');
-         expect(model.entity?.attributes[0].datatype).toBe('int');
+         expect(entity.attributes.length).toBe(6);
+         expect(entity.attributes[0].id).toBe('Id');
+         expect(entity.attributes[0].name).toBe('Id');
+         expect(entity.attributes[0].datatype).toBe('int');
       });
 
       test('entity with indentation error', async () => {
-         const document = entity3;
-         const parsedDocument = await parseDocument(services, document);
-         const model = parsedDocument.parseResult.value as CrossModelRoot;
-
-         expect(model).toHaveProperty('entity');
-         expect(parsedDocument.parseResult.lexerErrors.length).toBe(0);
-         expect(parsedDocument.parseResult.parserErrors.length).toBe(1);
+         await parseEntity({ services, text: entity3 }, { parserErrors: 1 });
       });
    });
 });

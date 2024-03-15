@@ -5,7 +5,9 @@ import { AstNode, ValidationAcceptor, ValidationChecks } from 'langium';
 import type { CrossModelServices } from './cross-model-module.js';
 import { ID_PROPERTY, IdentifiableAstNode } from './cross-model-naming.js';
 import {
+   Attribute,
    CrossModelAstType,
+   Relationship,
    RelationshipEdge,
    SourceObject,
    isEntity,
@@ -25,7 +27,8 @@ export function registerValidationChecks(services: CrossModelServices): void {
    const checks: ValidationChecks<CrossModelAstType> = {
       AstNode: validator.checkNode,
       RelationshipEdge: validator.checkRelationshipEdge,
-      SourceObject: validator.checkSourceObject
+      SourceObject: validator.checkSourceObject,
+      Relationship: validator.checkRelationship
    };
    registry.register(checks, validator);
 }
@@ -79,6 +82,33 @@ export class CrossModelValidator {
             accept('error', 'Must provide a unique id.', { node, property: ID_PROPERTY });
          } else if (node.id) {
             knownIds.push(node.id);
+         }
+      }
+   }
+
+   checkRelationship(relationship: Relationship, accept: ValidationAcceptor): void {
+      // we check that each attribute actually belongs to their respective entity (parent, child)
+      // and that each attribute is only used once
+      const usedParentAttributes: Attribute[] = [];
+      const usedChildAttributes: Attribute[] = [];
+      for (const attribute of relationship.attributes) {
+         if (attribute.parent.ref) {
+            if (attribute.parent?.ref?.$container !== relationship.parent?.ref) {
+               accept('error', 'Not a valid parent attribute.', { node: attribute, property: 'parent' });
+            } else if (usedParentAttributes.includes(attribute.parent.ref)) {
+               accept('error', 'Each parent attribute can only be referenced once.', { node: attribute, property: 'parent' });
+            } else {
+               usedParentAttributes.push(attribute.parent.ref);
+            }
+         }
+         if (attribute.child.ref) {
+            if (attribute.child?.ref?.$container !== relationship.child?.ref) {
+               accept('error', 'Not a valid child attribute.', { node: attribute, property: 'child' });
+            } else if (usedChildAttributes.includes(attribute.child.ref)) {
+               accept('error', 'Each child attribute can only be referenced once.', { node: attribute, property: 'child' });
+            } else {
+               usedChildAttributes.push(attribute.child.ref);
+            }
          }
       }
    }

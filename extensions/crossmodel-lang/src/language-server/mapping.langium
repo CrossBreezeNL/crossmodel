@@ -14,40 +14,42 @@ Mapping:
             'id' ':' id=ID
             ('sources' ':'
                 INDENT 
-                    sources+=SourceObject*
-                DEDENT)?
+                    ('-' sources+=SourceObject)+
+                DEDENT
+            )?
             'target' ':' target=TargetObject
         DEDENT
 ;
 
 SourceObject:
-    '-' 'id' ':' id=ID 
-        'entity' ':' entity=[Entity:IDReference] // implies attributes through entity
-        'join' ':' join=JoinType 
-        ('relations' ':'
-            INDENT
-                relations+=SourceObjectRelations*     
-            DEDENT)?
+    'id' ':' id=ID
+    'entity' ':' entity=[Entity:IDReference] // implies attributes through entity
+    'join' ':' join=JoinType
+    ('relations' ':'
+        INDENT
+            ('-' relations+=SourceObjectRelations)*
+        DEDENT
+    )?
 ;
 
 JoinType returns string: 'from' | 'inner-join' | 'cross-join' | 'left-join' | 'apply';
 
 SourceObjectRelations:
-    '-' 'source' ':' source=[SourceObject:IDReference]
-        'conditions' ':'
-            INDENT 
-                conditions+=SourceObjectCondition*     
-            DEDENT
+    'source' ':' source=[SourceObject:IDReference]
+    'conditions' ':'
+        INDENT 
+            ('-' conditions+=SourceObjectCondition)*
+        DEDENT
 ;
 
 SourceObjectCondition: RelationshipCondition | JoinCondition;
 
 RelationshipCondition:
-    '-' 'relationship' ':' relationship=[Relationship:IDReference]
+    'relationship' ':' relationship=[Relationship:IDReference]
 ;
 
 JoinCondition:
-    '-' 'join' ':' expression=JoinExpression
+    'join' ':' expression=JoinExpression
 ;
 
 JoinExpression:
@@ -59,14 +61,15 @@ TargetObject:
         'entity' ':' entity=[Entity:IDReference] // implies attributes through entity
         ('mappings' ':'
             INDENT 
-                mappings+=AttributeMapping*     
-            DEDENT)?
+                ('-' mappings+=AttributeMapping)+     
+            DEDENT
+        )?
     DEDENT
 ;
 
 AttributeMapping:
-    '-' 'attribute' ':' attribute=AttributeMappingTarget
-        'source' ':' source=AttributeMappingSource
+    'attribute' ':' attribute=AttributeMappingTarget
+    'source' ':' source=AttributeMappingSource
 ;
 
 AttributeMappingTarget:

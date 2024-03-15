@@ -7,60 +7,41 @@ SystemDiagram:
     ('systemDiagram' | 'diagram') ':' 
     (
         INDENT
-            SystemDiagramFields*
+            'id' ':' id=ID
+            ('name' ':'  name=STRING)?
+            ('description' ':' description=STRING)?
+            ('nodes' ':'
+                INDENT 
+                    ('-' nodes+=EntityNode)+
+                DEDENT
+            )?
+            ('edges' ':'
+                INDENT 
+                    ('-' edges+=RelationshipEdge)+
+                DEDENT
+            )?
         DEDENT
     )*
 ;
 
-SystemDiagramFields infers SystemDiagram:
-    (
-        'nodes' ':' SystemDiagramNodes |
-        'edges' ':' SystemDiagramEdge |
-        'id' ':' id=ID |
-        'description' ':' description=STRING |
-        'name' ':'  name=STRING
-    )
-;
-
-SystemDiagramNodes infers SystemDiagram:
-    INDENT 
-        (nodes+=EntityNode)*     
-    DEDENT
-;
 
 EntityNode:
-    '-' EntityNodeFields*
-;
-
-EntityNodeFields infers EntityNode:
-    'id' ':' id=ID | 
-    'entity' ':' entity=[Entity:IDReference] |
-    'x' ':' x=NUMBER | 
-    'y' ':' y=NUMBER |
-    'width' ':' width=NUMBER |
-    'height' ':' height=NUMBER |
-    'name' ':'  name=STRING |
-    'description' ':' description=STRING
+    'id' ':' id=ID
+    ('name' ':'  name=STRING)?
+    ('description' ':' description=STRING)?
+    'entity' ':' entity=[Entity:IDReference]
+    'x' ':' x=NUMBER
+    'y' ':' y=NUMBER
+    'width' ':' width=NUMBER
+    'height' ':' height=NUMBER
 ;
 
 interface EntityNodeAttribute extends EntityAttribute {
 }
 
-SystemDiagramEdge infers SystemDiagram:
-    INDENT 
-        (edges+=RelationshipEdge)*     
-    DEDENT
-;
-
 RelationshipEdge:
-    '-' RelationshipEdgeFields*
-;
-
-RelationshipEdgeFields infers RelationshipEdge:
-    (
-        'relationship' ':' relationship=[Relationship:IDReference] |
-        'sourceNode' ':' sourceNode=[EntityNode:IDReference] |
-        'targetNode' ':' targetNode=[EntityNode:IDReference] |
-        'id' ':' id=ID
-    )
+    'id' ':' id=ID
+    'relationship' ':' relationship=[Relationship:IDReference]
+    'sourceNode' ':' sourceNode=[EntityNode:IDReference]
+    'targetNode' ':' targetNode=[EntityNode:IDReference]
 ;

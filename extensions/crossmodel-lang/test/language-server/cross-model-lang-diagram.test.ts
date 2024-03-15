@@ -2,54 +2,31 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 import { describe, expect, test } from '@jest/globals';
-import { EmptyFileSystem, isReference } from 'langium';
+import { isReference } from 'langium';
 
 import { diagram1, diagram2, diagram3, diagram4, diagram5, diagram6 } from './test-utils/test-documents/diagram/index.js';
-import { parseDocument } from './test-utils/utils.js';
+import { createCrossModelTestServices, parseSystemDiagram } from './test-utils/utils.js';
 
-import { createCrossModelServices } from '../../src/language-server/cross-model-module.js';
-import { CrossModelRoot } from '../../src/language-server/generated/ast.js';
-
-const services = createCrossModelServices({ ...EmptyFileSystem }).CrossModel;
+const services = createCrossModelTestServices();
 
 describe('CrossModel language Diagram', () => {
    describe('Diagram without nodes and edges', () => {
       test('Simple file for diagram', async () => {
-         const document = diagram1;
-         const parsedDocument = await parseDocument(services, document);
-         const model = parsedDocument.parseResult.value as CrossModelRoot;
-
-         expect(model).toHaveProperty('systemDiagram');
-         expect(parsedDocument.parseResult.lexerErrors.length).toBe(0);
-         expect(parsedDocument.parseResult.parserErrors.length).toBe(0);
-
-         expect(model.systemDiagram?.id).toBe('Systemdiagram1');
+         const systemDiagram = await parseSystemDiagram({ services, text: diagram1 });
+         expect(systemDiagram?.id).toBe('Systemdiagram1');
       });
 
       test('Diagram with indentation error', async () => {
-         const document = diagram4;
-         const parsedDocument = await parseDocument(services, document);
-         const model = parsedDocument.parseResult.value as CrossModelRoot;
-
-         expect(model).toHaveProperty('systemDiagram');
-         expect(parsedDocument.parseResult.lexerErrors.length).toBe(0);
-         expect(parsedDocument.parseResult.parserErrors.length).toBe(1);
+         await parseSystemDiagram({ services, text: diagram4 }, { parserErrors: 1 });
       });
    });
 
    describe('Diagram with nodes', () => {
       test('Simple file for diagram and nodes', async () => {
-         const document = diagram2;
-         const parsedDocument = await parseDocument(services, document);
-         const model = parsedDocument.parseResult.value as CrossModelRoot;
-         const node1 = model.systemDiagram?.nodes[0];
+         const systemDiagram = await parseSystemDiagram({ services, text: diagram2 });
 
-         expect(model).toHaveProperty('systemDiagram');
-         expect(parsedDocument.parseResult.lexerErrors.length).toBe(0);
-         expect(parsedDocument.parseResult.parserErrors.length).toBe(0);
-
-         expect(model.systemDiagram?.nodes.length).toBe(1);
-
+         expect(systemDiagram?.nodes).toHaveLength(1);
+         const node1 = systemDiagram?.nodes[0];
          expect(node1?.id).toBe('CustomerNode');
          expect(isReference(node1?.entity)).toBe(true);
          expect(node1?.entity?.$refText).toBe('Customer');
@@ -59,17 +36,10 @@ describe('CrossModel language Diagram', () => {
 
    describe('Diagram with edges', () => {
       test('Simple file for diagram and edges', async () => {
-         const document = diagram3;
-         const parsedDocument = await parseDocument(services, document);
-         const model = parsedDocument.parseResult.value as CrossModelRoot;
-         const edge1 = model.systemDiagram?.edges[0];
+         const systemDiagram = await parseSystemDiagram({ services, text: diagram3 });
 
-         expect(model).toHaveProperty('systemDiagram');
-         expect(parsedDocument.parseResult.lexerErrors.length).toBe(0);
-         expect(parsedDocument.parseResult.parserErrors.length).toBe(0);
-
-         expect(model.systemDiagram?.edges.length).toBe(1);
-
+         expect(systemDiagram?.edges).toHaveLength(1);
+         const edge1 = systemDiagram?.edges[0];
          expect(edge1?.id).toBe('OrderCustomerEdge');
          expect(isReference(edge1?.relationship)).toBe(true);
          expect(edge1?.relationship?.$refText).toBe('Order_Customer');
@@ -78,53 +48,41 @@ describe('CrossModel language Diagram', () => {
 
    describe('Diagram with nodes and edges', () => {
       test('Simple file for diagram and edges', async () => {
-         const document = diagram5;
-         const parsedDocument = await parseDocument(services, document);
-         const model = parsedDocument.parseResult.value as CrossModelRoot;
-         const node1 = model.systemDiagram?.nodes[0];
-         const edge1 = model.systemDiagram?.edges[0];
+         const systemDiagram = await parseSystemDiagram({ services, text: diagram5 });
 
-         expect(model).toHaveProperty('systemDiagram');
+         expect(systemDiagram?.name).toBe('System diagram 1');
+         expect(systemDiagram?.description).toBe('This is a basic diagram with nodes and edges');
 
-         expect(parsedDocument.parseResult.lexerErrors.length).toBe(0);
-         expect(parsedDocument.parseResult.parserErrors.length).toBe(0);
-
-         expect(model.systemDiagram?.name).toBe('System diagram 1');
-         expect(model.systemDiagram?.description).toBe('This is a basic diagram with nodes and edges');
-         expect(model.systemDiagram?.nodes.length).toBe(1);
-         expect(model.systemDiagram?.edges.length).toBe(1);
-
+         expect(systemDiagram?.nodes).toHaveLength(1);
+         const node1 = systemDiagram?.nodes[0];
          expect(node1?.id).toBe('CustomerNode');
          expect(isReference(node1?.entity)).toBe(true);
          expect(node1?.entity?.$refText).toBe('Customer');
          expect(node1?.x).toBe(100);
 
+         expect(systemDiagram?.edges).toHaveLength(1);
+         const edge1 = systemDiagram?.edges[0];
          expect(edge1?.id).toBe('OrderCustomerEdge');
          expect(isReference(edge1?.relationship)).toBe(true);
          expect(edge1?.relationship?.$refText).toBe('Order_Customer');
       });
 
       test('Simple file for diagram and edges, but description and name coming last', async () => {
-         const document = diagram6;
-         const parsedDocument = await parseDocument(services, document);
-         const model = parsedDocument.parseResult.value as CrossModelRoot;
-         const node1 = model.systemDiagram?.nodes[0];
-         const edge1 = model.systemDiagram?.edges[0];
+         const systemDiagram = await parseSystemDiagram({ services, text: diagram6 }, { parserErrors: 3 });
 
-         expect(model).toHaveProperty('systemDiagram');
-         expect(parsedDocument.parseResult.lexerErrors.length).toBe(0);
-         expect(parsedDocument.parseResult.parserErrors.length).toBe(0);
+         const node1 = systemDiagram?.nodes[0];
 
-         expect(model.systemDiagram?.name).toBe('System diagram 1');
-         expect(model.systemDiagram?.description).toBe('This is a basic diagram with nodes and edges');
-         expect(model.systemDiagram?.nodes.length).toBe(1);
-         expect(model.systemDiagram?.edges.length).toBe(1);
+         expect(systemDiagram?.name).toBeUndefined();
+         expect(systemDiagram?.description).toBeUndefined();
 
+         expect(systemDiagram?.nodes).toHaveLength(1);
          expect(node1?.id).toBe('CustomerNode');
          expect(isReference(node1?.entity)).toBe(true);
          expect(node1?.entity?.$refText).toBe('Customer');
          expect(node1?.x).toBe(100);
 
+         expect(systemDiagram?.edges).toHaveLength(1);
+         const edge1 = systemDiagram?.edges[0];
          expect(edge1?.id).toBe('OrderCustomerEdge');
          expect(isReference(edge1?.relationship)).toBe(true);
          expect(edge1?.relationship?.$refText).toBe('Order_Customer');

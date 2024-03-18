@@ -9,6 +9,7 @@ import {
    Args,
    Bounds,
    CursorCSS,
+   Disposable,
    EdgeCreationTool,
    EdgeCreationToolMouseListener,
    FeedbackEdgeEndMovingMouseListener,
@@ -155,9 +156,6 @@ export class MappingEdgeCreationToolMouseListener extends EdgeCreationToolMouseL
       this.tool.registerFeedback([
          DrawFeedbackEdgeAction.create({ elementTypeId: this.triggerAction.elementTypeId, sourceId: this.source })
       ]);
-   }
-   [Symbol.dispose](): void {
-      throw new Error('Method not implemented.');
    }
 
    override mouseOver(target: GModelElement, _event: MouseEvent): Action[] {

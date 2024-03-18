@@ -2,7 +2,15 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 
-import { ConsoleLogger, LogLevel, SetViewportAction, TYPES, bindAsService, configureActionHandler } from '@eclipse-glsp/client';
+import {
+   ConsoleLogger,
+   LogLevel,
+   SetViewportAction,
+   TYPES,
+   bindAsService,
+   bindOrRebind,
+   configureActionHandler
+} from '@eclipse-glsp/client';
 import { TheiaGLSPSelectionForwarder } from '@eclipse-glsp/theia-integration';
 import { ContainerModule, interfaces } from '@theia/core/shared/inversify';
 import { GridAlignmentHandler } from './crossmodel-grid-handler';
@@ -16,7 +24,7 @@ export function createCrossModelDiagramModule(registry: interfaces.ContainerModu
       rebind(TYPES.LogLevel).toConstantValue(LogLevel.warn);
       bindAsService(bind, CrossModelSelectionDataService, CrossModelGLSPSelectionDataService);
       bind(CrossModelTheiaGLSPSelectionForwarder).toSelf().inSingletonScope();
-      rebind(TheiaGLSPSelectionForwarder).toService(CrossModelTheiaGLSPSelectionForwarder);
+      bindOrRebind({ bind, isBound, rebind }, TheiaGLSPSelectionForwarder).toService(CrossModelTheiaGLSPSelectionForwarder);
       bind(TYPES.ISnapper).to(CrossModelGridSnapper);
       configureActionHandler({ bind, isBound }, SetViewportAction.KIND, GridAlignmentHandler);
       registry(bind, unbind, isBound, rebind, unbindAsync, onActivation, onDeactivation);

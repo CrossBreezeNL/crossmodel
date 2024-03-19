@@ -31,6 +31,13 @@
    background-size: 11px;
 }
 
+.sprotty
+   .edge-creation:not(.edge-check-pending-mode):not(.edge-creation-select-source-mode):not(.edge-creation-select-target-mode):not(
+      .edge-reconnect-select-target-mode:not(.edge-modification-not-allowed-mode)
+   ) {
+   cursor: ew-resize;
+}
+
 .sprotty text {
    font-family: monospace;
 }
@@ -108,6 +115,10 @@
    display: none;
 }
 
+.sprotty[id^='system-diagram'] .tool-palette .tool-button {
+   outline-width: 0;
+}
+
 /* we know there is only the 1:1 relationship tool for now, if we ever need more styling, better to create a complete custom toolbar */
 .sprotty[id^='system-diagram'] .tool-palette .tool-button::before {
    margin-right: var(--theia-ui-padding);
@@ -116,6 +127,11 @@
    content: '\eafd';
    -webkit-font-smoothing: antialiased;
    -moz-osx-font-smoothing: grayscale;
+}
+
+.sprotty[id^='system-diagram'] .tool-palette .tool-button.clicked {
+   background: var(--theia-activityBarBadge-background);
+   color: var(--theia-activityBarBadge-foreground);
 }
 
 .command-palette {

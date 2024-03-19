@@ -3,7 +3,14 @@
  ********************************************************************************/
 
 import { RELATIONSHIP_EDGE_TYPE } from '@crossbreeze/protocol';
-import { Command, CreateEdgeOperation, JsonCreateEdgeOperationHandler, ModelState } from '@eclipse-glsp/server';
+import {
+   ActionDispatcher,
+   Command,
+   CreateEdgeOperation,
+   JsonCreateEdgeOperationHandler,
+   ModelState,
+   SelectAction
+} from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
 import { URI, Utils as UriUtils } from 'vscode-uri';
 import { CrossModelRoot, EntityNode, Relationship, RelationshipEdge, isCrossModelRoot } from '../../../language-server/generated/ast.js';
@@ -17,6 +24,7 @@ export class SystemDiagramCreateEdgeOperationHandler extends JsonCreateEdgeOpera
    elementTypeIds = [RELATIONSHIP_EDGE_TYPE];
 
    @inject(ModelState) protected override modelState!: SystemModelState;
+   @inject(ActionDispatcher) protected actionDispatcher!: ActionDispatcher;
 
    createCommand(operation: CreateEdgeOperation): Command {
       return new CrossModelCommand(this.modelState, () => this.createEdge(operation));
@@ -48,6 +56,9 @@ export class SystemDiagramCreateEdgeOperationHandler extends JsonCreateEdgeOpera
                }
             };
             this.modelState.systemDiagram.edges.push(edge);
+            this.actionDispatcher.dispatchAfterNextUpdate(
+               SelectAction.create({ selectedElementsIDs: [this.modelState.idProvider.getLocalId(edge) ?? edge.id] })
+            );
          }
       }
    }
@@ -66,6 +77,7 @@ export class SystemDiagramCreateEdgeOperationHandler extends JsonCreateEdgeOpera
          $container: relationshipRoot,
          id: this.modelState.idProvider.findNextId(Relationship, source + 'To' + target),
          type: '1:1',
+         attributes: [],
          parent: { $refText: sourceNode.entity?.$refText || '' },
          child: { $refText: targetNode.entity?.$refText || '' }
       };

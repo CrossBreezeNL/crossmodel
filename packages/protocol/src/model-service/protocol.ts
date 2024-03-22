@@ -191,6 +191,15 @@ export interface ResolvedElement<T extends Element = Element> {
    match?: T;
 }
 
+export interface SystemInfoArgs {
+   contextUri: string;
+}
+
+export interface SystemInfo {
+   packageFilePath: string;
+   modelFilePaths: string[];
+}
+
 export const OpenModel = new rpc.RequestType1<OpenModelArgs, CrossModelRoot | undefined, void>('server/open');
 export const CloseModel = new rpc.RequestType1<CloseModelArgs, void, void>('server/close');
 export const RequestModel = new rpc.RequestType1<string, CrossModelRoot | undefined, void>('server/request');
@@ -203,3 +212,5 @@ export const UpdateModel = new rpc.RequestType1<UpdateModelArgs<CrossModelRoot>,
 export const SaveModel = new rpc.RequestType1<SaveModelArgs<CrossModelRoot>, void, void>('server/save');
 export const OnSave = new rpc.NotificationType1<ModelSavedEvent<CrossModelRoot>>('server/onSave');
 export const OnUpdated = new rpc.NotificationType1<ModelUpdatedEvent<CrossModelRoot>>('server/onUpdated');
+
+export const RequestSystemInfo = new rpc.RequestType1<SystemInfoArgs, SystemInfo | undefined, void>('server/system');

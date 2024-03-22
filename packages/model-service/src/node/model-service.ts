@@ -15,10 +15,13 @@ import {
    OpenModelArgs,
    ReferenceableElement,
    RequestModel,
+   RequestSystemInfo,
    ResolveReference,
    ResolvedElement,
    SaveModel,
    SaveModelArgs,
+   SystemInfo,
+   SystemInfoArgs,
    UpdateModel,
    UpdateModelArgs
 } from '@crossbreeze/protocol';
@@ -165,6 +168,11 @@ export class ModelServiceImpl implements ModelService {
    async resolveReference(reference: CrossReference): Promise<ResolvedElement | undefined> {
       await this.initializeServerConnection();
       return this.connection.sendRequest(ResolveReference, reference);
+   }
+
+   async getSystemInfo(args: SystemInfoArgs): Promise<SystemInfo | undefined> {
+      await this.initializeServerConnection();
+      return this.connection.sendRequest(RequestSystemInfo, args);
    }
 
    protected setUpListeners(): void {

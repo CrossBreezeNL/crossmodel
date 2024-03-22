@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { MenuContribution } from '@theia/core';
+import { CommandContribution, MenuContribution } from '@theia/core';
 import { ContainerModule } from '@theia/core/shared/inversify';
 import { FileNavigatorWidget } from '@theia/navigator/lib/browser';
 import { FileNavigatorContribution } from '@theia/navigator/lib/browser/navigator-contribution';
@@ -9,6 +9,7 @@ import { WorkspaceCommandContribution } from '@theia/workspace/lib/browser/works
 import '../../style/index.css';
 import { createCrossModelFileNavigatorWidget } from './cm-file-navigator-tree-widget';
 import { CrossModelFileNavigatorContribution, CrossModelWorkspaceContribution } from './new-element-contribution';
+import { ImportExportContribution } from './import-export-contribution';
 
 export default new ContainerModule((bind, _unbind, _isBound, rebind) => {
    bind(CrossModelWorkspaceContribution).toSelf().inSingletonScope();
@@ -19,4 +20,8 @@ export default new ContainerModule((bind, _unbind, _isBound, rebind) => {
    rebind(FileNavigatorContribution).toService(CrossModelFileNavigatorContribution);
 
    rebind(FileNavigatorWidget).toDynamicValue(ctx => createCrossModelFileNavigatorWidget(ctx.container));
+
+   bind(ImportExportContribution).toSelf().inSingletonScope();
+   bind(CommandContribution).toService(ImportExportContribution);
+   bind(MenuContribution).toService(ImportExportContribution);
 });

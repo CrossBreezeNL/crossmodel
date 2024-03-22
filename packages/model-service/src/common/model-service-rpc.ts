@@ -12,6 +12,8 @@ import {
    ReferenceableElement,
    ResolvedElement,
    SaveModelArgs,
+   SystemInfo,
+   SystemInfoArgs,
    UpdateModelArgs
 } from '@crossbreeze/protocol';
 import { Event, RpcServer } from '@theia/core';
@@ -31,6 +33,7 @@ export interface ModelService extends RpcServer<ModelServiceClient> {
    resolveReference(reference: CrossReference): Promise<ResolvedElement | undefined>;
    update(args: UpdateModelArgs<CrossModelRoot>): Promise<CrossModelRoot>;
    save(args: SaveModelArgs<CrossModelRoot>): Promise<void>;
+   getSystemInfo(args: SystemInfoArgs): Promise<SystemInfo | undefined>;
 }
 
 export const ModelServiceClient = Symbol('ModelServiceClient');

@@ -15,10 +15,13 @@ import {
    OpenModelArgs,
    ReferenceableElement,
    RequestModel,
+   RequestSystemInfo,
    ResolveReference,
    ResolvedElement,
    SaveModel,
    SaveModelArgs,
+   SystemInfo,
+   SystemInfoArgs,
    UpdateModel,
    UpdateModelArgs
 } from '@crossbreeze/protocol';
@@ -52,6 +55,11 @@ export class ModelServer implements Disposable {
       this.toDispose.push(connection.onRequest(ResolveReference, args => this.resolve(args)));
       this.toDispose.push(connection.onRequest(UpdateModel, args => this.updateModel(args)));
       this.toDispose.push(connection.onRequest(SaveModel, args => this.saveModel(args)));
+      this.toDispose.push(connection.onRequest(RequestSystemInfo, args => this.systemInfo(args)));
+   }
+
+   protected systemInfo(args: SystemInfoArgs): Promise<SystemInfo | undefined> {
+      return this.modelService.getSystemInfo(args);
    }
 
    protected complete(args: CrossReferenceContext): Promise<ReferenceableElement[]> {

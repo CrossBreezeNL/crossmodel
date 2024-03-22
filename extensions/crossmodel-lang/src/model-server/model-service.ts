@@ -11,12 +11,15 @@ import {
    OpenModelArgs,
    ReferenceableElement,
    SaveModelArgs,
+   SystemInfo,
+   SystemInfoArgs,
    UpdateModelArgs
 } from '@crossbreeze/protocol';
 import { AstNode, Deferred, DocumentState, isAstNode } from 'langium';
 import { Disposable, OptionalVersionedTextDocumentIdentifier, Range, TextDocumentEdit, TextEdit, uinteger } from 'vscode-languageserver';
 import { URI } from 'vscode-uri';
 import { CrossModelServices, CrossModelSharedServices } from '../language-server/cross-model-module.js';
+import { PackageAstNodeDescription } from '../language-server/cross-model-scope.js';
 import { findDocument } from '../language-server/util/ast-util.js';
 import { LANGUAGE_CLIENT_ID } from './openable-text-documents.js';
 
@@ -205,5 +208,21 @@ export class ModelService {
 
    async resolveCrossReference(args: CrossReference): Promise<AstNode | undefined> {
       return this.shared.CrossModel.references.ScopeProvider.resolveCrossReference(args);
+   }
+
+   async getSystemInfo(args: SystemInfoArgs): Promise<SystemInfo | undefined> {
+      const packageInfo = this.shared.workspace.PackageManager.getPackageInfoByURI(URI.parse(args.contextUri!));
+      if (!packageInfo) {
+         return undefined;
+      }
+      const packageId = packageInfo.id;
+      return {
+         packageFilePath: packageInfo.uri.fsPath,
+         modelFilePaths: this.shared.workspace.IndexManager.allElements()
+            .filter(desc => desc instanceof PackageAstNodeDescription && desc.packageId === packageId)
+            .map(desc => desc.documentUri.fsPath)
+            .distinct()
+            .toArray()
+      };
    }
 }

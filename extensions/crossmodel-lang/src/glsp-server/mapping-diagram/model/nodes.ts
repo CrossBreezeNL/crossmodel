@@ -112,7 +112,7 @@ export class GTargetObjectNodeBuilder extends GNodeBuilder<GTargetObjectNode> {
       this.addCssClasses('diagram-node', 'target-node');
 
       // Add the label/name of the node
-      this.add(createHeader(node.entity?.ref?.name || 'unresolved', this.proxy.id));
+      this.add(createHeader(node.entity?.ref?.name || node.entity?.ref?.id || 'unresolved', this.proxy.id));
 
       // Add the children of the node
       const attributes = getAttributes(node);

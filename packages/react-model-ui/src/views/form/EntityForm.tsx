@@ -2,48 +2,48 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
+import { Entity } from '@crossbreeze/protocol';
+import { TextField } from '@mui/material';
 import * as React from 'react';
-import { Tab, TabList, TabPanel, Tabs } from 'react-tabs';
-import 'react-tabs/style/react-tabs.css';
-import '../../../style/entity-form.css';
-import { useModel } from '../../ModelContext';
-import { ErrorView } from '../ErrorView';
-import { EntityAttributesDataGrid } from '../common/EntityAttributesDataGrid';
-import { EntityGeneralForm } from '../common/EntityGeneralForm';
+import { useEntity, useModelDispatch } from '../../ModelContext';
+import { FormSection } from '../FormSection';
+import { EntityAttributesDataGrid } from '../common';
+import { Form } from './Form';
 
-// Form with tabs to edit an entity's properties and attributes.
+export interface EntityFormProps {
+   entity: Entity;
+}
+
 export function EntityForm(): React.ReactElement {
-   const model = useModel();
-
-   if (!model.entity) {
-      return <ErrorView errorMessage='This is not an entity model!' />;
-   }
+   const dispatch = useModelDispatch();
+   const entity = useEntity();
 
    return (
-      <div className='form-editor'>
-         <div className='form-editor-header'>
-            <h1>
-               <span className='label'>Entity : </span>
-               <span className='value'>{model.entity.name}</span>
-            </h1>
-         </div>
-         <Tabs>
-            <TabList>
-               <Tab>
-                  <h3>General</h3>
-               </Tab>
-               <Tab>
-                  <h3>Attributes</h3>
-               </Tab>
-            </TabList>
+      <Form id={entity.id} name={entity.name ?? 'Entity'} iconClass='codicon-git-commit'>
+         <FormSection label='General'>
+            <TextField
+               fullWidth={true}
+               label='Name'
+               margin='normal'
+               variant='outlined'
+               value={entity.name}
+               onChange={event => dispatch({ type: 'entity:change-name', name: event.target.value ?? '' })}
+            />
 
-            <TabPanel>
-               <EntityGeneralForm />
-            </TabPanel>
-            <TabPanel>
-               <EntityAttributesDataGrid />
-            </TabPanel>
-         </Tabs>
-      </div>
+            <TextField
+               fullWidth={true}
+               label='Description'
+               margin='normal'
+               variant='outlined'
+               multiline={true}
+               rows={2}
+               value={entity.description}
+               onChange={event => dispatch({ type: 'entity:change-description', description: event.target.value ?? '' })}
+            />
+         </FormSection>
+         <FormSection label='Attributes'>
+            <EntityAttributesDataGrid />
+         </FormSection>
+      </Form>
    );
 }

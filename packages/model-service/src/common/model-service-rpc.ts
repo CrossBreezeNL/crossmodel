@@ -5,10 +5,12 @@
 import {
    CloseModelArgs,
    CrossModelRoot,
-   DiagramNodeEntity,
-   FindRootReferenceNameArgs,
+   CrossReference,
+   CrossReferenceContext,
    ModelUpdatedEvent,
    OpenModelArgs,
+   ReferenceableElement,
+   ResolvedElement,
    SaveModelArgs,
    UpdateModelArgs
 } from '@crossbreeze/protocol';
@@ -25,8 +27,8 @@ export interface ModelService extends RpcServer<ModelServiceClient> {
    open(args: OpenModelArgs): Promise<CrossModelRoot | undefined>;
    close(args: CloseModelArgs): Promise<void>;
    request(uri: string): Promise<CrossModelRoot | undefined>;
-   requestDiagramNodeEntityModel(uri: string, id: string): Promise<DiagramNodeEntity | undefined>;
-   findRootReferenceName(args: FindRootReferenceNameArgs): Promise<string | undefined>;
+   findReferenceableElements(args: CrossReferenceContext): Promise<ReferenceableElement[]>;
+   resolveReference(reference: CrossReference): Promise<ResolvedElement | undefined>;
    update(args: UpdateModelArgs<CrossModelRoot>): Promise<CrossModelRoot>;
    save(args: SaveModelArgs<CrossModelRoot>): Promise<void>;
 }

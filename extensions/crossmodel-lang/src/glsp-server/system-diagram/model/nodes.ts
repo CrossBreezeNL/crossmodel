@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { ENTITY_NODE_TYPE } from '@crossbreeze/protocol';
+import { ENTITY_NODE_TYPE, REFERENCE_CONTAINER_TYPE, REFERENCE_PROPERTY, REFERENCE_VALUE } from '@crossbreeze/protocol';
 import { ArgsUtil, GNode, GNodeBuilder } from '@eclipse-glsp/server';
 import { EntityNode } from '../../../language-server/generated/ast.js';
 import { getAttributes } from '../../../language-server/util/ast-util.js';
@@ -25,9 +25,12 @@ export class GEntityNodeBuilder extends GNodeBuilder<GEntityNode> {
 
       // Options which are the same for every node
       this.addCssClasses('diagram-node', 'entity');
+      this.addArg(REFERENCE_CONTAINER_TYPE, EntityNode);
+      this.addArg(REFERENCE_PROPERTY, 'entity');
+      this.addArg(REFERENCE_VALUE, node.entity.$refText);
 
       // Add the label/name of the node
-      this.add(createHeader(entityRef?.name || 'unresolved', this.proxy.id));
+      this.add(createHeader(entityRef?.name || entityRef?.id || 'unresolved', this.proxy.id));
 
       // Add the children of the node
       const attributes = getAttributes(node);

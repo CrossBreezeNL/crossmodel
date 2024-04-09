@@ -6,8 +6,7 @@ import { EditorContext, LabeledAction } from '@eclipse-glsp/protocol';
 import { ContextActionsProvider, ModelState, Point } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
 import { codiconCSSString } from 'sprotty';
-import { isExternalDescriptionForLocalPackage } from '../../../language-server/cross-model-scope.js';
-import { createEntityNodeReference } from '../../../language-server/util/ast-util.js';
+import { EntityNode } from '../../../language-server/generated/ast.js';
 import { SystemModelState } from '../model/system-model-state.js';
 
 /**
@@ -21,23 +20,15 @@ export class SystemDiagramAddEntityActionProvider implements ContextActionsProvi
    @inject(ModelState) protected state!: SystemModelState;
 
    async getActions(editorContext: EditorContext): Promise<LabeledAction[]> {
-      const scopeProvider = this.state.services.language.references.ScopeProvider;
-      const refInfo = createEntityNodeReference(this.state.systemDiagram);
-      const actions: LabeledAction[] = [];
-      const scope = scopeProvider.getScope(refInfo);
-      const duplicateStore = new Set<string>();
-
-      scope.getAllElements().forEach(description => {
-         if (!duplicateStore.has(description.name) && !isExternalDescriptionForLocalPackage(description, this.state.packageId)) {
-            actions.push({
-               label: description.name,
-               actions: [AddEntityOperation.create(description.name, editorContext.lastMousePosition || Point.ORIGIN)],
-               icon: codiconCSSString('inspect')
-            });
-            duplicateStore.add(description.name);
-         }
+      const completionItems = this.state.services.language.references.ScopeProvider.complete({
+         container: { globalId: this.state.systemDiagram.id! },
+         syntheticElements: [{ property: 'nodes', type: EntityNode }],
+         property: 'entity'
       });
-
-      return actions;
+      return completionItems.map<LabeledAction>(item => ({
+         label: item.label,
+         actions: [AddEntityOperation.create(item.label, editorContext.lastMousePosition || Point.ORIGIN)],
+         icon: codiconCSSString('inspect')
+      }));
    }
 }

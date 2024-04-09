@@ -2,17 +2,19 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { Message, ReactWidget } from '@theia/core/lib/browser';
+import { Message, OpenerService, ReactWidget, open } from '@theia/core/lib/browser';
+import { URI } from '@theia/core/lib/common';
 import * as React from '@theia/core/shared/react';
 import { PropertyDataService } from '@theia/property-view/lib/browser/property-data-service';
 import { PropertyViewContentWidget } from '@theia/property-view/lib/browser/property-view-content-widget';
 
 import { ModelService } from '@crossbreeze/model-service/lib/common';
-import { CrossModelRoot, isDiagramNodeEntity } from '@crossbreeze/protocol';
-import { EntityPropertyView, withModelProvider } from '@crossbreeze/react-model-ui';
+import { CrossModelRoot, ResolvedElement } from '@crossbreeze/protocol';
+import { EntityForm, ErrorView, RelationshipForm, withModelProvider, withTheme } from '@crossbreeze/react-model-ui';
 import { GLSPDiagramWidget, GlspSelection, getDiagramWidget } from '@eclipse-glsp/theia-integration';
 import { ApplicationShell } from '@theia/core/lib/browser/shell/application-shell';
-import { inject, injectable } from '@theia/core/shared/inversify';
+import { ThemeService } from '@theia/core/lib/browser/theming';
+import { inject, injectable, postConstruct } from '@theia/core/shared/inversify';
 import { PROPERTY_CLIENT_ID } from './model-data-service';
 
 @injectable()
@@ -22,9 +24,11 @@ export class ModelPropertyWidget extends ReactWidget implements PropertyViewCont
 
    @inject(ModelService) protected modelService: ModelService;
    @inject(ApplicationShell) protected shell: ApplicationShell;
+   @inject(OpenerService) protected readonly openerService: OpenerService;
+   @inject(ThemeService) protected readonly themeService: ThemeService;
 
-   protected model: CrossModelRoot | undefined;
-   protected uri: string;
+   protected model?: CrossModelRoot;
+   protected uri?: string;
 
    constructor() {
       super();
@@ -33,9 +37,16 @@ export class ModelPropertyWidget extends ReactWidget implements PropertyViewCont
       this.title.caption = ModelPropertyWidget.LABEL;
       this.title.closable = false;
       this.node.tabIndex = 0;
+      this.node.style.height = '100%';
 
       this.saveModel = this.saveModel.bind(this);
       this.updateModel = this.updateModel.bind(this);
+      this.openModel = this.openModel.bind(this);
+   }
+
+   @postConstruct()
+   init(): void {
+      this.toDispose.pushAll([this.themeService.onDidColorThemeChange(() => this.update())]);
    }
 
    async updatePropertyViewContent(propertyDataService?: PropertyDataService, selection?: GlspSelection | undefined): Promise<void> {
@@ -48,17 +59,22 @@ export class ModelPropertyWidget extends ReactWidget implements PropertyViewCont
 
       if (propertyDataService) {
          try {
-            const selectionData = await propertyDataService.providePropertyData(selection);
-            if (isDiagramNodeEntity(selectionData)) {
-               this.model = selectionData.model;
-               this.uri = selectionData.uri;
-            }
+            const selectionData = (await propertyDataService.providePropertyData(selection)) as ResolvedElement | undefined;
+            this.model = selectionData?.model;
+            this.uri = selectionData?.uri;
          } catch (error) {
             this.model = undefined;
          }
       }
 
       this.update();
+   }
+
+   async openModel(): Promise<void> {
+      if (this.uri === undefined) {
+         throw new Error('Cannot save undefined model');
+      }
+      open(this.openerService, new URI(this.uri));
    }
 
    async saveModel(): Promise<void> {
@@ -73,15 +89,33 @@ export class ModelPropertyWidget extends ReactWidget implements PropertyViewCont
    }
 
    protected render(): React.ReactNode {
-      if (!this.model) {
-         return <></>;
+      if (this.model?.entity) {
+         const EntityComponent = withTheme(
+            withModelProvider(EntityForm, {
+               model: this.model,
+               onModelUpdate: this.updateModel,
+               onModelSave: this.saveModel,
+               onModelOpen: this.openModel,
+               modelQueryApi: this.modelService
+            }),
+            { theme: this.themeService.getCurrentTheme().type }
+         );
+         return <EntityComponent />;
       }
-      const PropertyComponent = withModelProvider(EntityPropertyView, {
-         model: this.model,
-         onModelUpdate: this.updateModel,
-         onModelSave: this.saveModel
-      });
-      return <PropertyComponent />;
+      if (this.model?.relationship) {
+         const RelationshipComponent = withTheme(
+            withModelProvider(RelationshipForm, {
+               model: this.model,
+               onModelUpdate: this.updateModel,
+               onModelSave: this.saveModel,
+               onModelOpen: this.openModel,
+               modelQueryApi: this.modelService
+            }),
+            { theme: this.themeService.getCurrentTheme().type }
+         );
+         return <RelationshipComponent />;
+      }
+      return <ErrorView errorMessage='This is not a valid model!' />;
    }
 
    protected override onActivateRequest(msg: Message): void {

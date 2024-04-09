@@ -38,7 +38,7 @@ export class SystemDiagramDropEntityOperationHandler extends JsonOperationHandle
                $container: container,
                id: this.modelState.idProvider.findNextId(EntityNode, root.entity.id + 'Node', this.modelState.systemDiagram),
                entity: {
-                  $refText: this.modelState.idProvider.getExternalId(root.entity) || root.entity.id || '',
+                  $refText: this.modelState.idProvider.getGlobalId(root.entity) || root.entity.id || '',
                   ref: root.entity
                },
                x: (x += 10),

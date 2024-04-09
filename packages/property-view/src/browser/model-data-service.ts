@@ -2,8 +2,9 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
+import { CrossModelSelectionData } from '@crossbreeze/glsp-client/lib/browser/crossmodel-selection-data-service';
 import { ModelService } from '@crossbreeze/model-service/lib/common';
-import { DiagramNodeEntity, ENTITY_NODE_TYPE } from '@crossbreeze/protocol';
+import { ResolvedElement } from '@crossbreeze/protocol';
 import { GlspSelection } from '@eclipse-glsp/theia-integration';
 import { inject, injectable } from '@theia/core/shared/inversify';
 import { PropertyDataService } from '@theia/property-view/lib/browser/property-data-service';
@@ -21,19 +22,21 @@ export class ModelDataService implements PropertyDataService {
       return GlspSelection.is(selection) ? 1 : 0;
    }
 
-   protected async getSelectedEntity(selection: GlspSelection | undefined): Promise<DiagramNodeEntity | undefined> {
+   protected async getSelectedEntity(selection: GlspSelection | undefined): Promise<ResolvedElement | undefined> {
       if (!selection || !GlspSelection.is(selection) || !selection.sourceUri || selection.selectedElementsIDs.length === 0) {
          return undefined;
       }
+      const dataMap = selection.additionalSelectionData as CrossModelSelectionData;
       for (const selectedElementId of selection.selectedElementsIDs) {
-         if (selection.additionalSelectionData?.selectionDataMap.get(selectedElementId) === ENTITY_NODE_TYPE) {
-            return this.modelService.requestDiagramNodeEntityModel(selection.sourceUri, selectedElementId);
+         const info = dataMap?.selectionDataMap.get(selectedElementId);
+         if (info?.reference) {
+            return this.modelService.resolveReference(info?.reference);
          }
       }
       return undefined;
    }
 
-   async providePropertyData(selection: GlspSelection | undefined): Promise<DiagramNodeEntity | undefined> {
+   async providePropertyData(selection: GlspSelection | undefined): Promise<ResolvedElement | undefined> {
       return this.getSelectedEntity(selection);
    }
 }

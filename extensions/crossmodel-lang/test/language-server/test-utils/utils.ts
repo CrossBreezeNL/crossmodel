@@ -2,8 +2,9 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { DefaultLangiumDocuments, EmptyFileSystem, LangiumDocument, LangiumServices } from 'langium';
+import { EmptyFileSystem, LangiumDocument, LangiumServices } from 'langium';
 import { ParseHelperOptions, parseDocument as langiumParseDocument } from 'langium/test';
+import { CrossModelLangiumDocuments } from '../../../src/language-server/cross-model-langium-documents.js';
 import { CrossModelServices, createCrossModelServices } from '../../../src/language-server/cross-model-module.js';
 import {
    CrossModelRoot,
@@ -20,7 +21,7 @@ import { SemanticRoot, TypeGuard, WithDocument, findSemanticRoot } from '../../.
 
 export function createCrossModelTestServices(): CrossModelServices {
    const services = createCrossModelServices({ ...EmptyFileSystem }).CrossModel;
-   services.shared.workspace.LangiumDocuments = new DefaultLangiumDocuments(services.shared);
+   services.shared.workspace.LangiumDocuments = new CrossModelLangiumDocuments(services.shared);
    return services;
 }
 

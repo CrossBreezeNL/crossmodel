@@ -5,29 +5,17 @@
 import { CrossModelRoot } from '@crossbreeze/protocol';
 import * as React from 'react';
 import { useImmerReducer } from 'use-immer';
-import { ModelContext, ModelDispatchContext, SaveCallback, SaveModelContext, defaultSaveCallback } from './ModelContext';
+import { ModelContext, ModelDispatchContext, ModelQueryApiContext, OpenModelContext, SaveModelContext } from './ModelContext';
 import { DispatchAction, ModelReducer, ModelState } from './ModelReducer';
+import { ModelProviderProps } from './ModelViewer';
 
 export type UpdateCallback = (model: CrossModelRoot) => void;
 
 /**
  * Represents the properties required by the ModelProvider component.
  */
-export interface ModelProviderProps extends React.PropsWithChildren {
-   /**
-    * The model object that will be provided to the child components.
-    */
+export interface InternalModelProviderProps extends React.PropsWithChildren, ModelProviderProps {
    model: CrossModelRoot;
-
-   /**
-    * A callback that will be triggered when the model is updated by this component.
-    */
-   onModelUpdate: UpdateCallback;
-
-   /**
-    * A callback that is triggered when this components want to save it's model
-    */
-   onModelSave?: SaveCallback;
 }
 
 /**
@@ -40,10 +28,12 @@ export interface ModelProviderProps extends React.PropsWithChildren {
  */
 export function ModelProvider({
    model,
-   onModelSave = defaultSaveCallback,
+   onModelOpen,
+   onModelSave,
    onModelUpdate,
+   modelQueryApi,
    children
-}: ModelProviderProps): React.ReactElement {
+}: InternalModelProviderProps): React.ReactElement {
    const [appState, dispatch] = useImmerReducer<ModelState, DispatchAction>(ModelReducer, { model, reason: 'model:initial' });
 
    React.useEffect(() => {
@@ -60,9 +50,13 @@ export function ModelProvider({
 
    return (
       <ModelContext.Provider value={appState.model}>
-         <SaveModelContext.Provider value={onModelSave}>
-            <ModelDispatchContext.Provider value={dispatch}>{children}</ModelDispatchContext.Provider>
-         </SaveModelContext.Provider>
+         <OpenModelContext.Provider value={onModelOpen}>
+            <SaveModelContext.Provider value={onModelSave}>
+               <ModelDispatchContext.Provider value={dispatch}>
+                  <ModelQueryApiContext.Provider value={modelQueryApi}>{children}</ModelQueryApiContext.Provider>
+               </ModelDispatchContext.Provider>
+            </SaveModelContext.Provider>
+         </OpenModelContext.Provider>
       </ModelContext.Provider>
    );
 }

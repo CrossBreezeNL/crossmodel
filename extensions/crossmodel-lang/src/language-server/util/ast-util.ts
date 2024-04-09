@@ -2,16 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 import { unquote } from '@crossbreeze/protocol';
-import {
-   AstNode,
-   AstNodeDescription,
-   LangiumDocument,
-   Reference,
-   ReferenceInfo,
-   findRootNode,
-   isAstNode,
-   isAstNodeDescription
-} from 'langium';
+import { AstNode, AstNodeDescription, LangiumDocument, findRootNode, isAstNode, isAstNodeDescription } from 'langium';
 import { ID_PROPERTY, IdProvider } from '../cross-model-naming.js';
 import { getLocalName } from '../cross-model-scope.js';
 import {
@@ -98,36 +89,12 @@ export function isImplicitProperty(prop: string, obj: any): boolean {
    );
 }
 
-export function createEntityNodeReference(root: SystemDiagram): ReferenceInfo {
-   return {
-      reference: {} as Reference,
-      container: {
-         $type: EntityNode,
-         $container: root,
-         $containerProperty: 'nodes'
-      },
-      property: 'entity'
-   };
-}
-
-export function createSourceObjectReference(root: Mapping): ReferenceInfo {
-   return {
-      reference: {} as Reference,
-      container: {
-         $type: SourceObject,
-         $container: root,
-         $containerProperty: 'sources'
-      },
-      property: 'entity'
-   };
-}
-
 export function createSourceObject(entity: Entity | AstNodeDescription, container: Mapping, idProvider: IdProvider): SourceObject {
    const entityId = isAstNodeDescription(entity)
       ? getLocalName(entity)
       : entity.id ?? idProvider.getLocalId(entity) ?? entity.name ?? 'unknown';
    const ref = isAstNodeDescription(entity) ? undefined : entity;
-   const $refText = isAstNodeDescription(entity) ? entity.name : idProvider.getExternalId(entity) || entity.id || '';
+   const $refText = isAstNodeDescription(entity) ? entity.name : idProvider.getGlobalId(entity) || entity.id || '';
    return {
       $type: SourceObject,
       $container: container,
@@ -218,7 +185,7 @@ export type TypeGuard<T> = (item: unknown) => item is T;
 export function findSemanticRoot(input: DocumentContent): SemanticRoot | undefined;
 export function findSemanticRoot<T extends SemanticRoot>(input: DocumentContent, guard: TypeGuard<T>): T | undefined;
 export function findSemanticRoot<T extends SemanticRoot>(input: DocumentContent, guard?: TypeGuard<T>): SemanticRoot | T | undefined {
-   const root = isAstNode(input) ? input.$document?.parseResult.value ?? findRootNode(input) : input.parseResult.value;
+   const root = isAstNode(input) ? input.$document?.parseResult?.value ?? findRootNode(input) : input.parseResult?.value;
    const semanticRoot = isCrossModelRoot(root) ? root.entity ?? root.mapping ?? root.relationship ?? root.systemDiagram : undefined;
    return !semanticRoot ? undefined : !guard ? semanticRoot : guard(semanticRoot) ? semanticRoot : undefined;
 }

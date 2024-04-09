@@ -4,27 +4,48 @@
 
 import { CrossModelRoot } from '@crossbreeze/protocol';
 import * as React from 'react';
-import { SaveCallback } from './ModelContext';
+import { ModelQueryApi, OpenCallback, SaveCallback } from './ModelContext';
 import { ModelProvider, UpdateCallback } from './ModelProvider';
 import { ErrorView } from './views/ErrorView';
 
-export interface ModelViewerProps {
-   model: CrossModelRoot | undefined;
+export interface ModelProviderProps {
+   /**
+    * The model object that will be provided to the child components.
+    */
+   model?: CrossModelRoot;
+
+   /**
+    * A callback that will be triggered when the model is updated by this component.
+    */
    onModelUpdate: UpdateCallback;
+
+   /**
+    * A callback that is triggered when this components want to save it's model
+    */
    onModelSave?: SaveCallback;
+
+   /**
+    * A callback that is triggered when this components want to save it's model
+    */
+   onModelOpen?: OpenCallback;
+
+   /**
+    * An API to query additional Model data.
+    */
+   modelQueryApi: ModelQueryApi;
 }
 
-export function withModelProvider<P extends React.JSX.IntrinsicAttributes, MVP extends ModelViewerProps>(
+export function withModelProvider<P, MVP extends ModelProviderProps>(
    WrappedComponent: React.ComponentType<P>,
-   { model, onModelUpdate, onModelSave }: MVP
-): (props: P) => React.ReactElement {
-   const ModelViewerReadyComponent = (componentProps: P): React.ReactElement => {
-      if (!model) {
+   providerProps: MVP
+): React.ComponentType<P & React.JSX.IntrinsicAttributes> {
+   const ModelViewerReadyComponent = (props: P & React.JSX.IntrinsicAttributes): React.ReactElement => {
+      if (!providerProps.model) {
          return <ErrorView errorMessage='No Model Set!' />;
       }
       return (
-         <ModelProvider model={model} onModelUpdate={onModelUpdate} onModelSave={onModelSave}>
-            <WrappedComponent {...componentProps} />
+         <ModelProvider {...providerProps} model={providerProps.model!}>
+            <WrappedComponent {...props} />
          </ModelProvider>
       );
    };

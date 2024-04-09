@@ -4,7 +4,7 @@
 
 import { ModelService, ModelServiceClient } from '@crossbreeze/model-service/lib/common';
 import { CrossModelRoot } from '@crossbreeze/protocol';
-import { EntityForm, withModelProvider } from '@crossbreeze/react-model-ui';
+import { EntityForm, ErrorView, RelationshipForm, withModelProvider, withTheme } from '@crossbreeze/react-model-ui';
 import { CommandService, Emitter, Event } from '@theia/core';
 import {
    LabelProvider,
@@ -15,9 +15,11 @@ import {
    SaveOptions,
    Saveable
 } from '@theia/core/lib/browser';
+import { ThemeService } from '@theia/core/lib/browser/theming';
 import URI from '@theia/core/lib/common/uri';
 import { inject, injectable, postConstruct } from '@theia/core/shared/inversify';
 import * as React from '@theia/core/shared/react';
+import { EditorPreferences } from '@theia/editor/lib/browser';
 import * as deepEqual from 'fast-deep-equal';
 import * as debounce from 'p-debounce';
 
@@ -30,23 +32,25 @@ const FORM_CLIENT_ID = 'form-client';
 
 @injectable()
 export class FormEditorWidget extends ReactWidget implements NavigatableWidget, Saveable {
-   dirty = false;
-   autoSave: 'off' | 'afterDelay' | 'onFocusChange' | 'onWindowChange';
-   public readonly onDirtyChangedEmitter = new Emitter<void>();
-   onDirtyChanged: Event<void> = this.onDirtyChangedEmitter.event;
-
    @inject(FormEditorWidgetOptions) protected options: FormEditorWidgetOptions;
    @inject(LabelProvider) protected labelProvider: LabelProvider;
    @inject(ModelService) private readonly modelService: ModelService;
    @inject(CommandService) protected commandService: CommandService;
    @inject(ModelServiceClient) protected formClient: ModelServiceClient;
+   @inject(ThemeService) protected readonly themeService: ThemeService;
+   @inject(EditorPreferences) private readonly editorPreferences: EditorPreferences;
+
+   protected readonly onDirtyChangedEmitter = new Emitter<void>();
+   onDirtyChanged: Event<void> = this.onDirtyChangedEmitter.event;
+   dirty = false;
+   autoSave: 'off' | 'afterDelay' | 'onFocusChange' | 'onWindowChange';
+   autoSaveDelay: number;
 
    protected syncedModel: CrossModelRoot | undefined;
    protected error: string | undefined;
 
    @postConstruct()
    init(): void {
-      // Widget options
       this.id = this.options.id;
       this.title.label = this.labelProvider.getName(this.getResourceUri());
       this.title.iconClass = this.labelProvider.getIcon(this.getResourceUri());
@@ -56,13 +60,25 @@ export class FormEditorWidget extends ReactWidget implements NavigatableWidget, 
       this.getResourceUri = this.getResourceUri.bind(this);
       this.loadModel();
 
-      this.toDispose.push(
+      this.autoSave = this.editorPreferences.get('files.autoSave');
+      this.autoSaveDelay = this.editorPreferences.get('files.autoSaveDelay');
+
+      this.toDispose.pushAll([
          this.formClient.onUpdate(event => {
             if (event.sourceClientId !== FORM_CLIENT_ID && event.uri === this.getResourceUri().toString()) {
                this.modelUpdated(event.model);
             }
-         })
-      );
+         }),
+         this.editorPreferences.onPreferenceChanged(event => {
+            if (event.preferenceName === 'files.autoSave') {
+               this.autoSave = this.editorPreferences.get('files.autoSave');
+            }
+            if (event.preferenceName === 'files.autoSaveDelay') {
+               this.autoSaveDelay = this.editorPreferences.get('files.autoSaveDelay');
+            }
+         }),
+         this.themeService.onDidColorThemeChange(() => this.update())
+      ]);
    }
 
    protected async loadModel(): Promise<void> {
@@ -88,10 +104,17 @@ export class FormEditorWidget extends ReactWidget implements NavigatableWidget, 
       await this.modelService.save({ uri: this.getResourceUri().toString(), model: this.syncedModel, clientId: FORM_CLIENT_ID });
    }
 
-   protected updateModel = debounce((model: CrossModelRoot) => {
+   protected updateModel = debounce(async (model: CrossModelRoot) => {
       if (!deepEqual(this.syncedModel, model)) {
          this.syncedModel = model;
-         this.modelService.update({ uri: this.getResourceUri().toString(), model, clientId: FORM_CLIENT_ID });
+         this.setDirty(true);
+         await this.modelService.update({ uri: this.getResourceUri().toString(), model, clientId: FORM_CLIENT_ID });
+         if (this.autoSave !== 'off' && this.dirty) {
+            const saveTimeout = setTimeout(() => {
+               this.save();
+               clearTimeout(saveTimeout);
+            }, this.autoSaveDelay);
+         }
       }
    }, 200);
 
@@ -117,11 +140,29 @@ export class FormEditorWidget extends ReactWidget implements NavigatableWidget, 
    }
 
    render(): React.ReactNode {
-      const FormComponent = withModelProvider(EntityForm, {
-         model: this.syncedModel,
-         onModelUpdate: this.updateModel
-      });
-      return <FormComponent />;
+      if (this.syncedModel?.entity) {
+         const EntityComponent = withTheme(
+            withModelProvider(EntityForm, {
+               model: this.syncedModel,
+               onModelUpdate: this.updateModel,
+               modelQueryApi: this.modelService
+            }),
+            { theme: this.themeService.getCurrentTheme().type }
+         );
+         return <EntityComponent />;
+      }
+      if (this.syncedModel?.relationship) {
+         const RelationshipComponent = withTheme(
+            withModelProvider(RelationshipForm, {
+               model: this.syncedModel,
+               onModelUpdate: this.updateModel,
+               modelQueryApi: this.modelService
+            }),
+            { theme: this.themeService.getCurrentTheme().type }
+         );
+         return <RelationshipComponent />;
+      }
+      return <ErrorView errorMessage='This is not a valid model!' />;
    }
 
    protected override onActivateRequest(msg: Message): void {

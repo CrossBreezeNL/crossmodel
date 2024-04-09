@@ -5,16 +5,18 @@ import {
    CloseModel,
    CloseModelArgs,
    CrossModelRoot,
-   DiagramNodeEntity,
-   FindRootReferenceName,
-   FindRootReferenceNameArgs,
+   CrossReference,
+   CrossReferenceContext,
+   FindReferenceableElements,
    MODELSERVER_PORT_COMMAND,
    OnSave,
    OnUpdated,
    OpenModel,
    OpenModelArgs,
+   ReferenceableElement,
    RequestModel,
-   RequestModelDiagramNode,
+   ResolveReference,
+   ResolvedElement,
    SaveModel,
    SaveModelArgs,
    UpdateModel,
@@ -155,14 +157,14 @@ export class ModelServiceImpl implements ModelService {
       }
    }
 
-   async requestDiagramNodeEntityModel(uri: string, id: string): Promise<DiagramNodeEntity | undefined> {
+   async findReferenceableElements(args: CrossReferenceContext): Promise<ReferenceableElement[]> {
       await this.initializeServerConnection();
-      return this.connection.sendRequest(RequestModelDiagramNode, uri, id);
+      return this.connection.sendRequest(FindReferenceableElements, args);
    }
 
-   async findRootReferenceName(args: FindRootReferenceNameArgs): Promise<string | undefined> {
+   async resolveReference(reference: CrossReference): Promise<ResolvedElement | undefined> {
       await this.initializeServerConnection();
-      return this.connection.sendRequest(FindRootReferenceName, args);
+      return this.connection.sendRequest(ResolveReference, reference);
    }
 
    protected setUpListeners(): void {

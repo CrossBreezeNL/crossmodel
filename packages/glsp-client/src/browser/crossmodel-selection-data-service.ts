@@ -1,7 +1,8 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { GModelElement, GModelRoot } from '@eclipse-glsp/client';
+import { CrossReference, REFERENCE_CONTAINER_TYPE, REFERENCE_PROPERTY, REFERENCE_VALUE } from '@crossbreeze/protocol';
+import { GModelElement, GModelRoot, hasArgs } from '@eclipse-glsp/client';
 import { GlspSelectionData } from '@eclipse-glsp/theia-integration';
 import { isDefined } from '@theia/core';
 import { injectable } from '@theia/core/shared/inversify';
@@ -14,8 +15,34 @@ export class CrossModelGLSPSelectionDataService extends CrossModelSelectionDataS
    }
 }
 
-export function getSelectionDataFor(selection: GModelElement[]): GlspSelectionData {
-   const selectionDataMap = new Map<string, string>();
-   selection.forEach(element => selectionDataMap.set(element.id, element.type));
+export interface GModelElementInfo {
+   type: string;
+   reference?: CrossReference;
+}
+
+export interface CrossModelSelectionData {
+   selectionDataMap: Map<string, GModelElementInfo>;
+}
+
+export function getSelectionDataFor(selection: GModelElement[]): CrossModelSelectionData {
+   const selectionDataMap = new Map<string, GModelElementInfo>();
+   selection.forEach(element => selectionDataMap.set(element.id, getElementInfo(element)));
    return { selectionDataMap };
+}
+
+export function getElementInfo(element: GModelElement): GModelElementInfo {
+   if (hasArgs(element)) {
+      const referenceProperty = element.args[REFERENCE_PROPERTY];
+      const referenceContainerType = element.args[REFERENCE_CONTAINER_TYPE];
+      const referenceValue = element.args[REFERENCE_VALUE];
+      return {
+         type: element.type,
+         reference: {
+            container: { globalId: element.id, type: referenceContainerType.toString() },
+            property: referenceProperty.toString(),
+            value: referenceValue.toString()
+         }
+      };
+   }
+   return { type: element.type };
 }

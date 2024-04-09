@@ -5,7 +5,8 @@
 import { AddSourceObjectOperation } from '@crossbreeze/protocol';
 import { Command, JsonOperationHandler, ModelState } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
-import { createSourceObject, createSourceObjectReference } from '../../../language-server/util/ast-util.js';
+import { SourceObject } from '../../../language-server/generated/ast.js';
+import { createSourceObject } from '../../../language-server/util/ast-util.js';
 import { CrossModelCommand } from '../../common/cross-model-command.js';
 import { MappingModelState } from '../model/mapping-model-state.js';
 
@@ -23,10 +24,12 @@ export class MappingDiagramAddSourceObjectOperationHandler extends JsonOperation
 
    protected async addSourceObject(operation: AddSourceObjectOperation): Promise<void> {
       const container = this.modelState.mapping;
-      const refInfo = createSourceObjectReference(container);
-      const scope = this.modelState.services.language.references.ScopeProvider.getScope(refInfo);
-      const entityDescription = scope.getElement(operation.entityName);
-
+      const scope = this.modelState.services.language.references.ScopeProvider.getCompletionScope({
+         container: { globalId: this.modelState.mapping.id! },
+         syntheticElements: [{ property: 'sources', type: SourceObject }],
+         property: 'entity'
+      });
+      const entityDescription = scope.elementScope.getElement(operation.entityName);
       if (entityDescription) {
          const sourceObject = createSourceObject(entityDescription, container, this.modelState.idProvider);
          container.sources.push(sourceObject);

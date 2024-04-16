@@ -25,7 +25,7 @@
     "package:post": "rimraf plugins/crossmodel-lang* && yarn --cwd ../../extensions/crossmodel-lang symlink",
     "package:pre": "rimraf dist && rimraf plugins/crossmodel-lang && yarn package:extensions",
     "package:preview": "yarn package:pre && electron-builder -c.mac.identity=null --dir && yarn package:post",
-    "prepare": "theia build --mode development && yarn download:plugins",
+    "prepare": "export NODE_OPTIONS=--max_old_space_size=8192 && theia build --mode development && yarn download:plugins",
     "rebuild": "theia rebuild:electron --cacheRoot ../..",
     "start": "cross-env NODE_ENV=development theia start --plugins=local-dir:plugins",
     "test": "jest --passWithNoTests",

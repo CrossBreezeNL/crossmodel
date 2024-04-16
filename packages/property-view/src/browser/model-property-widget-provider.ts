@@ -11,8 +11,6 @@ import { ModelPropertyWidget } from './model-property-widget';
 export class ModelPropertyWidgetProvider extends DefaultPropertyViewWidgetProvider {
    override readonly id = 'model-property-widget-provider';
    override readonly label = 'Model Property Widget Provider';
-   currentUri = '';
-   currentNode = '';
 
    @inject(ModelPropertyWidget) protected modelPropertyWidget: ModelPropertyWidget;
 

@@ -2,17 +2,14 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { Entity } from '@crossbreeze/protocol';
 import { TextField } from '@mui/material';
 import * as React from 'react';
 import { useEntity, useModelDispatch } from '../../ModelContext';
+import { modelComponent } from '../../ModelViewer';
+import { themed } from '../../ThemedViewer';
 import { FormSection } from '../FormSection';
 import { EntityAttributesDataGrid } from '../common';
 import { Form } from './Form';
-
-export interface EntityFormProps {
-   entity: Entity;
-}
 
 export function EntityForm(): React.ReactElement {
    const dispatch = useModelDispatch();
@@ -47,3 +44,5 @@ export function EntityForm(): React.ReactElement {
       </Form>
    );
 }
+
+export const EntityComponent = themed(modelComponent(EntityForm));

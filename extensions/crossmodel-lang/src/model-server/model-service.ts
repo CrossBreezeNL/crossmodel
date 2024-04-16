@@ -76,6 +76,10 @@ export class ModelService {
     * @param uri document URI
     */
    async close(args: CloseModelArgs): Promise<void> {
+      if (this.documentManager.isOnlyOpenInClient(args.uri, args.clientId)) {
+         // we need to restore the original state without any unsaved changes
+         await this.update({ ...args, model: this.documentManager.readFile(args.uri) });
+      }
       return this.documentManager.close(args);
    }
 

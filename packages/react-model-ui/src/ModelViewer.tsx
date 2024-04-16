@@ -14,6 +14,8 @@ export interface ModelProviderProps {
     */
    model?: CrossModelRoot;
 
+   dirty: boolean;
+
    /**
     * A callback that will be triggered when the model is updated by this component.
     */
@@ -35,16 +37,15 @@ export interface ModelProviderProps {
    modelQueryApi: ModelQueryApi;
 }
 
-export function withModelProvider<P, MVP extends ModelProviderProps>(
-   WrappedComponent: React.ComponentType<P>,
-   providerProps: MVP
-): React.ComponentType<P & React.JSX.IntrinsicAttributes> {
-   const ModelViewerReadyComponent = (props: P & React.JSX.IntrinsicAttributes): React.ReactElement => {
-      if (!providerProps.model) {
+export function modelComponent<P, MVP extends ModelProviderProps>(
+   WrappedComponent: React.ComponentType<P>
+): React.ComponentType<P & MVP & React.JSX.IntrinsicAttributes> {
+   const ModelViewerReadyComponent = (props: P & MVP & React.JSX.IntrinsicAttributes): React.ReactElement => {
+      if (!props.model) {
          return <ErrorView errorMessage='No Model Set!' />;
       }
       return (
-         <ModelProvider {...providerProps} model={providerProps.model!}>
+         <ModelProvider {...props} model={props.model!}>
             <WrappedComponent {...props} />
          </ModelProvider>
       );

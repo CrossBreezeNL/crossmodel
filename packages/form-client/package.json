@@ -29,6 +29,7 @@
     "watch": "tsc -w"
   },
   "dependencies": {
+    "@crossbreeze/core": "0.0.0",
     "@crossbreeze/model-service": "^1.0.0",
     "@crossbreeze/protocol": "0.0.0",
     "@crossbreeze/react-model-ui": "0.0.0",

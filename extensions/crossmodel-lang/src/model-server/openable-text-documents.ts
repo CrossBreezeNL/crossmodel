@@ -250,6 +250,10 @@ export class OpenableTextDocuments<T extends TextDocument> extends TextDocuments
       return this.isOpenInClient(uri, LANGUAGE_CLIENT_ID);
    }
 
+   isOnlyOpenInClient(uri: string, client: string): boolean {
+      return this.__clientDocuments.get(uri)?.size === 1 && this.isOpenInClient(uri, client);
+   }
+
    protected log(uri: string, message: string): void {
       const full = URI.parse(uri);
       this.logger.info(`[Documents][${basename(full.fsPath)}] ${message}`);

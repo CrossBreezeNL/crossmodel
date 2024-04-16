@@ -5,7 +5,14 @@
 import { CrossModelRoot } from '@crossbreeze/protocol';
 import * as React from 'react';
 import { useImmerReducer } from 'use-immer';
-import { ModelContext, ModelDispatchContext, ModelQueryApiContext, OpenModelContext, SaveModelContext } from './ModelContext';
+import {
+   ModelContext,
+   ModelDirtyContext,
+   ModelDispatchContext,
+   ModelQueryApiContext,
+   OpenModelContext,
+   SaveModelContext
+} from './ModelContext';
 import { DispatchAction, ModelReducer, ModelState } from './ModelReducer';
 import { ModelProviderProps } from './ModelViewer';
 
@@ -28,6 +35,7 @@ export interface InternalModelProviderProps extends React.PropsWithChildren, Mod
  */
 export function ModelProvider({
    model,
+   dirty,
    onModelOpen,
    onModelSave,
    onModelUpdate,
@@ -39,10 +47,10 @@ export function ModelProvider({
    React.useEffect(() => {
       // triggered when a new model is passed from the outside via props -> update internal state
       dispatch({ type: 'model:update', model });
-   }, [model, dispatch]);
+   }, [dispatch, model]);
 
    React.useEffect(() => {
-      if (appState.reason !== 'model:update') {
+      if (appState.reason !== 'model:initial' && appState.reason !== 'model:update') {
          // triggered when the internal model is updated, pass update to callback
          onModelUpdate(appState.model);
       }
@@ -53,7 +61,9 @@ export function ModelProvider({
          <OpenModelContext.Provider value={onModelOpen}>
             <SaveModelContext.Provider value={onModelSave}>
                <ModelDispatchContext.Provider value={dispatch}>
-                  <ModelQueryApiContext.Provider value={modelQueryApi}>{children}</ModelQueryApiContext.Provider>
+                  <ModelDirtyContext.Provider value={dirty}>
+                     <ModelQueryApiContext.Provider value={modelQueryApi}>{children}</ModelQueryApiContext.Provider>
+                  </ModelDirtyContext.Provider>
                </ModelDispatchContext.Provider>
             </SaveModelContext.Provider>
          </OpenModelContext.Provider>

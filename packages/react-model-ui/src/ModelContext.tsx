@@ -28,6 +28,8 @@ export const SaveModelContext = React.createContext<SaveCallback | undefined>(un
 export const DEFAULT_QUERY_API: ModelQueryApi = { findReferenceableElements: async () => [] };
 export const ModelQueryApiContext = React.createContext<ModelQueryApi>(DEFAULT_QUERY_API);
 
+export const ModelDirtyContext = React.createContext<boolean>(false);
+
 export function useModel(): CrossModelRoot {
    return React.useContext(ModelContext);
 }
@@ -46,6 +48,10 @@ export function useModelOpen(): OpenCallback | undefined {
 
 export function useModelQueryApi(): ModelQueryApi {
    return React.useContext(ModelQueryApiContext);
+}
+
+export function useDirty(): boolean {
+   return React.useContext(ModelDirtyContext);
 }
 
 export function useEntity(): Entity {

@@ -159,12 +159,11 @@ export interface ThemingProps {
    theme: ThemeType;
 }
 
-export function withTheme<P, TP extends ThemingProps>(
-   WrappedComponent: React.ComponentType<P>,
-   themeProps: TP
-): React.ComponentType<P & React.JSX.IntrinsicAttributes> {
-   const ThemedComponent = (props: P & React.JSX.IntrinsicAttributes): React.ReactElement => (
-      <ThemeProvider theme={getTheme(themeProps.theme)}>
+export function themed<P, TP extends ThemingProps>(
+   WrappedComponent: React.ComponentType<P>
+): React.ComponentType<P & TP & React.JSX.IntrinsicAttributes> {
+   const ThemedComponent = (props: P & TP & React.JSX.IntrinsicAttributes): React.ReactElement => (
+      <ThemeProvider theme={getTheme(props.theme)}>
          <CssBaseline />
          <WrappedComponent {...props} />
       </ThemeProvider>

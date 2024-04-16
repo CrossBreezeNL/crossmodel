@@ -4,7 +4,7 @@
 
 import { OpenInNewOutlined, SaveOutlined } from '@mui/icons-material';
 import { AppBar, Box, Button, Icon, Toolbar, Typography } from '@mui/material';
-import { useModelOpen, useModelSave } from '../../ModelContext';
+import { useDirty, useModelOpen, useModelSave } from '../../ModelContext';
 import React = require('react');
 
 export interface HeaderProps {
@@ -16,6 +16,7 @@ export interface HeaderProps {
 export function Header({ name, id, iconClass }: HeaderProps): React.ReactElement {
    const saveModel = useModelSave();
    const openModel = useModelOpen();
+   const dirty = useDirty();
 
    return (
       <AppBar position='sticky'>
@@ -24,6 +25,7 @@ export function Header({ name, id, iconClass }: HeaderProps): React.ReactElement
                {iconClass && <Icon baseClassName='codicon' className={iconClass} sx={{ fontSize: '1.7em !important' }} />}
                <Typography variant='h6' component='div'>
                   {name}
+                  {saveModel && dirty ? '*' : ''}
                </Typography>
                <Typography variant='overline' component='div' sx={{ pt: '.5em' }}>
                   ID: {id}
@@ -37,7 +39,7 @@ export function Header({ name, id, iconClass }: HeaderProps): React.ReactElement
                   </Button>
                )}
                {saveModel && (
-                  <Button onClick={saveModel} startIcon={<SaveOutlined />} color='inherit'>
+                  <Button onClick={saveModel} startIcon={<SaveOutlined />} color='inherit' disabled={!dirty}>
                      Save
                   </Button>
                )}

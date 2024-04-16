@@ -150,6 +150,10 @@ export class OpenTextDocumentManager {
       return this.textDocuments.isOpenInLanguageClient(this.normalizedUri(uri));
    }
 
+   isOnlyOpenInClient(uri: string, client: string): boolean {
+      return this.textDocuments.isOnlyOpenInClient(this.normalizedUri(uri), client);
+   }
+
    protected createDummyDocument(uri: string): TextDocumentItem {
       return TextDocumentItem.create(this.normalizedUri(uri), CrossModelLanguageMetaData.languageId, 0, '');
    }
@@ -158,9 +162,11 @@ export class OpenTextDocumentManager {
       uri: string,
       languageId: string = CrossModelLanguageMetaData.languageId
    ): Promise<TextDocumentItem> {
-      const vscUri = URI.parse(uri);
-      const content = this.fileSystemProvider.readFileSync(vscUri);
-      return TextDocumentItem.create(vscUri.toString(), languageId, 0, content.toString());
+      return TextDocumentItem.create(uri, languageId, 0, this.readFile(uri));
+   }
+
+   readFile(uri: string): string {
+      return this.fileSystemProvider.readFileSync(URI.parse(uri));
    }
 
    protected normalizedUri(uri: string): string {

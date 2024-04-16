@@ -109,6 +109,7 @@ export default function AttributeGrid<T extends GridValidRowModel>({
                label='Move Up'
                onClick={() => onMoveUp(params.row)}
                color='inherit'
+               disabled={params.row.idx === 0}
             />,
             <GridActionsCellItem
                key='move-down'
@@ -116,11 +117,12 @@ export default function AttributeGrid<T extends GridValidRowModel>({
                label='Move Down'
                onClick={() => onMoveDown(params.row)}
                color='inherit'
+               disabled={params.row.idx === rows.length - 1}
             />
          ]
       });
       setColumns(gridColumns);
-   }, [attributeColumns, onDelete, onMoveDown, onMoveUp, validateRow]);
+   }, [attributeColumns, onDelete, onMoveDown, onMoveUp, rows.length, validateRow]);
 
    const EditToolbar = React.useMemo(
       () => (
@@ -155,6 +157,9 @@ export default function AttributeGrid<T extends GridValidRowModel>({
          sx={{
             fontSize: '1em',
             width: '100%',
+            '&.MuiDataGrid-root': {
+               width: '100%'
+            },
             '& .actions': {
                color: 'text.secondary'
             },

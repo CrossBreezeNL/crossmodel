@@ -6,12 +6,14 @@ import { EntityType, ReferenceableElement } from '@crossbreeze/protocol';
 import { TextField } from '@mui/material';
 import * as React from 'react';
 import { useModelDispatch, useModelQueryApi, useRelationship } from '../../ModelContext';
+import { modelComponent } from '../../ModelViewer';
+import { themed } from '../../ThemedViewer';
 import { FormSection } from '../FormSection';
 import AsyncAutoComplete from '../common/AsyncAutoComplete';
 import { RelationshipAttributesDataGrid } from '../common/RelationshipAttributesDataGrid';
 import { Form } from './Form';
 
-// Form with tabs to edit an entity's properties and attributes.
+// Form with tabs to edit an relationship's properties and attributes.
 export function RelationshipForm(): React.ReactElement {
    const dispatch = useModelDispatch();
    const api = useModelQueryApi();
@@ -69,3 +71,5 @@ export function RelationshipForm(): React.ReactElement {
       </Form>
    );
 }
+
+export const RelationshipComponent = themed(modelComponent(RelationshipForm));

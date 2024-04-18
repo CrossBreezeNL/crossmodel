@@ -49,20 +49,18 @@ export class PackageLocalAstNodeDescription extends PackageAstNodeDescription {
 /**
  * Custom class to represent package-external descriptions with the package name so we can do easier instanceof checks.
  */
-export class PackageExternalAstNodeDescription extends PackageAstNodeDescription {
+export class GlobalAstNodeDescription extends PackageAstNodeDescription {
    constructor(packageName: string, name: string, delegate: AstNodeDescription) {
       super(packageName, name, delegate);
    }
 }
 
-export function isExternalDescriptionForLocalPackage(description: AstNodeDescription, packageId?: string): boolean {
-   return packageId !== undefined && description instanceof PackageExternalAstNodeDescription && description.packageId === packageId;
+export function isGlobalDescriptionForLocalPackage(description: AstNodeDescription, packageId?: string): boolean {
+   return packageId !== undefined && description instanceof GlobalAstNodeDescription && description.packageId === packageId;
 }
 
 export function getLocalName(description: AstNodeDescription): string {
-   return description instanceof PackageExternalAstNodeDescription
-      ? getLocalName(description.delegate) ?? description.name
-      : description.name;
+   return description instanceof GlobalAstNodeDescription ? getLocalName(description.delegate) ?? description.name : description.name;
 }
 
 /**
@@ -107,9 +105,9 @@ export class CrossModelScopeComputation extends DefaultScopeComputation {
          exports.push(new PackageLocalAstNodeDescription(packageId, localId, description));
       }
 
-      const externalId = this.idProvider.getExternalId(node, packageName);
-      if (externalId && description) {
-         exports.push(new PackageExternalAstNodeDescription(packageId, externalId, description));
+      const globalId = this.idProvider.getGlobalId(node, packageName);
+      if (globalId && description) {
+         exports.push(new GlobalAstNodeDescription(packageId, globalId, description));
       }
    }
 

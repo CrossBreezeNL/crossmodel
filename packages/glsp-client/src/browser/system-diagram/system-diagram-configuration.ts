@@ -19,10 +19,16 @@ export class SystemDiagramConfiguration extends GLSPDiagramConfiguration {
    diagramType: string = SystemDiagramLanguage.diagramType;
 
    configureContainer(container: Container, ...containerConfiguration: ContainerConfiguration): Container {
-      return initializeDiagramContainer(container, ...containerConfiguration, systemDiagramModule, systemEdgeCreationToolModule, {
-         add: systemSelectModule,
-         remove: selectModule
-      });
+      return initializeDiagramContainer(
+         container,
+         {
+            add: systemSelectModule,
+            remove: selectModule
+         },
+         ...containerConfiguration,
+         systemDiagramModule,
+         systemEdgeCreationToolModule
+      );
    }
 }
 

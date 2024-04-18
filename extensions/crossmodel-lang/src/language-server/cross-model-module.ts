@@ -27,6 +27,7 @@ import { ClientLogger } from './cross-model-client-logger.js';
 import { CrossModelCompletionProvider } from './cross-model-completion-provider.js';
 import { CrossModelDocumentBuilder } from './cross-model-document-builder.js';
 import { CrossModelModelFormatter } from './cross-model-formatter.js';
+import { CrossModelIndexManager } from './cross-model-index-manager.js';
 import { CrossModelLangiumDocuments } from './cross-model-langium-documents.js';
 import { CrossModelLanguageServer } from './cross-model-language-server.js';
 import { DefaultIdProvider } from './cross-model-naming.js';
@@ -77,6 +78,8 @@ export interface CrossModelAddedSharedServices {
    workspace: {
       /* override */ WorkspaceManager: CrossModelWorkspaceManager;
       PackageManager: CrossModelPackageManager;
+      LangiumDocuments: CrossModelLangiumDocuments;
+      IndexManager: CrossModelIndexManager;
    };
    logger: {
       ClientLogger: ClientLogger;
@@ -89,7 +92,9 @@ export interface CrossModelAddedSharedServices {
 export const CrossModelSharedServices = Symbol('CrossModelSharedServices');
 export type CrossModelSharedServices = Omit<LangiumSharedServices, 'ServiceRegistry'> &
    CrossModelAddedSharedServices &
-   AddedSharedModelServices;
+   AddedSharedModelServices & {
+      CrossModel: CrossModelServices;
+   };
 
 export const CrossModelSharedModule: Module<
    CrossModelSharedServices,
@@ -102,7 +107,8 @@ export const CrossModelSharedModule: Module<
       LangiumDocuments: services => new CrossModelLangiumDocuments(services),
       TextDocuments: services => new OpenableTextDocuments(TextDocument, services),
       TextDocumentManager: services => new OpenTextDocumentManager(services),
-      DocumentBuilder: services => new CrossModelDocumentBuilder(services)
+      DocumentBuilder: services => new CrossModelDocumentBuilder(services),
+      IndexManager: services => new CrossModelIndexManager(services)
    },
    logger: {
       ClientLogger: services => new ClientLogger(services)
@@ -130,6 +136,7 @@ export interface CrossModelAddedServices {
    references: {
       IdProvider: DefaultIdProvider;
       Linker: CrossModelLinker;
+      ScopeProvider: CrossModelScopeProvider;
    };
    validation: {
       CrossModelValidator: CrossModelValidator;
@@ -204,6 +211,7 @@ export function createCrossModelServices(context: DefaultSharedModuleContext): {
    const shared = inject(createDefaultSharedModule(context), CrossModelGeneratedSharedModule, CrossModelSharedModule);
    const CrossModel = inject(createDefaultModule({ shared }), CrossModelGeneratedModule, createCrossModelModule({ shared }));
    shared.ServiceRegistry.register(CrossModel);
+   shared.CrossModel = CrossModel;
    registerValidationChecks(CrossModel);
    return { shared, CrossModel };
 }

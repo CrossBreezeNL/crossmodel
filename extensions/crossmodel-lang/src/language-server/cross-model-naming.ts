@@ -28,7 +28,7 @@ export function getId(node?: AstNode): string | undefined {
 export interface IdProvider extends NameProvider {
    getNodeId(node?: AstNode): string | undefined;
    getLocalId(node?: AstNode): string | undefined;
-   getExternalId(node?: AstNode): string | undefined;
+   getGlobalId(node?: AstNode): string | undefined;
 
    findNextId(type: string, proposal: string | undefined): string;
    findNextId(type: string, proposal: string | undefined, container: AstNode): string;
@@ -95,7 +95,7 @@ export class DefaultIdProvider implements NameProvider, IdProvider {
     * @param packageName package name
     * @returns fully qualified, package-local name
     */
-   getExternalId(node?: AstNode, packageName = this.getPackageName(node)): string | undefined {
+   getGlobalId(node?: AstNode, packageName = this.getPackageName(node)): string | undefined {
       const localId = this.getLocalId(node);
       if (!localId) {
          return undefined;
@@ -110,7 +110,7 @@ export class DefaultIdProvider implements NameProvider, IdProvider {
    }
 
    getName(node?: AstNode): string | undefined {
-      return node ? this.getExternalId(node) : undefined;
+      return node ? this.getGlobalId(node) : undefined;
    }
 
    getNameNode(node: AstNode): CstNode | undefined {
@@ -121,9 +121,9 @@ export class DefaultIdProvider implements NameProvider, IdProvider {
    findNextId(type: string, proposal: string | undefined, container: AstNode): string;
    findNextId(type: string, proposal: string | undefined, container?: AstNode): string {
       if (isAstNode(container)) {
-         return this.findNextIdInContainer(type, proposal ?? 'Element', container);
+         return this.findNextIdInContainer(type, proposal?.replaceAll('.', '_') ?? 'Element', container);
       }
-      return this.findNextIdInIndex(type, proposal ?? 'Element');
+      return this.findNextIdInIndex(type, proposal?.replaceAll('.', '_') ?? 'Element');
    }
 
    protected getParent(node: AstNode): AstNode | undefined {

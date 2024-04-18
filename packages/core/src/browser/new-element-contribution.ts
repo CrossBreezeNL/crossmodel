@@ -2,7 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 import { ModelService } from '@crossbreeze/model-service/lib/common';
-import { ModelFileExtensions, quote, toId } from '@crossbreeze/protocol';
+import { MappingType, ModelFileExtensions, TargetObjectType, quote, toId } from '@crossbreeze/protocol';
 import { Command, CommandContribution, CommandRegistry, MaybePromise, MenuContribution, MenuModelRegistry, URI, nls } from '@theia/core';
 import { CommonMenus, DialogError, codicon, open } from '@theia/core/lib/browser';
 import { TabBarToolbarRegistry } from '@theia/core/lib/browser/shell/tab-bar-toolbar';
@@ -141,8 +141,8 @@ export class CrossModelWorkspaceContribution extends WorkspaceCommandContributio
       registry.registerMenuAction(EditorContextMenu.COMMANDS, { commandId: DERIVE_MAPPING_FROM_ENTITY.id });
    }
 
-   protected async deriveNewMappingFile(uri: URI): Promise<void> {
-      const parent = await this.getDirectory(uri);
+   protected async deriveNewMappingFile(entityUri: URI): Promise<void> {
+      const parent = await this.getDirectory(entityUri);
       if (parent) {
          const parentUri = parent.resource;
          const dialog = new WorkspaceInputDialog(
@@ -159,11 +159,16 @@ export class CrossModelWorkspaceContribution extends WorkspaceCommandContributio
          if (selectedSource) {
             const fileName = this.applyFileExtension(selectedSource, ModelFileExtensions.Mapping);
             const baseFileName = this.removeFileExtension(selectedSource, ModelFileExtensions.Mapping);
-            const fileUri = parentUri.resolve(fileName);
+            const mappingUri = parentUri.resolve(fileName);
 
-            const targetRef = await this.modelService.findRootReferenceName({ source: fileUri.path.fsPath(), target: uri.path.fsPath() });
-            if (!targetRef) {
-               this.messageService.error('Could not detect target element at ' + uri.path.fsPath());
+            const elements = await this.modelService.findReferenceableElements({
+               container: { uri: mappingUri.path.fsPath(), type: MappingType },
+               syntheticElements: [{ property: 'target', type: TargetObjectType }],
+               property: 'entity'
+            });
+            const entityElement = elements.find(element => element.uri === entityUri.toString());
+            if (!entityElement) {
+               this.messageService.error('Could not detect target element at ' + entityUri.path.fsPath());
                return;
             }
 
@@ -171,10 +176,10 @@ export class CrossModelWorkspaceContribution extends WorkspaceCommandContributio
             const content = `mapping:
             id: ${mappingName}
             target:
-               entity: ${targetRef}`;
-            await this.fileService.create(fileUri, content);
-            this.fireCreateNewFile({ parent: parentUri, uri: fileUri });
-            open(this.openerService, fileUri);
+               entity: ${entityElement.label}`;
+            await this.fileService.create(mappingUri, content);
+            this.fireCreateNewFile({ parent: parentUri, uri: mappingUri });
+            open(this.openerService, mappingUri);
          }
       }
    }

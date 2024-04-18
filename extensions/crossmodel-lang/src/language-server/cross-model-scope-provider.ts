@@ -1,10 +1,29 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { AstNodeDescription, DefaultScopeProvider, EMPTY_SCOPE, getDocument, ReferenceInfo, Scope, StreamScope } from 'langium';
+import {
+   CrossReference,
+   CrossReferenceContainer,
+   CrossReferenceContext,
+   ReferenceableElement,
+   isGlobalElementReference,
+   isRootElementReference,
+   isSyntheticDocument
+} from '@crossbreeze/protocol';
+import {
+   AstNode,
+   AstNodeDescription,
+   DefaultScopeProvider,
+   EMPTY_SCOPE,
+   ReferenceInfo,
+   Scope,
+   StreamScope,
+   URI,
+   getDocument
+} from 'langium';
 import { CrossModelServices } from './cross-model-module.js';
-import { PackageAstNodeDescription, PackageExternalAstNodeDescription } from './cross-model-scope.js';
-import { isAttributeMapping } from './generated/ast.js';
+import { GlobalAstNodeDescription, PackageAstNodeDescription, isGlobalDescriptionForLocalPackage } from './cross-model-scope.js';
+import { isAttributeMapping, isRelationshipAttribute, isSourceObject } from './generated/ast.js';
 import { fixDocument } from './util/ast-util.js';
 
 /**
@@ -14,7 +33,8 @@ import { fixDocument } from './util/ast-util.js';
 export class PackageScopeProvider extends DefaultScopeProvider {
    constructor(
       protected services: CrossModelServices,
-      protected packageManager = services.shared.workspace.PackageManager
+      protected packageManager = services.shared.workspace.PackageManager,
+      protected idProvider = services.references.IdProvider
    ) {
       super(services);
    }
@@ -50,7 +70,7 @@ export class PackageScopeProvider extends DefaultScopeProvider {
             .getAllElements()
             .filter(
                description =>
-                  description instanceof PackageExternalAstNodeDescription &&
+                  description instanceof GlobalAstNodeDescription &&
                   this.packageManager.isVisible(sourcePackage, this.getPackageId(description))
             )
       );
@@ -67,6 +87,47 @@ export class PackageScopeProvider extends DefaultScopeProvider {
 }
 
 export class CrossModelScopeProvider extends PackageScopeProvider {
+   protected resolveCrossReferenceContainer(container: CrossReferenceContainer): AstNode | undefined {
+      if (isSyntheticDocument(container)) {
+         const document = this.services.shared.workspace.LangiumDocuments.createEmptyDocument(URI.parse(container.uri));
+         return { $type: container.type, $container: document.parseResult.value };
+      }
+      if (isRootElementReference(container)) {
+         return this.services.shared.workspace.IndexManager.resolveSemanticElement(URI.parse(container.uri));
+      }
+      if (isGlobalElementReference(container)) {
+         return this.services.shared.workspace.IndexManager.resolveElementById(container.globalId, container.type);
+      }
+      return undefined;
+   }
+
+   referenceContextToInfo(ctx: CrossReferenceContext): ReferenceInfo {
+      let container = this.resolveCrossReferenceContainer(ctx.container);
+      if (!container) {
+         throw Error('Invalid CrossReference Container');
+      }
+      for (const segment of ctx.syntheticElements ?? []) {
+         container = {
+            $container: container,
+            $containerProperty: segment.property,
+            $type: segment.type
+         };
+      }
+      const referenceInfo: ReferenceInfo = {
+         reference: { $refText: '' },
+         container: container,
+         property: ctx.property
+      };
+      return referenceInfo;
+   }
+
+   resolveCrossReference(reference: CrossReference): AstNode | undefined {
+      const description = this.getScope(this.referenceContextToInfo(reference))
+         .getAllElements()
+         .find(desc => desc.name === reference.value);
+      return this.services.shared.workspace.IndexManager.resolveElement(description);
+   }
+
    override getScope(context: ReferenceInfo): Scope {
       try {
          return super.getScope(this.fixContext(context));
@@ -80,4 +141,56 @@ export class CrossModelScopeProvider extends PackageScopeProvider {
       fixDocument(context.container, context.container.$cstNode?.root.astNode.$document);
       return context;
    }
+
+   getCompletionScope(ctx: CrossReferenceContext): CompletionScope {
+      const referenceInfo = this.referenceContextToInfo(ctx);
+      const packageId = this.packageManager.getPackageIdByDocument(getDocument(referenceInfo.container));
+      const filteredDescriptions = this.getScope(referenceInfo)
+         .getAllElements()
+         .filter(description => this.filterCompletion(description, packageId, referenceInfo.container, referenceInfo.property))
+         .distinct(description => description.name);
+      const elementScope = this.createScope(filteredDescriptions);
+      return { elementScope, source: referenceInfo };
+   }
+
+   complete(ctx: CrossReferenceContext): ReferenceableElement[] {
+      return this.getCompletionScope(ctx)
+         .elementScope.getAllElements()
+         .map<ReferenceableElement>(description => ({
+            uri: description.documentUri.toString(),
+            type: description.type,
+            label: description.name
+         }))
+         .toArray();
+   }
+
+   filterCompletion(description: AstNodeDescription, packageId: string, container?: AstNode, property?: string): boolean {
+      if (isRelationshipAttribute(container)) {
+         // only show relevant attributes depending on the parent or child context
+         if (property === 'child') {
+            return description.name.startsWith(container.$container.child?.$refText + '.');
+         }
+         if (property === 'parent') {
+            return description.name.startsWith(container.$container.parent?.$refText + '.');
+         }
+      }
+      if (isSourceObject(container) && property === 'entity' && container.$container.target.entity.ref) {
+         const targetEntity = container.$container.target.entity.ref;
+         if (description instanceof GlobalAstNodeDescription) {
+            return description.name !== this.idProvider.getGlobalId(targetEntity);
+         }
+         return description.name !== this.idProvider.getLocalId(targetEntity);
+      }
+      if (isGlobalDescriptionForLocalPackage(description, packageId)) {
+         // we want to keep fully qualified names in the scope so we can do proper linking
+         // but want to hide it from the user for local options, i.e., if we are in the same project we can skip the project name
+         return false;
+      }
+      return true;
+   }
+}
+
+export interface CompletionScope {
+   source: ReferenceInfo;
+   elementScope: Scope;
 }

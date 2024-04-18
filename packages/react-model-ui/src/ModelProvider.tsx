@@ -5,29 +5,24 @@
 import { CrossModelRoot } from '@crossbreeze/protocol';
 import * as React from 'react';
 import { useImmerReducer } from 'use-immer';
-import { ModelContext, ModelDispatchContext, SaveCallback, SaveModelContext, defaultSaveCallback } from './ModelContext';
+import {
+   ModelContext,
+   ModelDirtyContext,
+   ModelDispatchContext,
+   ModelQueryApiContext,
+   OpenModelContext,
+   SaveModelContext
+} from './ModelContext';
 import { DispatchAction, ModelReducer, ModelState } from './ModelReducer';
+import { ModelProviderProps } from './ModelViewer';
 
 export type UpdateCallback = (model: CrossModelRoot) => void;
 
 /**
  * Represents the properties required by the ModelProvider component.
  */
-export interface ModelProviderProps extends React.PropsWithChildren {
-   /**
-    * The model object that will be provided to the child components.
-    */
+export interface InternalModelProviderProps extends React.PropsWithChildren, ModelProviderProps {
    model: CrossModelRoot;
-
-   /**
-    * A callback that will be triggered when the model is updated by this component.
-    */
-   onModelUpdate: UpdateCallback;
-
-   /**
-    * A callback that is triggered when this components want to save it's model
-    */
-   onModelSave?: SaveCallback;
 }
 
 /**
@@ -40,19 +35,22 @@ export interface ModelProviderProps extends React.PropsWithChildren {
  */
 export function ModelProvider({
    model,
-   onModelSave = defaultSaveCallback,
+   dirty,
+   onModelOpen,
+   onModelSave,
    onModelUpdate,
+   modelQueryApi,
    children
-}: ModelProviderProps): React.ReactElement {
+}: InternalModelProviderProps): React.ReactElement {
    const [appState, dispatch] = useImmerReducer<ModelState, DispatchAction>(ModelReducer, { model, reason: 'model:initial' });
 
    React.useEffect(() => {
       // triggered when a new model is passed from the outside via props -> update internal state
       dispatch({ type: 'model:update', model });
-   }, [model, dispatch]);
+   }, [dispatch, model]);
 
    React.useEffect(() => {
-      if (appState.reason !== 'model:update') {
+      if (appState.reason !== 'model:initial' && appState.reason !== 'model:update') {
          // triggered when the internal model is updated, pass update to callback
          onModelUpdate(appState.model);
       }
@@ -60,9 +58,15 @@ export function ModelProvider({
 
    return (
       <ModelContext.Provider value={appState.model}>
-         <SaveModelContext.Provider value={onModelSave}>
-            <ModelDispatchContext.Provider value={dispatch}>{children}</ModelDispatchContext.Provider>
-         </SaveModelContext.Provider>
+         <OpenModelContext.Provider value={onModelOpen}>
+            <SaveModelContext.Provider value={onModelSave}>
+               <ModelDispatchContext.Provider value={dispatch}>
+                  <ModelDirtyContext.Provider value={dirty}>
+                     <ModelQueryApiContext.Provider value={modelQueryApi}>{children}</ModelQueryApiContext.Provider>
+                  </ModelDirtyContext.Provider>
+               </ModelDispatchContext.Provider>
+            </SaveModelContext.Provider>
+         </OpenModelContext.Provider>
       </ModelContext.Provider>
    );
 }

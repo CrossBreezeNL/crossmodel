@@ -1,8 +1,9 @@
 relationship: 
     id: Order_Customer
+    name: "Order - Customer"
     parent: Customer
     child: Order
-    type: "1:1"
+    type: "1:n"
     attributes:
         - parent: Customer.Id
           child: Order.CustomerId

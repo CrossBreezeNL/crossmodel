@@ -9,15 +9,19 @@ import {
    SelectFeedbackCommand,
    TYPES,
    bindAsService,
-   configureCommand
+   configureCommand,
+   selectModule
 } from '@eclipse-glsp/client';
 import { SystemSelectTool } from './select-tool';
 
-export const systemSelectModule = new FeatureModule((bind, _unbind, isBound) => {
-   const context = { bind, isBound };
-   configureCommand(context, SelectCommand);
-   configureCommand(context, SelectAllCommand);
-   configureCommand(context, SelectFeedbackCommand);
-   bindAsService(context, TYPES.IDefaultTool, SystemSelectTool);
-   bind(RankedSelectMouseListener).toSelf().inSingletonScope();
-});
+export const systemSelectModule = new FeatureModule(
+   (bind, _unbind, isBound) => {
+      const context = { bind, isBound };
+      configureCommand(context, SelectCommand);
+      configureCommand(context, SelectAllCommand);
+      configureCommand(context, SelectFeedbackCommand);
+      bindAsService(context, TYPES.IDefaultTool, SystemSelectTool);
+      bind(RankedSelectMouseListener).toSelf().inSingletonScope();
+   },
+   { featureId: selectModule.featureId }
+);

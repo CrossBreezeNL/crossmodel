@@ -6,7 +6,6 @@ import { AddEntityOperation } from '@crossbreeze/protocol';
 import { Command, JsonOperationHandler, ModelState } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
 import { Entity, EntityNode } from '../../../language-server/generated/ast.js';
-import { createEntityNodeReference } from '../../../language-server/util/ast-util.js';
 import { CrossModelCommand } from '../../common/cross-model-command.js';
 import { SystemModelState } from '../model/system-model-state.js';
 
@@ -23,10 +22,14 @@ export class SystemDiagramAddEntityOperationHandler extends JsonOperationHandler
    }
 
    protected async createEntityNode(operation: AddEntityOperation): Promise<void> {
+      const scope = this.modelState.services.language.references.ScopeProvider.getCompletionScope({
+         container: { globalId: this.modelState.systemDiagram.id! },
+         syntheticElements: [{ property: 'nodes', type: EntityNode }],
+         property: 'entity'
+      });
+
       const container = this.modelState.systemDiagram;
-      const refInfo = createEntityNodeReference(container);
-      const scope = this.modelState.services.language.references.ScopeProvider.getScope(refInfo);
-      const entityDescription = scope.getElement(operation.entityName);
+      const entityDescription = scope.elementScope.getElement(operation.entityName);
 
       if (entityDescription) {
          const node: EntityNode = {

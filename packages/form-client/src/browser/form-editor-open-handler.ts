@@ -20,7 +20,7 @@ export class FormEditorOpenHandler extends NavigatableWidgetOpenHandler<FormEdit
    }
 }
 
-export function createFormEditorId(uri: URI, counter?: number): string {
+export function createFormEditorId(uri: string, counter?: number): string {
    // ensure we create a unique ID
-   return FormEditorOpenHandler.ID + `:${uri.toString()}` + (counter !== undefined ? `:${counter}` : '');
+   return FormEditorOpenHandler.ID + `:${uri}` + (counter !== undefined ? `:${counter}` : '');
 }

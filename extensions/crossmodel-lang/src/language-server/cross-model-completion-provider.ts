@@ -17,8 +17,7 @@ import { v4 as uuid } from 'uuid';
 import { CompletionItemKind, InsertTextFormat } from 'vscode-languageserver-protocol';
 import type { Range } from 'vscode-languageserver-types';
 import { CrossModelServices } from './cross-model-module.js';
-import { isExternalDescriptionForLocalPackage } from './cross-model-scope.js';
-import { RelationshipAttribute, isRelationshipAttribute } from './generated/ast.js';
+import { RelationshipAttribute } from './generated/ast.js';
 import { fixDocument } from './util/ast-util.js';
 
 /**
@@ -32,7 +31,7 @@ export class CrossModelCompletionProvider extends DefaultCompletionProvider {
    };
 
    constructor(
-      services: CrossModelServices,
+      protected services: CrossModelServices,
       protected packageManager = services.shared.workspace.PackageManager
    ) {
       super(services);
@@ -195,15 +194,12 @@ export class CrossModelCompletionProvider extends DefaultCompletionProvider {
    }
 
    protected override filterCrossReference(context: CompletionContext, description: AstNodeDescription): boolean {
-      if (isRelationshipAttribute(context.node)) {
-         return this.filterRelationshipAttribute(context.node, context, description);
-      }
-      if (isExternalDescriptionForLocalPackage(description, this.packageId)) {
-         // we want to keep fully qualified names in the scope so we can do proper linking
-         // but want to hide it from the user for local options, i.e., if we are in the same project we can skip the project name
-         return false;
-      }
-      return super.filterCrossReference(context, description);
+      return this.services.references.ScopeProvider.filterCompletion(
+         description,
+         this.packageId!,
+         context.node,
+         context.features[context.features.length - 1].property
+      );
    }
 
    protected filterRelationshipAttribute(node: RelationshipAttribute, context: CompletionContext, desc: AstNodeDescription): boolean {

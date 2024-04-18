@@ -44,7 +44,7 @@ export class SystemDiagramCreateEdgeOperationHandler extends JsonCreateEdgeOpera
                id: this.modelState.idProvider.findNextId(RelationshipEdge, relationship.id, this.modelState.systemDiagram),
                relationship: {
                   ref: relationship,
-                  $refText: this.modelState.idProvider.getExternalId(relationship) || relationship.id || ''
+                  $refText: this.modelState.idProvider.getGlobalId(relationship) || relationship.id || ''
                },
                sourceNode: {
                   ref: sourceNode,

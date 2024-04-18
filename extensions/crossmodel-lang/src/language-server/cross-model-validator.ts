@@ -40,27 +40,27 @@ export class CrossModelValidator {
    constructor(protected services: CrossModelServices) {}
 
    checkNode(node: AstNode, accept: ValidationAcceptor): void {
-      this.checkUniqueExternalId(node, accept);
+      this.checkUniqueGlobalId(node, accept);
       this.checkUniqueNodeId(node, accept);
    }
 
-   protected checkUniqueExternalId(node: AstNode, accept: ValidationAcceptor): void {
-      if (!this.isExported(node)) {
+   protected checkUniqueGlobalId(node: AstNode, accept: ValidationAcceptor): void {
+      if (!this.isExportedGlobally(node)) {
          return;
       }
-      const externalId = this.services.references.IdProvider.getExternalId(node);
-      if (!externalId) {
+      const globalId = this.services.references.IdProvider.getGlobalId(node);
+      if (!globalId) {
          accept('error', 'Missing required id field', { node, property: ID_PROPERTY });
          return;
       }
       const allElements = Array.from(this.services.shared.workspace.IndexManager.allElements());
-      const duplicates = allElements.filter(description => description.name === externalId);
+      const duplicates = allElements.filter(description => description.name === globalId);
       if (duplicates.length > 1) {
          accept('error', 'Must provide a unique id.', { node, property: ID_PROPERTY });
       }
    }
 
-   protected isExported(node: AstNode): boolean {
+   protected isExportedGlobally(node: AstNode): boolean {
       // we export anything with an id from entities and relationships and all root nodes, see CrossModelScopeComputation
       return isEntity(node) || isEntityAttribute(node) || isRelationship(node) || isSystemDiagram(node) || isMapping(node);
    }

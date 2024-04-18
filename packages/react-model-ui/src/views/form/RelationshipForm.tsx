@@ -28,7 +28,7 @@ export function RelationshipForm(): React.ReactElement {
          <FormSection label='General'>
             <TextField
                label='Name'
-               value={relationship.name}
+               value={relationship.name ?? ''}
                onChange={event => dispatch({ type: 'relationship:change-name', name: event.target.value ?? '' })}
             />
 
@@ -36,13 +36,13 @@ export function RelationshipForm(): React.ReactElement {
                label='Description'
                multiline={true}
                rows={2}
-               value={relationship.description}
+               value={relationship.description ?? ''}
                onChange={event => dispatch({ type: 'relationship:change-description', description: event.target.value ?? '' })}
             />
 
             <TextField
                label='Type *'
-               value={relationship.type}
+               value={relationship.type ?? ''}
                onChange={event => dispatch({ type: 'relationship:change-type', newType: event.target.value ?? '' })}
             />
 

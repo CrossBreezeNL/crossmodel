@@ -22,7 +22,6 @@ export function EditAttributePropertyComponent({
    const relationship = useRelationship();
    const queryApi = useModelQueryApi();
    const gridApi = useGridApiContext();
-   const ref = React.useRef();
 
    const referenceCtx: CrossReferenceContext = React.useMemo(
       () => ({
@@ -43,7 +42,6 @@ export function EditAttributePropertyComponent({
 
    return (
       <AsyncAutoComplete
-         ref={ref}
          autoFocus={hasFocus}
          fullWidth={true}
          label=''

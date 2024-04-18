@@ -12,7 +12,12 @@ export interface AsyncAutoCompleteProps<T> extends Omit<AutocompleteProps<T, fal
 }
 
 // Based on https://mui.com/material-ui/react-autocomplete/
-export default function AsyncAutoComplete<T>({ label, optionLoader, ...props }: AsyncAutoCompleteProps<T>): React.ReactElement {
+export default function AsyncAutoComplete<T>({
+   label,
+   optionLoader,
+   textFieldProps,
+   ...props
+}: AsyncAutoCompleteProps<T>): React.ReactElement {
    const [open, setOpen] = React.useState(false);
    const [options, setOptions] = React.useState<readonly T[]>([]);
    const loading = open && options.length === 0;
@@ -54,7 +59,7 @@ export default function AsyncAutoComplete<T>({ label, optionLoader, ...props }: 
          renderInput={params => (
             <TextField
                {...params}
-               {...props.textFieldProps}
+               {...textFieldProps}
                label={label}
                InputProps={{
                   ...params.InputProps,

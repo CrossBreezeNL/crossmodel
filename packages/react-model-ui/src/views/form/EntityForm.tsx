@@ -23,7 +23,7 @@ export function EntityForm(): React.ReactElement {
                label='Name'
                margin='normal'
                variant='outlined'
-               value={entity.name}
+               value={entity.name ?? ''}
                onChange={event => dispatch({ type: 'entity:change-name', name: event.target.value ?? '' })}
             />
 
@@ -34,7 +34,7 @@ export function EntityForm(): React.ReactElement {
                variant='outlined'
                multiline={true}
                rows={2}
-               value={entity.description}
+               value={entity.description ?? ''}
                onChange={event => dispatch({ type: 'entity:change-description', description: event.target.value ?? '' })}
             />
          </FormSection>

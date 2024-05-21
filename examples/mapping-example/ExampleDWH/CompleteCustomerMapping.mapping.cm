@@ -15,14 +15,22 @@ mapping:
         entity: ExampleDWH.CompleteCustomer
         mappings:
           - attribute: Country
-            source: CustomerSourceObject.Country
+            sources:
+              - CustomerSourceObject.Country
           - attribute: FixedNumber
-            source: 1
+            sources:
+              - 1
           - attribute: FixedString
-            source: "Hoppa"
+            sources:
+              - "Hoppa"
           - attribute: Name
-            source: CustomerSourceObject.FirstName
+            sources:
+              - CustomerSourceObject.FirstName
+              - CustomerSourceObject.LastName
+            expression: "CONCAT_WS({{CustomerSourceObject.FirstName}}, {{CustomerSourceObject.LastName}}, ' ')"
           - attribute: Age
-            source: CalcAgeSourceObject.Age
-          - attribute: Age
-            source: CalcAgeSourceObject.Age
+            sources:
+              - CustomerSourceObject.BirthDate
+            expression: "DATEDIFF(YEAR, NOW(), {{CustomerSourceObject.BirthDate}})"
+          - attribute: Today
+            expression: "GETDATE()"

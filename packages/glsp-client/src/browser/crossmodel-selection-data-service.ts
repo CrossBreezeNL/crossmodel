@@ -35,14 +35,16 @@ export function getElementInfo(element: GModelElement): GModelElementInfo {
       const referenceProperty = element.args[REFERENCE_PROPERTY];
       const referenceContainerType = element.args[REFERENCE_CONTAINER_TYPE];
       const referenceValue = element.args[REFERENCE_VALUE];
-      return {
-         type: element.type,
-         reference: {
-            container: { globalId: element.id, type: referenceContainerType.toString() },
-            property: referenceProperty.toString(),
-            value: referenceValue.toString()
-         }
-      };
+      if (referenceProperty && referenceContainerType && referenceValue) {
+         return {
+            type: element.type,
+            reference: {
+               container: { globalId: element.id, type: referenceContainerType.toString() },
+               property: referenceProperty.toString(),
+               value: referenceValue.toString()
+            }
+         };
+      }
    }
    return { type: element.type };
 }

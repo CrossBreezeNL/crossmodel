@@ -49,7 +49,7 @@ RelationshipCondition:
 ;
 
 JoinCondition:
-    'join' ':' expression=JoinExpression
+    'join' ':' join=JoinExpression
 ;
 
 JoinExpression:
@@ -69,7 +69,12 @@ TargetObject:
 
 AttributeMapping:
     'attribute' ':' attribute=AttributeMappingTarget
-    'source' ':' source=AttributeMappingSource
+    ('sources' ':' 
+        INDENT 
+            ('-' sources+=AttributeMappingSource)+     
+        DEDENT
+    )?
+    ('expression' ':' expression=STRING)?
 ;
 
 AttributeMappingTarget:

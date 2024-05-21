@@ -14,11 +14,12 @@ import {
 } from 'langium';
 import { getExplicitRuleType } from 'langium/internal';
 import { v4 as uuid } from 'uuid';
-import { CompletionItemKind, InsertTextFormat } from 'vscode-languageserver-protocol';
+import { CompletionItemKind, InsertTextFormat, TextEdit } from 'vscode-languageserver-protocol';
 import type { Range } from 'vscode-languageserver-types';
 import { CrossModelServices } from './cross-model-module.js';
-import { RelationshipAttribute } from './generated/ast.js';
+import { RelationshipAttribute, isAttributeMapping, isReferenceSource } from './generated/ast.js';
 import { fixDocument } from './util/ast-util.js';
+import { isExpressionStart } from '@crossbreeze/protocol';
 
 /**
  * Custom completion provider that only shows the short options to the user if a longer, fully-qualified version is also available.
@@ -71,6 +72,20 @@ export class CrossModelCompletionProvider extends DefaultCompletionProvider {
    ): MaybePromise<void> {
       if (assignment.feature === 'id') {
          return this.completionForId(context, assignment, acceptor);
+      }
+      if (isAttributeMapping(context.node) && assignment.feature === 'expression') {
+         const node = context.node;
+         const text = context.textDocument.getText();
+         const existingText = text.substring(context.tokenOffset, context.offset);
+         if (isExpressionStart(existingText)) {
+            node.sources.filter(isReferenceSource).forEach(source => {
+               acceptor(context, {
+                  label: source.value.$refText,
+                  textEdit: TextEdit.insert(context.textDocument.positionAt(context.offset), source.value.$refText)
+               });
+            });
+            return;
+         }
       }
       if (GrammarAST.isRuleCall(assignment.terminal) && assignment.terminal.rule.ref) {
          const type = this.getRuleType(assignment.terminal.rule.ref);

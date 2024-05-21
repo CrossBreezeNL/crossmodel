@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { GModelIndex } from '@eclipse-glsp/server';
+import { GModelElement, GModelIndex } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
 import { AstNode, streamAst } from 'langium';
 import * as uuid from 'uuid';
@@ -64,5 +64,14 @@ export class CrossModelIndex extends GModelIndex {
          return guard(semanticNode) ? semanticNode : undefined;
       }
       return semanticNode;
+   }
+
+   protected override doIndex(element: GModelElement): void {
+      if (this.idToElement.has(element.id)) {
+         // super method throws error which is a bit too extreme, simply log the error to the client
+         this.services.shared.logger.ClientLogger.error('Duplicate element id in graph: ' + element.id);
+         return;
+      }
+      super.doIndex(element);
    }
 }

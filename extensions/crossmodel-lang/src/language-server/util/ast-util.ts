@@ -115,7 +115,7 @@ export function createAttributeMapping(
       $type: AttributeMapping,
       $container: container
    } as AttributeMapping;
-   mapping.source = asLiteral || typeof source === 'number' ? createLiteral(mapping, source) : createReferenceSource(mapping, source);
+   mapping.sources = asLiteral || typeof source === 'number' ? [createLiteral(mapping, source)] : [createReferenceSource(mapping, source)];
    mapping.attribute = createAttributeMappingTarget(mapping, targetId);
    return mapping;
 }

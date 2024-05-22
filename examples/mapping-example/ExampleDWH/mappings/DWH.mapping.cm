@@ -40,8 +40,6 @@ mapping:
             sources:
               - CalcAgeSourceObject.Age
           - attribute: FixedNumber
-            sources:
-              - 1337
+            expression: "1337"
           - attribute: FixedString
-            sources:
-              - "Fixed String"
+            expression: "Fixed String"

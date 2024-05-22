@@ -2111,88 +2111,23 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
       "$type": "ParserRule",
       "name": "AttributeMappingSource",
       "definition": {
-        "$type": "Alternatives",
-        "elements": [
-          {
-            "$type": "Group",
-            "elements": [
-              {
-                "$type": "Action",
-                "inferredType": {
-                  "$type": "InferredType",
-                  "name": "ReferenceSource"
-                }
-              },
-              {
-                "$type": "Assignment",
-                "feature": "value",
-                "operator": "=",
-                "terminal": {
-                  "$type": "CrossReference",
-                  "type": {
-                    "$ref": "#/interfaces@3"
-                  },
-                  "terminal": {
-                    "$type": "RuleCall",
-                    "rule": {
-                      "$ref": "#/rules@3"
-                    },
-                    "arguments": []
-                  },
-                  "deprecatedSyntax": false
-                }
-              }
-            ]
+        "$type": "Assignment",
+        "feature": "value",
+        "operator": "=",
+        "terminal": {
+          "$type": "CrossReference",
+          "type": {
+            "$ref": "#/interfaces@3"
           },
-          {
-            "$type": "Group",
-            "elements": [
-              {
-                "$type": "Action",
-                "inferredType": {
-                  "$type": "InferredType",
-                  "name": "NumberLiteral"
-                }
-              },
-              {
-                "$type": "Assignment",
-                "feature": "value",
-                "operator": "=",
-                "terminal": {
-                  "$type": "RuleCall",
-                  "rule": {
-                    "$ref": "#/rules@5"
-                  },
-                  "arguments": []
-                }
-              }
-            ]
+          "terminal": {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@3"
+            },
+            "arguments": []
           },
-          {
-            "$type": "Group",
-            "elements": [
-              {
-                "$type": "Action",
-                "inferredType": {
-                  "$type": "InferredType",
-                  "name": "StringLiteral"
-                }
-              },
-              {
-                "$type": "Assignment",
-                "feature": "value",
-                "operator": "=",
-                "terminal": {
-                  "$type": "RuleCall",
-                  "rule": {
-                    "$ref": "#/rules@4"
-                  },
-                  "arguments": []
-                }
-              }
-            ]
-          }
-        ]
+          "deprecatedSyntax": false
+        }
       },
       "definesHiddenTokens": false,
       "entry": false,

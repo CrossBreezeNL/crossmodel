@@ -13,7 +13,7 @@ import {
 import { inject, injectable } from 'inversify';
 import { combineIds } from '../../../language-server/cross-model-naming.js';
 import { isSourceObjectAttribute, isTargetObjectAttribute } from '../../../language-server/generated/ast.js';
-import { createAttributeMapping, getOwner } from '../../../language-server/util/ast-util.js';
+import { createAttributeMapping, createAttributeMappingSource, getOwner } from '../../../language-server/util/ast-util.js';
 import { CrossModelCommand } from '../../common/cross-model-command.js';
 import { MappingModelState } from '../model/mapping-model-state.js';
 
@@ -36,22 +36,19 @@ export class MappingEdgeCreationOperationHandler extends JsonCreateEdgeOperation
    protected createEdge(operation: CreateEdgeOperation): void {
       const sourceElementId = isLeftPortId(operation.targetElementId) ? operation.sourceElementId : operation.targetElementId;
       const targetElementId = isLeftPortId(operation.targetElementId) ? operation.targetElementId : operation.sourceElementId;
-      if (operation.args?.isLiteral === true) {
-         const container = this.modelState.mapping.target;
-         const targetElement = this.modelState.index.findSemanticElement(targetElementId, isTargetObjectAttribute);
-         if (!targetElement) {
-            return;
-         }
-         // interpret sourceElementId as literal
-         const source = Number.parseFloat(sourceElementId);
-         const mapping = createAttributeMapping(container, isNaN(source) ? sourceElementId : source, targetElement.id, true);
-         container.mappings.push(mapping);
-      } else if (isPortId(sourceElementId)) {
+      if (isPortId(sourceElementId)) {
          const container = this.modelState.mapping.target;
          const sourceElement = this.modelState.index.findSemanticElement(sourceElementId, isSourceObjectAttribute);
          const targetElement = this.modelState.index.findSemanticElement(targetElementId, isTargetObjectAttribute);
-         if (sourceElement && targetElement) {
-            const mapping = createAttributeMapping(container, combineIds(getOwner(sourceElement).id, sourceElement.id), targetElement.id);
+         if (!targetElement || !sourceElement) {
+            return;
+         }
+         const sourceAttributeReference = combineIds(getOwner(sourceElement).id, sourceElement.id);
+         const existingMapping = container.mappings.find(mapping => mapping.attribute.value.ref === targetElement);
+         if (existingMapping) {
+            existingMapping.sources.push(createAttributeMappingSource(existingMapping, sourceAttributeReference));
+         } else {
+            const mapping = createAttributeMapping(container, sourceAttributeReference, targetElement.id);
             container.mappings.push(mapping);
          }
       }

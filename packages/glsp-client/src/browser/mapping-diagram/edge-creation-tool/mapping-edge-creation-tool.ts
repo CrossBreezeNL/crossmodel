@@ -19,10 +19,8 @@ import {
    HoverFeedbackAction,
    IFeedbackActionDispatcher,
    ITypeHintProvider,
-   ModifyCSSFeedbackAction,
    MoveAction,
    Point,
-   SetUIExtensionVisibilityAction,
    TriggerEdgeCreationAction,
    cursorFeedbackAction,
    findChildrenAtPosition,
@@ -40,8 +38,6 @@ import {
 import { injectable } from 'inversify';
 import { AttributeCompartment } from '../../model';
 import { SourceObjectNode, TargetObjectNode } from '../model';
-import { ExtendedEnableDefaultToolsAction } from './actions';
-import { LiteralCreationPalette } from './literal-creation-tool';
 
 export type AttributeParent = 'target-object' | 'source-object';
 
@@ -140,11 +136,7 @@ export class MappingEdgeEndMovingListener extends FeedbackEdgeEndMovingMouseList
    }
 }
 
-const CURSOR_LITERAL_CREATION = 'literal-creation';
-
 export class MappingEdgeCreationToolMouseListener extends EdgeCreationToolMouseListener implements Disposable {
-   protected literalCreation = false;
-
    constructor(
       protected override triggerAction: MappingEdgeCreationAction,
       actionDispatcher: GLSPActionDispatcher,
@@ -168,34 +160,11 @@ export class MappingEdgeCreationToolMouseListener extends EdgeCreationToolMouseL
          this.currentTarget = target.root.index.getById(targetPortId);
          this.allowedTarget = !!this.currentTarget;
       }
-      this.literalCreation = this.triggerAction.args.sourceAttributeParent === 'target-object' && target === target.root;
-      const cursorAction = this.literalCreation
-         ? ModifyCSSFeedbackAction.create({ add: [CURSOR_LITERAL_CREATION] })
-         : ModifyCSSFeedbackAction.create({ remove: [CURSOR_LITERAL_CREATION] });
-      return [this.updateEdgeFeedback(), cursorAction];
-   }
-
-   override nonDraggingMouseUp(element: GModelElement, event: MouseEvent): Action[] {
-      if (this.source && this.literalCreation) {
-         return [
-            SetUIExtensionVisibilityAction.create({
-               extensionId: LiteralCreationPalette.ID,
-               visible: true,
-               contextElementsId: [this.source]
-            }),
-            ExtendedEnableDefaultToolsAction.create({ focusGraph: false })
-         ];
-      }
-      return super.nonDraggingMouseUp(element, event);
-   }
-
-   protected override reinitialize(): void {
-      super.reinitialize();
-      this.actionDispatcher.dispatch(ModifyCSSFeedbackAction.create({ remove: [CURSOR_LITERAL_CREATION] }));
+      return [this.updateEdgeFeedback()];
    }
 
    dispose(): void {
-      this.actionDispatcher.dispatch(ModifyCSSFeedbackAction.create({ remove: [CURSOR_LITERAL_CREATION] }));
+      // do nothing
    }
 }
 

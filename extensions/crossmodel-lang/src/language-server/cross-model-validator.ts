@@ -15,7 +15,6 @@ import {
    isEntity,
    isEntityAttribute,
    isMapping,
-   isReferenceSource,
    isRelationship,
    isSystemDiagram
 } from './generated/ast.js';
@@ -139,7 +138,7 @@ export class CrossModelValidator {
       }
       const mappingExpressionRange = mappingExpression.range;
       const expressions = findAllExpressions(mapping.expression);
-      const sources = mapping.sources.filter(isReferenceSource).map(source => source.value.$refText);
+      const sources = mapping.sources.map(source => source.value.$refText);
       for (const expression of expressions) {
          const completeExpression = getExpression(expression);
          const expressionPosition = getExpressionPosition(expression);

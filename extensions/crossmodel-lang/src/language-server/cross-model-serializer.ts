@@ -2,7 +2,6 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { quote } from '@crossbreeze/protocol';
 import { isReference } from 'langium';
 import { Serializer } from '../model-server/serializer.js';
 import {
@@ -16,10 +15,7 @@ import {
    SystemDiagram,
    isAttributeMappingSource,
    isAttributeMappingTarget,
-   isJoinExpression,
-   isNumberLiteral,
-   isReferenceSource,
-   isStringLiteral
+   isJoinExpression
 } from './generated/ast.js';
 import { isImplicitProperty } from './util/ast-util.js';
 
@@ -202,16 +198,7 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot> {
    }
 
    private serializeAttributeMappingSource(obj: AttributeMappingSource): any {
-      if (isReferenceSource(obj)) {
-         return this.resolvedValue(obj.value);
-      }
-      if (isNumberLiteral(obj)) {
-         return obj.value;
-      }
-      if (isStringLiteral(obj)) {
-         return quote(obj.value);
-      }
-      return '';
+      return this.resolvedValue(obj.value);
    }
 
    private serializeAttributeMappingTarget(obj: AttributeMappingTarget): any {

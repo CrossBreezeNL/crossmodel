@@ -15,10 +15,6 @@
    height: 100%;
 }
 
-.sprotty .literal-creation {
-   cursor: context-menu !important;
-}
-
 .feedback-edge {
    pointer-events: none;
 }
@@ -60,27 +56,17 @@
    fill: #fefffe;
 }
 
-.source-object.string-literal .sprotty-node:not(.selected, .mouseover) {
-   stroke: #cb7575;
-   fill: #fff9f9;
-}
-
-.source-object.number-literal .sprotty-node:not(.selected, .mouseover) {
-   stroke: #5877e5;
-   fill: #fcfdff;
-}
-
 .header-label {
    font-weight: bold;
    letter-spacing: 0.5px;
 }
 
-.attribute {
+.attribute-compartment {
    stroke: none;
    fill: transparent;
 }
 
-.attribute.mouseover,
+.attribute-compartment.mouseover,
 .sprotty-node.mouseover:not(.selected),
 .sprotty-edge.mouseover:not(.selected) {
    stroke: var(--theia-focusBorder);
@@ -88,6 +74,7 @@
    opacity: 1;
 }
 
+.attribute-compartment.selected,
 .sprotty-node.selected,
 .sprotty-edge.selected {
    stroke: var(--theia-focusBorder);
@@ -95,11 +82,17 @@
    stroke-dasharray: 6px 3px;
 }
 
-.attribute.mouseover,
+.attribute-compartment.mouseover,
+.attribute-compartment.selected,
 .sprotty-node.mouseover:not(.selected),
 .sprotty-node.selected {
    fill: #f3faff;
    stroke-width: 2px;
+}
+
+.sprotty .attribute_expression_marker {
+   text-anchor: start;
+   baseline-shift: 2px;
 }
 
 .sprotty[id^='system-diagram'] .tool-palette {

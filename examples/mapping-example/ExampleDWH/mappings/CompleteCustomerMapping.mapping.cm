@@ -18,11 +18,9 @@ mapping:
             sources:
               - CustomerSourceObject.Country
           - attribute: FixedNumber
-            sources:
-              - 1
+            expression: "1"
           - attribute: FixedString
-            sources:
-              - "Hoppa"
+            expression: "Hoppa"
           - attribute: Name
             sources:
               - CustomerSourceObject.FirstName

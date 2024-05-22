@@ -22,7 +22,7 @@ input[type='number'] {
 }
 
 .dialogContent .theia-FileNamePanel {
-   margin: var(--theia-ui-padding) 0 calc(var(--theia-ui-padding) / 2) 0;
+   margin: var(--theia-ui-padding) 0 0 0;
    min-height: 27px;
    height: auto;
 }

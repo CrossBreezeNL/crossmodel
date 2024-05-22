@@ -5,15 +5,10 @@ import { Command, DeleteElementOperation, GEdge, GNode, JsonOperationHandler, Mo
 import { inject, injectable } from 'inversify';
 import {
    AttributeMappingSource,
-   NumberLiteral,
    SourceObject,
    SourceObjectRelations,
-   StringLiteral,
    isAttributeMappingSource,
-   isNumberLiteral,
-   isReferenceSource,
-   isSourceObject,
-   isStringLiteral
+   isSourceObject
 } from '../../../language-server/generated/ast.js';
 import { getOwner } from '../../../language-server/util/ast-util.js';
 import { CrossModelCommand } from '../../common/cross-model-command.js';
@@ -64,8 +59,6 @@ export class MappingDiagramDeleteElementOperationHandler extends JsonOperationHa
       const astNode = this.modelState.index.findSemanticElement(node.id);
       if (isSourceObject(astNode)) {
          this.deleteSourceObject(node, astNode, deleteInfo);
-      } else if (isStringLiteral(astNode) || isNumberLiteral(astNode)) {
-         this.deleteLiteralObject(node, astNode, deleteInfo);
       }
    }
 
@@ -76,17 +69,9 @@ export class MappingDiagramDeleteElementOperationHandler extends JsonOperationHa
       deleteInfo.relations.push(...mapping.sources.flatMap(src => src.relations).filter(relation => relation.source.ref === source));
       deleteInfo.attributeSources.push(
          ...mapping.target.mappings.flatMap(attrMapping =>
-            attrMapping.sources.filter(
-               attrSource => isReferenceSource(attrSource) && attrSource.value.ref && getOwner(attrSource.value?.ref) === source
-            )
+            attrMapping.sources.filter(attrSource => attrSource.value.ref && getOwner(attrSource.value?.ref) === source)
          )
       );
-   }
-
-   protected deleteLiteralObject(node: GNode, literal: StringLiteral | NumberLiteral, deleteInfo: DeleteInfo): void {
-      // Literal nodes are contained by the corresponding targetAttributeMapping => we only have to delete
-      // the mapping that correlates to the outgoing edge of the literal node
-      this.modelState.index.getOutgoingEdges(node).forEach(edge => this.deleteEdge(edge, deleteInfo));
    }
 
    protected deleteEdge(edge: GEdge, deleteInfo: DeleteInfo): void {

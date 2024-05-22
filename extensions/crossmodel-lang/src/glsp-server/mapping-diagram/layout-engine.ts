@@ -4,7 +4,6 @@
 import { SOURCE_NUMBER_NODE_TYPE, SOURCE_STRING_NODE_TYPE, TARGET_OBJECT_NODE_TYPE, isLeftPortId } from '@crossbreeze/protocol';
 import { GCompartment, GModelRoot, GNode, GPort, LayoutEngine, MaybePromise, findParentByClass } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
-import { isReferenceSource } from '../../language-server/generated/ast.js';
 import { getOwner } from '../../language-server/util/ast-util.js';
 import { MappingModelState } from './model/mapping-model-state.js';
 import { GTargetObjectNode } from './model/nodes.js';
@@ -24,7 +23,7 @@ export class MappingDiagramLayoutEngine implements LayoutEngine {
 
       const index = this.modelState.index;
 
-      // position source nodes (references and literals) in correct order
+      // position source nodes in correct order
       let offset = 0;
       let maxSourceWidth = 0;
       const marginBetweenSourceNodes = 20;
@@ -62,7 +61,7 @@ export class MappingDiagramLayoutEngine implements LayoutEngine {
       const idx = this.modelState.index;
       const sourceNodeOrder = [...target.mappings]
          .sort((left, right) => (left.attribute.value.ref?.$containerIndex ?? 0) - (right.attribute.value.ref?.$containerIndex ?? 0))
-         .flatMap(mapping => mapping.sources.map(source => idx.createId(isReferenceSource(source) ? getOwner(source.value.ref) : source)));
+         .flatMap(mapping => mapping.sources.map(source => idx.createId(getOwner(source.value.ref))));
       return (left: GNode, right: GNode): number => {
          if (!sourceNodeOrder.includes(left.id)) {
             return 1;

@@ -13,3 +13,10 @@ input[type='number'] {
    appearance: textfield;
    -moz-appearance: textfield;
 }
+
+.theia-TreeNodeSegment.theia-caption-suffix {
+   font-size: var(--theia-ui-font-size0);
+   margin-left: 0.5em;
+   text-transform: uppercase;
+   color: var(--theia-activityBar-inactiveForeground);
+}

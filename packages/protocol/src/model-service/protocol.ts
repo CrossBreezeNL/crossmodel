@@ -191,14 +191,30 @@ export interface ResolvedElement<T extends Element = Element> {
    match?: T;
 }
 
+export interface ModelUpdatedEvent<T> {
+   uri: string;
+   model: T;
+   sourceClientId: string;
+   reason: 'changed' | 'deleted' | 'updated' | 'saved';
+}
+
 export interface SystemInfoArgs {
    contextUri: string;
 }
 
 export interface SystemInfo {
+   id: string;
+   name: string;
+   directory: string;
    packageFilePath: string;
    modelFilePaths: string[];
 }
+
+export interface SystemUpdatedEvent {
+   system: SystemInfo;
+   reason: 'added' | 'removed';
+}
+export type SystemUpdateListener = (event: SystemUpdatedEvent) => void | Promise<void>;
 
 export const OpenModel = new rpc.RequestType1<OpenModelArgs, CrossModelRoot | undefined, void>('server/open');
 export const CloseModel = new rpc.RequestType1<CloseModelArgs, void, void>('server/close');
@@ -210,7 +226,9 @@ export const ResolveReference = new rpc.RequestType1<CrossReference, ResolvedEle
 
 export const UpdateModel = new rpc.RequestType1<UpdateModelArgs<CrossModelRoot>, CrossModelRoot, void>('server/update');
 export const SaveModel = new rpc.RequestType1<SaveModelArgs<CrossModelRoot>, void, void>('server/save');
-export const OnSave = new rpc.NotificationType1<ModelSavedEvent<CrossModelRoot>>('server/onSave');
-export const OnUpdated = new rpc.NotificationType1<ModelUpdatedEvent<CrossModelRoot>>('server/onUpdated');
+export const OnModelSaved = new rpc.NotificationType1<ModelSavedEvent<CrossModelRoot>>('server/onSave');
+export const OnModelUpdated = new rpc.NotificationType1<ModelUpdatedEvent<CrossModelRoot>>('server/onUpdated');
 
+export const RequestSystemInfos = new rpc.RequestType1<void, SystemInfo[], void>('server/systems');
 export const RequestSystemInfo = new rpc.RequestType1<SystemInfoArgs, SystemInfo | undefined, void>('server/system');
+export const OnSystemsUpdated = new rpc.NotificationType1<SystemUpdatedEvent>('server/onSystemsUpdated');

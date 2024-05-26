@@ -1,9 +1,10 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { DefaultDocumentBuilder, LangiumSharedServices } from 'langium';
+import { DefaultDocumentBuilder } from 'langium';
 import { CancellationToken } from 'vscode-languageclient';
 import { URI, Utils as UriUtils } from 'vscode-uri';
+import { CrossModelSharedServices } from './cross-model-module.js';
 import { isPackageUri } from './cross-model-package-manager.js';
 import { Utils } from './util/uri-util.js';
 
@@ -13,7 +14,7 @@ import { Utils } from './util/uri-util.js';
 export class CrossModelDocumentBuilder extends DefaultDocumentBuilder {
    protected languageFileExtensions: string[] = [];
 
-   constructor(services: LangiumSharedServices) {
+   constructor(protected services: CrossModelSharedServices) {
       super(services);
       this.languageFileExtensions = this.serviceRegistry.all.flatMap(service => service.LanguageMetaData.fileExtensions);
    }
@@ -49,6 +50,9 @@ export class CrossModelDocumentBuilder extends DefaultDocumentBuilder {
          .filter(doc => doc.uri.path.startsWith(dirPath))
          .map(doc => doc.uri)
          .toArray();
-      return deletedDocuments || [uri];
+      const deletedPackages = this.services.workspace.PackageManager.getPackageInfos()
+         .filter(info => Utils.isChildOf(uri, info.uri))
+         .map(info => info.uri);
+      return [...deletedDocuments, ...deletedPackages, uri];
    }
 }

@@ -53,7 +53,7 @@ export class CrossModelStorage implements SourceModelStorage, ClientSessionListe
       }
       this.toDispose.push(await this.state.modelService.open({ uri: rootUri, clientId: this.state.clientId }));
       this.toDispose.push(
-         this.state.modelService.onUpdate<CrossModelRoot>(rootUri, async event => {
+         this.state.modelService.onModelUpdated<CrossModelRoot>(rootUri, async event => {
             if (this.state.clientId !== event.sourceClientId || event.reason !== 'changed') {
                await this.update(rootUri, event.model);
                this.actionDispatcher.dispatchAll(await this.submissionHandler.submitModel('external'));

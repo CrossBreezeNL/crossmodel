@@ -117,3 +117,29 @@ export const ModelFileExtensions = {
       return type ? this.detectFileExtension(type) : undefined;
    }
 } as const;
+
+export namespace ModelStructure {
+   export const System = {
+      ICON: 'codicon codicon-globe'
+   };
+
+   export const Entity = {
+      FOLDER: 'entities',
+      ICON: 'codicon codicon-git-commit'
+   };
+
+   export const Relationship = {
+      FOLDER: 'relationships',
+      ICON: 'codicon codicon-git-compare'
+   };
+
+   export const SystemDiagram = {
+      FOLDER: 'diagrams',
+      ICON: 'codicon codicon-type-hierarchy-sub'
+   };
+
+   export const Mapping = {
+      FOLDER: 'mappings',
+      ICON: 'codicon codicon-group-by-ref-type'
+   };
+}

@@ -2,13 +2,15 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { DocumentState, LangiumDocument, MultiMap } from 'langium';
+import { Disposable, DocumentState, LangiumDocument, MultiMap } from 'langium';
 // eslint-disable-next-line import/no-unresolved
+import { SystemInfo, SystemUpdatedEvent, SystemUpdateListener } from '@crossbreeze/protocol';
 import { PackageJson } from 'type-fest';
 import { CancellationToken, WorkspaceFolder } from 'vscode-languageserver';
 import { URI, Utils as UriUtils } from 'vscode-uri';
 import { CrossModelSharedServices } from './cross-model-module.js';
 import { QUALIFIED_ID_SEPARATOR } from './cross-model-naming.js';
+import { PackageAstNodeDescription } from './cross-model-scope.js';
 import { Utils } from './util/uri-util.js';
 
 /** Constant for representing an unknown project ID. */
@@ -17,8 +19,10 @@ export const UNKNOWN_PROJECT_ID = 'unknown';
 /** Constant for representing an unknown project reference. */
 export const UNKNOWN_PROJECT_REFERENCE = 'unknown';
 
+export const PACKAGE_JSON = 'package.json';
+
 export function isPackageUri(uri: URI): boolean {
-   return UriUtils.basename(uri) === 'package.json';
+   return UriUtils.basename(uri) === PACKAGE_JSON;
 }
 
 export function isPackageLockUri(uri: URI): boolean {
@@ -85,6 +89,7 @@ export class PackageInfo {
 export class CrossModelPackageManager {
    protected uriToPackage = new Map<string, PackageInfo>();
    protected idToPackage = new MultiMap<string, PackageInfo>();
+   protected readonly updateListeners: SystemUpdateListener[] = [];
 
    constructor(
       protected shared: CrossModelSharedServices,
@@ -139,6 +144,10 @@ export class CrossModelPackageManager {
       // during document parsing we store the package URI in the document
       const packageUri = (doc as any)['packageUri'] as URI | undefined;
       return this.getPackageInfoByURI(packageUri ?? doc.uri);
+   }
+
+   getPackageInfos(): PackageInfo[] {
+      return Array.from(this.uriToPackage.values());
    }
 
    getPackageInfoByURI(uri?: URI): PackageInfo | undefined {
@@ -229,6 +238,7 @@ export class CrossModelPackageManager {
             this.logger.warn('A package with the same id was already registered.');
          }
          this.idToPackage.add(packageInfo.id, packageInfo);
+         this.emitUpdate({ system: this.convertPackageInfoToSystemInfo(packageInfo), reason: 'added' });
          return [packageInfo.id];
       }
       return [];
@@ -238,7 +248,9 @@ export class CrossModelPackageManager {
       const packageInfo = this.uriToPackage.get(uri.toString());
       if (packageInfo && !packageInfo?.isUnknown) {
          this.uriToPackage.delete(uri.toString());
-         this.idToPackage.delete(packageInfo.id, packageInfo);
+         if (this.idToPackage.delete(packageInfo.id, packageInfo)) {
+            this.emitUpdate({ system: this.convertPackageInfoToSystemInfo(packageInfo), reason: 'removed' });
+         }
          return [packageInfo.id];
       }
       return [];
@@ -260,11 +272,41 @@ export class CrossModelPackageManager {
       return toUpdate;
    }
 
+   protected async emitUpdate(event: SystemUpdatedEvent): Promise<void> {
+      await Promise.all(this.updateListeners.map(listener => listener(event)));
+   }
+
+   onUpdate(callback: SystemUpdateListener): Disposable {
+      this.updateListeners.push(callback);
+      return Disposable.create(() => {
+         const index = this.updateListeners.indexOf(callback);
+         if (index >= 0) {
+            this.updateListeners.splice(index, 1);
+         }
+      });
+   }
+
    protected documentParsed(built: LangiumDocument[], _cancelToken: CancellationToken): void {
       // we only do this so we can quickly find the package info for a given document
       for (const doc of built) {
          (doc as any)['packageUri'] = this.getPackageInfoByURI(doc.uri)?.uri;
       }
+   }
+
+   convertPackageInfoToSystemInfo(packageInfo: PackageInfo): SystemInfo {
+      const packageId = packageInfo.id;
+      const directory = UriUtils.dirname(packageInfo.uri);
+      return {
+         id: packageInfo.id,
+         name: packageInfo.packageJson?.name ?? UriUtils.basename(directory) ?? 'Unknown',
+         directory: directory.fsPath,
+         packageFilePath: packageInfo.uri.fsPath,
+         modelFilePaths: this.shared.workspace.IndexManager.allElements()
+            .filter(desc => desc instanceof PackageAstNodeDescription && desc.packageId === packageId)
+            .map(desc => desc.documentUri.fsPath)
+            .distinct()
+            .toArray()
+      };
    }
 }
 

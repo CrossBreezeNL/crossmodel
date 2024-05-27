@@ -17,9 +17,8 @@ import { v4 as uuid } from 'uuid';
 import { CompletionItemKind, InsertTextFormat, TextEdit } from 'vscode-languageserver-protocol';
 import type { Range } from 'vscode-languageserver-types';
 import { CrossModelServices } from './cross-model-module.js';
-import { RelationshipAttribute, isAttributeMapping, isReferenceSource } from './generated/ast.js';
+import { AttributeMapping, RelationshipAttribute, isAttributeMapping, isReferenceSource } from './generated/ast.js';
 import { fixDocument } from './util/ast-util.js';
-import { isExpressionStart } from '@crossbreeze/protocol';
 
 /**
  * Custom completion provider that only shows the short options to the user if a longer, fully-qualified version is also available.
@@ -28,7 +27,7 @@ export class CrossModelCompletionProvider extends DefaultCompletionProvider {
    protected packageId?: string;
 
    readonly completionOptions = {
-      triggerCharacters: ['\n', ' ']
+      triggerCharacters: ['\n', ' ', '{']
    };
 
    constructor(
@@ -74,18 +73,7 @@ export class CrossModelCompletionProvider extends DefaultCompletionProvider {
          return this.completionForId(context, assignment, acceptor);
       }
       if (isAttributeMapping(context.node) && assignment.feature === 'expression') {
-         const node = context.node;
-         const text = context.textDocument.getText();
-         const existingText = text.substring(context.tokenOffset, context.offset);
-         if (isExpressionStart(existingText)) {
-            node.sources.filter(isReferenceSource).forEach(source => {
-               acceptor(context, {
-                  label: source.value.$refText,
-                  textEdit: TextEdit.insert(context.textDocument.positionAt(context.offset), source.value.$refText)
-               });
-            });
-            return;
-         }
+         return this.completeAttributeMappingExpression(context, context.node, acceptor);
       }
       if (GrammarAST.isRuleCall(assignment.terminal) && assignment.terminal.rule.ref) {
          const type = this.getRuleType(assignment.terminal.rule.ref);
@@ -98,6 +86,33 @@ export class CrossModelCompletionProvider extends DefaultCompletionProvider {
                return this.completionForBoolean(context, assignment, acceptor);
          }
       }
+   }
+
+   protected completeAttributeMappingExpression(
+      context: CompletionContext,
+      mapping: AttributeMapping,
+      acceptor: CompletionAcceptor
+   ): MaybePromise<void> {
+      const text = context.textDocument.getText();
+      const expressionUpToCursor = text.substring(context.tokenOffset, context.offset);
+      const referenceStart = expressionUpToCursor.lastIndexOf('{{');
+      const referenceEnd = expressionUpToCursor.lastIndexOf('}}');
+      if (referenceEnd >= referenceStart) {
+         // we are not within a reference part
+         return;
+      }
+      const start = context.textDocument.positionAt(context.tokenOffset + referenceStart + '{{'.length);
+      const end = context.textDocument.positionAt(context.offset);
+      const reference = context.textDocument.getText({ start, end }).trim();
+      mapping.sources
+         .filter(isReferenceSource)
+         .filter(source => reference.length === 0 || source.value.$refText.startsWith(reference))
+         .forEach(source => {
+            acceptor(context, {
+               label: source.value.$refText,
+               textEdit: TextEdit.replace({ start, end }, source.value.$refText)
+            });
+         });
    }
 
    protected getRuleType(rule: GrammarAST.AbstractRule): string | undefined {

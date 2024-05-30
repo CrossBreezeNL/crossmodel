@@ -1,11 +1,13 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { AstNode, ValidationAcceptor, ValidationChecks } from 'langium';
+import { findAllExpressions, getExpression, getExpressionPosition, getExpressionText } from '@crossbreeze/protocol';
+import { AstNode, ValidationAcceptor, ValidationChecks, findNodeForProperty } from 'langium';
 import type { CrossModelServices } from './cross-model-module.js';
 import { ID_PROPERTY, IdentifiableAstNode } from './cross-model-naming.js';
 import {
    Attribute,
+   AttributeMapping,
    CrossModelAstType,
    Relationship,
    RelationshipEdge,
@@ -13,6 +15,7 @@ import {
    isEntity,
    isEntityAttribute,
    isMapping,
+   isReferenceSource,
    isRelationship,
    isSystemDiagram
 } from './generated/ast.js';
@@ -28,7 +31,8 @@ export function registerValidationChecks(services: CrossModelServices): void {
       AstNode: validator.checkNode,
       RelationshipEdge: validator.checkRelationshipEdge,
       SourceObject: validator.checkSourceObject,
-      Relationship: validator.checkRelationship
+      Relationship: validator.checkRelationship,
+      AttributeMapping: validator.checkAttributeMapping
    };
    registry.register(checks, validator);
 }
@@ -125,6 +129,31 @@ export class CrossModelValidator {
    checkSourceObject(obj: SourceObject, accept: ValidationAcceptor): void {
       if (obj.join === 'from' && obj.relations.length > 0) {
          accept('error', 'Source objects with join type "from" cannot have relations.', { node: obj, property: 'relations' });
+      }
+   }
+
+   checkAttributeMapping(mapping: AttributeMapping, accept: ValidationAcceptor): void {
+      const mappingExpression = findNodeForProperty(mapping.$cstNode, 'expression');
+      if (!mappingExpression) {
+         return;
+      }
+      const mappingExpressionRange = mappingExpression.range;
+      const expressions = findAllExpressions(mapping.expression);
+      const sources = mapping.sources.filter(isReferenceSource).map(source => source.value.$refText);
+      for (const expression of expressions) {
+         const completeExpression = getExpression(expression);
+         const expressionPosition = getExpressionPosition(expression);
+         const expressionText = getExpressionText(expression);
+         if (!sources.includes(expressionText)) {
+            const startCharacter = mappingExpressionRange.start.character + expressionPosition + 1;
+            accept('error', 'Only sources can be referenced in an expression.', {
+               node: mapping,
+               range: {
+                  start: { line: mappingExpressionRange.start.line, character: startCharacter },
+                  end: { line: mappingExpressionRange.end.line, character: startCharacter + completeExpression.length }
+               }
+            });
+         }
       }
    }
 }

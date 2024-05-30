@@ -4,10 +4,12 @@
 import { Command, DeleteElementOperation, GEdge, GNode, JsonOperationHandler, ModelState, remove } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
 import {
-   AttributeMapping,
+   AttributeMappingSource,
+   NumberLiteral,
    SourceObject,
    SourceObjectRelations,
-   isAttributeMapping,
+   StringLiteral,
+   isAttributeMappingSource,
    isNumberLiteral,
    isReferenceSource,
    isSourceObject,
@@ -25,7 +27,7 @@ export class MappingDiagramDeleteElementOperationHandler extends JsonOperationHa
 
    override createCommand(operation: DeleteElementOperation): Command | undefined {
       const deleteInfo = this.findElementsToDelete(operation);
-      if (deleteInfo.sources.length === 0 && deleteInfo.mapping.length === 0) {
+      if (deleteInfo.sources.length === 0 && deleteInfo.attributeSources.length === 0 && deleteInfo.relations.length === 0) {
          return undefined;
       }
 
@@ -36,55 +38,69 @@ export class MappingDiagramDeleteElementOperationHandler extends JsonOperationHa
       const container = this.modelState.mapping.sources;
       remove(container, ...deleteInfo.sources);
 
+      deleteInfo.attributeSources.forEach(source => remove(source.$container.sources, source));
+
+      // remove any mapping that does not contain any sources after deleting sources and attribute sources
       const mappings = this.modelState.mapping.target.mappings;
-      remove(mappings, ...deleteInfo.mapping);
+      remove(mappings, ...mappings.filter(mapping => mapping.sources.length === 0));
 
       deleteInfo.relations.forEach(relation => remove(relation.$container.relations, relation));
    }
 
    protected findElementsToDelete(operation: DeleteElementOperation): DeleteInfo {
-      const deleteInfo: DeleteInfo = { sources: [], mapping: [], relations: [] };
-      const mapping = this.modelState.mapping;
+      const deleteInfo: DeleteInfo = { sources: [], relations: [], attributeSources: [] };
       operation.elementIds.forEach(id => {
          const graphElement = this.modelState.index.get(id);
          if (graphElement instanceof GNode) {
-            const astNode = this.modelState.index.findSemanticElement(id);
-            if (isSourceObject(astNode)) {
-               deleteInfo.mapping.push(
-                  ...mapping.target.mappings.filter(
-                     attributeMapping =>
-                        isReferenceSource(attributeMapping.source) &&
-                        attributeMapping.source.value.ref &&
-                        getOwner(attributeMapping.source.value?.ref) === astNode
-                  )
-               );
-               deleteInfo.sources.push(astNode);
-               deleteInfo.relations.push(
-                  ...mapping.sources.flatMap(source => source.relations).filter(relation => relation.source.ref === astNode)
-               );
-            } else if (isStringLiteral(astNode) || isNumberLiteral(astNode)) {
-               // Literal nodes are contained by the corresponding targetAttributeMapping=> we only have to delete
-               // the mapping that correlates to the outgoing edge of the literal node
-               this.modelState.index.getOutgoingEdges(graphElement).forEach(edge => {
-                  const attributeMapping = this.modelState.index.findSemanticElement(edge.id, isAttributeMapping);
-                  if (attributeMapping) {
-                     deleteInfo.mapping.push(attributeMapping);
-                  }
-               });
-            }
+            this.deleteNode(graphElement, deleteInfo);
          } else if (graphElement instanceof GEdge) {
-            const attributeMapping = this.modelState.index.findSemanticElement(graphElement.id, isAttributeMapping);
-            if (attributeMapping) {
-               deleteInfo.mapping.push(attributeMapping);
-            }
+            this.deleteEdge(graphElement, deleteInfo);
          }
       });
       return deleteInfo;
+   }
+
+   protected deleteNode(node: GNode, deleteInfo: DeleteInfo): void {
+      const astNode = this.modelState.index.findSemanticElement(node.id);
+      if (isSourceObject(astNode)) {
+         this.deleteSourceObject(node, astNode, deleteInfo);
+      } else if (isStringLiteral(astNode) || isNumberLiteral(astNode)) {
+         this.deleteLiteralObject(node, astNode, deleteInfo);
+      }
+   }
+
+   protected deleteSourceObject(node: GNode, source: SourceObject, deleteInfo: DeleteInfo): void {
+      const mapping = this.modelState.mapping;
+      // delete source and all relations and attribute sources that reference that source
+      deleteInfo.sources.push(source);
+      deleteInfo.relations.push(...mapping.sources.flatMap(src => src.relations).filter(relation => relation.source.ref === source));
+      deleteInfo.attributeSources.push(
+         ...mapping.target.mappings.flatMap(attrMapping =>
+            attrMapping.sources.filter(
+               attrSource => isReferenceSource(attrSource) && attrSource.value.ref && getOwner(attrSource.value?.ref) === source
+            )
+         )
+      );
+   }
+
+   protected deleteLiteralObject(node: GNode, literal: StringLiteral | NumberLiteral, deleteInfo: DeleteInfo): void {
+      // Literal nodes are contained by the corresponding targetAttributeMapping => we only have to delete
+      // the mapping that correlates to the outgoing edge of the literal node
+      this.modelState.index.getOutgoingEdges(node).forEach(edge => this.deleteEdge(edge, deleteInfo));
+   }
+
+   protected deleteEdge(edge: GEdge, deleteInfo: DeleteInfo): void {
+      // the edge has the source as semantic element with an additional UUID cause the user may use the same source multiple times
+      // see the generation of the edge id in edges.ts
+      const source = this.modelState.index.findSemanticElement(edge.id, isAttributeMappingSource);
+      if (source) {
+         deleteInfo.attributeSources.push(source);
+      }
    }
 }
 
 interface DeleteInfo {
    sources: SourceObject[];
-   mapping: AttributeMapping[];
    relations: SourceObjectRelations[];
+   attributeSources: AttributeMappingSource[];
 }

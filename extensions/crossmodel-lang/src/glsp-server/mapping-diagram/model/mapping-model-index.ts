@@ -57,7 +57,7 @@ export class MappingModelIndex extends CrossModelIndex {
    }
 
    protected createAttributeMappingId(mapping: AttributeMapping): string | undefined {
-      const sourceId = this.findId(mapping.source);
+      const sourceId = mapping.sources.map(source => this.findId(source)).join('_');
       const targetId = this.findId(mapping.attribute);
       return `${mapping.$containerIndex ?? 0}_${sourceId}_to_${targetId}`;
    }
@@ -71,11 +71,11 @@ export class MappingModelIndex extends CrossModelIndex {
    }
 
    protected createLiteralId(literal: NumberLiteral | StringLiteral): string {
-      return `mapping_${literal.$container?.$containerIndex ?? 0}_source_${literal.value}`;
+      return `mapping_${literal.$container?.$containerIndex ?? 0}_source_${literal.$containerIndex ?? 0}_${literal.value}`;
    }
 
    protected createReferenceSourceId(source: ReferenceSource): string | undefined {
-      return `mapping_${source.$container?.$containerIndex ?? 0}_source_${this.createId(source.value.ref)}`;
+      return `mapping_${source.$container?.$containerIndex ?? 0}_source_${source.$containerIndex ?? 0}_${this.createId(source.value.ref)}`;
    }
 
    protected getIndex(node: AstNode): number {

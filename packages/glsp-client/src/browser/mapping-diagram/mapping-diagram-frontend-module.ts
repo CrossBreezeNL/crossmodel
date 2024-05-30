@@ -2,10 +2,17 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { ContainerContext, DiagramConfiguration, GLSPDiagramWidget, GLSPTheiaFrontendModule } from '@eclipse-glsp/theia-integration';
+import {
+   ContainerContext,
+   DiagramConfiguration,
+   GLSPDiagramWidget,
+   GLSPTheiaFrontendModule,
+   registerDiagramManager
+} from '@eclipse-glsp/theia-integration';
 
 import { MappingDiagramLanguage } from '../../common/crossmodel-diagram-language';
 import { MappingDiagramConfiguration } from './mapping-diagram-configuration';
+import { MappingDiagramManager } from './mapping-diagram-manager';
 import { MappingDiagramWidget } from './mapping-diagram-widget';
 
 export class MappingDiagramModule extends GLSPTheiaFrontendModule {
@@ -26,6 +33,11 @@ export class MappingDiagramModule extends GLSPTheiaFrontendModule {
    override bindDiagramWidgetFactory(context: ContainerContext): void {
       super.bindDiagramWidgetFactory(context);
       context.rebind(GLSPDiagramWidget).to(MappingDiagramWidget);
+   }
+
+   override configureDiagramManager(context: ContainerContext): void {
+      context.bind(MappingDiagramManager).toSelf().inSingletonScope();
+      registerDiagramManager(context.bind, MappingDiagramManager, false);
    }
 }
 

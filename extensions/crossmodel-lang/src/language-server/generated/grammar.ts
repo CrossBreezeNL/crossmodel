@@ -1780,7 +1780,7 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
           },
           {
             "$type": "Assignment",
-            "feature": "expression",
+            "feature": "join",
             "operator": "=",
             "terminal": {
               "$type": "RuleCall",
@@ -1994,24 +1994,80 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
             }
           },
           {
-            "$type": "Keyword",
-            "value": "source"
-          },
-          {
-            "$type": "Keyword",
-            "value": ":"
-          },
-          {
-            "$type": "Assignment",
-            "feature": "source",
-            "operator": "=",
-            "terminal": {
-              "$type": "RuleCall",
-              "rule": {
-                "$ref": "#/rules@28"
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": "sources"
               },
-              "arguments": []
-            }
+              {
+                "$type": "Keyword",
+                "value": ":"
+              },
+              {
+                "$type": "RuleCall",
+                "rule": {
+                  "$ref": "#/rules@9"
+                },
+                "arguments": []
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Keyword",
+                    "value": "-"
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "sources",
+                    "operator": "+=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$ref": "#/rules@28"
+                      },
+                      "arguments": []
+                    }
+                  }
+                ],
+                "cardinality": "+"
+              },
+              {
+                "$type": "RuleCall",
+                "rule": {
+                  "$ref": "#/rules@8"
+                },
+                "arguments": []
+              }
+            ],
+            "cardinality": "?"
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": "expression"
+              },
+              {
+                "$type": "Keyword",
+                "value": ":"
+              },
+              {
+                "$type": "Assignment",
+                "feature": "expression",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$ref": "#/rules@4"
+                  },
+                  "arguments": []
+                }
+              }
+            ],
+            "cardinality": "?"
           }
         ]
       },

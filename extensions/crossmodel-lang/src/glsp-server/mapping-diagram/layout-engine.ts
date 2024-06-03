@@ -18,6 +18,10 @@ export class MappingDiagramLayoutEngine implements LayoutEngine {
    @inject(MappingModelState) protected modelState!: MappingModelState;
 
    layout(): MaybePromise<GModelRoot> {
+      if (!this.modelState.mapping) {
+         return this.modelState.root;
+      }
+
       const index = this.modelState.index;
 
       // position source nodes (references and literals) in correct order
@@ -54,13 +58,11 @@ export class MappingDiagramLayoutEngine implements LayoutEngine {
    protected getSourceNodeOrderFunction(): (left: GNode, right: GNode) => number {
       // sort mappings by the target attribute order and extract the source node id
       const target = this.modelState.mapping.target;
-      const index = this.modelState.index;
 
+      const idx = this.modelState.index;
       const sourceNodeOrder = [...target.mappings]
          .sort((left, right) => (left.attribute.value.ref?.$containerIndex ?? 0) - (right.attribute.value.ref?.$containerIndex ?? 0))
-         .map(mapping =>
-            isReferenceSource(mapping.source) ? index.createId(getOwner(mapping.source.value.ref)) : index.createId(mapping.source)
-         );
+         .flatMap(mapping => mapping.sources.map(source => idx.createId(isReferenceSource(source) ? getOwner(source.value.ref) : source)));
       return (left: GNode, right: GNode): number => {
          if (!sourceNodeOrder.includes(left.id)) {
             return 1;

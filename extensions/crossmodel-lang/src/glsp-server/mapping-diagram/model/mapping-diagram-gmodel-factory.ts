@@ -39,7 +39,8 @@ export class MappingDiagramGModelFactory implements GModelFactory {
 
       // literals that serve as source
       mappingRoot.target.mappings
-         .map(mapping => this.createSourceLiteralNode(mapping.source))
+         .flatMap(mapping => mapping.sources)
+         .map(source => this.createSourceLiteralNode(source))
          .filter(node => node !== undefined)
          .forEach(node => graphBuilder.add(node!));
 
@@ -47,13 +48,13 @@ export class MappingDiagramGModelFactory implements GModelFactory {
       graphBuilder.add(this.createTargetNode(mappingRoot.target));
 
       // attribute mapping edges
-      mappingRoot.target.mappings.map(mapping => this.createTargetObjectEdge(mapping)).forEach(edge => graphBuilder.add(edge));
+      mappingRoot.target.mappings.flatMap(mapping => this.createTargetObjectEdge(mapping)).forEach(edge => graphBuilder.add(edge));
 
       return graphBuilder.build();
    }
 
-   protected createTargetObjectEdge(attribute: AttributeMapping): GEdge {
-      return GTargetObjectEdge.builder().set(attribute, this.modelState.index).build();
+   protected createTargetObjectEdge(attribute: AttributeMapping): GEdge[] {
+      return attribute.sources.map(src => GTargetObjectEdge.builder().set(src, this.modelState.index).build());
    }
 
    protected createSourceObjectNode(sourceObject: SourceObject): GNode {

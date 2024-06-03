@@ -28,14 +28,20 @@ mapping:
         entity: CompleteCustomer
         mappings:
           - attribute: Name
-            source: Customer.FirstName
+            sources:
+              - Customer.FirstName
           - attribute: Name
-            source: Customer.LastName
+            sources:
+              - Customer.LastName
           - attribute: Country
-            source: Country.Name
+            sources:
+              - Country.Name
           - attribute: Age
-            source: CalcAgeSourceObject.Age
+            sources:
+              - CalcAgeSourceObject.Age
           - attribute: FixedNumber
-            source: 1337
+            sources:
+              - 1337
           - attribute: FixedString
-            source: "Fixed String"
+            sources:
+              - "Fixed String"

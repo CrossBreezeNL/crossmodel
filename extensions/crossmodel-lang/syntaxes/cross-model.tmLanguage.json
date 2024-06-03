@@ -10,7 +10,7 @@
     },
     {
       "name": "keyword.control.cross-model",
-      "match": "\\b(apply|attribute|attributes|child|conditions|cross-join|datatype|description|diagram|edges|entity|from|height|id|inner-join|join|left-join|mapping|mappings|name|nodes|parent|relations|relationship|source|sourceNode|sources|systemDiagram|target|targetNode|type|width|x|y)\\b"
+      "match": "\\b(apply|attribute|attributes|child|conditions|cross-join|datatype|description|diagram|edges|entity|expression|from|height|id|inner-join|join|left-join|mapping|mappings|name|nodes|parent|relations|relationship|source|sourceNode|sources|systemDiagram|target|targetNode|type|width|x|y)\\b"
     },
     {
       "name": "string.quoted.double.cross-model",

@@ -64,7 +64,8 @@ export interface AttributeMapping extends AstNode {
     readonly $container: TargetObject;
     readonly $type: 'AttributeMapping';
     attribute: AttributeMappingTarget
-    source: AttributeMappingSource
+    expression?: string
+    sources: Array<AttributeMappingSource>
 }
 
 export const AttributeMapping = 'AttributeMapping';
@@ -136,7 +137,7 @@ export function isEntityNode(item: unknown): item is EntityNode {
 export interface JoinCondition extends AstNode {
     readonly $container: SourceObjectRelations;
     readonly $type: 'JoinCondition';
-    expression: JoinExpression
+    join: JoinExpression
 }
 
 export const JoinCondition = 'JoinCondition';
@@ -465,6 +466,14 @@ export class CrossModelAstReflection extends AbstractAstReflection {
 
     getTypeMetaData(type: string): TypeMetaData {
         switch (type) {
+            case 'AttributeMapping': {
+                return {
+                    name: 'AttributeMapping',
+                    mandatory: [
+                        { name: 'sources', type: 'array' }
+                    ]
+                };
+            }
             case 'Entity': {
                 return {
                     name: 'Entity',

@@ -17,3 +17,6 @@ entity:
         - id: FixedString
           name: "FixedString"
           datatype: "Varchar"
+        - id: Today
+          name: "Today"
+          datatype: "Date"

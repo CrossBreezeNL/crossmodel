@@ -37,12 +37,12 @@ const NAV_DOWNLOAD_UPLOAD = [...NAVIGATOR_CONTEXT_MENU, '6_downloadupload'];
 
 const EXPORT_YAML_SYSTEM_NAV: Command = {
    id: 'crossmodel.export.yaml.nav',
-   label: 'Export System as File'
+   label: 'Export System to File'
 };
 
 const EXPORT_YAML_SYSTEM_FILE: Command = {
    id: 'crossmodel.export.yaml.file',
-   label: 'Export System as File'
+   label: 'Export System to File'
 };
 
 const IMPORT_YAML_SYSTEM_NAV: Command = {
@@ -152,13 +152,14 @@ export class ImportExportContribution implements CommandContribution, MenuContri
 
       const systemDirectory = URI.fromFilePath(system.directory);
 
-      const saveDirectory = await this.fileService.resolve(systemPackageUri.parent);
+      const saveUri = this.workspaceService.getWorkspaceRootUri(systemPackageUri) ?? systemPackageUri.parent;
+      const saveDirectory = await this.fileService.resolve(saveUri);
       const exportFileUri = await this.fileDialogService.showSaveDialog(
          {
             title: `Export ${system.name} to File`,
             saveLabel: 'Export',
             inputValue: system.name + '.' + EXPORT_FILE_EXTENSION,
-            filters: { 'All Files': [], 'System Export Files': [EXPORT_FILE_EXTENSION] }
+            filters: { ['System Export Files (*.' + EXPORT_FILE_EXTENSION + ')']: [EXPORT_FILE_EXTENSION], 'All Files': [] }
          },
          saveDirectory
       );
@@ -271,7 +272,7 @@ export class ImportExportContribution implements CommandContribution, MenuContri
          title: workspaceImport ? 'Select System File to Import into Workspace' : 'Select System File to Import into Folder',
          canSelectFiles: true,
          openLabel: 'Import',
-         filters: { 'All Files': [], 'System Export Files': [EXPORT_FILE_EXTENSION] }
+         filters: { ['System Export Files (*.' + EXPORT_FILE_EXTENSION + ')']: [EXPORT_FILE_EXTENSION], 'All Files': [] }
       });
       if (!selectedExport) {
          return;

@@ -9,16 +9,21 @@ import {
    CrossReference,
    CrossReferenceContext,
    FindReferenceableElements,
-   OnSave,
-   OnUpdated,
+   OnModelSaved,
+   OnModelUpdated,
+   OnSystemsUpdated,
    OpenModel,
    OpenModelArgs,
    ReferenceableElement,
    RequestModel,
+   RequestSystemInfo,
+   RequestSystemInfos,
    ResolveReference,
    ResolvedElement,
    SaveModel,
    SaveModelArgs,
+   SystemInfo,
+   SystemInfoArgs,
    UpdateModel,
    UpdateModelArgs
 } from '@crossbreeze/protocol';
@@ -52,6 +57,17 @@ export class ModelServer implements Disposable {
       this.toDispose.push(connection.onRequest(ResolveReference, args => this.resolve(args)));
       this.toDispose.push(connection.onRequest(UpdateModel, args => this.updateModel(args)));
       this.toDispose.push(connection.onRequest(SaveModel, args => this.saveModel(args)));
+      this.toDispose.push(connection.onRequest(RequestSystemInfo, args => this.systemInfo(args)));
+      this.toDispose.push(connection.onRequest(RequestSystemInfos, args => this.systemInfos()));
+      this.toDispose.push(this.modelService.onSystemUpdated(event => this.connection.sendNotification(OnSystemsUpdated, event)));
+   }
+
+   protected systemInfo(args: SystemInfoArgs): Promise<SystemInfo | undefined> {
+      return this.modelService.getSystemInfo(args);
+   }
+
+   protected systemInfos(): Promise<SystemInfo[]> {
+      return this.modelService.getSystemInfos();
    }
 
    protected complete(args: CrossReferenceContext): Promise<ReferenceableElement[]> {
@@ -80,15 +96,15 @@ export class ModelServer implements Disposable {
       this.disposeListeners(args);
       const listenersForClient = [];
       listenersForClient.push(
-         this.modelService.onSave(args.uri, event =>
-            this.connection.sendNotification(OnSave, {
+         this.modelService.onModelSaved(args.uri, event =>
+            this.connection.sendNotification(OnModelSaved, {
                uri: args.uri,
                model: this.toSerializable(event.model) as CrossModelRoot,
                sourceClientId: event.sourceClientId
             })
          ),
-         this.modelService.onUpdate(args.uri, event =>
-            this.connection.sendNotification(OnUpdated, {
+         this.modelService.onModelUpdated(args.uri, event =>
+            this.connection.sendNotification(OnModelUpdated, {
                uri: args.uri,
                model: this.toSerializable(event.model) as CrossModelRoot,
                sourceClientId: event.sourceClientId,

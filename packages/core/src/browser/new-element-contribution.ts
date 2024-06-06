@@ -2,9 +2,9 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 import { ModelService } from '@crossbreeze/model-service/lib/common';
-import { MappingType, ModelFileExtensions, TargetObjectType, quote, toId } from '@crossbreeze/protocol';
+import { MappingType, ModelFileExtensions, ModelStructure, TargetObjectType, quote, toId } from '@crossbreeze/protocol';
 import { Command, CommandContribution, CommandRegistry, MaybePromise, MenuContribution, MenuModelRegistry, URI, nls } from '@theia/core';
-import { CommonMenus, DialogError, codicon, open } from '@theia/core/lib/browser';
+import { CommonMenus, DialogError, open } from '@theia/core/lib/browser';
 import { TabBarToolbarRegistry } from '@theia/core/lib/browser/shell/tab-bar-toolbar';
 import { inject, injectable } from '@theia/core/shared/inversify';
 import { EditorContextMenu } from '@theia/editor/lib/browser';
@@ -52,7 +52,7 @@ const NEW_ELEMENT_TEMPLATES: NewElementTemplate[] = [
       label: 'Entity',
       fileExtension: ModelFileExtensions.Entity,
       category: TEMPLATE_CATEGORY,
-      iconClass: codicon('git-commit'),
+      iconClass: ModelStructure.Entity.ICON,
       content: name => INITIAL_ENTITY_CONTENT.replace(/\$\{name\}/gi, quote(name)).replace(/\$\{id\}/gi, toId(name))
    },
    {
@@ -60,7 +60,7 @@ const NEW_ELEMENT_TEMPLATES: NewElementTemplate[] = [
       label: 'Relationship',
       fileExtension: ModelFileExtensions.Relationship,
       category: TEMPLATE_CATEGORY,
-      iconClass: codicon('git-compare'),
+      iconClass: ModelStructure.Relationship.ICON,
       content: name => INITIAL_RELATIONSHIP_CONTENT.replace(/\$\{name\}/gi, quote(name)).replace(/\$\{id\}/gi, toId(name))
    },
    {
@@ -68,7 +68,7 @@ const NEW_ELEMENT_TEMPLATES: NewElementTemplate[] = [
       label: 'SystemDiagram',
       fileExtension: ModelFileExtensions.SystemDiagram,
       category: TEMPLATE_CATEGORY,
-      iconClass: codicon('type-hierarchy-sub'),
+      iconClass: ModelStructure.SystemDiagram.ICON,
       content: name => INITIAL_DIAGRAM_CONTENT.replace(/\$\{name\}/gi, quote(name)).replace(/\$\{id\}/gi, toId(name))
    },
    {
@@ -76,7 +76,7 @@ const NEW_ELEMENT_TEMPLATES: NewElementTemplate[] = [
       label: 'Mapping',
       fileExtension: ModelFileExtensions.Mapping,
       category: TEMPLATE_CATEGORY,
-      iconClass: codicon('group-by-ref-type'),
+      iconClass: ModelStructure.Mapping.ICON,
       content: name => INITIAL_MAPPING_CONTENT.replace(/\$\{name\}/gi, quote(name)).replace(/\$\{id\}/gi, toId(name))
    }
 ];

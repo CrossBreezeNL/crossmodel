@@ -13,3 +13,25 @@ input[type='number'] {
    appearance: textfield;
    -moz-appearance: textfield;
 }
+
+.theia-TreeNodeSegment.theia-caption-suffix {
+   font-size: var(--theia-ui-font-size0);
+   margin-left: 0.5em;
+   text-transform: uppercase;
+   color: var(--theia-activityBar-inactiveForeground);
+}
+
+.dialogContent .theia-FileNamePanel {
+   margin: var(--theia-ui-padding) 0 calc(var(--theia-ui-padding) / 2) 0;
+   min-height: 27px;
+   height: auto;
+}
+
+.dialogContent .theia-FiltersPanel {
+   min-height: 27px;
+   height: auto;
+}
+
+:root {
+   --theia-private-file-dialog-input-height: 24px; /* from: 21px - better aligns with the file name panel size */
+}

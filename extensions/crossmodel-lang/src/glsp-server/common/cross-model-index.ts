@@ -46,7 +46,6 @@ export class CrossModelIndex extends GModelIndex {
 
    protected indexAstNode(node: AstNode): void {
       const id = this.findId(node);
-      console.log('INDEX', node.$type, id);
       if (id) {
          this.indexSemanticElement(id, node);
       }

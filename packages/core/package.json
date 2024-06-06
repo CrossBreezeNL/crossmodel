@@ -33,9 +33,12 @@
     "@crossbreeze/model-service": "^1.0.0",
     "@crossbreeze/protocol": "0.0.0",
     "@theia/core": "1.43.1",
+    "@theia/filesystem": "1.43.1",
     "@theia/markers": "1.43.1",
     "@theia/outline-view": "1.43.1",
-    "@theia/plugin-ext": "1.43.1"
+    "@theia/plugin-ext": "1.43.1",
+    "type-fest": "^4.18.2",
+    "yaml": "^2.4.1"
   },
   "theiaExtensions": [
     {

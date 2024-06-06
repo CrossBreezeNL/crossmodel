@@ -2,7 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { EntityType, ReferenceableElement } from '@crossbreeze/protocol';
+import { EntityType, ModelFileType, ModelStructure, ReferenceableElement } from '@crossbreeze/protocol';
 import { TextField } from '@mui/material';
 import * as React from 'react';
 import { useModelDispatch, useModelQueryApi, useRelationship } from '../../ModelContext';
@@ -24,7 +24,7 @@ export function RelationshipForm(): React.ReactElement {
    const labelProvider = (element: ReferenceableElement): string => element.label;
 
    return (
-      <Form id={relationship.id} name={relationship.name ?? 'Relationship'} iconClass='codicon-git-compare'>
+      <Form id={relationship.id} name={relationship.name ?? ModelFileType.Relationship} iconClass={ModelStructure.Relationship.ICON}>
          <FormSection label='General'>
             <TextField
                label='Name'

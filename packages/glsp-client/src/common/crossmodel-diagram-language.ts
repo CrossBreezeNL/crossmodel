@@ -19,5 +19,5 @@ export const MappingDiagramLanguage: GLSPDiagramLanguage = {
    contributionId: CrossModelLanguageContributionId,
    label: 'Mapping Diagram',
    diagramType: 'mapping-diagram',
-   fileExtensions: [ModelFileExtensions.Mapping, ModelFileExtensions.MappingDiagram]
+   fileExtensions: [ModelFileExtensions.Mapping]
 };

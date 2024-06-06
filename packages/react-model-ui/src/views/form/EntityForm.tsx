@@ -2,6 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
+import { ModelFileType, ModelStructure } from '@crossbreeze/protocol';
 import { TextField } from '@mui/material';
 import * as React from 'react';
 import { useEntity, useModelDispatch } from '../../ModelContext';
@@ -16,7 +17,7 @@ export function EntityForm(): React.ReactElement {
    const entity = useEntity();
 
    return (
-      <Form id={entity.id} name={entity.name ?? 'Entity'} iconClass='codicon-git-commit'>
+      <Form id={entity.id} name={entity.name ?? ModelFileType.Entity} iconClass={ModelStructure.Entity.ICON}>
          <FormSection label='General'>
             <TextField
                fullWidth={true}

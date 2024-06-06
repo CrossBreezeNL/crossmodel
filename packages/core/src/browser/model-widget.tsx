@@ -2,7 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { ModelService, ModelServiceClient } from '@crossbreeze/model-service/lib/common';
+import { ModelService } from '@crossbreeze/model-service/lib/common';
 import { CrossModelRoot } from '@crossbreeze/protocol';
 import {
    EntityComponent,
@@ -39,7 +39,6 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
    @inject(CrossModelWidgetOptions) protected options: CrossModelWidgetOptions;
    @inject(LabelProvider) protected labelProvider: LabelProvider;
    @inject(ModelService) protected readonly modelService: ModelService;
-   @inject(ModelServiceClient) protected serviceClient: ModelServiceClient;
    @inject(ThemeService) protected readonly themeService: ThemeService;
    @inject(EditorPreferences) protected readonly editorPreferences: EditorPreferences;
    @inject(OpenerService) protected readonly openerService: OpenerService;
@@ -64,7 +63,7 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
       this.autoSaveDelay = this.editorPreferences.get('files.autoSaveDelay');
 
       this.toDispose.pushAll([
-         this.serviceClient.onUpdate(event => {
+         this.modelService.onModelUpdate(event => {
             if (event.sourceClientId !== this.options.clientId && event.uri === this.model?.uri.toString()) {
                this.handleExternalUpdate(event.model);
             }

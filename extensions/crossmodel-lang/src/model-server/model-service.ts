@@ -11,12 +11,16 @@ import {
    OpenModelArgs,
    ReferenceableElement,
    SaveModelArgs,
+   SystemInfo,
+   SystemInfoArgs,
+   SystemUpdatedEvent,
    UpdateModelArgs
 } from '@crossbreeze/protocol';
 import { AstNode, Deferred, DocumentState, isAstNode } from 'langium';
 import { Disposable, OptionalVersionedTextDocumentIdentifier, Range, TextDocumentEdit, TextEdit, uinteger } from 'vscode-languageserver';
-import { URI } from 'vscode-uri';
+import { URI, Utils as UriUtils } from 'vscode-uri';
 import { CrossModelServices, CrossModelSharedServices } from '../language-server/cross-model-module.js';
+import { PACKAGE_JSON } from '../language-server/cross-model-package-manager.js';
 import { findDocument } from '../language-server/util/ast-util.js';
 import { LANGUAGE_CLIENT_ID } from './openable-text-documents.js';
 
@@ -148,11 +152,11 @@ export class ModelService {
       return Promise.race([pendingUpdate.promise, timeout]);
    }
 
-   onUpdate<T extends AstNode>(uri: string, listener: (model: ModelUpdatedEvent<T>) => void): Disposable {
+   onModelUpdated<T extends AstNode>(uri: string, listener: (model: ModelUpdatedEvent<T>) => void): Disposable {
       return this.documentManager.onUpdate(uri, listener);
    }
 
-   onSave<T extends AstNode>(uri: string, listener: (model: ModelSavedEvent<T>) => void): Disposable {
+   onModelSaved<T extends AstNode>(uri: string, listener: (model: ModelSavedEvent<T>) => void): Disposable {
       return this.documentManager.onSave(uri, listener);
    }
 
@@ -205,5 +209,26 @@ export class ModelService {
 
    async resolveCrossReference(args: CrossReference): Promise<AstNode | undefined> {
       return this.shared.CrossModel.references.ScopeProvider.resolveCrossReference(args);
+   }
+
+   async getSystemInfos(): Promise<SystemInfo[]> {
+      return this.shared.workspace.PackageManager.getPackageInfos().map(info =>
+         this.shared.workspace.PackageManager.convertPackageInfoToSystemInfo(info)
+      );
+   }
+
+   async getSystemInfo(args: SystemInfoArgs): Promise<SystemInfo | undefined> {
+      const contextUri = URI.parse(args.contextUri);
+      const packageInfo =
+         this.shared.workspace.PackageManager.getPackageInfoByURI(contextUri) ??
+         this.shared.workspace.PackageManager.getPackageInfoByURI(UriUtils.joinPath(contextUri, PACKAGE_JSON));
+      if (!packageInfo) {
+         return undefined;
+      }
+      return this.shared.workspace.PackageManager.convertPackageInfoToSystemInfo(packageInfo);
+   }
+
+   onSystemUpdated(listener: (event: SystemUpdatedEvent) => void): Disposable {
+      return this.shared.workspace.PackageManager.onUpdate(listener);
    }
 }

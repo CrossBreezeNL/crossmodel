@@ -9,16 +9,21 @@ import {
    CrossReferenceContext,
    FindReferenceableElements,
    MODELSERVER_PORT_COMMAND,
-   OnSave,
-   OnUpdated,
+   OnModelSaved,
+   OnModelUpdated,
+   OnSystemsUpdated,
    OpenModel,
    OpenModelArgs,
    ReferenceableElement,
    RequestModel,
+   RequestSystemInfo,
+   RequestSystemInfos,
    ResolveReference,
    ResolvedElement,
    SaveModel,
    SaveModelArgs,
+   SystemInfo,
+   SystemInfoArgs,
    UpdateModel,
    UpdateModelArgs
 } from '@crossbreeze/protocol';
@@ -27,13 +32,13 @@ import { Deferred } from '@theia/core/lib/common/promise-util';
 import { inject, injectable } from '@theia/core/shared/inversify';
 import * as net from 'net';
 import * as rpc from 'vscode-jsonrpc/node';
-import { ModelService, ModelServiceClient } from '../common/model-service-rpc';
+import { ModelServiceClient, ModelServiceServer } from '../common/model-service-rpc';
 
 /**
  * Backend service implementation that mainly forwards all requests from the Theia frontend to the model server exposed on a given socket.
  */
 @injectable()
-export class ModelServiceImpl implements ModelService {
+export class ModelServiceServerImpl implements ModelServiceServer {
    protected initialized?: Deferred<void>;
    protected connection: rpc.MessageConnection;
    protected client?: ModelServiceClient;
@@ -47,6 +52,10 @@ export class ModelServiceImpl implements ModelService {
       }
       this.client = client;
       this.initializeServerConnection();
+   }
+
+   getClient(): ModelServiceClient | undefined {
+      return this.client;
    }
 
    protected async initializeServerConnection(): Promise<void> {
@@ -66,6 +75,7 @@ export class ModelServiceImpl implements ModelService {
          progress.cancel();
          this.messageService.info('Connected to Model Server on port ' + port, { timeout: 3000 });
          this.initialized.resolve();
+         this.client?.ready();
       } catch (error) {
          progress.cancel();
          this.messageService.error('Could not connect to Model Server: ' + error);
@@ -167,12 +177,25 @@ export class ModelServiceImpl implements ModelService {
       return this.connection.sendRequest(ResolveReference, reference);
    }
 
+   async getSystemInfos(): Promise<SystemInfo[]> {
+      await this.initializeServerConnection();
+      return this.connection.sendRequest(RequestSystemInfos, undefined);
+   }
+
+   async getSystemInfo(args: SystemInfoArgs): Promise<SystemInfo | undefined> {
+      await this.initializeServerConnection();
+      return this.connection.sendRequest(RequestSystemInfo, args);
+   }
+
    protected setUpListeners(): void {
-      this.connection.onNotification(OnSave, event => {
+      this.connection.onNotification(OnModelSaved, event => {
          this.client?.updateModel({ ...event, reason: 'saved' });
       });
-      this.connection.onNotification(OnUpdated, event => {
+      this.connection.onNotification(OnModelUpdated, event => {
          this.client?.updateModel(event);
+      });
+      this.connection.onNotification(OnSystemsUpdated, event => {
+         this.client?.updateSystem(event);
       });
    }
 }

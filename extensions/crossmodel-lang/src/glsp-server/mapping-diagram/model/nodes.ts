@@ -5,7 +5,7 @@ import { RenderProps, SOURCE_OBJECT_NODE_TYPE, TARGET_OBJECT_NODE_TYPE } from '@
 import { ArgsUtil, GLabel, GNode, GNodeBuilder } from '@eclipse-glsp/server';
 import { SourceObject, TargetObject, TargetObjectAttribute } from '../../../language-server/generated/ast.js';
 import { getAttributes } from '../../../language-server/util/ast-util.js';
-import { AttributeCompartment, AttributesCompartmentBuilder, createAttributesCompartment, createHeader } from '../../common/nodes.js';
+import { AttributeCompartment, AttributesCompartmentBuilder, createHeader } from '../../common/nodes.js';
 import { MappingModelIndex } from './mapping-model-index.js';
 
 export class GSourceObjectNode extends GNode {
@@ -18,6 +18,7 @@ export class GSourceObjectNode extends GNode {
 
 export class GSourceObjectNodeBuilder extends GNodeBuilder<GSourceObjectNode> {
    set(node: SourceObject, index: MappingModelIndex): this {
+      const sourceObjectIdx = node.$container.sources.indexOf(node);
       this.id(index.createId(node));
 
       this.addCssClasses('diagram-node', 'source-object', 'entity');
@@ -26,7 +27,14 @@ export class GSourceObjectNodeBuilder extends GNodeBuilder<GSourceObjectNode> {
 
       // Add the children of the node
       const attributes = getAttributes(node);
-      this.add(createAttributesCompartment(attributes, this.proxy.id, index));
+      const attributesContainer = new AttributesCompartmentBuilder().set(this.proxy.id);
+      for (const attribute of attributes) {
+         const attrComp = AttributeCompartment.builder().set(attribute, index);
+         attrComp.addArg(RenderProps.SOURCE_OBJECT_IDX, sourceObjectIdx);
+         attributesContainer.add(attrComp.build());
+      }
+      this.add(attributesContainer.build());
+      this.addArg(RenderProps.SOURCE_OBJECT_IDX, sourceObjectIdx);
 
       this.layout('vbox')
          .addArgs(ArgsUtil.cornerRadius(3))
@@ -59,7 +67,6 @@ export class GTargetObjectNodeBuilder extends GNodeBuilder<GTargetObjectNode> {
 
       // Add the children of the node
       const attributes = getAttributes(node);
-      node.$container.sources.find;
 
       const attributesContainer = new AttributesCompartmentBuilder().set(id);
       for (const attribute of attributes) {

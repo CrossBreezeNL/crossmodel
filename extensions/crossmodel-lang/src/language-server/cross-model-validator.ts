@@ -129,8 +129,8 @@ export class CrossModelValidator {
    }
 
    checkSourceObject(obj: SourceObject, accept: ValidationAcceptor): void {
-      if (obj.join === 'from' && obj.relations.length > 0) {
-         accept('error', 'Source objects with join type "from" cannot have relations.', { node: obj, property: 'relations' });
+      if (obj.join === 'from' && obj.dependencies.length > 0) {
+         accept('error', 'Source objects with join type "from" cannot have dependencies.', { node: obj, property: 'dependencies' });
       }
    }
 

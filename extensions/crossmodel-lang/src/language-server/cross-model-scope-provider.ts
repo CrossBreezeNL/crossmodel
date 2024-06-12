@@ -22,8 +22,8 @@ import {
    getDocument
 } from 'langium';
 import { CrossModelServices } from './cross-model-module.js';
-import { GlobalAstNodeDescription, PackageAstNodeDescription, isGlobalDescriptionForLocalPackage } from './cross-model-scope.js';
-import { isAttributeMapping, isRelationshipAttribute, isSourceObject } from './generated/ast.js';
+import { GlobalAstNodeDescription, PackageAstNodeDescription } from './cross-model-scope.js';
+import { isAttributeMapping, isRelationshipAttribute, isSourceObject, isSourceObjectAttributeReference } from './generated/ast.js';
 import { fixDocument } from './util/ast-util.js';
 
 /**
@@ -108,6 +108,7 @@ export class CrossModelScopeProvider extends PackageScopeProvider {
       }
       for (const segment of ctx.syntheticElements ?? []) {
          container = {
+            ...segment,
             $container: container,
             $containerProperty: segment.property,
             $type: segment.type
@@ -161,7 +162,8 @@ export class CrossModelScopeProvider extends PackageScopeProvider {
             type: description.type,
             label: description.name
          }))
-         .toArray();
+         .toArray()
+         .sort((left, right) => left.label.localeCompare(right.label));
    }
 
    filterCompletion(description: AstNodeDescription, packageId: string, container?: AstNode, property?: string): boolean {
@@ -181,10 +183,11 @@ export class CrossModelScopeProvider extends PackageScopeProvider {
          }
          return description.name !== this.idProvider.getLocalId(targetEntity);
       }
-      if (isGlobalDescriptionForLocalPackage(description, packageId)) {
-         // we want to keep fully qualified names in the scope so we can do proper linking
-         // but want to hide it from the user for local options, i.e., if we are in the same project we can skip the project name
-         return false;
+      if (isSourceObjectAttributeReference(container)) {
+         // we are in a join condition of a source object, only show our own and our dependent source object references
+         const dependency = container.$container.$container.$container;
+         const sourceObject = dependency.$container;
+         return description.name.startsWith(dependency.source.$refText + '.') || description.name.startsWith(sourceObject.id + '.');
       }
       return true;
    }

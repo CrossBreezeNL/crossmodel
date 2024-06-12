@@ -45,7 +45,7 @@ export class CrossModelCompletionProvider extends DefaultCompletionProvider {
       this.fixCompletionNode(context);
       const assignment = getContainerOfType(next.feature, GrammarAST.isAssignment);
       if (!GrammarAST.isCrossReference(next.feature) && assignment) {
-         return this.completionForAssignment(context, assignment, acceptor);
+         return this.completionForAssignment(context, next, assignment, acceptor);
       }
       return super.completionFor(context, next, acceptor);
    }
@@ -57,7 +57,7 @@ export class CrossModelCompletionProvider extends DefaultCompletionProvider {
    }
 
    protected override filterKeyword(context: CompletionContext, keyword: GrammarAST.Keyword): boolean {
-      return super.filterKeyword(context, keyword) && this.isUndefinedProperty(context.node, keyword.value);
+      return this.isUndefinedProperty(context.node, keyword.value);
    }
 
    protected isUndefinedProperty(obj: any, property: string): boolean {
@@ -66,6 +66,7 @@ export class CrossModelCompletionProvider extends DefaultCompletionProvider {
 
    protected completionForAssignment(
       context: CompletionContext,
+      next: NextFeature<GrammarAST.AbstractElement>,
       assignment: GrammarAST.Assignment,
       acceptor: CompletionAcceptor
    ): MaybePromise<void> {
@@ -86,6 +87,7 @@ export class CrossModelCompletionProvider extends DefaultCompletionProvider {
                return this.completionForBoolean(context, assignment, acceptor);
          }
       }
+      return super.completionFor(context, next, acceptor);
    }
 
    protected completeAttributeMappingExpression(

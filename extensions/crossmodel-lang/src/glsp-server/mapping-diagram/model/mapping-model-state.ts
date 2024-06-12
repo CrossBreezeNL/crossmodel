@@ -19,7 +19,7 @@ export class MappingModelState extends CrossModelState {
    protected ensureAttributeMappings(semanticRoot: CrossModelRoot): void {
       if (semanticRoot.mapping) {
          const target = semanticRoot.mapping.target;
-         const targetAttributes = getAttributes(target);
+         const targetAttributes = target ? getAttributes(target) : [];
          // we want to ensure that each target attribute has a mapping that we can manipulate in our editor
          // the change will automatically be persisted with the next change that is done
          targetAttributes.forEach(targetAttribute => {

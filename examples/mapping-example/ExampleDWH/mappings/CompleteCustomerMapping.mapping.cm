@@ -7,10 +7,10 @@ mapping:
       - id: CalcAgeSourceObject
         entity: ExampleDWH.CalcAge
         join: apply
-        relations:
+        dependencies:
           - source: CustomerSourceObject
             conditions:
-              - join: CalcAgeSourceObject.BirthDate = CustomerSourceObject.BirthDate
+              - CalcAgeSourceObject.BirthDate = CustomerSourceObject.BirthDate
     target:
         entity: ExampleDWH.CompleteCustomer
         mappings:

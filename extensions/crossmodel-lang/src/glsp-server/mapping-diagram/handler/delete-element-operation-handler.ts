@@ -6,7 +6,7 @@ import { inject, injectable } from 'inversify';
 import {
    AttributeMappingSource,
    SourceObject,
-   SourceObjectRelations,
+   SourceObjectDependency,
    isAttributeMappingSource,
    isSourceObject
 } from '../../../language-server/generated/ast.js';
@@ -22,7 +22,7 @@ export class MappingDiagramDeleteElementOperationHandler extends JsonOperationHa
 
    override createCommand(operation: DeleteElementOperation): Command | undefined {
       const deleteInfo = this.findElementsToDelete(operation);
-      if (deleteInfo.sources.length === 0 && deleteInfo.attributeSources.length === 0 && deleteInfo.relations.length === 0) {
+      if (deleteInfo.sources.length === 0 && deleteInfo.attributeSources.length === 0 && deleteInfo.dependencies.length === 0) {
          return undefined;
       }
 
@@ -33,11 +33,11 @@ export class MappingDiagramDeleteElementOperationHandler extends JsonOperationHa
       const container = this.modelState.mapping.sources;
       remove(container, ...deleteInfo.sources);
       deleteInfo.attributeSources.forEach(source => remove(source.$container.sources, source));
-      deleteInfo.relations.forEach(relation => remove(relation.$container.relations, relation));
+      deleteInfo.dependencies.forEach(relation => remove(relation.$container.relations, relation));
    }
 
    protected findElementsToDelete(operation: DeleteElementOperation): DeleteInfo {
-      const deleteInfo: DeleteInfo = { sources: [], relations: [], attributeSources: [] };
+      const deleteInfo: DeleteInfo = { sources: [], dependencies: [], attributeSources: [] };
       operation.elementIds.forEach(id => {
          const graphElement = this.modelState.index.get(id);
          if (graphElement instanceof GNode) {
@@ -60,7 +60,9 @@ export class MappingDiagramDeleteElementOperationHandler extends JsonOperationHa
       const mapping = this.modelState.mapping;
       // delete source and all relations and attribute sources that reference that source
       deleteInfo.sources.push(source);
-      deleteInfo.relations.push(...mapping.sources.flatMap(src => src.relations).filter(relation => relation.source.ref === source));
+      deleteInfo.dependencies.push(
+         ...mapping.sources.flatMap(src => src.dependencies).filter(dependency => dependency.source.ref === source)
+      );
       deleteInfo.attributeSources.push(
          ...mapping.target.mappings.flatMap(attrMapping =>
             attrMapping.sources.filter(attrSource => attrSource.value.ref && getOwner(attrSource.value?.ref) === source)
@@ -80,6 +82,6 @@ export class MappingDiagramDeleteElementOperationHandler extends JsonOperationHa
 
 interface DeleteInfo {
    sources: SourceObject[];
-   relations: SourceObjectRelations[];
+   dependencies: SourceObjectDependency[];
    attributeSources: AttributeMappingSource[];
 }

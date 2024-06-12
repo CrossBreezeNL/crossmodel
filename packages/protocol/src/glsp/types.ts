@@ -38,4 +38,5 @@ export namespace RenderProps {
    }
 
    export const TARGET_ATTRIBUTE_MAPPING_IDX = RenderProps.key('mappingIndex');
+   export const SOURCE_OBJECT_IDX = RenderProps.key('sourceObjectIndex');
 }

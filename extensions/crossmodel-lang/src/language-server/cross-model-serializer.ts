@@ -2,6 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
+import { quote } from '@crossbreeze/protocol';
 import { isReference } from 'langium';
 import { Serializer } from '../model-server/serializer.js';
 import {
@@ -9,13 +10,14 @@ import {
    AttributeMappingTarget,
    CrossModelRoot,
    Entity,
-   JoinExpression,
+   JoinCondition,
    Mapping,
    Relationship,
+   StringLiteral,
    SystemDiagram,
    isAttributeMappingSource,
    isAttributeMappingTarget,
-   isJoinExpression
+   isJoinCondition
 } from './generated/ast.js';
 import { isImplicitProperty } from './util/ast-util.js';
 
@@ -43,7 +45,7 @@ const PROPERTY_ORDER = [
    'target',
    'object',
    'join',
-   'relations',
+   'dependencies',
    'mappings',
    'source',
    'conditions',
@@ -63,6 +65,7 @@ const ID_OR_IDREF = [
    'attribute',
    'from',
    'join',
+   'conditions',
    'parent',
    'child',
    'value'
@@ -134,6 +137,7 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot> {
 
    private serializeArray(arr: any[], indentationLevel: number, key: string): string {
       const serializedItems = arr
+         .filter(item => item !== undefined)
          .map(item => this.serializeValue(item, indentationLevel, key))
          .map(item => this.ensureArrayItem(item, indentationLevel + CrossModelSerializer.INDENTATION_AMOUNT_ARRAY))
          .join(CrossModelSerializer.CHAR_NEWLINE);
@@ -167,9 +171,9 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot> {
          // sources are simply serialized as their value instead of object structure
          return this.serializeAttributeMappingTarget(obj);
       }
-      if (isJoinExpression(obj)) {
+      if (isJoinCondition(obj)) {
          // expressions are serialized not as the object tree but as user-level expression
-         return this.serializeJoinExpression(obj);
+         return this.serializeJoinCondition(obj);
       }
       return <T>Object.entries(obj)
          .filter(([key, value]) => !key.startsWith('$') && !isImplicitProperty(key, obj))
@@ -205,7 +209,13 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot> {
       return this.resolvedValue(obj.value);
    }
 
-   private serializeJoinExpression(obj: JoinExpression): any {
-      return this.resolvedValue(obj.source) + ' ' + obj.operator + ' ' + this.resolvedValue(obj.target);
+   private serializeJoinCondition(obj: JoinCondition): any {
+      const text = obj.$cstNode?.text?.trim();
+      if (text) {
+         return text;
+      }
+      const left = obj.expression.left.$type === StringLiteral ? quote(obj.expression.left.value) : obj.expression.left.value;
+      const right = obj.expression.right.$type === StringLiteral ? quote(obj.expression.right.value) : obj.expression.right.value;
+      return [left, obj.expression.op, right].join(' ');
    }
 }

@@ -103,12 +103,12 @@ export function createSourceObject(entity: Entity | AstNodeDescription, containe
    };
 }
 
-export function createAttributeMapping(container: TargetObject, source: string, targetId: string): AttributeMapping {
+export function createAttributeMapping(container: TargetObject, source: string | undefined, targetId: string): AttributeMapping {
    const mapping = {
       $type: AttributeMapping,
       $container: container
    } as AttributeMapping;
-   mapping.sources = [createAttributeMappingSource(mapping, source)];
+   mapping.sources = source ? [createAttributeMappingSource(mapping, source)] : [];
    mapping.attribute = createAttributeMappingTarget(mapping, targetId);
    return mapping;
 }

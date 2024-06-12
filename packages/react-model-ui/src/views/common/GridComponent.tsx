@@ -69,35 +69,64 @@ export default function GridComponent<T extends GridValidRowModel>({
       [validateField]
    );
 
+   const removeSyntheticRows = React.useCallback(() => {
+      if (rows.find(row => row.idx < 0)) {
+         setRows(oldRows => oldRows.filter(row => row.idx >= 0));
+      }
+      if (Object.keys(rowModesModel).find(rowId => Number(rowId) < 0)) {
+         setRowModesModel(oldModel => Object.fromEntries(Object.entries(oldModel).filter(([idx]) => Number(idx) >= 0)));
+      }
+   }, [rowModesModel, rows]);
+
    const handleRowUpdate = React.useCallback(
       async (newRow: GridComponentRow<T>, oldRow: GridComponentRow<T>): Promise<GridComponentRow<T>> => {
          const updatedRow = mergeRightToLeft(oldRow, newRow);
          if (updatedRow.idx === undefined || updatedRow.idx < 0) {
+            removeSyntheticRows();
             await onAdd(updatedRow);
-            setRows(oldRows => oldRows.filter(row => row.idx !== updatedRow.idx));
-            return { ...updatedRow, _action: 'delete' };
+            return { ...updatedRow, idx: -1, _action: 'delete' };
          } else if (updatedRow.idx >= 0) {
             await onUpdate(updatedRow);
          }
          return updatedRow;
       },
-      [onAdd, onUpdate]
+      [onAdd, onUpdate, removeSyntheticRows]
    );
+
+   const handleRowUpdateError = React.useCallback(async (error: any): Promise<void> => console.log(error), []);
 
    const handleRowModesModelChange = React.useCallback((newRowModesModel: GridRowModesModel): void => {
       setRowModesModel(newRowModesModel);
    }, []);
 
-   const handleRowEditStop = React.useCallback((params: GridRowEditStopParams<T>): void => {
-      if (params.row.idx < 0) {
-         setRows(oldRows => oldRows.filter(row => row.idx >= 0));
-         setRowModesModel(oldModel => {
-            const newModel = { ...oldModel };
-            delete newModel[params.row.idx];
-            return newModel;
-         });
+   const handleRowEditStop = React.useCallback(
+      (params: GridRowEditStopParams<T>): void => {
+         removeSyntheticRows();
+      },
+      [removeSyntheticRows]
+   );
+
+   const createSyntheticRow = React.useCallback(() => {
+      const id = -1;
+      if (!rows.find(row => row.idx === -1)) {
+         setRows(oldRows => [...oldRows, { ...defaultEntry, idx: id }]);
       }
-   }, []);
+
+      // put new row in edit mode
+      const fieldToFocus = columns.length > 0 ? columns[0].field : undefined;
+      setRowModesModel(oldModel => ({ ...oldModel, [id]: { mode: GridRowModes.Edit, fieldToFocus } }));
+   }, [columns, defaultEntry, rows]);
+
+   const deleteEntry = React.useCallback(
+      (row: GridComponentRow<T>) => {
+         if (row.idx < 0) {
+            removeSyntheticRows();
+         } else {
+            onDelete(row);
+         }
+      },
+      [onDelete, removeSyntheticRows]
+   );
 
    const getRowId = React.useCallback((row: GridComponentRow<T>): number => row.idx, []);
 
@@ -119,7 +148,7 @@ export default function GridComponent<T extends GridValidRowModel>({
                key='delete'
                icon={<DeleteOutlined />}
                label='Delete'
-               onClick={() => onDelete(params.row)}
+               onClick={() => deleteEntry(params.row)}
                color='inherit'
             />,
             <GridActionsCellItem
@@ -141,28 +170,17 @@ export default function GridComponent<T extends GridValidRowModel>({
          ]
       });
       setColumns(allColumns);
-   }, [gridColumns, onDelete, onMoveDown, onMoveUp, rows.length, validateRow]);
-
-   const createNewEntry = React.useCallback(() => {
-      const id = -1;
-      if (!rows.find(row => row.idx === -1)) {
-         setRows(oldRows => [...oldRows, { ...defaultEntry, idx: id }]);
-      }
-
-      // put new row in edit mode
-      const fieldToFocus = columns.length > 0 ? columns[0].field : undefined;
-      setRowModesModel(oldModel => ({ ...oldModel, [id]: { mode: GridRowModes.Edit, fieldToFocus } }));
-   }, [columns, defaultEntry, rows]);
+   }, [gridColumns, deleteEntry, onMoveDown, onMoveUp, rows.length, validateRow]);
 
    const EditToolbar = React.useMemo(
       () => (
          <GridToolbarContainer>
-            <Button color='primary' startIcon={<AddIcon />} size='small' onClick={() => createNewEntry()}>
+            <Button color='primary' startIcon={<AddIcon />} size='small' onClick={() => createSyntheticRow()}>
                {newEntryText}
             </Button>
          </GridToolbarContainer>
       ),
-      [createNewEntry, newEntryText]
+      [createSyntheticRow, newEntryText]
    );
 
    const NoRowsOverlay = React.useMemo(() => <GridOverlay>{noEntriesText ?? 'No Rows'}</GridOverlay>, [noEntriesText]);
@@ -178,6 +196,7 @@ export default function GridComponent<T extends GridValidRowModel>({
          onRowModesModelChange={handleRowModesModelChange}
          onRowEditStop={handleRowEditStop}
          processRowUpdate={handleRowUpdate}
+         onProcessRowUpdateError={handleRowUpdateError}
          hideFooter={true}
          density='compact'
          disableColumnFilter={true}

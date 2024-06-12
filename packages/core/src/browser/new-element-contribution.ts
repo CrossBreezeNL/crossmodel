@@ -12,6 +12,7 @@ import { FileStat } from '@theia/filesystem/lib/common/files';
 import { FileNavigatorContribution, NavigatorContextMenu } from '@theia/navigator/lib/browser/navigator-contribution';
 import { WorkspaceCommandContribution } from '@theia/workspace/lib/browser/workspace-commands';
 import { WorkspaceInputDialog } from '@theia/workspace/lib/browser/workspace-input-dialog';
+import * as yaml from 'yaml';
 
 const NEW_ELEMENT_NAV_MENU = [...NavigatorContextMenu.NAVIGATION, '0_new'];
 const NEW_ELEMENT_MAIN_MENU = [...CommonMenus.FILE, '0_new'];
@@ -172,11 +173,23 @@ export class CrossModelWorkspaceContribution extends WorkspaceCommandContributio
                return;
             }
 
+            const root = await this.modelService.request(entityElement.uri);
+            if (!root?.entity) {
+               this.messageService.error('Could not resolve entity element at ' + entityUri.path.fsPath());
+               return;
+            }
             const mappingName = baseFileName.charAt(0).toUpperCase() + baseFileName.substring(1);
-            const content = `mapping:
-            id: ${mappingName}
-            target:
-               entity: ${entityElement.label}`;
+            const mapping = {
+               mapping: {
+                  id: mappingName,
+                  target: {
+                     entity: entityElement.label,
+                     mappings: [] as { attribute: string }[]
+                  }
+               }
+            };
+            root.entity.attributes.forEach(attribute => mapping.mapping.target.mappings.push({ attribute: attribute.id }));
+            const content = yaml.stringify(mapping, { indent: 4 });
             await this.fileService.create(mappingUri, content);
             this.fireCreateNewFile({ parent: parentUri, uri: mappingUri });
             open(this.openerService, mappingUri);

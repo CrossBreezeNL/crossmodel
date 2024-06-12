@@ -92,6 +92,7 @@
 
 .sprotty .attribute_expression_marker {
    text-anchor: start;
+   fill: #666666;
    baseline-shift: 2px;
 }
 

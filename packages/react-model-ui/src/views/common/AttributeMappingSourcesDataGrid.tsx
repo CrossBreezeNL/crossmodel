@@ -16,11 +16,11 @@ import { useMapping, useModelDispatch, useModelQueryApi } from '../../ModelConte
 import AsyncAutoComplete from './AsyncAutoComplete';
 import GridComponent, { GridComponentRow } from './GridComponent';
 
-export interface EditAttributeMappingSourceComponentProps extends GridRenderEditCellParams {}
+export interface EditAttributeMappingSourceComponentProps extends GridRenderEditCellParams<AttributeMappingSource> {}
 
 export function EditAttributeMappingSourceComponent({
    id,
-   value,
+   row,
    field,
    hasFocus
 }: EditAttributeMappingSourceComponentProps): React.ReactElement {
@@ -43,26 +43,26 @@ export function EditAttributeMappingSourceComponent({
    const referenceableElements = React.useCallback(() => queryApi.findReferenceableElements(referenceCtx), [queryApi, referenceCtx]);
 
    const handleValueChange = React.useCallback(
-      (newValue: ReferenceableElement): void => {
+      (_evt: React.SyntheticEvent, newValue: ReferenceableElement): void => {
          const source = { $type: AttributeMappingSourceType, value: newValue.label, uri: newValue.uri };
          gridApi.current.setEditCellValue({ id, field, value: source });
       },
       [field, gridApi, id]
    );
 
+   const value = React.useMemo<ReferenceableElement>(() => ({ uri: '', label: row.value.toString() ?? '', type: row.$type }), [row]);
+
    return (
       <AsyncAutoComplete<ReferenceableElement>
-         autoFocus={hasFocus}
          openOnFocus={true}
          fullWidth={true}
          label=''
          optionLoader={referenceableElements}
-         onChange={(_evt, newValue) => handleValueChange(newValue)}
-         value={{ uri: value.uri ?? '', label: value.value.toString() ?? '', type: value.$type }}
+         onChange={handleValueChange}
+         value={value}
          clearOnBlur={true}
-         blurOnSelect={true}
          selectOnFocus={true}
-         textFieldProps={{ sx: { margin: '0' } }}
+         textFieldProps={{ sx: { margin: '0' }, autoFocus: hasFocus, placeholder: 'Select an attribute' }}
          isOptionEqualToValue={(option, val) => option.label === val.label}
       />
    );
@@ -77,6 +77,10 @@ export interface AttributeMappingSourcesDataGridProps {
 
 export function AttributeMappingSourcesDataGrid({ mapping, mappingIdx }: AttributeMappingSourcesDataGridProps): React.ReactElement {
    const dispatch = useModelDispatch();
+
+   const sources = React.useMemo<AttributeMappingSource[]>(() => mapping.sources, [mapping]);
+
+   const defaultSource = React.useMemo<AttributeMappingSource>(() => ({ $type: AttributeMappingSourceType, value: '' }), []);
 
    // Callback for when the user stops editing a cell.
    const handleSourceUpdate = React.useCallback(
@@ -137,10 +141,10 @@ export function AttributeMappingSourcesDataGrid({ mapping, mappingIdx }: Attribu
          autoHeight
          columnHeaderHeight={0}
          gridColumns={columns}
-         gridData={mapping.sources}
+         gridData={sources}
          noEntriesText='No Sources'
          newEntryText='Add Source'
-         defaultEntry={{ $type: AttributeMappingSourceType, value: '' }}
+         defaultEntry={defaultSource}
          onAdd={handleAddSource}
          onDelete={handleSourceDelete}
          onUpdate={handleSourceUpdate}

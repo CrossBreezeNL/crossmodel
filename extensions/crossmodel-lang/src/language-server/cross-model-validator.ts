@@ -12,6 +12,8 @@ import {
    Relationship,
    RelationshipEdge,
    SourceObject,
+   TargetObject,
+   TargetObjectAttribute,
    isEntity,
    isEntityAttribute,
    isMapping,
@@ -31,7 +33,8 @@ export function registerValidationChecks(services: CrossModelServices): void {
       RelationshipEdge: validator.checkRelationshipEdge,
       SourceObject: validator.checkSourceObject,
       Relationship: validator.checkRelationship,
-      AttributeMapping: validator.checkAttributeMapping
+      AttributeMapping: validator.checkAttributeMapping,
+      TargetObject: validator.checkTargetObject
    };
    registry.register(checks, validator);
 }
@@ -152,6 +155,17 @@ export class CrossModelValidator {
                   end: { line: mappingExpressionRange.end.line, character: startCharacter + completeExpression.length }
                }
             });
+         }
+      }
+   }
+
+   checkTargetObject(target: TargetObject, accept: ValidationAcceptor): void {
+      const knownAttributes: TargetObjectAttribute[] = [];
+      for (const mapping of target.mappings) {
+         if (mapping.attribute.value.ref && knownAttributes.includes(mapping.attribute.value.ref)) {
+            accept('error', 'Each target attribute can only be mapped once.', { node: mapping.attribute });
+         } else if (mapping.attribute.value.ref) {
+            knownAttributes.push(mapping.attribute.value.ref);
          }
       }
    }

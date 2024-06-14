@@ -5,20 +5,20 @@ systemDiagram:
     nodes:
       - id: CustomerNode
         entity: Customer
-        x: 363
-        y: 264
-        width: 141.7887420654297
+        x: 330
+        y: 275
+        width: 143.8433380126953
         height: 176
       - id: OrderNode
         entity: Order
-        x: 649
-        y: 275
-        width: 148.649658203125
+        x: 572
+        y: 297
+        width: 150.8330535888672
         height: 147
       - id: AddressNode
         entity: ExampleCRM.Address
         x: 88
-        y: 297
+        y: 319
         width: 159.649658203125
         height: 96
     edges:

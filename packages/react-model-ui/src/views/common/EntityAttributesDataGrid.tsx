@@ -2,11 +2,13 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 import { EntityAttribute, EntityAttributeType } from '@crossbreeze/protocol';
-import { GridColDef, GridRowModel } from '@mui/x-data-grid';
+import { GridColDef } from '@mui/x-data-grid';
 import * as React from 'react';
 import { useEntity, useModelDispatch } from '../../ModelContext';
 import { ErrorView } from '../ErrorView';
-import AttributeGrid, { AttributeRow, ValidationFunction } from './AttributeGrid';
+import GridComponent, { GridComponentRow, ValidationFunction } from './GridComponent';
+
+export type EntityAttributeRow = GridComponentRow<EntityAttribute>;
 
 export function EntityAttributesDataGrid(): React.ReactElement {
    const entity = useEntity();
@@ -14,7 +16,7 @@ export function EntityAttributesDataGrid(): React.ReactElement {
 
    // Callback for when the user stops editing a cell.
    const handleRowUpdate = React.useCallback(
-      (attribute: AttributeRow<EntityAttribute>): GridRowModel => {
+      (attribute: EntityAttributeRow): EntityAttributeRow => {
          // Handle change of name property.
          dispatch({
             type: 'entity:attribute:update',
@@ -33,12 +35,20 @@ export function EntityAttributesDataGrid(): React.ReactElement {
       [dispatch]
    );
 
-   const handleAddAttribute = React.useCallback((): void => {
-      dispatch({ type: 'entity:attribute:add-empty' });
-   }, [dispatch]);
+   const handleAddAttribute = React.useCallback(
+      (attribute: EntityAttributeRow): void => {
+         if (attribute.name) {
+            dispatch({
+               type: 'entity:attribute:add-attribute',
+               attribute: { ...attribute, id: findName('Attribute', entity.attributes, attr => attr.id!) }
+            });
+         }
+      },
+      [dispatch, entity.attributes]
+   );
 
    const handleAttributeUpward = React.useCallback(
-      (attribute: AttributeRow<EntityAttribute>): void => {
+      (attribute: EntityAttributeRow): void => {
          dispatch({
             type: 'entity:attribute:move-attribute-up',
             attributeIdx: attribute.idx
@@ -48,7 +58,7 @@ export function EntityAttributesDataGrid(): React.ReactElement {
    );
 
    const handleAttributeDownward = React.useCallback(
-      (attribute: AttributeRow<EntityAttribute>): void => {
+      (attribute: EntityAttributeRow): void => {
          dispatch({
             type: 'entity:attribute:move-attribute-down',
             attributeIdx: attribute.idx
@@ -58,7 +68,7 @@ export function EntityAttributesDataGrid(): React.ReactElement {
    );
 
    const handleAttributeDelete = React.useCallback(
-      (attribute: AttributeRow<EntityAttribute>): void => {
+      (attribute: EntityAttributeRow): void => {
          dispatch({
             type: 'entity:attribute:delete-attribute',
             attributeIdx: attribute.idx
@@ -98,21 +108,45 @@ export function EntityAttributesDataGrid(): React.ReactElement {
       []
    );
 
+   const defaultEntry = React.useMemo<EntityAttribute>(
+      () => ({
+         $type: EntityAttributeType,
+         id: findName('Attribute', entity.attributes, attr => attr.id!),
+         $globalId: 'toBeAssigned',
+         name: findName('New Attribute', entity.attributes, attr => attr.name!),
+         datatype: 'Varchar'
+      }),
+      [entity.attributes]
+   );
+
    // Check if model initialized. Has to be here otherwise the compiler complains.
    if (entity === undefined) {
       return <ErrorView errorMessage='No Entity!' />;
    }
    return (
-      <AttributeGrid
+      <GridComponent
          autoHeight
-         attributeColumns={columns}
-         attributes={entity.attributes}
+         gridColumns={columns}
+         gridData={entity.attributes}
+         defaultEntry={defaultEntry}
          onDelete={handleAttributeDelete}
          onMoveDown={handleAttributeDownward}
          onMoveUp={handleAttributeUpward}
-         onNewAttribute={handleAddAttribute}
+         noEntriesText='No Attributes'
+         newEntryText='Add Attribute'
+         onAdd={handleAddAttribute}
          onUpdate={handleRowUpdate}
-         validateAttribute={validateAttribute}
+         validateField={validateAttribute}
       />
    );
+}
+
+export function findName<T>(suggestion: string, data: T[], nameGetter: (element: T) => string): string {
+   const names = data.map(nameGetter);
+   let name = suggestion;
+   let index = 1;
+   while (names.includes(name)) {
+      name = name + index++;
+   }
+   return name;
 }

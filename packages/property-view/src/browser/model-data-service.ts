@@ -2,14 +2,19 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { CrossModelSelectionData } from '@crossbreeze/glsp-client/lib/browser/crossmodel-selection-data-service';
+import { CrossModelSelectionData, GModelElementInfo } from '@crossbreeze/glsp-client/lib/browser/crossmodel-selection-data-service';
 import { ModelService } from '@crossbreeze/model-service/lib/common';
-import { ResolvedElement } from '@crossbreeze/protocol';
+import { RenderProps } from '@crossbreeze/protocol';
 import { GlspSelection } from '@eclipse-glsp/theia-integration';
 import { inject, injectable } from '@theia/core/shared/inversify';
 import { PropertyDataService } from '@theia/property-view/lib/browser/property-data-service';
 
 export const PROPERTY_CLIENT_ID = 'property-view-client';
+
+export interface PropertiesRenderData {
+   uri: string;
+   renderProps?: RenderProps;
+}
 
 @injectable()
 export class ModelDataService implements PropertyDataService {
@@ -22,21 +27,27 @@ export class ModelDataService implements PropertyDataService {
       return GlspSelection.is(selection) ? 1 : 0;
    }
 
-   protected async getSelectedEntity(selection: GlspSelection | undefined): Promise<ResolvedElement | undefined> {
+   async providePropertyData(selection: GlspSelection | undefined): Promise<PropertiesRenderData | undefined> {
       if (!selection || !GlspSelection.is(selection) || !selection.sourceUri || selection.selectedElementsIDs.length === 0) {
          return undefined;
       }
-      const dataMap = selection.additionalSelectionData as CrossModelSelectionData;
+      const selectionData = selection.additionalSelectionData as CrossModelSelectionData;
       for (const selectedElementId of selection.selectedElementsIDs) {
-         const info = dataMap?.selectionDataMap.get(selectedElementId);
-         if (info?.reference) {
-            return this.modelService.resolveReference(info?.reference);
+         const renderData = await this.getPropertyData(selection, selectionData?.selectionDataMap.get(selectedElementId));
+         if (renderData) {
+            return renderData;
          }
       }
       return undefined;
    }
 
-   async providePropertyData(selection: GlspSelection | undefined): Promise<ResolvedElement | undefined> {
-      return this.getSelectedEntity(selection);
+   protected async getPropertyData(selection: GlspSelection, info?: GModelElementInfo): Promise<PropertiesRenderData | undefined> {
+      if (info?.reference) {
+         const reference = await this.modelService.resolveReference(info.reference);
+         return reference ? { uri: reference?.uri, renderProps: info.renderProps } : undefined;
+      } else if (selection.sourceUri && info?.renderProps) {
+         return { uri: selection.sourceUri, renderProps: info.renderProps };
+      }
+      return undefined;
    }
 }

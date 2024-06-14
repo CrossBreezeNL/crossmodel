@@ -78,10 +78,9 @@ AttributeMapping:
 ;
 
 AttributeMappingTarget:
-    value=[TargetObjectAttribute:IDReference];
+    value=[TargetObjectAttribute:IDReference]
+;
 
 AttributeMappingSource:
-    {infer ReferenceSource} value=[SourceObjectAttribute:IDReference] |
-    {infer NumberLiteral} value=NUMBER |
-    {infer StringLiteral} value=STRING
+    value=[SourceObjectAttribute:IDReference]
 ;

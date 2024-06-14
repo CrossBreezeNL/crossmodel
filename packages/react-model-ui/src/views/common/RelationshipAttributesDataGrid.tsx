@@ -1,12 +1,12 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { CrossReferenceContext, EntityType, RelationshipAttribute } from '@crossbreeze/protocol';
-import { GridColDef, GridRenderEditCellParams, GridRowModel, useGridApiContext } from '@mui/x-data-grid';
+import { CrossReferenceContext, EntityType, RelationshipAttribute, RelationshipAttributeType } from '@crossbreeze/protocol';
+import { GridColDef, GridRenderEditCellParams, useGridApiContext } from '@mui/x-data-grid';
 import * as React from 'react';
 import { useModelDispatch, useModelQueryApi, useRelationship } from '../../ModelContext';
 import AsyncAutoComplete from './AsyncAutoComplete';
-import AttributeGrid, { AttributeRow } from './AttributeGrid';
+import GridComponent, { GridComponentRow } from './GridComponent';
 
 export interface EditAttributePropertyComponentProps extends GridRenderEditCellParams {
    property: 'child' | 'parent';
@@ -55,13 +55,15 @@ export function EditAttributePropertyComponent({
    );
 }
 
+export type RelationshipAttributeRow = GridComponentRow<RelationshipAttribute>;
+
 export function RelationshipAttributesDataGrid(): React.ReactElement {
    const relationship = useRelationship();
    const dispatch = useModelDispatch();
 
    // Callback for when the user stops editing a cell.
    const handleRowUpdate = React.useCallback(
-      (attribute: AttributeRow<RelationshipAttribute>): GridRowModel => {
+      (attribute: RelationshipAttributeRow): RelationshipAttributeRow => {
          // Handle change of name property.
          dispatch({
             type: 'relationship:attribute:update',
@@ -77,12 +79,17 @@ export function RelationshipAttributesDataGrid(): React.ReactElement {
       [dispatch]
    );
 
-   const handleAddAttribute = React.useCallback((): void => {
-      dispatch({ type: 'relationship:attribute:add-empty' });
-   }, [dispatch]);
+   const handleAddAttribute = React.useCallback(
+      (attribute: RelationshipAttributeRow): void => {
+         if (attribute.child && attribute.parent) {
+            dispatch({ type: 'relationship:attribute:add-relationship', attribute });
+         }
+      },
+      [dispatch]
+   );
 
    const handleAttributeUpward = React.useCallback(
-      (attribute: AttributeRow<RelationshipAttribute>): void => {
+      (attribute: RelationshipAttributeRow): void => {
          dispatch({
             type: 'relationship:attribute:move-attribute-up',
             attributeIdx: attribute.idx
@@ -92,7 +99,7 @@ export function RelationshipAttributesDataGrid(): React.ReactElement {
    );
 
    const handleAttributeDownward = React.useCallback(
-      (attribute: AttributeRow<RelationshipAttribute>): void => {
+      (attribute: RelationshipAttributeRow): void => {
          dispatch({
             type: 'relationship:attribute:move-attribute-down',
             attributeIdx: attribute.idx
@@ -102,7 +109,7 @@ export function RelationshipAttributesDataGrid(): React.ReactElement {
    );
 
    const handleAttributeDelete = React.useCallback(
-      (attribute: AttributeRow<RelationshipAttribute>): void => {
+      (attribute: RelationshipAttributeRow): void => {
          dispatch({
             type: 'relationship:attribute:delete-attribute',
             attributeIdx: attribute.idx
@@ -134,14 +141,17 @@ export function RelationshipAttributesDataGrid(): React.ReactElement {
    );
 
    return (
-      <AttributeGrid
+      <GridComponent
          autoHeight
-         attributeColumns={columns}
-         attributes={relationship.attributes}
+         gridColumns={columns}
+         gridData={relationship.attributes}
+         defaultEntry={{ $type: RelationshipAttributeType }}
          onDelete={handleAttributeDelete}
          onMoveDown={handleAttributeDownward}
          onMoveUp={handleAttributeUpward}
-         onNewAttribute={handleAddAttribute}
+         noEntriesText='No Attributes'
+         newEntryText='Add Attribute'
+         onAdd={handleAddAttribute}
          onUpdate={handleRowUpdate}
       />
    );

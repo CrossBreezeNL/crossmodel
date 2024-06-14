@@ -60,7 +60,7 @@ export class DragEdgeCreationMouseListener extends DragAwareMouseListener {
       const result: Action[] = super.mouseMove(target, event);
       if (this.dragStart && this.mappingEdgeCreationArgs) {
          const dragDistance = Point.maxDistance(this.dragStart, { x: event.clientX, y: event.clientY });
-         if (dragDistance > 3) {
+         if (dragDistance > 10) {
             result.push(TriggerEdgeCreationAction.create(TARGET_ATTRIBUTE_MAPPING_EDGE_TYPE, { args: this.mappingEdgeCreationArgs }));
          }
       }

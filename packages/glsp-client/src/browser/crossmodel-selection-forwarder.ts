@@ -46,7 +46,7 @@ export class CrossModelTheiaGLSPSelectionForwarder extends TheiaGLSPSelectionFor
          selectedElementsIDs,
          additionalSelectionData,
          widgetId: this.viewerOptions.baseDiv,
-         sourceUri: sourceUri
+         sourceUri
       };
       this.theiaSelectionService.selection = glspSelection;
    }

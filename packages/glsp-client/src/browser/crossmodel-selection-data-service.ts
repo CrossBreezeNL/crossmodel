@@ -1,23 +1,24 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { CrossReference, REFERENCE_CONTAINER_TYPE, REFERENCE_PROPERTY, REFERENCE_VALUE } from '@crossbreeze/protocol';
+import { CrossReference, REFERENCE_CONTAINER_TYPE, REFERENCE_PROPERTY, REFERENCE_VALUE, RenderProps } from '@crossbreeze/protocol';
 import { GModelElement, GModelRoot, hasArgs } from '@eclipse-glsp/client';
-import { GlspSelectionData } from '@eclipse-glsp/theia-integration';
 import { isDefined } from '@theia/core';
 import { injectable } from '@theia/core/shared/inversify';
 import { CrossModelSelectionDataService } from './crossmodel-selection-forwarder';
 
 @injectable()
 export class CrossModelGLSPSelectionDataService extends CrossModelSelectionDataService {
-   async getSelectionData(root: Readonly<GModelRoot>, selectedElementIds: string[]): Promise<GlspSelectionData> {
-      return getSelectionDataFor(selectedElementIds.map(id => root.index.getById(id)).filter(isDefined));
+   async getSelectionData(root: Readonly<GModelRoot>, selectedElementIds: string[]): Promise<CrossModelSelectionData> {
+      const selection = selectedElementIds.map(id => root.index.getById(id)).filter(isDefined);
+      return getSelectionDataFor(selection);
    }
 }
 
 export interface GModelElementInfo {
    type: string;
    reference?: CrossReference;
+   renderProps?: RenderProps;
 }
 
 export interface CrossModelSelectionData {
@@ -31,20 +32,25 @@ export function getSelectionDataFor(selection: GModelElement[]): CrossModelSelec
 }
 
 export function getElementInfo(element: GModelElement): GModelElementInfo {
+   return { type: element.type, reference: getCrossReference(element), renderProps: getRenderProps(element) };
+}
+
+export function getCrossReference(element: GModelElement): CrossReference | undefined {
    if (hasArgs(element)) {
-      const referenceProperty = element.args[REFERENCE_PROPERTY];
       const referenceContainerType = element.args[REFERENCE_CONTAINER_TYPE];
+      const referenceProperty = element.args[REFERENCE_PROPERTY];
       const referenceValue = element.args[REFERENCE_VALUE];
       if (referenceProperty && referenceContainerType && referenceValue) {
          return {
-            type: element.type,
-            reference: {
-               container: { globalId: element.id, type: referenceContainerType.toString() },
-               property: referenceProperty.toString(),
-               value: referenceValue.toString()
-            }
+            container: { globalId: element.id, type: referenceContainerType.toString() },
+            property: referenceProperty.toString(),
+            value: referenceValue.toString()
          };
       }
    }
-   return { type: element.type };
+   return undefined;
+}
+
+export function getRenderProps(element: GModelElement): RenderProps {
+   return hasArgs(element) ? RenderProps.read(element.args) : {};
 }

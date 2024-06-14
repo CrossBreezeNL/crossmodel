@@ -1,25 +1,23 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { unquote } from '@crossbreeze/protocol';
+import { AttributeMappingSourceType } from '@crossbreeze/protocol';
 import { AstNode, AstNodeDescription, LangiumDocument, findRootNode, isAstNode, isAstNodeDescription } from 'langium';
 import { ID_PROPERTY, IdProvider } from '../cross-model-naming.js';
 import { getLocalName } from '../cross-model-scope.js';
 import {
    Attribute,
    AttributeMapping,
+   AttributeMappingSource,
    AttributeMappingTarget,
    CrossModelRoot,
    Entity,
    EntityNode,
    EntityNodeAttribute,
    Mapping,
-   NumberLiteral,
-   ReferenceSource,
    Relationship,
    SourceObject,
    SourceObjectAttribute,
-   StringLiteral,
    SystemDiagram,
    TargetObject,
    TargetObjectAttribute,
@@ -105,43 +103,20 @@ export function createSourceObject(entity: Entity | AstNodeDescription, containe
    };
 }
 
-export function createAttributeMapping(
-   container: TargetObject,
-   source: string | number,
-   targetId: string,
-   asLiteral = false
-): AttributeMapping {
+export function createAttributeMapping(container: TargetObject, source: string | undefined, targetId: string): AttributeMapping {
    const mapping = {
       $type: AttributeMapping,
       $container: container
    } as AttributeMapping;
-   mapping.sources = asLiteral || typeof source === 'number' ? [createLiteral(mapping, source)] : [createReferenceSource(mapping, source)];
+   mapping.sources = source ? [createAttributeMappingSource(mapping, source)] : [];
    mapping.attribute = createAttributeMappingTarget(mapping, targetId);
    return mapping;
 }
 
-export function createLiteral(container: AttributeMapping, value: string): StringLiteral;
-export function createLiteral(container: AttributeMapping, value: number): NumberLiteral;
-export function createLiteral(container: AttributeMapping, value: string | number): NumberLiteral | StringLiteral;
-export function createLiteral(container: AttributeMapping, value: string | number): NumberLiteral | StringLiteral {
-   if (typeof value === 'string') {
-      return {
-         $type: StringLiteral,
-         $container: container,
-         value: unquote(value)
-      };
-   }
-   return {
-      $type: NumberLiteral,
-      $container: container,
-      value
-   };
-}
-
-export function createReferenceSource(container: AttributeMapping, sourceId: string): ReferenceSource {
+export function createAttributeMappingSource(container: AttributeMapping, sourceId: string): AttributeMappingSource {
    return {
       $container: container,
-      $type: ReferenceSource,
+      $type: AttributeMappingSourceType,
       value: { $refText: sourceId }
    };
 }

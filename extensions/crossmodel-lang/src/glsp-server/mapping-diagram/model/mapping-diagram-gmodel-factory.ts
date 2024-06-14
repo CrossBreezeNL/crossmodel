@@ -3,17 +3,10 @@
  ********************************************************************************/
 import { GEdge, GGraph, GModelFactory, GNode } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
-import {
-   AttributeMapping,
-   AttributeMappingSource,
-   SourceObject,
-   TargetObject,
-   isNumberLiteral,
-   isStringLiteral
-} from '../../../language-server/generated/ast.js';
+import { AttributeMapping, SourceObject, TargetObject } from '../../../language-server/generated/ast.js';
 import { GTargetObjectEdge } from './edges.js';
 import { MappingModelState } from './mapping-model-state.js';
-import { GNumberLiteralNode, GSourceObjectNode, GStringLiteralNode, GTargetObjectNode } from './nodes.js';
+import { GSourceObjectNode, GTargetObjectNode } from './nodes.js';
 
 @injectable()
 export class MappingDiagramGModelFactory implements GModelFactory {
@@ -37,13 +30,6 @@ export class MappingDiagramGModelFactory implements GModelFactory {
       // source nodes
       mappingRoot.sources.map(sourceObject => this.createSourceObjectNode(sourceObject)).forEach(node => graphBuilder.add(node));
 
-      // literals that serve as source
-      mappingRoot.target.mappings
-         .flatMap(mapping => mapping.sources)
-         .map(source => this.createSourceLiteralNode(source))
-         .filter(node => node !== undefined)
-         .forEach(node => graphBuilder.add(node!));
-
       // target node
       graphBuilder.add(this.createTargetNode(mappingRoot.target));
 
@@ -63,15 +49,5 @@ export class MappingDiagramGModelFactory implements GModelFactory {
 
    protected createTargetNode(target: TargetObject): GNode {
       return GTargetObjectNode.builder().set(target, this.modelState.index).build();
-   }
-
-   protected createSourceLiteralNode(node: AttributeMappingSource): GNode | undefined {
-      if (isStringLiteral(node)) {
-         return GStringLiteralNode.builder().set(node, this.modelState.index).build();
-      }
-      if (isNumberLiteral(node)) {
-         return GNumberLiteralNode.builder().set(node, this.modelState.index).build();
-      }
-      return undefined;
    }
 }

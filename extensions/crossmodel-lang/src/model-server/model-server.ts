@@ -33,6 +33,7 @@ import * as rpc from 'vscode-jsonrpc/node.js';
 import { isCrossModelRoot } from '../language-server/generated/ast.js';
 
 import { ModelService } from './model-service.js';
+import { IMPLICIT_ID_PROPERTY } from '../language-server/util/ast-util.js';
 
 /**
  * The model server handles request messages on the RPC connection and ensures that any return value
@@ -159,7 +160,7 @@ export class ModelServer implements Disposable {
       // Furthermore we ensure that for references we use their string representation ($refText)
       // instead of their real value to avoid sending whole serialized object graphs
       return <O>Object.entries(obj)
-         .filter(([key, value]) => !key.startsWith('$') || key === '$type')
+         .filter(([key, value]) => !key.startsWith('$') || key === '$type' || key === IMPLICIT_ID_PROPERTY)
          .reduce((acc, [key, value]) => ({ ...acc, [key]: this.cleanValue(value) }), { $globalId: this.modelService.getGlobalId(obj) });
    }
 

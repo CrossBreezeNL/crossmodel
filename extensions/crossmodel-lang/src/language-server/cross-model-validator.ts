@@ -12,10 +12,11 @@ import {
    Relationship,
    RelationshipEdge,
    SourceObject,
+   TargetObject,
+   TargetObjectAttribute,
    isEntity,
    isEntityAttribute,
    isMapping,
-   isReferenceSource,
    isRelationship,
    isSystemDiagram
 } from './generated/ast.js';
@@ -32,7 +33,8 @@ export function registerValidationChecks(services: CrossModelServices): void {
       RelationshipEdge: validator.checkRelationshipEdge,
       SourceObject: validator.checkSourceObject,
       Relationship: validator.checkRelationship,
-      AttributeMapping: validator.checkAttributeMapping
+      AttributeMapping: validator.checkAttributeMapping,
+      TargetObject: validator.checkTargetObject
    };
    registry.register(checks, validator);
 }
@@ -139,7 +141,7 @@ export class CrossModelValidator {
       }
       const mappingExpressionRange = mappingExpression.range;
       const expressions = findAllExpressions(mapping.expression);
-      const sources = mapping.sources.filter(isReferenceSource).map(source => source.value.$refText);
+      const sources = mapping.sources.map(source => source.value.$refText);
       for (const expression of expressions) {
          const completeExpression = getExpression(expression);
          const expressionPosition = getExpressionPosition(expression);
@@ -153,6 +155,17 @@ export class CrossModelValidator {
                   end: { line: mappingExpressionRange.end.line, character: startCharacter + completeExpression.length }
                }
             });
+         }
+      }
+   }
+
+   checkTargetObject(target: TargetObject, accept: ValidationAcceptor): void {
+      const knownAttributes: TargetObjectAttribute[] = [];
+      for (const mapping of target.mappings) {
+         if (mapping.attribute.value.ref && knownAttributes.includes(mapping.attribute.value.ref)) {
+            accept('error', 'Each target attribute can only be mapped once.', { node: mapping.attribute });
+         } else if (mapping.attribute.value.ref) {
+            knownAttributes.push(mapping.attribute.value.ref);
          }
       }
    }

@@ -12,7 +12,9 @@ import {
    GridActionsCellItem,
    GridColDef,
    GridEditCellProps,
+   GridOverlay,
    GridPreProcessEditCellProps,
+   GridRowEditStopParams,
    GridRowModes,
    GridRowModesModel,
    GridToolbarContainer,
@@ -20,78 +22,124 @@ import {
 } from '@mui/x-data-grid';
 import * as React from 'react';
 
-export type AttributeRow<T> = T &
+export type GridComponentRow<T> = T &
    GridValidRowModel & {
       idx: number;
    };
 
 export type ValidationFunction<T> = <P extends keyof T, V extends T[P]>(field: P, value: V) => string | undefined;
 
-export interface AttributeGridProps<T extends GridValidRowModel> extends Omit<DataGridProps<T>, 'rows' | 'columns' | 'processRowUpdate'> {
-   attributes: T[];
-   attributeColumns: GridColDef<T>[];
-   onNewAttribute: () => void;
-   onUpdate: (toUpdate: AttributeRow<T>) => void;
-   onDelete: (toDelete: AttributeRow<T>) => void;
-   onMoveUp: (toMoveUp: AttributeRow<T>) => void;
-   onMoveDown: (toMoveDown: AttributeRow<T>) => void;
-   validateAttribute?: ValidationFunction<T>;
+export interface GridComponentProps<T extends GridValidRowModel> extends Omit<DataGridProps<T>, 'rows' | 'columns' | 'processRowUpdate'> {
+   gridData: T[];
+   gridColumns: GridColDef<T>[];
+   noEntriesText?: string;
+   newEntryText: string;
+   defaultEntry: T;
+   onAdd: (toAdd: GridComponentRow<T>) => void | GridComponentRow<T> | Promise<void | GridComponentRow<T>>;
+   onUpdate: (toUpdate: GridComponentRow<T>) => void | GridComponentRow<T> | Promise<void | GridComponentRow<T>>;
+   onDelete: (toDelete: GridComponentRow<T>) => void;
+   onMoveUp: (toMoveUp: GridComponentRow<T>) => void;
+   onMoveDown: (toMoveDown: GridComponentRow<T>) => void;
+   validateField?: ValidationFunction<T>;
 }
 
-export default function AttributeGrid<T extends GridValidRowModel>({
-   attributes,
-   attributeColumns,
-   onNewAttribute,
+export default function GridComponent<T extends GridValidRowModel>({
+   gridData,
+   gridColumns,
+   noEntriesText,
+   newEntryText,
+   defaultEntry,
+   onAdd,
    onUpdate,
    onDelete,
    onMoveUp,
    onMoveDown,
-   validateAttribute,
+   validateField,
    ...props
-}: AttributeGridProps<T>): React.ReactElement {
+}: GridComponentProps<T>): React.ReactElement {
    const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>({});
-   const [columns, setColumns] = React.useState<GridColDef<AttributeRow<T>>[]>([]);
-   const [rows, setRows] = React.useState<AttributeRow<T>[]>([]);
+   const [columns, setColumns] = React.useState<GridColDef<GridComponentRow<T>>[]>([]);
+   const [rows, setRows] = React.useState<GridComponentRow<T>[]>([]);
 
    const validateRow = React.useCallback(
       (params: GridPreProcessEditCellProps, column: GridColDef<T>): GridEditCellProps => {
-         const error = validateAttribute?.(column.field, params.props.value);
+         const error = validateField?.(column.field, params.props.value);
          return { ...params.props, error };
       },
-      [validateAttribute]
+      [validateField]
    );
 
+   const removeSyntheticRows = React.useCallback(() => {
+      if (rows.find(row => row.idx < 0)) {
+         setRows(oldRows => oldRows.filter(row => row.idx >= 0));
+      }
+      if (Object.keys(rowModesModel).find(rowId => Number(rowId) < 0)) {
+         setRowModesModel(oldModel => Object.fromEntries(Object.entries(oldModel).filter(([idx]) => Number(idx) >= 0)));
+      }
+   }, [rowModesModel, rows]);
+
    const handleRowUpdate = React.useCallback(
-      (newRow: AttributeRow<T>, oldRow: AttributeRow<T>): AttributeRow<T> => {
+      async (newRow: GridComponentRow<T>, oldRow: GridComponentRow<T>): Promise<GridComponentRow<T>> => {
          const updatedRow = mergeRightToLeft(oldRow, newRow);
-         onUpdate(updatedRow);
+         if (updatedRow.idx === undefined || updatedRow.idx < 0) {
+            removeSyntheticRows();
+            await onAdd(updatedRow);
+            return { ...updatedRow, idx: -1, _action: 'delete' };
+         } else if (updatedRow.idx >= 0) {
+            await onUpdate(updatedRow);
+         }
          return updatedRow;
       },
-      [onUpdate]
+      [onAdd, onUpdate, removeSyntheticRows]
    );
+
+   const handleRowUpdateError = React.useCallback(async (error: any): Promise<void> => console.log(error), []);
 
    const handleRowModesModelChange = React.useCallback((newRowModesModel: GridRowModesModel): void => {
       setRowModesModel(newRowModesModel);
    }, []);
 
-   const getRowId = React.useCallback((attribute: AttributeRow<T>): number => attribute.idx, []);
+   const handleRowEditStop = React.useCallback(
+      (params: GridRowEditStopParams<T>): void => {
+         removeSyntheticRows();
+      },
+      [removeSyntheticRows]
+   );
 
-   React.useEffect(() => {
-      if (rows.length - attributes.length === -1) {
-         setRowModesModel(oldModel => ({ ...oldModel, [rows.length]: { mode: GridRowModes.Edit } }));
+   const createSyntheticRow = React.useCallback(() => {
+      const id = -1;
+      if (!rows.find(row => row.idx === -1)) {
+         setRows(oldRows => [...oldRows, { ...defaultEntry, idx: id }]);
       }
-   }, [attributes.length, rows]);
+
+      // put new row in edit mode
+      const fieldToFocus = columns.length > 0 ? columns[0].field : undefined;
+      setRowModesModel(oldModel => ({ ...oldModel, [id]: { mode: GridRowModes.Edit, fieldToFocus } }));
+   }, [columns, defaultEntry, rows]);
+
+   const deleteEntry = React.useCallback(
+      (row: GridComponentRow<T>) => {
+         if (row.idx < 0) {
+            removeSyntheticRows();
+         } else {
+            onDelete(row);
+         }
+      },
+      [onDelete, removeSyntheticRows]
+   );
+
+   const getRowId = React.useCallback((row: GridComponentRow<T>): number => row.idx, []);
 
    React.useEffect(() => {
-      setRows(attributes.map((data, idx) => ({ ...data, idx, isNew: false })));
-   }, [attributes]);
+      setRows(gridData.map((data, idx) => ({ ...data, idx })));
+   }, [gridData]);
 
    React.useEffect(() => {
-      const gridColumns = attributeColumns.map(column => ({
+      const allColumns = gridColumns.map(column => ({
          preProcessEditCellProps: params => validateRow(params, column),
          ...column
-      })) as GridColDef<AttributeRow<T>>[];
-      gridColumns.push({
+      })) as GridColDef<GridComponentRow<T>>[];
+      allColumns.push({
          field: 'actions',
          type: 'actions',
          cellClassName: 'actions',
@@ -100,7 +148,7 @@ export default function AttributeGrid<T extends GridValidRowModel>({
                key='delete'
                icon={<DeleteOutlined />}
                label='Delete'
-               onClick={() => onDelete(params.row)}
+               onClick={() => deleteEntry(params.row)}
                color='inherit'
             />,
             <GridActionsCellItem
@@ -121,22 +169,24 @@ export default function AttributeGrid<T extends GridValidRowModel>({
             />
          ]
       });
-      setColumns(gridColumns);
-   }, [attributeColumns, onDelete, onMoveDown, onMoveUp, rows.length, validateRow]);
+      setColumns(allColumns);
+   }, [gridColumns, deleteEntry, onMoveDown, onMoveUp, rows.length, validateRow]);
 
    const EditToolbar = React.useMemo(
       () => (
          <GridToolbarContainer>
-            <Button color='primary' startIcon={<AddIcon />} size='small' onClick={() => onNewAttribute()}>
-               Add Attribute
+            <Button color='primary' startIcon={<AddIcon />} size='small' onClick={() => createSyntheticRow()}>
+               {newEntryText}
             </Button>
          </GridToolbarContainer>
       ),
-      [onNewAttribute]
+      [createSyntheticRow, newEntryText]
    );
 
+   const NoRowsOverlay = React.useMemo(() => <GridOverlay>{noEntriesText ?? 'No Rows'}</GridOverlay>, [noEntriesText]);
+
    return (
-      <DataGrid<AttributeRow<T>>
+      <DataGrid<GridComponentRow<T>>
          rows={rows}
          getRowId={getRowId}
          columns={columns}
@@ -144,7 +194,9 @@ export default function AttributeGrid<T extends GridValidRowModel>({
          rowModesModel={rowModesModel}
          rowSelection={true}
          onRowModesModelChange={handleRowModesModelChange}
+         onRowEditStop={handleRowEditStop}
          processRowUpdate={handleRowUpdate}
+         onProcessRowUpdateError={handleRowUpdateError}
          hideFooter={true}
          density='compact'
          disableColumnFilter={true}
@@ -153,7 +205,7 @@ export default function AttributeGrid<T extends GridValidRowModel>({
          disableMultipleRowSelection={true}
          disableColumnMenu={true}
          disableDensitySelector={true}
-         slots={{ toolbar: () => EditToolbar }}
+         slots={{ toolbar: () => EditToolbar, noRowsOverlay: () => NoRowsOverlay }}
          sx={{
             fontSize: '1em',
             width: '100%',

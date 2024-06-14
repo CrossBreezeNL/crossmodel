@@ -17,7 +17,7 @@ import { v4 as uuid } from 'uuid';
 import { CompletionItemKind, InsertTextFormat, TextEdit } from 'vscode-languageserver-protocol';
 import type { Range } from 'vscode-languageserver-types';
 import { CrossModelServices } from './cross-model-module.js';
-import { AttributeMapping, RelationshipAttribute, isAttributeMapping, isReferenceSource } from './generated/ast.js';
+import { AttributeMapping, RelationshipAttribute, isAttributeMapping } from './generated/ast.js';
 import { fixDocument } from './util/ast-util.js';
 
 /**
@@ -105,7 +105,6 @@ export class CrossModelCompletionProvider extends DefaultCompletionProvider {
       const end = context.textDocument.positionAt(context.offset);
       const reference = context.textDocument.getText({ start, end }).trim();
       mapping.sources
-         .filter(isReferenceSource)
          .filter(source => reference.length === 0 || source.value.$refText.startsWith(reference))
          .forEach(source => {
             acceptor(context, {

@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { CrossModelRoot, CrossReferenceContext, Entity, ReferenceableElement, Relationship } from '@crossbreeze/protocol';
+import { CrossModelRoot, CrossReferenceContext, Entity, Mapping, ReferenceableElement, Relationship } from '@crossbreeze/protocol';
 import * as React from 'react';
 import { DispatchAction, ModelReducer } from './ModelReducer';
 
@@ -60,4 +60,8 @@ export function useEntity(): Entity {
 
 export function useRelationship(): Relationship {
    return useModel().relationship!;
+}
+
+export function useMapping(): Mapping {
+   return useModel().mapping!;
 }

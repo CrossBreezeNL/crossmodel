@@ -7,13 +7,17 @@ import { PropertyDataService } from '@theia/property-view/lib/browser/property-d
 import { PropertyViewContentWidget } from '@theia/property-view/lib/browser/property-view-content-widget';
 
 import { CrossModelWidget } from '@crossbreeze/core/lib/browser';
-import { ResolvedElement } from '@crossbreeze/protocol';
+import { CrossModelRoot, RenderProps } from '@crossbreeze/protocol';
 import { GLSPDiagramWidget, GlspSelection, getDiagramWidget } from '@eclipse-glsp/theia-integration';
 import { inject, injectable } from '@theia/core/shared/inversify';
+import * as deepEqual from 'fast-deep-equal';
+import { PropertiesRenderData } from './model-data-service';
 
 @injectable()
 export class ModelPropertyWidget extends CrossModelWidget implements PropertyViewContentWidget {
    @inject(ApplicationShell) protected shell: ApplicationShell;
+
+   protected renderData?: PropertiesRenderData;
 
    constructor() {
       super();
@@ -28,14 +32,19 @@ export class ModelPropertyWidget extends CrossModelWidget implements PropertyVie
          return;
       }
       if (propertyDataService) {
-         const selectionData = (await propertyDataService.providePropertyData(selection)) as ResolvedElement | undefined;
-         if (this.model?.uri.toString() === selectionData?.uri) {
-            return;
+         const renderData = (await propertyDataService.providePropertyData(selection)) as PropertiesRenderData | undefined;
+         if (this.model?.uri.toString() !== renderData?.uri || !deepEqual(this.renderData, renderData)) {
+            this.renderData = renderData;
+            this.setModel(renderData?.uri);
          }
-         this.setModel(selectionData?.uri);
       } else {
+         this.renderData = undefined;
          this.setModel();
       }
+   }
+
+   protected override getRenderProperties(root: CrossModelRoot): RenderProps {
+      return this.renderData?.renderProps ?? super.getRenderProperties(root);
    }
 
    protected override async closeModel(uri: string): Promise<void> {

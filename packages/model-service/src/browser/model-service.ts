@@ -69,7 +69,7 @@ export class ModelServiceImpl implements ModelService {
       return this.server.findReferenceableElements(args);
    }
 
-   resolveReference(reference: CrossReference): Promise<ResolvedElement<Element> | undefined> {
+   resolveReference(reference: CrossReference): Promise<ResolvedElement | undefined> {
       return this.server.resolveReference(reference);
    }
 

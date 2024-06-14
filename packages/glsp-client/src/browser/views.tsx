@@ -29,7 +29,7 @@ export class AttributeCompartmentView extends GCompartmentView {
       const vnode: any = (
          <g transform={translate}>
             <rect
-               class-attribute={true}
+               class-attribute-compartment={true}
                class-mouseover={compartment.hoverFeedback}
                class-selected={compartment.selected}
                x='0'

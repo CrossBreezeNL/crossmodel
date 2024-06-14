@@ -1,13 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import {
-   CrossModelRoot,
-   EntityAttribute,
-   EntityAttributeType,
-   RelationshipAttribute,
-   RelationshipAttributeType
-} from '@crossbreeze/protocol';
+import { AttributeMappingSource, CrossModelRoot, EntityAttribute, RelationshipAttribute } from '@crossbreeze/protocol';
 
 export interface ModelAction {
    type: string;
@@ -35,7 +29,8 @@ export interface EntityAttributeUpdateAction extends ModelAction {
 }
 
 export interface EntityAttributeAddEmptyAction extends ModelAction {
-   type: 'entity:attribute:add-empty';
+   type: 'entity:attribute:add-attribute';
+   attribute: EntityAttribute;
 }
 
 export interface EntityAttributeMoveUpAction extends ModelAction {
@@ -90,7 +85,8 @@ export interface RelationshipAttributeUpdateAction extends ModelAction {
 }
 
 export interface RelationshipAttributeAddEmptyAction extends ModelAction {
-   type: 'relationship:attribute:add-empty';
+   type: 'relationship:attribute:add-relationship';
+   attribute: RelationshipAttribute;
 }
 
 export interface RelationshipAttributeMoveUpAction extends ModelAction {
@@ -106,6 +102,43 @@ export interface RelationshipAttributeMoveDownAction extends ModelAction {
 export interface RelationshipAttributeDeleteAction extends ModelAction {
    type: 'relationship:attribute:delete-attribute';
    attributeIdx: number;
+}
+
+export interface AttributeMappingChangeExpressionAction extends ModelAction {
+   type: 'attribute-mapping:change-expression';
+   mappingIdx: number;
+   expression: string;
+}
+
+export interface AttributeMappingUpdateSourceAction extends ModelAction {
+   type: 'attribute-mapping:update-source';
+   mappingIdx: number;
+   sourceIdx: number;
+   source: AttributeMappingSource;
+}
+
+export interface AttributeMappingAddEmptySourceAction extends ModelAction {
+   type: 'attribute-mapping:add-source';
+   mappingIdx: number;
+   source: AttributeMappingSource;
+}
+
+export interface AttributeMappingMoveSourceUpAction extends ModelAction {
+   type: 'attribute-mapping:move-source-up';
+   mappingIdx: number;
+   sourceIdx: number;
+}
+
+export interface AttributeMappingMoveSourceDownAction extends ModelAction {
+   type: 'attribute-mapping:move-source-down';
+   mappingIdx: number;
+   sourceIdx: number;
+}
+
+export interface AttributeMappingDeleteSourceAction extends ModelAction {
+   type: 'attribute-mapping:delete-source';
+   mappingIdx: number;
+   sourceIdx: number;
 }
 
 export type DispatchAction =
@@ -127,7 +160,13 @@ export type DispatchAction =
    | RelationshipAttributeAddEmptyAction
    | RelationshipAttributeMoveUpAction
    | RelationshipAttributeMoveDownAction
-   | RelationshipAttributeDeleteAction;
+   | RelationshipAttributeDeleteAction
+   | AttributeMappingChangeExpressionAction
+   | AttributeMappingUpdateSourceAction
+   | AttributeMappingAddEmptySourceAction
+   | AttributeMappingMoveSourceUpAction
+   | AttributeMappingMoveSourceDownAction
+   | AttributeMappingDeleteSourceAction;
 
 export type ModelStateReason = DispatchAction['type'] | 'model:initial';
 
@@ -168,14 +207,8 @@ export function ModelReducer(state: ModelState, action: DispatchAction): ModelSt
          };
          break;
 
-      case 'entity:attribute:add-empty':
-         state.model.entity!.attributes.push({
-            $type: EntityAttributeType,
-            id: findName('Attribute', state.model.entity!.attributes, attr => attr.id!),
-            $globalId: 'toBeAssigned',
-            name: findName('New Attribute', state.model.entity!.attributes, attr => attr.name!),
-            datatype: 'Varchar'
-         });
+      case 'entity:attribute:add-attribute':
+         state.model.entity!.attributes.push(action.attribute);
          break;
 
       case 'entity:attribute:move-attribute-up':
@@ -222,10 +255,8 @@ export function ModelReducer(state: ModelState, action: DispatchAction): ModelSt
          state.model.relationship!.attributes[action.attributeIdx] = action.attribute;
          break;
 
-      case 'relationship:attribute:add-empty':
-         state.model.relationship!.attributes.push({
-            $type: RelationshipAttributeType
-         });
+      case 'relationship:attribute:add-relationship':
+         state.model.relationship!.attributes.push(action.attribute);
          break;
 
       case 'relationship:attribute:move-attribute-up':
@@ -248,21 +279,45 @@ export function ModelReducer(state: ModelState, action: DispatchAction): ModelSt
          state.model.relationship!.attributes.splice(action.attributeIdx, 1);
          break;
 
+      case 'attribute-mapping:change-expression':
+         state.model.mapping!.target.mappings[action.mappingIdx].expression = undefinedIfEmpty(action.expression);
+         break;
+
+      case 'attribute-mapping:update-source':
+         state.model.mapping!.target.mappings[action.mappingIdx].sources[action.sourceIdx] = { ...action.source };
+         break;
+
+      case 'attribute-mapping:add-source':
+         state.model.mapping!.target.mappings[action.mappingIdx].sources.push(action.source);
+         break;
+
+      case 'attribute-mapping:move-source-up':
+         if (action.sourceIdx > 0) {
+            const attributeMapping = state.model.mapping!.target.mappings[action.mappingIdx];
+            const temp = attributeMapping.sources[action.sourceIdx - 1];
+            attributeMapping.sources[action.sourceIdx - 1] = attributeMapping.sources[action.sourceIdx];
+            attributeMapping.sources[action.sourceIdx] = temp;
+         }
+         break;
+
+      case 'attribute-mapping:move-source-down':
+         if (action.sourceIdx < state.model.mapping!.target.mappings[action.mappingIdx].sources.length - 1) {
+            const attributeMapping = state.model.mapping!.target.mappings[action.mappingIdx];
+            const temp = attributeMapping.sources[action.sourceIdx + 1];
+            attributeMapping.sources[action.sourceIdx + 1] = attributeMapping.sources[action.sourceIdx];
+            attributeMapping.sources[action.sourceIdx] = temp;
+         }
+         break;
+
+      case 'attribute-mapping:delete-source':
+         state.model.mapping!.target.mappings[action.mappingIdx].sources.splice(action.sourceIdx, 1);
+         break;
+
       default: {
          throw Error('Unknown ModelReducer action');
       }
    }
    return state;
-}
-
-function findName<T>(suggestion: string, data: T[], nameGetter: (element: T) => string): string {
-   const names = data.map(nameGetter);
-   let name = suggestion;
-   let index = 1;
-   while (names.includes(name)) {
-      name = name + index++;
-   }
-   return name;
 }
 
 export function undefinedIfEmpty(string?: string): string | undefined {

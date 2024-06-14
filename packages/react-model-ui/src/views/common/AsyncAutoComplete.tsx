@@ -18,7 +18,7 @@ export default function AsyncAutoComplete<T>({
    textFieldProps,
    ...props
 }: AsyncAutoCompleteProps<T>): React.ReactElement {
-   const [open, setOpen] = React.useState(false);
+   const [open, setOpen] = React.useState(props.open);
    const [options, setOptions] = React.useState<readonly T[]>([]);
    const loading = open && options.length === 0;
 
@@ -39,12 +39,6 @@ export default function AsyncAutoComplete<T>({
          active = false;
       };
    }, [loading, optionLoader]);
-
-   React.useEffect(() => {
-      if (!open) {
-         setOptions([]);
-      }
-   }, [open]);
 
    return (
       <Autocomplete

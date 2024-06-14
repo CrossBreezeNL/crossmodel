@@ -30,9 +30,8 @@ mapping:
           - attribute: Name
             sources:
               - Customer.FirstName
-          - attribute: Name
-            sources:
               - Customer.LastName
+            expression: "CONCAT_WS({{Customer.FirstName}}, {{Customer.LastName}}, ' ')"
           - attribute: Country
             sources:
               - Country.Name
@@ -40,8 +39,6 @@ mapping:
             sources:
               - CalcAgeSourceObject.Age
           - attribute: FixedNumber
-            sources:
-              - 1337
+            expression: "1337"
           - attribute: FixedString
-            sources:
-              - "Fixed String"
+            expression: "Fixed String"

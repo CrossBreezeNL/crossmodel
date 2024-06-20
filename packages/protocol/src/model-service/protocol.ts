@@ -88,16 +88,16 @@ export interface SourceObject extends CrossModelElement, Identifiable {
    entity?: Reference<Entity>;
    join?: SourceObjectJoinType;
    dependencies: Array<SourceObjectDependency>;
+   conditions: Array<SourceObjectCondition>;
 }
 
 export const SourceObjectDependencyType = 'SourceObjectDependency';
 export interface SourceObjectDependency extends CrossModelElement {
    readonly $type: typeof SourceObjectDependencyType;
-   conditions: Array<SourceObjectDependencyCondition>;
    source: Reference<SourceObject>;
 }
 
-export type SourceObjectDependencyCondition = JoinCondition;
+export type SourceObjectCondition = JoinCondition;
 
 export const JoinConditionType = 'JoinCondition';
 export interface JoinCondition extends CrossModelElement {

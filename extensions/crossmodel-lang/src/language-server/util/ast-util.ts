@@ -99,7 +99,8 @@ export function createSourceObject(entity: Entity | AstNodeDescription, containe
       id: idProvider.findNextId(SourceObject, entityId + 'SourceObject', container),
       entity: { $refText, ref },
       join: 'from',
-      dependencies: []
+      dependencies: [],
+      conditions: []
    };
 }
 

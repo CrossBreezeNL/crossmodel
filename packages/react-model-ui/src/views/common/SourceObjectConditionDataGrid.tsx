@@ -11,9 +11,7 @@ import {
    ReferenceableElement,
    SourceObject,
    SourceObjectAttributeReferenceType,
-   SourceObjectDependency,
-   SourceObjectDependencyCondition,
-   SourceObjectDependencyType,
+   SourceObjectCondition,
    StringLiteralType,
    quote
 } from '@crossbreeze/protocol';
@@ -23,20 +21,18 @@ import { useModelDispatch, useModelQueryApi } from '../../ModelContext';
 import AsyncAutoComplete from './AsyncAutoComplete';
 import GridComponent, { GridComponentRow } from './GridComponent';
 
-export interface EditSourceObjectDependencyConditionComponentProps extends GridRenderEditCellParams<BinaryExpression> {
+export interface EditSourceObjectConditionComponentProps extends GridRenderEditCellParams<BinaryExpression> {
    field: 'left' | 'right';
    sourceObject: SourceObject;
-   dependency: SourceObjectDependency;
 }
 
-export function EditSourceObjectDependencyConditionComponent({
+export function EditSourceObjectConditionComponent({
    id,
    row,
    field,
    hasFocus,
-   sourceObject,
-   dependency
-}: EditSourceObjectDependencyConditionComponentProps): React.ReactElement {
+   sourceObject
+}: EditSourceObjectConditionComponentProps): React.ReactElement {
    const queryApi = useModelQueryApi();
    const gridApi = useGridApiContext();
 
@@ -44,14 +40,13 @@ export function EditSourceObjectDependencyConditionComponent({
       () => ({
          container: { globalId: sourceObject.$globalId },
          syntheticElements: [
-            { property: 'dependencies', type: SourceObjectDependencyType, source: { $refText: dependency.source } },
             { property: 'conditions', type: JoinConditionType },
             { property: 'expression', type: BinaryExpressionType },
             { property: field, type: SourceObjectAttributeReferenceType }
          ],
          property: 'value'
       }),
-      [dependency.source, field, sourceObject.$globalId]
+      [field, sourceObject.$globalId]
    );
    const referenceableElements = React.useCallback(() => queryApi.findReferenceableElements(referenceCtx), [queryApi, referenceCtx]);
 
@@ -87,33 +82,25 @@ export function EditSourceObjectDependencyConditionComponent({
    );
 }
 
-export type SourceObjectDependencyConditionRow = GridComponentRow<BinaryExpression>;
+export type SourceObjectConditionRow = GridComponentRow<BinaryExpression>;
 
-export interface SourceObjectDependencyConditionDataGridProps
-   extends Omit<DataGridProps<BinaryExpression>, 'rows' | 'columns' | 'processRowUpdate'> {
+export interface SourceObjectConditionDataGridProps extends Omit<DataGridProps<BinaryExpression>, 'rows' | 'columns' | 'processRowUpdate'> {
    mapping: Mapping;
    sourceObjectIdx: number;
-   dependencyIdx: number;
 }
 
-export function SourceObjectDependencyConditionDataGrid({
+export function SourceObjectConditionDataGrid({
    mapping,
    sourceObjectIdx,
-   dependencyIdx,
    ...props
-}: SourceObjectDependencyConditionDataGridProps): React.ReactElement {
+}: SourceObjectConditionDataGridProps): React.ReactElement {
    const dispatch = useModelDispatch();
 
    const sourceObject = React.useMemo<SourceObject>(() => mapping.sources[sourceObjectIdx], [mapping.sources, sourceObjectIdx]);
 
-   const dependency = React.useMemo<SourceObjectDependency>(
-      () => sourceObject?.dependencies[dependencyIdx],
-      [dependencyIdx, sourceObject?.dependencies]
-   );
-
    const conditions = React.useMemo<BinaryExpression[]>(
-      () => dependency?.conditions?.map(condition => condition.expression) ?? [],
-      [dependency?.conditions]
+      () => sourceObject?.conditions?.map(condition => condition.expression) ?? [],
+      [sourceObject?.conditions]
    );
 
    const defaultCondition = React.useMemo<BinaryExpression>(
@@ -127,52 +114,50 @@ export function SourceObjectDependencyConditionDataGrid({
    );
 
    const handleConditionUpdate = React.useCallback(
-      (row: SourceObjectDependencyConditionRow): SourceObjectDependencyConditionRow => {
+      (row: SourceObjectConditionRow): SourceObjectConditionRow => {
          if (row.left.value === '' && row.right.value === '' && row.op === '=') {
-            dispatch({ type: 'source-object:dependency:delete-condition', sourceObjectIdx, dependencyIdx, conditionIdx: row.idx });
+            dispatch({ type: 'source-object:delete-condition', sourceObjectIdx, conditionIdx: row.idx });
          } else {
             const expression: BinaryExpression & { idx?: number } = { ...row };
             delete expression.idx;
-            const condition: SourceObjectDependencyCondition = { $type: 'JoinCondition', expression };
+            const condition: SourceObjectCondition = { $type: 'JoinCondition', expression };
             dispatch({
-               type: 'source-object:dependency:update-condition',
+               type: 'source-object:update-condition',
                sourceObjectIdx,
-               dependencyIdx,
                conditionIdx: row.idx,
                condition
             });
          }
          return row;
       },
-      [dependencyIdx, dispatch, sourceObjectIdx]
+      [dispatch, sourceObjectIdx]
    );
 
    const handleAddCondition = React.useCallback(
-      (row: SourceObjectDependencyConditionRow): void => {
+      (row: SourceObjectConditionRow): void => {
          if (row.left.value !== '' || row.right.value !== '' || row.op !== '=') {
-            const condition: SourceObjectDependencyCondition = { $type: 'JoinCondition', expression: row };
-            dispatch({ type: 'source-object:dependency:add-condition', sourceObjectIdx, dependencyIdx, condition });
+            const condition: SourceObjectCondition = { $type: 'JoinCondition', expression: row };
+            dispatch({ type: 'source-object:add-condition', sourceObjectIdx, condition });
          }
       },
-      [dependencyIdx, dispatch, sourceObjectIdx]
+      [dispatch, sourceObjectIdx]
    );
 
    const handleConditionUpward = React.useCallback(
-      (row: SourceObjectDependencyConditionRow): void =>
-         dispatch({ type: 'source-object:dependency:move-condition-up', sourceObjectIdx, dependencyIdx, conditionIdx: row.idx }),
-      [dependencyIdx, dispatch, sourceObjectIdx]
+      (row: SourceObjectConditionRow): void =>
+         dispatch({ type: 'source-object:move-condition-up', sourceObjectIdx, conditionIdx: row.idx }),
+      [dispatch, sourceObjectIdx]
    );
 
    const handleConditionDownward = React.useCallback(
-      (row: SourceObjectDependencyConditionRow): void =>
-         dispatch({ type: 'source-object:dependency:move-condition-up', sourceObjectIdx, dependencyIdx, conditionIdx: row.idx }),
-      [dependencyIdx, dispatch, sourceObjectIdx]
+      (row: SourceObjectConditionRow): void =>
+         dispatch({ type: 'source-object:move-condition-up', sourceObjectIdx, conditionIdx: row.idx }),
+      [dispatch, sourceObjectIdx]
    );
 
    const handleConditionDelete = React.useCallback(
-      (row: SourceObjectDependencyConditionRow): void =>
-         dispatch({ type: 'source-object:dependency:delete-condition', sourceObjectIdx, dependencyIdx, conditionIdx: row.idx }),
-      [dependencyIdx, dispatch, sourceObjectIdx]
+      (row: SourceObjectConditionRow): void => dispatch({ type: 'source-object:delete-condition', sourceObjectIdx, conditionIdx: row.idx }),
+      [dispatch, sourceObjectIdx]
    );
 
    const columns: GridColDef<BinaryExpression>[] = React.useMemo(
@@ -184,9 +169,7 @@ export function SourceObjectDependencyConditionDataGrid({
             renderHeader: () => 'Left',
             valueGetter: (_value, row) => row.left,
             valueFormatter: (value, row) => (row.left.$type === 'StringLiteral' ? quote(row.left.value) : row.left.value),
-            renderEditCell: params => (
-               <EditSourceObjectDependencyConditionComponent {...params} field='left' sourceObject={sourceObject} dependency={dependency} />
-            ),
+            renderEditCell: params => <EditSourceObjectConditionComponent {...params} field='left' sourceObject={sourceObject} />,
             type: 'singleSelect'
          },
          {
@@ -204,41 +187,27 @@ export function SourceObjectDependencyConditionDataGrid({
             renderHeader: () => 'Right',
             valueGetter: (_value, row) => row.right,
             valueFormatter: (value, row) => (row.right.$type === 'StringLiteral' ? quote(row.right.value) : row.right.value),
-            renderEditCell: params => (
-               <EditSourceObjectDependencyConditionComponent
-                  {...params}
-                  field='right'
-                  sourceObject={sourceObject}
-                  dependency={dependency}
-               />
-            ),
+            renderEditCell: params => <EditSourceObjectConditionComponent {...params} field='right' sourceObject={sourceObject} />,
             type: 'singleSelect'
          }
       ],
-      [dependency, sourceObject]
+      [sourceObject]
    );
 
-   const editProps =
-      dependencyIdx >= 0
-         ? {
-              onAdd: handleAddCondition,
-              onDelete: handleConditionDelete,
-              onUpdate: handleConditionUpdate,
-              onMoveDown: handleConditionDownward,
-              onMoveUp: handleConditionUpward
-           }
-         : {};
    return (
       <GridComponent
          {...props}
          autoHeight
          gridColumns={columns}
          gridData={conditions}
-         label={mapping.sources[sourceObjectIdx]?.dependencies[dependencyIdx]?.source}
-         noEntriesText={dependencyIdx >= 0 ? 'No Conditions' : 'Please select a Source Dependency'}
+         noEntriesText={'No Conditions'}
          newEntryText='Add Condition'
          defaultEntry={defaultCondition}
-         {...editProps}
+         onAdd={handleAddCondition}
+         onDelete={handleConditionDelete}
+         onUpdate={handleConditionUpdate}
+         onMoveDown={handleConditionDownward}
+         onMoveUp={handleConditionUpward}
       />
    );
 }

@@ -38,12 +38,12 @@ export function isJoinType(item: unknown): item is JoinType {
     return item === 'from' || item === 'inner-join' || item === 'cross-join' || item === 'left-join' || item === 'apply';
 }
 
-export type SourceObjectDependencyCondition = JoinCondition;
+export type SourceObjectCondition = JoinCondition;
 
-export const SourceObjectDependencyCondition = 'SourceObjectDependencyCondition';
+export const SourceObjectCondition = 'SourceObjectCondition';
 
-export function isSourceObjectDependencyCondition(item: unknown): item is SourceObjectDependencyCondition {
-    return reflection.isInstance(item, SourceObjectDependencyCondition);
+export function isSourceObjectCondition(item: unknown): item is SourceObjectCondition {
+    return reflection.isInstance(item, SourceObjectCondition);
 }
 
 export interface Attribute extends AstNode {
@@ -161,7 +161,7 @@ export function isEntityNode(item: unknown): item is EntityNode {
 }
 
 export interface JoinCondition extends AstNode {
-    readonly $container: SourceObjectDependency;
+    readonly $container: SourceObject;
     readonly $type: 'JoinCondition';
     expression: BinaryExpression
 }
@@ -247,6 +247,7 @@ export function isRelationshipEdge(item: unknown): item is RelationshipEdge {
 export interface SourceObject extends AstNode {
     readonly $container: Mapping;
     readonly $type: 'SourceObject';
+    conditions: Array<SourceObjectCondition>
     dependencies: Array<SourceObjectDependency>
     entity: Reference<Entity>
     id: string
@@ -274,7 +275,6 @@ export function isSourceObjectAttributeReference(item: unknown): item is SourceO
 export interface SourceObjectDependency extends AstNode {
     readonly $container: SourceObject;
     readonly $type: 'SourceObjectDependency';
-    conditions: Array<SourceObjectDependencyCondition>
     source: Reference<SourceObject>
 }
 
@@ -386,8 +386,8 @@ export type CrossModelAstType = {
     SourceObject: SourceObject
     SourceObjectAttribute: SourceObjectAttribute
     SourceObjectAttributeReference: SourceObjectAttributeReference
+    SourceObjectCondition: SourceObjectCondition
     SourceObjectDependency: SourceObjectDependency
-    SourceObjectDependencyCondition: SourceObjectDependencyCondition
     StringLiteral: StringLiteral
     SystemDiagram: SystemDiagram
     TargetObject: TargetObject
@@ -397,7 +397,7 @@ export type CrossModelAstType = {
 export class CrossModelAstReflection extends AbstractAstReflection {
 
     getAllTypes(): string[] {
-        return ['Attribute', 'AttributeMapping', 'AttributeMappingSource', 'AttributeMappingTarget', 'BinaryExpression', 'BooleanExpression', 'CrossModelRoot', 'Entity', 'EntityAttribute', 'EntityNode', 'EntityNodeAttribute', 'JoinCondition', 'Mapping', 'NumberLiteral', 'Relationship', 'RelationshipAttribute', 'RelationshipEdge', 'SourceObject', 'SourceObjectAttribute', 'SourceObjectAttributeReference', 'SourceObjectDependency', 'SourceObjectDependencyCondition', 'StringLiteral', 'SystemDiagram', 'TargetObject', 'TargetObjectAttribute'];
+        return ['Attribute', 'AttributeMapping', 'AttributeMappingSource', 'AttributeMappingTarget', 'BinaryExpression', 'BooleanExpression', 'CrossModelRoot', 'Entity', 'EntityAttribute', 'EntityNode', 'EntityNodeAttribute', 'JoinCondition', 'Mapping', 'NumberLiteral', 'Relationship', 'RelationshipAttribute', 'RelationshipEdge', 'SourceObject', 'SourceObjectAttribute', 'SourceObjectAttributeReference', 'SourceObjectCondition', 'SourceObjectDependency', 'StringLiteral', 'SystemDiagram', 'TargetObject', 'TargetObjectAttribute'];
     }
 
     protected override computeIsSubtype(subtype: string, supertype: string): boolean {
@@ -411,7 +411,7 @@ export class CrossModelAstReflection extends AbstractAstReflection {
                 return this.isSubtype(EntityAttribute, supertype);
             }
             case JoinCondition: {
-                return this.isSubtype(SourceObjectDependencyCondition, supertype);
+                return this.isSubtype(SourceObjectCondition, supertype);
             }
             case NumberLiteral:
             case SourceObjectAttributeReference:
@@ -499,15 +499,8 @@ export class CrossModelAstReflection extends AbstractAstReflection {
                 return {
                     name: 'SourceObject',
                     mandatory: [
+                        { name: 'conditions', type: 'array' },
                         { name: 'dependencies', type: 'array' }
-                    ]
-                };
-            }
-            case 'SourceObjectDependency': {
-                return {
-                    name: 'SourceObjectDependency',
-                    mandatory: [
-                        { name: 'conditions', type: 'array' }
                     ]
                 };
             }

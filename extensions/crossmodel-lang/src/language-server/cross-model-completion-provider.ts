@@ -227,6 +227,7 @@ export class CrossModelCompletionProvider extends DefaultCompletionProvider {
    protected override filterCrossReference(context: CompletionContext, description: AstNodeDescription): boolean {
       return this.services.references.ScopeProvider.filterCompletion(
          description,
+         context.document,
          this.packageId!,
          context.node,
          context.features[context.features.length - 1].property

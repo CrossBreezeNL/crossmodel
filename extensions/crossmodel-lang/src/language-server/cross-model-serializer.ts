@@ -6,8 +6,6 @@ import { quote } from '@crossbreeze/protocol';
 import { isReference } from 'langium';
 import { Serializer } from '../model-server/serializer.js';
 import {
-   AttributeMappingSource,
-   AttributeMappingTarget,
    CrossModelRoot,
    Entity,
    JoinCondition,
@@ -17,7 +15,8 @@ import {
    SystemDiagram,
    isAttributeMappingSource,
    isAttributeMappingTarget,
-   isJoinCondition
+   isJoinCondition,
+   isSourceObjectDependency
 } from './generated/ast.js';
 import { isImplicitProperty } from './util/ast-util.js';
 
@@ -68,6 +67,7 @@ const ID_OR_IDREF = [
    'conditions',
    'parent',
    'child',
+   'dependencies',
    'value'
 ];
 
@@ -163,13 +163,12 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot> {
     */
    toSerializableObject<T extends object>(obj: T): T {
       // preprocess some objects that need special serialization
-      if (isAttributeMappingSource(obj)) {
-         // sources are simply serialized as their value instead of object structure
-         return this.serializeAttributeMappingSource(obj);
+      if (isAttributeMappingSource(obj) || isAttributeMappingTarget(obj)) {
+         // skip object structure
+         return this.resolvedValue(obj.value);
       }
-      if (isAttributeMappingTarget(obj)) {
-         // sources are simply serialized as their value instead of object structure
-         return this.serializeAttributeMappingTarget(obj);
+      if (isSourceObjectDependency(obj)) {
+         return this.resolvedValue(obj.source);
       }
       if (isJoinCondition(obj)) {
          // expressions are serialized not as the object tree but as user-level expression
@@ -199,14 +198,6 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot> {
          return value.$refText;
       }
       return value;
-   }
-
-   private serializeAttributeMappingSource(obj: AttributeMappingSource): any {
-      return this.resolvedValue(obj.value);
-   }
-
-   private serializeAttributeMappingTarget(obj: AttributeMappingTarget): any {
-      return this.resolvedValue(obj.value);
    }
 
    private serializeJoinCondition(obj: JoinCondition): any {

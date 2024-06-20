@@ -8,16 +8,16 @@ mapping:
         entity: ExampleCRM.Address
         join: left-join
         dependencies:
-          - source: Customer
-            conditions:
-              - Address.CustomerID = Customer.Id
+          - Customer
+        conditions:
+          - Address.CustomerID = Customer.Id
       - id: Country
         entity: ExampleMasterdata.Country
         join: left-join
         dependencies:
-          - source: Address
-            conditions:
-              - Country.Code = Address.CountryCode
+          - Address
+        conditions:
+          - Country.Code = Address.CountryCode
       - id: AddressSourceObject
         entity: ExampleCRM.Address
         join: from

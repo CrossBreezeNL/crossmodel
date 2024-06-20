@@ -30,20 +30,20 @@ SourceObject:
             ('-' dependencies+=SourceObjectDependency)*
         DEDENT
     )?
+    ('conditions' ':'
+        INDENT 
+            ('-' conditions+=SourceObjectCondition)*
+        DEDENT
+    )?
 ;
 
 JoinType returns string: 'from' | 'inner-join' | 'cross-join' | 'left-join' | 'apply';
 
 SourceObjectDependency:
-    'source' ':' source=[SourceObject:IDReference]
-    ('conditions' ':'
-        INDENT 
-            ('-' conditions+=SourceObjectDependencyCondition)*
-        DEDENT
-    )?
+    source=[SourceObject:IDReference]
 ;
 
-SourceObjectDependencyCondition: JoinCondition
+SourceObjectCondition: JoinCondition
 ;
 
 JoinCondition: expression=BinaryExpression

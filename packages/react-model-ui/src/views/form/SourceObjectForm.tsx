@@ -9,6 +9,7 @@ import { useMapping, useModelDispatch } from '../../ModelContext';
 import { modelComponent } from '../../ModelViewer';
 import { themed } from '../../ThemedViewer';
 import { FormSection } from '../FormSection';
+import { SourceObjectConditionDataGrid } from '../common/SourceObjectConditionDataGrid';
 import { SourceObjectDependencyDataGrid } from '../common/SourceObjectDependencyDataGrid';
 import { Form } from './Form';
 
@@ -57,6 +58,9 @@ export function SourceObjectForm(props: SourceObjectRenderProps): React.ReactEle
          </FormSection>
          <FormSection label='Dependencies'>
             <SourceObjectDependencyDataGrid mapping={mapping} sourceObjectIdx={props.sourceObjectIndex} />
+         </FormSection>
+         <FormSection label='Conditions'>
+            <SourceObjectConditionDataGrid mapping={mapping} sourceObjectIdx={props.sourceObjectIndex} />
          </FormSection>
       </Form>
    );

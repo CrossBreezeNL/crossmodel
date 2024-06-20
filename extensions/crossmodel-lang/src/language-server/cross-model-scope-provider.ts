@@ -15,6 +15,7 @@ import {
    AstNodeDescription,
    DefaultScopeProvider,
    EMPTY_SCOPE,
+   LangiumDocument,
    ReferenceInfo,
    Scope,
    StreamScope,
@@ -23,7 +24,13 @@ import {
 } from 'langium';
 import { CrossModelServices } from './cross-model-module.js';
 import { GlobalAstNodeDescription, PackageAstNodeDescription } from './cross-model-scope.js';
-import { isAttributeMapping, isRelationshipAttribute, isSourceObject, isSourceObjectAttributeReference } from './generated/ast.js';
+import {
+   isAttributeMapping,
+   isRelationshipAttribute,
+   isSourceObject,
+   isSourceObjectAttributeReference,
+   isSourceObjectDependency
+} from './generated/ast.js';
 import { fixDocument } from './util/ast-util.js';
 
 /**
@@ -145,10 +152,11 @@ export class CrossModelScopeProvider extends PackageScopeProvider {
 
    getCompletionScope(ctx: CrossReferenceContext): CompletionScope {
       const referenceInfo = this.referenceContextToInfo(ctx);
-      const packageId = this.packageManager.getPackageIdByDocument(getDocument(referenceInfo.container));
+      const document = getDocument(referenceInfo.container);
+      const packageId = this.packageManager.getPackageIdByDocument(document);
       const filteredDescriptions = this.getScope(referenceInfo)
          .getAllElements()
-         .filter(description => this.filterCompletion(description, packageId, referenceInfo.container, referenceInfo.property))
+         .filter(description => this.filterCompletion(description, document, packageId, referenceInfo.container, referenceInfo.property))
          .distinct(description => description.name);
       const elementScope = this.createScope(filteredDescriptions);
       return { elementScope, source: referenceInfo };
@@ -166,7 +174,13 @@ export class CrossModelScopeProvider extends PackageScopeProvider {
          .sort((left, right) => left.label.localeCompare(right.label));
    }
 
-   filterCompletion(description: AstNodeDescription, packageId: string, container?: AstNode, property?: string): boolean {
+   filterCompletion(
+      description: AstNodeDescription,
+      document: LangiumDocument<AstNode>,
+      packageId: string,
+      container?: AstNode,
+      property?: string
+   ): boolean {
       if (isRelationshipAttribute(container)) {
          // only show relevant attributes depending on the parent or child context
          if (property === 'child') {
@@ -183,11 +197,18 @@ export class CrossModelScopeProvider extends PackageScopeProvider {
          }
          return description.name !== this.idProvider.getLocalId(targetEntity);
       }
+      if (isSourceObjectDependency(container)) {
+         return (
+            !(description instanceof GlobalAstNodeDescription) &&
+            !(description instanceof PackageAstNodeDescription) &&
+            description.documentUri.toString() === document.uri.toString()
+         );
+      }
       if (isSourceObjectAttributeReference(container)) {
          // we are in a join condition of a source object, only show our own and our dependent source object references
-         const dependency = container.$container.$container.$container;
-         const sourceObject = dependency.$container;
-         return description.name.startsWith(dependency.source.$refText + '.') || description.name.startsWith(sourceObject.id + '.');
+         const sourceObject = container.$container.$container.$container;
+         const allowedOwners = [sourceObject.id, ...sourceObject.dependencies.map(dependency => dependency.source.$refText)];
+         return !!allowedOwners.find(allowedOwner => description.name.startsWith(allowedOwner + '.'));
       }
       return true;
    }

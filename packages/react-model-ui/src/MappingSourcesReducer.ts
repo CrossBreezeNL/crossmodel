@@ -2,7 +2,7 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 
-import { SourceObject, SourceObjectDependency, SourceObjectDependencyCondition, SourceObjectJoinType } from '@crossbreeze/protocol';
+import { SourceObjectCondition, SourceObjectDependency, SourceObjectJoinType } from '@crossbreeze/protocol';
 import { DispatchAction, ModelAction, ModelState, moveDown, moveUp } from './ModelReducer';
 
 export interface SourceObjectChangeJoinAction extends ModelAction {
@@ -43,38 +43,33 @@ export interface SourceObjectMoveDependencyDownAction extends ModelAction {
 }
 
 export interface SourceObjectDependencyUpdateConditionAction extends ModelAction {
-   type: 'source-object:dependency:update-condition';
+   type: 'source-object:update-condition';
    sourceObjectIdx: number;
-   dependencyIdx: number;
    conditionIdx: number;
-   condition: SourceObjectDependencyCondition;
+   condition: SourceObjectCondition;
 }
 
 export interface SourceObjectDependencyAddConditionAction extends ModelAction {
-   type: 'source-object:dependency:add-condition';
+   type: 'source-object:add-condition';
    sourceObjectIdx: number;
-   dependencyIdx: number;
-   condition: SourceObjectDependencyCondition;
+   condition: SourceObjectCondition;
 }
 
 export interface SourceObjectDependencyDeleteConditionAction extends ModelAction {
-   type: 'source-object:dependency:delete-condition';
+   type: 'source-object:delete-condition';
    sourceObjectIdx: number;
-   dependencyIdx: number;
    conditionIdx: number;
 }
 
 export interface SourceObjectDependencyMoveConditionUpAction extends ModelAction {
-   type: 'source-object:dependency:move-condition-up';
+   type: 'source-object:move-condition-up';
    sourceObjectIdx: number;
-   dependencyIdx: number;
    conditionIdx: number;
 }
 
 export interface SourceObjectDependencyMoveConditionDownAction extends ModelAction {
-   type: 'source-object:dependency:move-condition-down';
+   type: 'source-object:move-condition-down';
    sourceObjectIdx: number;
-   dependencyIdx: number;
    conditionIdx: number;
 }
 
@@ -85,17 +80,14 @@ export type SourceObjectDependencyAction =
    | SourceObjectMoveDependencyDownAction
    | SourceObjectDeleteDependencyAction;
 
-export type SourceObjectDependencyConditionAction =
+export type SourceObjectConditionAction =
    | SourceObjectDependencyUpdateConditionAction
    | SourceObjectDependencyAddConditionAction
    | SourceObjectDependencyDeleteConditionAction
    | SourceObjectDependencyMoveConditionUpAction
    | SourceObjectDependencyMoveConditionDownAction;
 
-export type MappingSourcesDispatchAction =
-   | SourceObjectChangeJoinAction
-   | SourceObjectDependencyAction
-   | SourceObjectDependencyConditionAction;
+export type MappingSourcesDispatchAction = SourceObjectChangeJoinAction | SourceObjectDependencyAction | SourceObjectConditionAction;
 
 export function isMappingSourcesDispatchAction(action: DispatchAction): action is MappingSourcesDispatchAction {
    return action.type.startsWith('source-object:');
@@ -136,37 +128,25 @@ export function MappingSourcesModelReducer(state: ModelState, action: MappingSou
          sourceObject.dependencies.splice(action.dependencyIdx, 1);
          break;
 
-      case 'source-object:dependency:update-condition':
-      case 'source-object:dependency:add-condition':
-      case 'source-object:dependency:delete-condition':
-      case 'source-object:dependency:move-condition-up':
-      case 'source-object:dependency:move-condition-down':
-         handleSourceObjectDependencyCondition(sourceObject, action);
+      case 'source-object:update-condition':
+         sourceObject.conditions[action.conditionIdx] = action.condition;
+         break;
+
+      case 'source-object:add-condition':
+         sourceObject.conditions.push(action.condition);
+         break;
+
+      case 'source-object:delete-condition':
+         sourceObject.conditions.splice(action.conditionIdx, 1);
+         break;
+
+      case 'source-object:move-condition-up':
+         moveUp(sourceObject.conditions, action.conditionIdx);
+         break;
+
+      case 'source-object:move-condition-down':
+         moveDown(sourceObject.conditions, action.conditionIdx);
          break;
    }
    return state;
-}
-
-function handleSourceObjectDependencyCondition(sourceObject: SourceObject, action: SourceObjectDependencyConditionAction): void {
-   const dependency = sourceObject.dependencies[action.dependencyIdx];
-   if (dependency === undefined) {
-      throw Error('Model error: Mapping action applied on undefined dependency object');
-   }
-   switch (action.type) {
-      case 'source-object:dependency:update-condition':
-         dependency.conditions[action.conditionIdx] = action.condition;
-         break;
-      case 'source-object:dependency:add-condition':
-         dependency.conditions.push(action.condition);
-         break;
-      case 'source-object:dependency:delete-condition':
-         dependency.conditions.splice(action.conditionIdx, 1);
-         break;
-      case 'source-object:dependency:move-condition-up':
-         moveUp(dependency.conditions, action.conditionIdx);
-         break;
-      case 'source-object:dependency:move-condition-down':
-         moveDown(dependency.conditions, action.conditionIdx);
-         break;
-   }
 }

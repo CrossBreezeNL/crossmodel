@@ -8,9 +8,9 @@ mapping:
         entity: ExampleDWH.CalcAge
         join: apply
         dependencies:
-          - source: CustomerSourceObject
-            conditions:
-              - CalcAgeSourceObject.BirthDate = CustomerSourceObject.BirthDate
+          - CustomerSourceObject
+        conditions:
+          - CalcAgeSourceObject.BirthDate = CustomerSourceObject.BirthDate
     target:
         entity: ExampleDWH.CompleteCustomer
         mappings:

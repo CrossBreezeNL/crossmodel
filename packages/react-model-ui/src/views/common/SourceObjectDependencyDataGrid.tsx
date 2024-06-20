@@ -10,13 +10,11 @@ import {
    SourceObjectType,
    TargetObjectType
 } from '@crossbreeze/protocol';
-import { Box, Divider } from '@mui/material';
-import { GridCallbackDetails, GridColDef, GridRenderEditCellParams, GridRowSelectionModel, useGridApiContext } from '@mui/x-data-grid';
+import { GridColDef, GridRenderEditCellParams, useGridApiContext } from '@mui/x-data-grid';
 import * as React from 'react';
 import { useMapping, useModelDispatch, useModelQueryApi } from '../../ModelContext';
 import AsyncAutoComplete from './AsyncAutoComplete';
 import GridComponent, { GridComponentRow } from './GridComponent';
-import { SourceObjectDependencyConditionDataGrid } from './SourceObjectDependencyConditionDataGrid';
 
 export interface EditSourceObjectDependencySourceComponentProps extends GridRenderEditCellParams<SourceObjectDependency> {}
 
@@ -78,7 +76,6 @@ export interface SourceObjectDependencyDataGridProps {
 }
 
 export function SourceObjectDependencyDataGrid({ mapping, sourceObjectIdx }: SourceObjectDependencyDataGridProps): React.ReactElement {
-   const [selected, setSelected] = React.useState<number>(-1);
    const dispatch = useModelDispatch();
 
    const dependencies = React.useMemo<SourceObjectDependency[]>(
@@ -149,35 +146,20 @@ export function SourceObjectDependencyDataGrid({ mapping, sourceObjectIdx }: Sou
       []
    );
 
-   const handleRowSelectionChange = React.useCallback(
-      (rowSelectionModel: GridRowSelectionModel, details: GridCallbackDetails): void => setSelected(Number(rowSelectionModel[0])),
-      []
-   );
-
    return (
-      <Box display='flex' flexDirection='row'>
-         <GridComponent
-            style={{ flexGrow: 1 }}
-            autoHeight
-            onRowSelectionModelChange={handleRowSelectionChange}
-            gridColumns={columns}
-            gridData={dependencies}
-            noEntriesText='No Dependencies'
-            newEntryText='Add Dependency'
-            defaultEntry={defaultDependency}
-            onAdd={handleAddDependency}
-            onDelete={handleDependencyDelete}
-            onUpdate={handleDependencyUpdate}
-            onMoveDown={handleDependencyDownward}
-            onMoveUp={handleDependencyUpward}
-         />
-         <Divider orientation='vertical' />
-         <SourceObjectDependencyConditionDataGrid
-            style={{ flexGrow: 2 }}
-            mapping={mapping}
-            sourceObjectIdx={sourceObjectIdx}
-            dependencyIdx={selected}
-         />
-      </Box>
+      <GridComponent
+         style={{ flexGrow: 1 }}
+         autoHeight
+         gridColumns={columns}
+         gridData={dependencies}
+         noEntriesText='No Dependencies'
+         newEntryText='Add Dependency'
+         defaultEntry={defaultDependency}
+         onAdd={handleAddDependency}
+         onDelete={handleDependencyDelete}
+         onUpdate={handleDependencyUpdate}
+         onMoveDown={handleDependencyDownward}
+         onMoveUp={handleDependencyUpward}
+      />
    );
 }

@@ -4,6 +4,8 @@ mapping:
       - id: Customer
         entity: ExampleCRM.Customer
         join: from
+        conditions:
+          - Customer.Id > 0
       - id: Address
         entity: ExampleCRM.Address
         join: left-join
@@ -21,9 +23,17 @@ mapping:
       - id: AddressSourceObject
         entity: ExampleCRM.Address
         join: inner-join
+        dependencies:
+          - Customer
+        conditions:
+          - AddressSourceObject.CustomerID = Customer.Id
       - id: CalcAgeSourceObject
         entity: CalcAge
-        join: inner-join
+        join: apply
+        dependencies:
+          - Customer
+        conditions:
+          - CalcAgeSourceObject.BirthDate = Customer.BirthDate
     target:
         entity: CompleteCustomer
         mappings:
@@ -42,3 +52,4 @@ mapping:
             expression: "1337"
           - attribute: FixedString
             expression: "Fixed String"
+          - attribute: Today

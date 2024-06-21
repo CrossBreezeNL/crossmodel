@@ -2,16 +2,20 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 import { findAllExpressions, getExpression, getExpressionPosition, getExpressionText } from '@crossbreeze/protocol';
-import { AstNode, ValidationAcceptor, ValidationChecks, findNodeForProperty } from 'langium';
+import { AstNode, Reference, ValidationAcceptor, ValidationChecks, findNodeForProperty } from 'langium';
 import type { CrossModelServices } from './cross-model-module.js';
 import { ID_PROPERTY, IdentifiableAstNode } from './cross-model-naming.js';
 import {
    Attribute,
    AttributeMapping,
    CrossModelAstType,
+   Mapping,
    Relationship,
    RelationshipEdge,
    SourceObject,
+   SourceObjectAttribute,
+   SourceObjectCondition,
+   SourceObjectDependency,
    TargetObject,
    TargetObjectAttribute,
    isEntity,
@@ -20,6 +24,7 @@ import {
    isRelationship,
    isSystemDiagram
 } from './generated/ast.js';
+import { findDocument, getOwner } from './util/ast-util.js';
 
 /**
  * Register custom validation checks.
@@ -31,10 +36,13 @@ export function registerValidationChecks(services: CrossModelServices): void {
    const checks: ValidationChecks<CrossModelAstType> = {
       AstNode: validator.checkNode,
       RelationshipEdge: validator.checkRelationshipEdge,
+      Mapping: validator.checkMapping,
       SourceObject: validator.checkSourceObject,
       Relationship: validator.checkRelationship,
       AttributeMapping: validator.checkAttributeMapping,
-      TargetObject: validator.checkTargetObject
+      TargetObject: validator.checkTargetObject,
+      SourceObjectDependency: validator.checkSourceObjectDependency,
+      SourceObjectCondition: validator.checkSourceObjectCondition
    };
    registry.register(checks, validator);
 }
@@ -132,6 +140,14 @@ export class CrossModelValidator {
       if (obj.join === 'from' && obj.dependencies.length > 0) {
          accept('error', 'Source objects with join type "from" cannot have dependencies.', { node: obj, property: 'dependencies' });
       }
+      const knownRefs: string[] = [];
+      for (const dependency of obj.dependencies) {
+         if (knownRefs.includes(dependency.source.$refText)) {
+            accept('warning', 'Avoid duplicate dependency entries.', { node: dependency });
+         } else if (dependency.source.$refText) {
+            knownRefs.push(dependency.source.$refText);
+         }
+      }
    }
 
    checkAttributeMapping(mapping: AttributeMapping, accept: ValidationAcceptor): void {
@@ -167,6 +183,53 @@ export class CrossModelValidator {
          } else if (mapping.attribute.value.ref) {
             knownAttributes.push(mapping.attribute.value.ref);
          }
+      }
+   }
+
+   checkMapping(mapping: Mapping, accept: ValidationAcceptor): void {
+      let hasJoinSourceObject = false;
+      for (const sourceObject of mapping.sources) {
+         if (sourceObject.join === 'from') {
+            if (!hasJoinSourceObject) {
+               hasJoinSourceObject = true;
+            } else {
+               accept('error', 'Only one source object with join type "from" is allowed per mapping.', {
+                  node: sourceObject,
+                  property: 'join'
+               });
+            }
+         }
+      }
+   }
+
+   checkSourceObjectDependency(dependency: SourceObjectDependency, accept: ValidationAcceptor): void {
+      if (dependency.source.ref && dependency.source.ref === dependency.$container) {
+         accept('error', 'Cannot reference yourself as dependency.', { node: dependency });
+      }
+      if (dependency.source.ref && findDocument(dependency.source.ref)?.uri.toString() !== findDocument(dependency)?.uri.toString()) {
+         accept('error', 'Can only reference source objects from the same mapping.', { node: dependency });
+      }
+   }
+
+   checkSourceObjectCondition(condition: SourceObjectCondition, accept: ValidationAcceptor): void {
+      const sourceObject = condition.$container;
+      const left = condition.expression.left;
+      const checkReference: (reference: Reference<SourceObjectAttribute>) => boolean = reference => {
+         if (!reference.ref) {
+            return true;
+         }
+         const referencedSourceObject = getOwner(reference.ref);
+         return (
+            referencedSourceObject === sourceObject ||
+            !!sourceObject.dependencies.find(dependency => dependency.source.ref === referencedSourceObject)
+         );
+      };
+      if (left.$type === 'SourceObjectAttributeReference' && !checkReference(left.value)) {
+         accept('error', 'Can only reference attributes from source objects that are listed as dependency.', { node: left });
+      }
+      const right = condition.expression.right;
+      if (right.$type === 'SourceObjectAttributeReference' && !checkReference(right.value)) {
+         accept('error', 'Can only reference attributes from source objects that are listed as dependency.', { node: right });
       }
    }
 }

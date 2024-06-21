@@ -20,10 +20,10 @@ mapping:
           - Country.Code = Address.CountryCode
       - id: AddressSourceObject
         entity: ExampleCRM.Address
-        join: from
+        join: inner-join
       - id: CalcAgeSourceObject
         entity: CalcAge
-        join: from
+        join: inner-join
     target:
         entity: CompleteCustomer
         mappings:

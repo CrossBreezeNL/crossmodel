@@ -5,40 +5,37 @@ import {
    CrossReferenceContext,
    Mapping,
    ReferenceableElement,
+   SourceObject,
    SourceObjectDependency,
-   SourceObjectDependencyType,
-   SourceObjectType,
-   TargetObjectType
+   SourceObjectDependencyType
 } from '@crossbreeze/protocol';
 import { GridColDef, GridRenderEditCellParams, useGridApiContext } from '@mui/x-data-grid';
 import * as React from 'react';
-import { useMapping, useModelDispatch, useModelQueryApi } from '../../ModelContext';
+import { useModelDispatch, useModelQueryApi } from '../../ModelContext';
 import AsyncAutoComplete from './AsyncAutoComplete';
 import GridComponent, { GridComponentRow } from './GridComponent';
 
-export interface EditSourceObjectDependencySourceComponentProps extends GridRenderEditCellParams<SourceObjectDependency> {}
+export interface EditSourceObjectDependencySourceComponentProps extends GridRenderEditCellParams<SourceObjectDependency> {
+   sourceObject: SourceObject;
+}
 
 export function EditSourceObjectDependencySourceComponent({
+   sourceObject,
    id,
    row,
    field,
    hasFocus
 }: EditSourceObjectDependencySourceComponentProps): React.ReactElement {
-   const mapping = useMapping();
    const queryApi = useModelQueryApi();
    const gridApi = useGridApiContext();
 
    const referenceCtx: CrossReferenceContext = React.useMemo(
       () => ({
-         container: { globalId: mapping.id },
-         syntheticElements: [
-            { property: 'target', type: TargetObjectType },
-            { property: 'sources', type: SourceObjectType },
-            { property: 'dependencies', type: SourceObjectDependencyType }
-         ],
+         container: { globalId: sourceObject.$globalId },
+         syntheticElements: [{ property: 'dependencies', type: SourceObjectDependencyType }],
          property: 'source'
       }),
-      [mapping]
+      [sourceObject.$globalId]
    );
    const referenceableElements = React.useCallback(() => queryApi.findReferenceableElements(referenceCtx), [queryApi, referenceCtx]);
 
@@ -78,10 +75,9 @@ export interface SourceObjectDependencyDataGridProps {
 export function SourceObjectDependencyDataGrid({ mapping, sourceObjectIdx }: SourceObjectDependencyDataGridProps): React.ReactElement {
    const dispatch = useModelDispatch();
 
-   const dependencies = React.useMemo<SourceObjectDependency[]>(
-      () => mapping.sources[sourceObjectIdx].dependencies,
-      [mapping.sources, sourceObjectIdx]
-   );
+   const sourceObject = React.useMemo<SourceObject>(() => mapping.sources[sourceObjectIdx], [mapping.sources, sourceObjectIdx]);
+
+   const dependencies = React.useMemo<SourceObjectDependency[]>(() => sourceObject.dependencies, [sourceObject.dependencies]);
 
    const defaultDependency = React.useMemo<SourceObjectDependency>(
       () => ({ $type: SourceObjectDependencyType, source: '', conditions: [] }),
@@ -139,7 +135,7 @@ export function SourceObjectDependencyDataGrid({ mapping, sourceObjectIdx }: Sou
             valueGetter: (_value, row) => row,
             valueSetter: (value, row) => value,
             valueFormatter: (value, row) => (value as SourceObjectDependency).source,
-            renderEditCell: params => <EditSourceObjectDependencySourceComponent {...params} />,
+            renderEditCell: params => <EditSourceObjectDependencySourceComponent {...params} sourceObject={sourceObject} />,
             type: 'singleSelect'
          }
       ],

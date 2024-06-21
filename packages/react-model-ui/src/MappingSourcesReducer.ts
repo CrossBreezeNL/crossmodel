@@ -2,7 +2,13 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 
-import { SourceObjectCondition, SourceObjectDependency, SourceObjectJoinType } from '@crossbreeze/protocol';
+import {
+   BooleanExpression,
+   SourceObjectAttributeReferenceType,
+   SourceObjectCondition,
+   SourceObjectDependency,
+   SourceObjectJoinType
+} from '@crossbreeze/protocol';
 import { DispatchAction, ModelAction, ModelState, moveDown, moveUp } from './ModelReducer';
 
 export interface SourceObjectChangeJoinAction extends ModelAction {
@@ -125,7 +131,15 @@ export function MappingSourcesModelReducer(state: ModelState, action: MappingSou
          break;
 
       case 'source-object:delete-dependency':
-         sourceObject.dependencies.splice(action.dependencyIdx, 1);
+         {
+            const dependency = sourceObject.dependencies[action.dependencyIdx];
+            const isDependencyExpression: (expr: BooleanExpression) => boolean = expr =>
+               expr.$type === SourceObjectAttributeReferenceType && expr.value.startsWith(dependency.source + '.');
+            sourceObject.conditions = sourceObject.conditions.filter(
+               condition => !isDependencyExpression(condition.expression.left) && !isDependencyExpression(condition.expression.right)
+            );
+            sourceObject.dependencies.splice(action.dependencyIdx, 1);
+         }
          break;
 
       case 'source-object:update-condition':

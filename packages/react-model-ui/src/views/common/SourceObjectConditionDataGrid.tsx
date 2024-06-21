@@ -176,7 +176,7 @@ export function SourceObjectConditionDataGrid({
             field: 'op',
             flex: 50,
             editable: true,
-            renderHeader: () => 'Op',
+            renderHeader: () => 'Operator',
             type: 'singleSelect',
             valueOptions: ['=', '!=', '<', '<=', '>', '>=']
          },

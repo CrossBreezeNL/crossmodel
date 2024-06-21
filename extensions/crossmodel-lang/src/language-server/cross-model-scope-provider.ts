@@ -197,10 +197,12 @@ export class CrossModelScopeProvider extends PackageScopeProvider {
          }
          return description.name !== this.idProvider.getLocalId(targetEntity);
       }
-      if (isSourceObjectDependency(container)) {
+      if (isSourceObjectDependency(container) || (isSourceObject(container) && property === 'dependencies')) {
+         const sourceObject = isSourceObjectDependency(container) ? container.$container : container;
          return (
             !(description instanceof GlobalAstNodeDescription) &&
             !(description instanceof PackageAstNodeDescription) &&
+            !(description.name === sourceObject.id) &&
             description.documentUri.toString() === document.uri.toString()
          );
       }

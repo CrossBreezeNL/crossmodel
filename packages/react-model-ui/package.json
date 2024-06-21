@@ -35,9 +35,9 @@
     "@crossbreeze/protocol": "0.0.0",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
-    "@mui/icons-material": "^5.15.15",
-    "@mui/material": "^5.15.15",
-    "@mui/x-data-grid": "^7.1.1",
+    "@mui/icons-material": "^5.15.20",
+    "@mui/material": "^5.15.20",
+    "@mui/x-data-grid": "^7.6.2",
     "immer": "^10.0.3",
     "react": "18.2.0",
     "use-immer": "^0.9.0"

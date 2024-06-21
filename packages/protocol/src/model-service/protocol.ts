@@ -82,10 +82,55 @@ export interface Mapping extends CrossModelElement, Identifiable {
 }
 
 export const SourceObjectType = 'SourceObject';
+export type SourceObjectJoinType = 'from' | 'inner-join' | 'cross-join' | 'left-join' | 'apply';
 export interface SourceObject extends CrossModelElement, Identifiable {
    readonly $type: typeof SourceObjectType;
    entity?: Reference<Entity>;
-   join?: 'from' | 'inner-join' | 'cross-join' | 'left-join' | 'apply';
+   join?: SourceObjectJoinType;
+   dependencies: Array<SourceObjectDependency>;
+   conditions: Array<SourceObjectCondition>;
+}
+
+export const SourceObjectDependencyType = 'SourceObjectDependency';
+export interface SourceObjectDependency extends CrossModelElement {
+   readonly $type: typeof SourceObjectDependencyType;
+   source: Reference<SourceObject>;
+}
+
+export type SourceObjectCondition = JoinCondition;
+
+export const JoinConditionType = 'JoinCondition';
+export interface JoinCondition extends CrossModelElement {
+   readonly $type: typeof JoinConditionType;
+   expression: BinaryExpression;
+}
+
+export const BinaryExpressionType = 'BinaryExpression';
+export interface BinaryExpression extends CrossModelElement {
+   readonly $type: typeof BinaryExpressionType;
+   left: BooleanExpression;
+   op: '!=' | '<' | '<=' | '=' | '>' | '>=';
+   right: BooleanExpression;
+}
+
+export type BooleanExpression = NumberLiteral | SourceObjectAttributeReference | StringLiteral;
+
+export const NumberLiteralType = 'NumberLiteral';
+export interface NumberLiteral extends CrossModelElement {
+   readonly $type: typeof NumberLiteralType;
+   value: number;
+}
+
+export const StringLiteralType = 'StringLiteral';
+export interface StringLiteral extends CrossModelElement {
+   readonly $type: typeof StringLiteralType;
+   value: string;
+}
+
+export const SourceObjectAttributeReferenceType = 'SourceObjectAttributeReference';
+export interface SourceObjectAttributeReference extends CrossModelElement {
+   readonly $type: typeof SourceObjectAttributeReferenceType;
+   value: Reference<SourceObjectAttribute>;
 }
 
 export const TargetObjectType = 'TargetObject';

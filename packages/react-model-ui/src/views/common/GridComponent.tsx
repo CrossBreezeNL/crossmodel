@@ -5,6 +5,7 @@ import { DeleteOutlined } from '@mui/icons-material';
 import AddIcon from '@mui/icons-material/Add';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import { Box, Typography } from '@mui/material';
 import Button from '@mui/material/Button';
 import {
    DataGrid,
@@ -32,23 +33,25 @@ export type ValidationFunction<T> = <P extends keyof T, V extends T[P]>(field: P
 export interface GridComponentProps<T extends GridValidRowModel> extends Omit<DataGridProps<T>, 'rows' | 'columns' | 'processRowUpdate'> {
    gridData: T[];
    gridColumns: GridColDef<T>[];
-   noEntriesText?: string;
-   newEntryText: string;
    defaultEntry: T;
-   onAdd: (toAdd: GridComponentRow<T>) => void | GridComponentRow<T> | Promise<void | GridComponentRow<T>>;
-   onUpdate: (toUpdate: GridComponentRow<T>) => void | GridComponentRow<T> | Promise<void | GridComponentRow<T>>;
-   onDelete: (toDelete: GridComponentRow<T>) => void;
-   onMoveUp: (toMoveUp: GridComponentRow<T>) => void;
-   onMoveDown: (toMoveDown: GridComponentRow<T>) => void;
+   label?: string;
+   noEntriesText?: string;
+   newEntryText?: string;
+   onAdd?: (toAdd: GridComponentRow<T>) => void | GridComponentRow<T> | Promise<void | GridComponentRow<T>>;
+   onUpdate?: (toUpdate: GridComponentRow<T>) => void | GridComponentRow<T> | Promise<void | GridComponentRow<T>>;
+   onDelete?: (toDelete: GridComponentRow<T>) => void;
+   onMoveUp?: (toMoveUp: GridComponentRow<T>) => void;
+   onMoveDown?: (toMoveDown: GridComponentRow<T>) => void;
    validateField?: ValidationFunction<T>;
 }
 
 export default function GridComponent<T extends GridValidRowModel>({
    gridData,
    gridColumns,
+   defaultEntry,
+   label,
    noEntriesText,
    newEntryText,
-   defaultEntry,
    onAdd,
    onUpdate,
    onDelete,
@@ -83,10 +86,10 @@ export default function GridComponent<T extends GridValidRowModel>({
          const updatedRow = mergeRightToLeft(oldRow, newRow);
          if (updatedRow.idx === undefined || updatedRow.idx < 0) {
             removeSyntheticRows();
-            await onAdd(updatedRow);
+            await onAdd?.(updatedRow);
             return { ...updatedRow, idx: -1, _action: 'delete' };
          } else if (updatedRow.idx >= 0) {
-            await onUpdate(updatedRow);
+            await onUpdate?.(updatedRow);
          }
          return updatedRow;
       },
@@ -122,7 +125,7 @@ export default function GridComponent<T extends GridValidRowModel>({
          if (row.idx < 0) {
             removeSyntheticRows();
          } else {
-            onDelete(row);
+            onDelete?.(row);
          }
       },
       [onDelete, removeSyntheticRows]
@@ -150,22 +153,23 @@ export default function GridComponent<T extends GridValidRowModel>({
                label='Delete'
                onClick={() => deleteEntry(params.row)}
                color='inherit'
+               disabled={deleteEntry === undefined}
             />,
             <GridActionsCellItem
                key='move-up'
                icon={<ArrowUpwardIcon />}
                label='Move Up'
-               onClick={() => onMoveUp(params.row)}
+               onClick={() => onMoveUp?.(params.row)}
                color='inherit'
-               disabled={params.row.idx === 0}
+               disabled={onMoveUp === undefined || params.row.idx === 0}
             />,
             <GridActionsCellItem
                key='move-down'
                icon={<ArrowDownwardIcon />}
                label='Move Down'
-               onClick={() => onMoveDown(params.row)}
+               onClick={() => onMoveDown?.(params.row)}
                color='inherit'
-               disabled={params.row.idx === rows.length - 1}
+               disabled={onMoveDown === undefined || params.row.idx === rows.length - 1}
             />
          ]
       });
@@ -175,15 +179,31 @@ export default function GridComponent<T extends GridValidRowModel>({
    const EditToolbar = React.useMemo(
       () => (
          <GridToolbarContainer>
-            <Button color='primary' startIcon={<AddIcon />} size='small' onClick={() => createSyntheticRow()}>
-               {newEntryText}
+            <Button
+               color='primary'
+               startIcon={<AddIcon />}
+               size='small'
+               onClick={() => createSyntheticRow()}
+               disabled={onAdd === undefined}
+            >
+               {newEntryText ?? 'Add'}
             </Button>
+            {label ? (
+               <>
+                  <Box sx={{ flexGrow: 1 }} />
+                  <Typography variant='overline' sx={{ paddingX: '5px', color: '#007acc' }}>
+                     {label}
+                  </Typography>
+               </>
+            ) : (
+               <></>
+            )}
          </GridToolbarContainer>
       ),
-      [createSyntheticRow, newEntryText]
+      [createSyntheticRow, label, newEntryText, onAdd]
    );
 
-   const NoRowsOverlay = React.useMemo(() => <GridOverlay>{noEntriesText ?? 'No Rows'}</GridOverlay>, [noEntriesText]);
+   const NoRowsOverlay = React.useMemo(() => <GridOverlay>{noEntriesText ?? 'No Entries'}</GridOverlay>, [noEntriesText]);
 
    return (
       <DataGrid<GridComponentRow<T>>
@@ -244,6 +264,11 @@ export default function GridComponent<T extends GridValidRowModel>({
             '& .Mui-error': {
                backgroundColor: 'var(--theia-inputValidation-errorBackground)',
                color: 'var(--theia-inputValidation-errorBorder)'
+            },
+            '& .MuiDataGrid-columnHeader': {
+               textTransform: 'uppercase',
+               fontSize: '0.75em',
+               letterSpacing: '0.1em'
             }
          }}
          {...props}

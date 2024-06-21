@@ -25,35 +25,38 @@ SourceObject:
     'id' ':' id=ID
     'entity' ':' entity=[Entity:IDReference] // implies attributes through entity
     'join' ':' join=JoinType
-    ('relations' ':'
+    ('dependencies' ':'
         INDENT
-            ('-' relations+=SourceObjectRelations)*
+            ('-' dependencies+=SourceObjectDependency)*
+        DEDENT
+    )?
+    ('conditions' ':'
+        INDENT 
+            ('-' conditions+=SourceObjectCondition)*
         DEDENT
     )?
 ;
 
 JoinType returns string: 'from' | 'inner-join' | 'cross-join' | 'left-join' | 'apply';
 
-SourceObjectRelations:
-    'source' ':' source=[SourceObject:IDReference]
-    'conditions' ':'
-        INDENT 
-            ('-' conditions+=SourceObjectCondition)*
-        DEDENT
+SourceObjectDependency:
+    source=[SourceObject:IDReference]
 ;
 
-SourceObjectCondition: RelationshipCondition | JoinCondition;
-
-RelationshipCondition:
-    'relationship' ':' relationship=[Relationship:IDReference]
+SourceObjectCondition: JoinCondition
 ;
 
-JoinCondition:
-    'join' ':' join=JoinExpression
+JoinCondition: expression=BinaryExpression
 ;
 
-JoinExpression:
-    source=[SourceObjectAttribute:IDReference] operator='=' target=[SourceObjectAttribute:IDReference]
+BinaryExpression:
+    left=PrimaryExpression op=('=' | '!=' | '<' | '<=' | '>' | '>=') right=PrimaryExpression
+;
+
+PrimaryExpression infers BooleanExpression:
+    {infer NumberLiteral} value=NUMBER |
+    {infer StringLiteral} value=STRING |
+    {infer SourceObjectAttributeReference} value=[SourceObjectAttribute:IDReference]
 ;
 
 TargetObject:

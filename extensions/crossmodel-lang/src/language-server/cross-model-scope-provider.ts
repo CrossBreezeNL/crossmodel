@@ -15,6 +15,7 @@ import {
    AstNodeDescription,
    DefaultScopeProvider,
    EMPTY_SCOPE,
+   LangiumDocument,
    ReferenceInfo,
    Scope,
    StreamScope,
@@ -22,8 +23,14 @@ import {
    getDocument
 } from 'langium';
 import { CrossModelServices } from './cross-model-module.js';
-import { GlobalAstNodeDescription, PackageAstNodeDescription, isGlobalDescriptionForLocalPackage } from './cross-model-scope.js';
-import { isAttributeMapping, isRelationshipAttribute, isSourceObject } from './generated/ast.js';
+import { GlobalAstNodeDescription, PackageAstNodeDescription } from './cross-model-scope.js';
+import {
+   isAttributeMapping,
+   isRelationshipAttribute,
+   isSourceObject,
+   isSourceObjectAttributeReference,
+   isSourceObjectDependency
+} from './generated/ast.js';
 import { fixDocument } from './util/ast-util.js';
 
 /**
@@ -108,6 +115,7 @@ export class CrossModelScopeProvider extends PackageScopeProvider {
       }
       for (const segment of ctx.syntheticElements ?? []) {
          container = {
+            ...segment,
             $container: container,
             $containerProperty: segment.property,
             $type: segment.type
@@ -144,10 +152,11 @@ export class CrossModelScopeProvider extends PackageScopeProvider {
 
    getCompletionScope(ctx: CrossReferenceContext): CompletionScope {
       const referenceInfo = this.referenceContextToInfo(ctx);
-      const packageId = this.packageManager.getPackageIdByDocument(getDocument(referenceInfo.container));
+      const document = getDocument(referenceInfo.container);
+      const packageId = this.packageManager.getPackageIdByDocument(document);
       const filteredDescriptions = this.getScope(referenceInfo)
          .getAllElements()
-         .filter(description => this.filterCompletion(description, packageId, referenceInfo.container, referenceInfo.property))
+         .filter(description => this.filterCompletion(description, document, packageId, referenceInfo.container, referenceInfo.property))
          .distinct(description => description.name);
       const elementScope = this.createScope(filteredDescriptions);
       return { elementScope, source: referenceInfo };
@@ -161,10 +170,17 @@ export class CrossModelScopeProvider extends PackageScopeProvider {
             type: description.type,
             label: description.name
          }))
-         .toArray();
+         .toArray()
+         .sort((left, right) => left.label.localeCompare(right.label));
    }
 
-   filterCompletion(description: AstNodeDescription, packageId: string, container?: AstNode, property?: string): boolean {
+   filterCompletion(
+      description: AstNodeDescription,
+      document: LangiumDocument<AstNode>,
+      packageId: string,
+      container?: AstNode,
+      property?: string
+   ): boolean {
       if (isRelationshipAttribute(container)) {
          // only show relevant attributes depending on the parent or child context
          if (property === 'child') {
@@ -181,10 +197,20 @@ export class CrossModelScopeProvider extends PackageScopeProvider {
          }
          return description.name !== this.idProvider.getLocalId(targetEntity);
       }
-      if (isGlobalDescriptionForLocalPackage(description, packageId)) {
-         // we want to keep fully qualified names in the scope so we can do proper linking
-         // but want to hide it from the user for local options, i.e., if we are in the same project we can skip the project name
-         return false;
+      if (isSourceObjectDependency(container) || (isSourceObject(container) && property === 'dependencies')) {
+         const sourceObject = isSourceObjectDependency(container) ? container.$container : container;
+         return (
+            !(description instanceof GlobalAstNodeDescription) &&
+            !(description instanceof PackageAstNodeDescription) &&
+            !(description.name === sourceObject.id) &&
+            description.documentUri.toString() === document.uri.toString()
+         );
+      }
+      if (isSourceObjectAttributeReference(container)) {
+         // we are in a join condition of a source object, only show our own and our dependent source object references
+         const sourceObject = container.$container.$container.$container;
+         const allowedOwners = [sourceObject.id, ...sourceObject.dependencies.map(dependency => dependency.source.$refText)];
+         return !!allowedOwners.find(allowedOwner => description.name.startsWith(allowedOwner + '.'));
       }
       return true;
    }

@@ -12,7 +12,9 @@ import {
    ModelProviderProps,
    OpenCallback,
    RelationshipComponent,
-   SaveCallback
+   SaveCallback,
+   SourceObjectComponent,
+   SourceObjectRenderProps
 } from '@crossbreeze/react-model-ui';
 import { Emitter, Event } from '@theia/core';
 import { LabelProvider, Message, OpenerService, ReactWidget, Saveable, open } from '@theia/core/lib/browser';
@@ -229,10 +231,24 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
          );
       }
       if (this.model?.root?.mapping) {
-         const renderProps = this.getRenderProperties(this.model.root) as unknown as MappingRenderProps;
+         const renderProps = this.getRenderProperties(this.model.root) as unknown as MappingRenderProps & SourceObjectRenderProps;
          if (renderProps?.mappingIndex >= 0) {
             return (
                <MappingComponent
+                  dirty={this.dirty}
+                  model={this.model.root}
+                  onModelUpdate={this.handleUpdateRequest}
+                  onModelSave={this.handleSaveRequest}
+                  onModelOpen={this.handleOpenRequest}
+                  modelQueryApi={this.modelService}
+                  theme={this.themeService.getCurrentTheme().type}
+                  {...renderProps}
+               />
+            );
+         }
+         if (renderProps?.sourceObjectIndex >= 0) {
+            return (
+               <SourceObjectComponent
                   dirty={this.dirty}
                   model={this.model.root}
                   onModelUpdate={this.handleUpdateRequest}

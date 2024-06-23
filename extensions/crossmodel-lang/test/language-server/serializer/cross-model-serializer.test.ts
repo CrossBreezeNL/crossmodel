@@ -41,6 +41,7 @@ describe('CrossModelLexer', () => {
 
          crossModelRoot.entity.attributes = [
             {
+               identifier: false,
                $container: crossModelRoot.entity,
                $type: 'EntityAttribute',
                id: 'Attribute1',
@@ -48,6 +49,7 @@ describe('CrossModelLexer', () => {
                datatype: 'Datatype Attribute 1'
             },
             {
+               identifier: false,
                $container: crossModelRoot.entity,
                $type: 'EntityAttribute',
                id: 'Attribute2',
@@ -66,6 +68,7 @@ describe('CrossModelLexer', () => {
          };
          crossModelRootWithAttributesDifPlace.entity.attributes = [
             {
+               identifier: false,
                $container: crossModelRoot.entity,
                $type: 'EntityAttribute',
                id: 'Attribute1',
@@ -73,6 +76,7 @@ describe('CrossModelLexer', () => {
                datatype: 'Datatype Attribute 1'
             },
             {
+               identifier: false,
                $container: crossModelRoot.entity,
                $type: 'EntityAttribute',
                id: 'Attribute2',

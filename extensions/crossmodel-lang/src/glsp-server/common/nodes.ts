@@ -66,6 +66,8 @@ export class AttributeCompartmentBuilder extends GCompartmentBuilder<AttributeCo
          .layout('hbox')
          .addLayoutOption('paddingBottom', 3)
          .addLayoutOption('paddingTop', 3)
+         .addLayoutOption('paddingLeft', 3)
+         .addLayoutOption('paddingRight', 3)
          .addLayoutOption('hGap', 3);
 
       const leftPortId = createLeftPortId(attributeId);

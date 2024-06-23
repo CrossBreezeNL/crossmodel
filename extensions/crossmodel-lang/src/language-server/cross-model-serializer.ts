@@ -21,6 +21,7 @@ import {
 import { isImplicitProperty } from './util/ast-util.js';
 
 const PROPERTY_ORDER = [
+   'identifier',
    'id',
    'name',
    'datatype',
@@ -116,6 +117,9 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot> {
          .map(([objKey, objValue]) => {
             if (Array.isArray(objValue) && objValue.length === 0) {
                return;
+            }
+            if (objKey === 'identifier' && objValue === false) {
+               return '';
             }
 
             const propKey = this.serializeKey(objKey);

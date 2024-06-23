@@ -27,7 +27,7 @@ export class AttributeCompartmentView extends GCompartmentView {
    override render(compartment: Readonly<AttributeCompartment>, context: RenderingContext): VNode | undefined {
       const translate = `translate(${compartment.bounds.x}, ${compartment.bounds.y})`;
       const vnode: any = (
-         <g transform={translate}>
+         <g transform={translate} class-identifier={compartment.args?.identifier}>
             <rect
                class-attribute-compartment={true}
                class-mouseover={compartment.hoverFeedback}
@@ -38,6 +38,15 @@ export class AttributeCompartmentView extends GCompartmentView {
                height={Math.max(compartment.size.height, 0)}
             ></rect>
             {context.renderChildren(compartment) as ReactNode}
+            {compartment.args?.identifier && (
+               <line
+                  class-identifier={true}
+                  x1={(compartment.layoutOptions?.paddingLeft as number | undefined) ?? 0}
+                  y1={Math.max(compartment.size.height - 1, 0)}
+                  x2={Math.max(compartment.size.width, 0) - ((compartment.layoutOptions?.paddingRight as number | undefined) ?? 0)}
+                  y2={Math.max(compartment.size.height - 1, 0)}
+               />
+            )}
          </g>
       ) as any;
 

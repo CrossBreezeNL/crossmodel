@@ -96,6 +96,13 @@
    baseline-shift: 2px;
 }
 
+.sprotty line.identifier {
+   stroke: black;
+   stroke-width: 0.75px;
+   stroke-dasharray: none;
+   stroke-linecap: round;
+}
+
 .sprotty[id^='system-diagram'] .tool-palette {
    top: 11px;
    right: 11px;

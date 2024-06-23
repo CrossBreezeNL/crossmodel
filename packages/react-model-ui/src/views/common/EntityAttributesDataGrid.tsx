@@ -27,7 +27,8 @@ export function EntityAttributesDataGrid(): React.ReactElement {
                id: attribute.id,
                name: attribute.name,
                datatype: attribute.datatype,
-               description: attribute.description
+               description: attribute.description,
+               identifier: attribute.identifier
             }
          });
          return attribute;
@@ -89,6 +90,7 @@ export function EntityAttributesDataGrid(): React.ReactElement {
 
    const columns = React.useMemo<GridColDef[]>(
       () => [
+         { field: 'identifier', headerName: 'Id', maxWidth: 50, editable: true, type: 'boolean' },
          {
             field: 'name',
             headerName: 'Name',
@@ -100,6 +102,7 @@ export function EntityAttributesDataGrid(): React.ReactElement {
             field: 'datatype',
             headerName: 'Data type',
             editable: true,
+            flex: 100,
             type: 'singleSelect',
             valueOptions: ['Integer', 'Float', 'Char', 'Varchar', 'Bool']
          },

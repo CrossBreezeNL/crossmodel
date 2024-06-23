@@ -5,7 +5,7 @@ import { ENTITY_NODE_TYPE, REFERENCE_CONTAINER_TYPE, REFERENCE_PROPERTY, REFEREN
 import { ArgsUtil, GNode, GNodeBuilder } from '@eclipse-glsp/server';
 import { EntityNode } from '../../../language-server/generated/ast.js';
 import { getAttributes } from '../../../language-server/util/ast-util.js';
-import { createAttributesCompartment, createHeader } from '../../common/nodes.js';
+import { AttributeCompartment, AttributesCompartmentBuilder, createHeader } from '../../common/nodes.js';
 import { SystemModelIndex } from './system-model-index.js';
 
 export class GEntityNode extends GNode {
@@ -34,7 +34,13 @@ export class GEntityNodeBuilder extends GNodeBuilder<GEntityNode> {
 
       // Add the children of the node
       const attributes = getAttributes(node);
-      this.add(createAttributesCompartment(attributes, this.proxy.id, index));
+      const attributesCompartment = new AttributesCompartmentBuilder().set(this.proxy.id);
+      for (const attribute of attributes) {
+         const attributeNode = AttributeCompartment.builder().set(attribute, index);
+         attributeNode.addArg('identifier', attribute.identifier);
+         attributesCompartment.add(attributeNode.build());
+      }
+      this.add(attributesCompartment.build());
 
       // The DiagramNode in the langium file holds the coordinates of node
       this.layout('vbox')

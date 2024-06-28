@@ -138,3 +138,8 @@
 .command-palette {
    animation: none;
 }
+
+.attribute.identifier .icon-path {
+   transform: scale(0.0105) translate(-400px, 1375px);
+   fill: #000;
+}

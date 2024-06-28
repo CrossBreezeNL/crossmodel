@@ -37,7 +37,8 @@ export class GEntityNodeBuilder extends GNodeBuilder<GEntityNode> {
       const attributesCompartment = new AttributesCompartmentBuilder().set(this.proxy.id);
       for (const attribute of attributes) {
          const attributeNode = AttributeCompartment.builder().set(attribute, index);
-         attributeNode.addArg('identifier', attribute.identifier);
+         // increase padding left and right so we have space for the identifier icon
+         attributeNode.addArg('identifier', attribute.identifier).addLayoutOption('paddingLeft', 8).addLayoutOption('paddingRight', 8);
          attributesCompartment.add(attributeNode.build());
       }
       this.add(attributesCompartment.build());

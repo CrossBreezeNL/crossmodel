@@ -246,38 +246,6 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
         "$type": "Group",
         "elements": [
           {
-            "$type": "Group",
-            "elements": [
-              {
-                "$type": "Assignment",
-                "feature": "identifier",
-                "operator": "?=",
-                "terminal": {
-                  "$type": "Keyword",
-                  "value": "identifier"
-                }
-              },
-              {
-                "$type": "Keyword",
-                "value": ":"
-              },
-              {
-                "$type": "Alternatives",
-                "elements": [
-                  {
-                    "$type": "Keyword",
-                    "value": "TRUE"
-                  },
-                  {
-                    "$type": "Keyword",
-                    "value": "true"
-                  }
-                ]
-              }
-            ],
-            "cardinality": "?"
-          },
-          {
             "$type": "Keyword",
             "value": "id"
           },
@@ -336,6 +304,38 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
               },
               "arguments": []
             }
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Assignment",
+                "feature": "identifier",
+                "operator": "?=",
+                "terminal": {
+                  "$type": "Keyword",
+                  "value": "identifier"
+                }
+              },
+              {
+                "$type": "Keyword",
+                "value": ":"
+              },
+              {
+                "$type": "Alternatives",
+                "elements": [
+                  {
+                    "$type": "Keyword",
+                    "value": "TRUE"
+                  },
+                  {
+                    "$type": "Keyword",
+                    "value": "true"
+                  }
+                ]
+              }
+            ],
+            "cardinality": "?"
           },
           {
             "$type": "Group",

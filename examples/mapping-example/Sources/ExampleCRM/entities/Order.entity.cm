@@ -3,10 +3,10 @@ entity:
     name: "Order"
     description: "Order placed by a customer in the Customer table."
     attributes:
-      - identifier: true
-        id: Id
+      - id: Id
         name: "Id"
         datatype: "Integer"
+        identifier: true
       - id: OrderDate
         name: "OrderDate"
         datatype: "Integer"

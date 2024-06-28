@@ -3,10 +3,10 @@ entity:
     name: "Address"
     description: "The address of a customer."
     attributes:
-      - identifier: true
-        id: CustomerID
+      - id: CustomerID
         name: "CustomerID"
         datatype: "Integer"
+        identifier: true
       - id: Street
         name: "Street"
         datatype: "Text"

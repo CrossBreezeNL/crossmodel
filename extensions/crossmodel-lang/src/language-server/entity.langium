@@ -27,8 +27,8 @@ interface EntityAttribute extends Attribute {
 }
 
 EntityAttribute returns EntityAttribute:
-    (identifier?='identifier' ':' ('TRUE' | 'true'))?
     'id' ':' id=ID
     'name' ':'  name=STRING
     'datatype' ':' datatype=STRING
+    (identifier?='identifier' ':' ('TRUE' | 'true'))?
     ('description' ':' description=STRING)?;

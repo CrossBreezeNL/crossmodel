@@ -2,11 +2,14 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 import { EntityAttribute, EntityAttributeType } from '@crossbreeze/protocol';
+import CheckBoxOutlineBlankOutlined from '@mui/icons-material/CheckBoxOutlineBlankOutlined';
+import CheckBoxOutlined from '@mui/icons-material/CheckBoxOutlined';
 import { GridColDef } from '@mui/x-data-grid';
 import * as React from 'react';
 import { useEntity, useModelDispatch } from '../../ModelContext';
 import { ErrorView } from '../ErrorView';
 import GridComponent, { GridComponentRow, ValidationFunction } from './GridComponent';
+import { KeyIcon } from './Icons';
 
 export type EntityAttributeRow = GridComponentRow<EntityAttribute>;
 
@@ -88,9 +91,8 @@ export function EntityAttributesDataGrid(): React.ReactElement {
       []
    );
 
-   const columns = React.useMemo<GridColDef[]>(
+   const columns = React.useMemo<GridColDef<EntityAttribute>[]>(
       () => [
-         { field: 'identifier', headerName: 'Id', maxWidth: 50, editable: true, type: 'boolean' },
          {
             field: 'name',
             headerName: 'Name',
@@ -105,6 +107,19 @@ export function EntityAttributesDataGrid(): React.ReactElement {
             flex: 100,
             type: 'singleSelect',
             valueOptions: ['Integer', 'Float', 'Char', 'Varchar', 'Bool']
+         },
+         {
+            field: 'identifier',
+            renderHeader: () => <KeyIcon className='header-icon' style={{ color: 'rgba(0, 0, 0, 0.6)' }} fontSize='small' />,
+            renderCell: ({ row }) =>
+               row.identifier ? (
+                  <CheckBoxOutlined style={{ color: 'rgba(0, 0, 0, 0.6)' }} fontSize='small' />
+               ) : (
+                  <CheckBoxOutlineBlankOutlined style={{ color: 'rgba(0, 0, 0, 0.6)' }} fontSize='small' />
+               ),
+            maxWidth: 50,
+            editable: true,
+            type: 'boolean'
          },
          { field: 'description', headerName: 'Description', editable: true, flex: 200 }
       ],
@@ -127,7 +142,7 @@ export function EntityAttributesDataGrid(): React.ReactElement {
       return <ErrorView errorMessage='No Entity!' />;
    }
    return (
-      <GridComponent
+      <GridComponent<EntityAttribute>
          autoHeight
          gridColumns={columns}
          gridData={entity.attributes}

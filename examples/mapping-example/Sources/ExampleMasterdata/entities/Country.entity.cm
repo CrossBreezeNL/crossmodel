@@ -2,10 +2,10 @@ entity:
     id: Country
     name: "Country"
     attributes:
-      - identifier: true
-        id: Code
+      - id: Code
         name: "Code"
         datatype: "Varchar"
+        identifier: true
       - id: Name
         name: "Name"
         datatype: "Varchar"

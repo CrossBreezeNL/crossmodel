@@ -2,10 +2,10 @@ entity:
     id: Customer
     name: "Customer"
     attributes:
-      - identifier: true
-        id: Id
+      - id: Id
         name: "Id"
         datatype: "Integer"
+        identifier: true
       - id: FirstName
         name: "FirstName"
         datatype: "Text"

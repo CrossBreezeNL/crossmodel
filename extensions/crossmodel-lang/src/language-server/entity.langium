@@ -18,14 +18,17 @@ Entity:
 interface Attribute {
     id: string;
     name: string;
-    datatype: string; 
+    datatype: string;
     description?: string;
 }
 
-interface EntityAttribute extends Attribute {}
+interface EntityAttribute extends Attribute {
+    identifier?: boolean;
+}
 
 EntityAttribute returns EntityAttribute:
     'id' ':' id=ID
     'name' ':'  name=STRING
     'datatype' ':' datatype=STRING
+    (identifier?='identifier' ':' ('TRUE' | 'true'))?
     ('description' ':' description=STRING)?;

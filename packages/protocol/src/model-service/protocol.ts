@@ -54,6 +54,7 @@ export interface Attribute extends CrossModelElement, Identifiable {
 export const EntityAttributeType = 'EntityAttribute';
 export interface EntityAttribute extends Attribute {
    readonly $type: typeof EntityAttributeType;
+   identifier?: boolean;
 }
 
 export const RelationshipType = 'Relationship';

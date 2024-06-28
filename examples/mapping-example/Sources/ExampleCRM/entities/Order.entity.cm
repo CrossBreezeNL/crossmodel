@@ -6,6 +6,7 @@ entity:
       - id: Id
         name: "Id"
         datatype: "Integer"
+        identifier: true
       - id: OrderDate
         name: "OrderDate"
         datatype: "Integer"

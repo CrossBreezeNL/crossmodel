@@ -24,6 +24,7 @@ const PROPERTY_ORDER = [
    'id',
    'name',
    'datatype',
+   'identifier',
    'description',
    'entity',
    'parent',
@@ -115,6 +116,9 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot> {
          .sort((left, right) => PROPERTY_ORDER.indexOf(left[0]) - PROPERTY_ORDER.indexOf(right[0]))
          .map(([objKey, objValue]) => {
             if (Array.isArray(objValue) && objValue.length === 0) {
+               return;
+            }
+            if (objKey === 'identifier' && objValue === false) {
                return;
             }
 

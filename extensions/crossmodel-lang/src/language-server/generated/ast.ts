@@ -327,6 +327,7 @@ export function isTargetObject(item: unknown): item is TargetObject {
 
 export interface EntityAttribute extends Attribute {
     readonly $type: 'EntityAttribute' | 'EntityNodeAttribute';
+    identifier: boolean
 }
 
 export const EntityAttribute = 'EntityAttribute';
@@ -518,6 +519,14 @@ export class CrossModelAstReflection extends AbstractAstReflection {
                     name: 'TargetObject',
                     mandatory: [
                         { name: 'mappings', type: 'array' }
+                    ]
+                };
+            }
+            case 'EntityAttribute': {
+                return {
+                    name: 'EntityAttribute',
+                    mandatory: [
+                        { name: 'identifier', type: 'boolean' }
                     ]
                 };
             }

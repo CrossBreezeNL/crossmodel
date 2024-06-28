@@ -309,6 +309,38 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
             "$type": "Group",
             "elements": [
               {
+                "$type": "Assignment",
+                "feature": "identifier",
+                "operator": "?=",
+                "terminal": {
+                  "$type": "Keyword",
+                  "value": "identifier"
+                }
+              },
+              {
+                "$type": "Keyword",
+                "value": ":"
+              },
+              {
+                "$type": "Alternatives",
+                "elements": [
+                  {
+                    "$type": "Keyword",
+                    "value": "TRUE"
+                  },
+                  {
+                    "$type": "Keyword",
+                    "value": "true"
+                  }
+                ]
+              }
+            ],
+            "cardinality": "?"
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
                 "$type": "Keyword",
                 "value": "description"
               },
@@ -2220,13 +2252,23 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
     },
     {
       "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "name": "identifier",
+          "isOptional": true,
+          "type": {
+            "$type": "SimpleType",
+            "primitiveType": "boolean"
+          }
+        }
+      ],
       "name": "EntityAttribute",
       "superTypes": [
         {
           "$ref": "#/interfaces@0"
         }
-      ],
-      "attributes": []
+      ]
     },
     {
       "$type": "Interface",

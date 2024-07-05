@@ -3,12 +3,12 @@
  ********************************************************************************/
 import { CrossReference, REFERENCE_CONTAINER_TYPE, REFERENCE_PROPERTY, REFERENCE_VALUE, RenderProps } from '@crossbreeze/protocol';
 import { GModelElement, GModelRoot, hasArgs } from '@eclipse-glsp/client';
+import { GlspSelectionDataService } from '@eclipse-glsp/theia-integration';
 import { isDefined } from '@theia/core';
 import { injectable } from '@theia/core/shared/inversify';
-import { CrossModelSelectionDataService } from './crossmodel-selection-forwarder';
 
 @injectable()
-export class CrossModelGLSPSelectionDataService extends CrossModelSelectionDataService {
+export class CrossModelGLSPSelectionDataService extends GlspSelectionDataService {
    async getSelectionData(root: Readonly<GModelRoot>, selectedElementIds: string[]): Promise<CrossModelSelectionData> {
       const selection = selectedElementIds.map(id => root.index.getById(id)).filter(isDefined);
       return getSelectionDataFor(selection);

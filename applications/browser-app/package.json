@@ -14,11 +14,11 @@
     "email": "devops@crossbreeze.nl"
   },
   "scripts": {
+    "bundle": "yarn rebuild && theia build --mode development && yarn download:plugins",
     "clean": "theia clean && rimraf lib && rimraf src-gen",
     "download:plugins": "theia download:plugins",
-    "prepare": "theia build --mode development && yarn download:plugins",
     "rebuild": "theia rebuild:browser --cacheRoot ../..",
-    "start": "yarn rebuild && theia start --plugins=local-dir:plugins",
+    "start": "theia start --plugins=local-dir:plugins",
     "test": "jest --passWithNoTests",
     "watch": "theia build --watch --mode development"
   },
@@ -29,22 +29,22 @@
     "@crossbreeze/model-service": "^1.0.0",
     "@crossbreeze/product": "0.0.0",
     "@crossbreeze/property-view": "^1.0.0",
-    "@theia/core": "1.43.1",
-    "@theia/editor": "1.43.1",
-    "@theia/filesystem": "1.43.1",
-    "@theia/markers": "1.43.1",
-    "@theia/messages": "1.43.1",
-    "@theia/monaco": "1.43.1",
-    "@theia/navigator": "1.43.1",
-    "@theia/plugin-ext": "1.43.1",
-    "@theia/plugin-ext-vscode": "1.43.1",
-    "@theia/preferences": "1.43.1",
-    "@theia/process": "1.43.1",
-    "@theia/terminal": "1.43.1",
-    "@theia/workspace": "1.43.1"
+    "@theia/core": "1.49.1",
+    "@theia/editor": "1.49.1",
+    "@theia/filesystem": "1.49.1",
+    "@theia/markers": "1.49.1",
+    "@theia/messages": "1.49.1",
+    "@theia/monaco": "1.49.1",
+    "@theia/navigator": "1.49.1",
+    "@theia/plugin-ext": "1.49.1",
+    "@theia/plugin-ext-vscode": "1.49.1",
+    "@theia/preferences": "1.49.1",
+    "@theia/process": "1.49.1",
+    "@theia/terminal": "1.49.1",
+    "@theia/workspace": "1.49.1"
   },
   "devDependencies": {
-    "@theia/cli": "1.43.1"
+    "@theia/cli": "1.49.1"
   },
   "productName": "CrossModel Community Edition",
   "theia": {
@@ -57,7 +57,13 @@
           "files.associations": {
             "*.port": "ignore"
           }
-        }
+        },
+        "reloadOnReconnect": true
+      }
+    },
+    "backend": {
+      "config": {
+        "frontendConnectionTimeout": 86400000
       }
     },
     "generator": {

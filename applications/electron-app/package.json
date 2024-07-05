@@ -15,8 +15,7 @@
   },
   "main": "scripts/electron-main.js",
   "scripts": {
-    "build": "yarn bundle",
-    "bundle": "yarn rebuild && theia build --mode development",
+    "bundle": "cross-env NODE_OPTIONS=--max-old-space-size=8192 && yarn rebuild && theia build --mode development && yarn download:plugins",
     "clean": "theia clean && rimraf lib && rimraf src-gen",
     "deploy": "rimraf dist && electron-builder -c.mac.identity=null --publish always",
     "download:plugins": "theia download:plugins",
@@ -25,7 +24,6 @@
     "package:post": "rimraf plugins/crossmodel-lang* && yarn --cwd ../../extensions/crossmodel-lang symlink",
     "package:pre": "rimraf dist && rimraf plugins/crossmodel-lang && yarn package:extensions",
     "package:preview": "yarn package:pre && electron-builder -c.mac.identity=null --dir && yarn package:post",
-    "prepare": "cross-env NODE_OPTIONS=--max-old-space-size=8192 theia build --mode development && yarn download:plugins",
     "rebuild": "theia rebuild:electron --cacheRoot ../..",
     "start": "cross-env NODE_ENV=development theia start --plugins=local-dir:plugins",
     "test": "jest --passWithNoTests",
@@ -38,23 +36,23 @@
     "@crossbreeze/model-service": "^1.0.0",
     "@crossbreeze/product": "0.0.0",
     "@crossbreeze/property-view": "^1.0.0",
-    "@theia/core": "1.43.1",
-    "@theia/editor": "1.43.1",
-    "@theia/electron": "1.43.1",
-    "@theia/filesystem": "1.43.1",
-    "@theia/markers": "1.43.1",
-    "@theia/messages": "1.43.1",
-    "@theia/monaco": "1.43.1",
-    "@theia/navigator": "1.43.1",
-    "@theia/plugin-ext": "1.43.1",
-    "@theia/plugin-ext-vscode": "1.43.1",
-    "@theia/preferences": "1.43.1",
-    "@theia/process": "1.43.1",
-    "@theia/terminal": "1.43.1",
-    "@theia/workspace": "1.43.1"
+    "@theia/core": "1.49.1",
+    "@theia/editor": "1.49.1",
+    "@theia/electron": "1.49.1",
+    "@theia/filesystem": "1.49.1",
+    "@theia/markers": "1.49.1",
+    "@theia/messages": "1.49.1",
+    "@theia/monaco": "1.49.1",
+    "@theia/navigator": "1.49.1",
+    "@theia/plugin-ext": "1.49.1",
+    "@theia/plugin-ext-vscode": "1.49.1",
+    "@theia/preferences": "1.49.1",
+    "@theia/process": "1.49.1",
+    "@theia/terminal": "1.49.1",
+    "@theia/workspace": "1.49.1"
   },
   "devDependencies": {
-    "@theia/cli": "1.43.1",
+    "@theia/cli": "1.49.1",
     "electron": "^23.2.4",
     "electron-builder": "^23.6.0"
   },
@@ -64,12 +62,18 @@
     "frontend": {
       "config": {
         "applicationName": "CrossModel Community Edition",
+        "reloadOnReconnect": true,
         "preferences": {
           "security.workspace.trust.enabled": false,
           "files.associations": {
             "*.port": "ignore"
           }
         }
+      }
+    },
+    "backend": {
+      "config": {
+        "frontendConnectionTimeout": -1
       }
     },
     "generator": {

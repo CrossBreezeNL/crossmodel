@@ -2,7 +2,7 @@ on:
   workflow_call:
 
 env:
-  NODE_VERSION: 16.20.0
+  NODE_VERSION: 20.x
   PYTHON_VERSION: 3.11.4
 
 defaults:
@@ -30,13 +30,13 @@ jobs:
 
       # Setup Node
       - name: Setup Node.js ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
 
       # Setup Python
       - name: Setup Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -57,7 +57,7 @@ jobs:
       # Upload Unit Test Results (The different files for the OSes will end up in the same artifact).
       - name: Upload Unit Test Results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: unit-test-results
           # Include the unit-test-results folders (which is in the root of the workspace).
@@ -70,12 +70,12 @@ jobs:
         run: yarn --cwd ./e2e-tests/ playwright:install
       - name: Run Playwright tests
         if: runner.os == 'Linux'
-        uses: coactions/setup-xvfb@v1
+        uses: coactions/setup-xvfb@b6b4fcfb9f5a895edadc3bc76318fae0ac17c8b3 # v1.0.1
         with:
           run: yarn ui-test
       - name: Upload PlayWrite test report
         if: always() && runner.os == 'Linux'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: allure-results
           path: e2e-tests/allure-results/
@@ -95,13 +95,13 @@ jobs:
     steps:
       # Download the test results artifacts.
       - name: Download Unit Test Results
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: unit-test-results
           path: unit-test-results
       # Publish Test Results
       - name: Publish Unit Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v2
+        uses: EnricoMi/publish-unit-test-result-action@30eadd5010312f995f0d3b3cff7fe2984f69409e # v2.16.1
         with:
           check_name: Unit Test Results
           files: |

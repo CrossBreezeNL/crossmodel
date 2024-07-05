@@ -42,3 +42,7 @@ export function toId(text: string): string {
    // prefix with '_' if necessary
    return '_' + id;
 }
+
+export function codiconCSSString(icon: string): string {
+   return `codicon codicon-${icon}`;
+}

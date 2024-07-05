@@ -24,7 +24,7 @@ export function RelationshipForm(): React.ReactElement {
    const labelProvider = (element: ReferenceableElement): string => element.label;
 
    return (
-      <Form id={relationship.id} name={relationship.name ?? ModelFileType.Relationship} iconClass={ModelStructure.Relationship.ICON}>
+      <Form id={relationship.id} name={relationship.name ?? ModelFileType.Relationship} iconClass={ModelStructure.Relationship.ICON_CLASS}>
          <FormSection label='General'>
             <TextField
                label='Name'

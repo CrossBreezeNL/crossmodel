@@ -19,7 +19,7 @@ import { CrossModelCommand } from '../../common/cross-model-command.js';
 import { SystemModelState } from '../model/system-model-state.js';
 
 @injectable()
-export class SystemDiagramCreateEdgeOperationHandler extends JsonCreateEdgeOperationHandler {
+export class SystemDiagramCreateRelationsshipOperationHandler extends JsonCreateEdgeOperationHandler {
    override label = '1:1 Relationship';
    elementTypeIds = [RELATIONSHIP_EDGE_TYPE];
 
@@ -84,7 +84,7 @@ export class SystemDiagramCreateEdgeOperationHandler extends JsonCreateEdgeOpera
 
       // search for unique file name for the relationship and use file base name as relationship name
       // if the user doesn't rename any files we should end up with unique names ;-)
-      const dirName = UriUtils.dirname(URI.parse(this.modelState.semanticUri));
+      const dirName = UriUtils.joinPath(UriUtils.dirname(URI.parse(this.modelState.semanticUri)), '..', 'relationships');
       const targetUri = UriUtils.joinPath(dirName, relationship.id + '.relationship.cm');
       const uri = Utils.findNewUri(targetUri);
 

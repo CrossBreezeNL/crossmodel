@@ -14,6 +14,7 @@ import {
    ModelSubmissionHandler,
    OperationHandlerConstructor,
    SourceModelStorage,
+   ToolPaletteItemProvider,
    bindAsService
 } from '@eclipse-glsp/server';
 import { injectable } from 'inversify';
@@ -31,6 +32,7 @@ import { MappingDiagramConfiguration } from './mapping-diagram-configuration.js'
 import { MappingDiagramGModelFactory } from './model/mapping-diagram-gmodel-factory.js';
 import { MappingModelIndex } from './model/mapping-model-index.js';
 import { MappingModelState } from './model/mapping-model-state.js';
+import { MappingToolPaletteProvider } from './tool-palette/mapping-tool-palette-provider.js';
 
 /**
  * Provides configuration about our mapping diagrams.
@@ -79,5 +81,9 @@ export class MappingDiagramModule extends DiagramModule {
 
    protected override bindModelSubmissionHandler(): BindingTarget<ModelSubmissionHandler> {
       return CrossModelSubmitHandler;
+   }
+
+   protected override bindToolPaletteItemProvider(): BindingTarget<ToolPaletteItemProvider> | undefined {
+      return MappingToolPaletteProvider;
    }
 }

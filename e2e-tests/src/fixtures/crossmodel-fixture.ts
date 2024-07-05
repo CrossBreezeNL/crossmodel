@@ -8,10 +8,9 @@ import { CrossModelWorkspace } from '../page-objects/crossmodel-workspace';
 export let page: Page;
 export let app: CrossModelApp;
 
-test.beforeAll(async ({ browser }) => {
-   page = await browser.newPage();
+test.beforeAll(async ({ browser, playwright }) => {
    const ws = new CrossModelWorkspace(['src/resources/sample-workspace']);
-   app = await CrossModelApp.load(page, ws);
+   app = await CrossModelApp.load({ browser, playwright }, ws);
 });
 
 export default test;

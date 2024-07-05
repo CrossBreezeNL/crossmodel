@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@playwright/test": "^1.37.1",
-    "@theia/playwright": "1.43.1"
+    "@theia/playwright": "1.49.1"
   },
   "devDependencies": {
     "allure-playwright": "^2.9.2"

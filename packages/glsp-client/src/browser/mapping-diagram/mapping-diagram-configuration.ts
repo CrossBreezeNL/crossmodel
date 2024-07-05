@@ -10,30 +10,31 @@ import {
    TARGET_OBJECT_NODE_TYPE
 } from '@crossbreeze/protocol';
 import {
+   ContainerConfiguration,
    configureDefaultModelElements,
    configureModelElement,
+   gridModule,
    hoverFeedbackFeature,
    initializeDiagramContainer,
-   selectFeature,
-   toolPaletteModule
+   selectFeature
 } from '@eclipse-glsp/client';
-import { ContainerConfiguration } from '@eclipse-glsp/protocol';
 import { GLSPDiagramConfiguration } from '@eclipse-glsp/theia-integration';
 import { Container } from '@theia/core/shared/inversify/index';
 import { MappingDiagramLanguage } from '../../common/crossmodel-diagram-language';
 import { createCrossModelDiagramModule } from '../crossmodel-diagram-module';
+import { AttributeCompartment } from '../model';
 import { AttributeCompartmentView } from '../views';
 import { mappingEdgeCreationToolModule } from './edge-creation-tool/edge-creation-tool-module';
 import { AttributeMappingEdge, SourceNumberNode, SourceObjectNode, SourceStringNode, TargetObjectNode } from './model';
+import { sourceObjectCreationToolModule } from './source-object-creation-tool/source-object-creation-tool-module';
 import { AttributeMappingEdgeView, SourceNumberNodeView, SourceObjectNodeView, SourceStringNodeView, TargetObjectNodeView } from './views';
-import { AttributeCompartment } from '../model';
 
 export class MappingDiagramConfiguration extends GLSPDiagramConfiguration {
    diagramType: string = MappingDiagramLanguage.diagramType;
 
    configureContainer(container: Container, ...containerConfiguration: ContainerConfiguration): Container {
-      return initializeDiagramContainer(container, ...containerConfiguration, mappingDiagramModule, mappingEdgeCreationToolModule, {
-         remove: toolPaletteModule
+      return initializeDiagramContainer(container, ...containerConfiguration, {
+         add: [gridModule, mappingDiagramModule, mappingEdgeCreationToolModule, sourceObjectCreationToolModule]
       });
    }
 }

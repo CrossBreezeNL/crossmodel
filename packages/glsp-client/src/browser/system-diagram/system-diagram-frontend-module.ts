@@ -7,12 +7,14 @@ import {
    DiagramConfiguration,
    GLSPClientContribution,
    GLSPDiagramWidget,
-   GLSPTheiaFrontendModule
+   GLSPTheiaFrontendModule,
+   registerDiagramManager
 } from '@eclipse-glsp/theia-integration';
 
 import { SystemDiagramLanguage } from '../../common/crossmodel-diagram-language';
 import { CrossModelClientContribution } from '../crossmodel-client-contribution';
 import { SystemDiagramConfiguration } from './system-diagram-configuration';
+import { SystemDiagramManager } from './system-diagram-manager';
 import { SystemDiagramWidget } from './system-diagram-widget';
 
 export class SystemDiagramModule extends GLSPTheiaFrontendModule {
@@ -31,6 +33,11 @@ export class SystemDiagramModule extends GLSPTheiaFrontendModule {
    override bindDiagramWidgetFactory(context: ContainerContext): void {
       super.bindDiagramWidgetFactory(context);
       context.rebind(GLSPDiagramWidget).to(SystemDiagramWidget);
+   }
+
+   override configureDiagramManager(context: ContainerContext): void {
+      context.bind(SystemDiagramManager).toSelf().inSingletonScope();
+      registerDiagramManager(context.bind, SystemDiagramManager, false);
    }
 }
 

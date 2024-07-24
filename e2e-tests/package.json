@@ -8,13 +8,12 @@
     "email": "devops@crossbreeze.nl"
   },
   "scripts": {
-    "build": "tsc -b && npx playwright install chromium",
-    "clean": "rimraf lib tsconfig.tsbuildinfo",
+    "build": "yarn && yarn clean && tsc --incremental && yarn lint && yarn playwright:install",
+    "clean": "rimraf lib *.tsbuildinfo .eslintcache",
     "lint": "eslint -c ../.eslintrc.js --ext .ts ./src",
-    "playwright:install": "yarn playwright install --with-deps",
-    "prepare": "yarn clean && yarn build && yarn lint",
+    "playwright:install": "playwright install chromium",
     "test": "",
-    "ui-test": "yarn playwright test"
+    "ui-test": "yarn build && yarn playwright test"
   },
   "dependencies": {
     "@playwright/test": "^1.37.1",

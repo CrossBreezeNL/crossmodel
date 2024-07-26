@@ -3,6 +3,7 @@
  ********************************************************************************/
 
 import {
+   Action,
    ActionDispatcher,
    ClientSession,
    ClientSessionListener,
@@ -19,6 +20,7 @@ import {
 } from '@eclipse-glsp/server';
 import { inject, injectable, postConstruct } from 'inversify';
 import { findRootNode, streamReferences } from 'langium';
+import debounce from 'p-debounce';
 import { URI } from 'vscode-uri';
 import { CrossModelRoot, isCrossModelRoot } from '../../language-server/generated/ast.js';
 import { CrossModelState } from './cross-model-state.js';
@@ -55,8 +57,8 @@ export class CrossModelStorage implements SourceModelStorage, ClientSessionListe
       this.toDispose.push(
          this.state.modelService.onModelUpdated<CrossModelRoot>(rootUri, async event => {
             if (this.state.clientId !== event.sourceClientId || event.reason !== 'changed') {
-               await this.update(rootUri, event.model);
-               this.actionDispatcher.dispatchAll(await this.submissionHandler.submitModel('external'));
+               const result = await this.updateAndSubmit(rootUri, event.model);
+               this.actionDispatcher.dispatchAll(result);
             }
          })
       );
@@ -71,6 +73,11 @@ export class CrossModelStorage implements SourceModelStorage, ClientSessionListe
       }
       return newRoot;
    }
+
+   protected updateAndSubmit = debounce(async (rootUri: string, root: CrossModelRoot): Promise<Action[]> => {
+      await this.update(rootUri, root);
+      return this.submissionHandler.submitModel('external');
+   }, 250);
 
    saveSourceModel(action: SaveModelAction): MaybePromise<void> {
       const saveUri = this.getFileUri(action);

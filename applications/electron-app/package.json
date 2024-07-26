@@ -30,6 +30,7 @@
     "watch": "theia build --watch --mode development"
   },
   "dependencies": {
+    "@crossbreeze/composite-editor": "0.0.0",
     "@crossbreeze/core": "0.0.0",
     "@crossbreeze/form-client": "0.0.0",
     "@crossbreeze/glsp-client": "0.0.0",

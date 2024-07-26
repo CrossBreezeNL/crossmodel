@@ -2,14 +2,46 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 
-export const ModelFileType = {
+const ModelFileTypeValues = {
    Generic: 'Generic',
    Entity: 'Entity',
    Relationship: 'Relationship',
    Mapping: 'Mapping',
    SystemDiagram: 'SystemDiagram'
 } as const;
-export type ModelFileType = (typeof ModelFileType)[keyof typeof ModelFileType];
+
+export const ModelFileType = {
+   ...ModelFileTypeValues,
+   getIconClass: (type: ModelFileType) => {
+      switch (type) {
+         case 'Entity':
+            return ModelStructure.Entity.ICON_CLASS;
+         case 'Relationship':
+            return ModelStructure.Relationship.ICON_CLASS;
+         case 'SystemDiagram':
+            return ModelStructure.SystemDiagram.ICON_CLASS;
+         case 'Mapping':
+            return ModelStructure.Mapping.ICON_CLASS;
+         default:
+            return undefined;
+      }
+   },
+   getFileExtension(type: ModelFileType): string | undefined {
+      switch (type) {
+         case 'Entity':
+            return ModelFileExtensions.Entity;
+         case 'Generic':
+            return ModelFileExtensions.Generic;
+         case 'Mapping':
+            return ModelFileExtensions.Mapping;
+         case 'Relationship':
+            return ModelFileExtensions.Relationship;
+         case 'SystemDiagram':
+            return ModelFileExtensions.SystemDiagram;
+      }
+   }
+} as const;
+export type ModelFileType = (typeof ModelFileTypeValues)[keyof typeof ModelFileTypeValues];
 
 export const ModelFileExtensions = {
    Generic: '.cm',
@@ -81,6 +113,25 @@ export const ModelFileExtensions = {
       return undefined;
    },
 
+   getIconClass(uri: string): string | undefined {
+      const fileType = this.getFileType(uri);
+      if (!fileType) {
+         return undefined;
+      }
+      switch (fileType) {
+         case 'Entity':
+            return ModelStructure.Entity.ICON_CLASS;
+         case 'Relationship':
+            return ModelStructure.Relationship.ICON_CLASS;
+         case 'SystemDiagram':
+            return ModelStructure.SystemDiagram.ICON_CLASS;
+         case 'Mapping':
+            return ModelStructure.Mapping.ICON_CLASS;
+         default:
+            return '';
+      }
+   },
+
    detectFileType(content: string): ModelFileType | undefined {
       if (content.startsWith('entity')) {
          return 'Entity';
@@ -97,54 +148,38 @@ export const ModelFileExtensions = {
       return undefined;
    },
 
-   getFileExtension(type: ModelFileType): string | undefined {
-      switch (type) {
-         case 'Entity':
-            return ModelFileExtensions.Entity;
-         case 'Generic':
-            return ModelFileExtensions.Generic;
-         case 'Mapping':
-            return ModelFileExtensions.Mapping;
-         case 'Relationship':
-            return ModelFileExtensions.Relationship;
-         case 'SystemDiagram':
-            return ModelFileExtensions.SystemDiagram;
-      }
-   },
-
    detectFileExtension(content: string): string | undefined {
       const type = this.detectFileType(content);
       return type ? this.detectFileExtension(type) : undefined;
    }
 } as const;
 
-export namespace ModelStructure {
-   export const System = {
+export const ModelStructure = {
+   System: {
       ICON_CLASS: 'codicon codicon-globe',
       ICON: 'globe'
-   };
-
-   export const Entity = {
+   },
+   Entity: {
       FOLDER: 'entities',
       ICON_CLASS: 'codicon codicon-git-commit',
       ICON: 'git-commit'
-   };
+   },
 
-   export const Relationship = {
+   Relationship: {
       FOLDER: 'relationships',
       ICON_CLASS: 'codicon codicon-git-compare',
       ICON: 'git-compare'
-   };
+   },
 
-   export const SystemDiagram = {
+   SystemDiagram: {
       FOLDER: 'diagrams',
       ICON_CLASS: 'codicon codicon-type-hierarchy-sub',
       ICON: 'type-hierarchy-sub'
-   };
+   },
 
-   export const Mapping = {
+   Mapping: {
       FOLDER: 'mappings',
       ICON_CLASS: 'codicon codicon-group-by-ref-type',
       ICON: 'group-by-ref-type'
-   };
-}
+   }
+};

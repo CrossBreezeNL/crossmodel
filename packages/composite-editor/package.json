@@ -1,8 +1,8 @@
 {
-  "name": "@crossbreeze/property-view",
-  "version": "1.0.0",
+  "name": "@crossbreeze/composite-editor",
+  "version": "0.0.0",
   "private": true,
-  "description": "Property view for crossmodel",
+  "description": "CrossModel Editor Contribution",
   "keywords": [
     "theia-extension"
   ],
@@ -16,11 +16,9 @@
     "name": "CrossBreeze",
     "email": "devops@crossbreeze.nl"
   },
-  "main": "index.js",
   "files": [
     "lib",
-    "src",
-    "style"
+    "src"
   ],
   "scripts": {
     "build": "tsc -b",
@@ -31,19 +29,17 @@
     "watch": "tsc -w"
   },
   "dependencies": {
+    "@crossbreeze/core": "0.0.0",
+    "@crossbreeze/form-client": "0.0.0",
     "@crossbreeze/glsp-client": "0.0.0",
-    "@crossbreeze/model-service": "^1.0.0",
-    "@crossbreeze/protocol": "^0.0.0",
-    "@crossbreeze/react-model-ui": "0.0.0",
     "@eclipse-glsp/theia-integration": "2.2.1",
     "@theia/core": "1.49.1",
-    "@theia/filesystem": "1.49.1",
-    "@theia/property-view": "1.49.1"
+    "@theia/editor": "1.49.1",
+    "@theia/editor-preview": "1.49.1"
   },
   "theiaExtensions": [
     {
-      "frontend": "lib/browser/property-view-frontend-module",
-      "backend": "lib/node/property-view-backend-module"
+      "frontend": "lib/browser/composite-editor-frontend-module"
     }
   ]
 }

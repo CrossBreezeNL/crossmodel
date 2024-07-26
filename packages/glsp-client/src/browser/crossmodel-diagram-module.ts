@@ -14,7 +14,7 @@ import {
    bindAsService,
    bindOrRebind
 } from '@eclipse-glsp/client';
-import { GlspSelectionDataService, TheiaGLSPSelectionForwarder } from '@eclipse-glsp/theia-integration';
+import { GlspSelectionDataService } from '@eclipse-glsp/theia-integration';
 import { ContainerModule, interfaces } from '@theia/core/shared/inversify';
 import { CrossModelCommandPalette, CrossModelMousePositionTracker } from './cross-model-command-palette';
 import { CrossModelMouseDeleteTool } from './cross-model-delete-tool';
@@ -40,8 +40,5 @@ export function createCrossModelDiagramModule(registry: interfaces.ContainerModu
 
       bind(CrossModelMousePositionTracker).toSelf().inSingletonScope();
       bindOrRebind(context, GLSPMousePositionTracker).toService(CrossModelMousePositionTracker);
-
-      // there is a bug in the GLSP client release that will be fixed with 2.2.1 but for now we need to workaround
-      bind('selectionListener').toService(TheiaGLSPSelectionForwarder);
    });
 }

@@ -57,6 +57,9 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
    protected model?: Model;
    protected error: string | undefined;
 
+   protected readonly onModelSetEmitter = new Emitter<Model | undefined>();
+   onModelSet: Event<Model | undefined> = this.onModelSetEmitter.event;
+
    @postConstruct()
    init(): void {
       this.id = this.options.widgetId;
@@ -94,6 +97,7 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
       this.setDirty(false);
       this.update();
       this.focusInput();
+      this.onModelSetEmitter.fire(this.model);
    }
 
    private updateTitle(uri?: URI): void {

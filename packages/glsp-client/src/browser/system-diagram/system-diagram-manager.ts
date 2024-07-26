@@ -4,19 +4,13 @@
 
 import { codiconCSSString } from '@eclipse-glsp/client';
 import { GLSPDiagramManager } from '@eclipse-glsp/theia-integration';
-import { OpenWithHandler, OpenWithService } from '@theia/core/lib/browser';
-import { inject, injectable, postConstruct } from '@theia/core/shared/inversify';
+import { OpenWithHandler } from '@theia/core/lib/browser';
+import { injectable } from '@theia/core/shared/inversify';
 import { SystemDiagramLanguage } from '../../common/crossmodel-diagram-language';
 
 @injectable()
 export class SystemDiagramManager extends GLSPDiagramManager implements OpenWithHandler {
-   @inject(OpenWithService) protected readonly openWithService: OpenWithService;
-
-   @postConstruct()
-   protected override init(): void {
-      this.openWithService.registerHandler(this);
-      super.init();
-   }
+   static readonly ID = 'system-diagram-manager';
 
    get label(): string {
       return SystemDiagramLanguage.label;
@@ -36,5 +30,9 @@ export class SystemDiagramManager extends GLSPDiagramManager implements OpenWith
 
    override get contributionId(): string {
       return SystemDiagramLanguage.contributionId;
+   }
+
+   override get id(): string {
+      return SystemDiagramManager.ID;
    }
 }

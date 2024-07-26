@@ -303,7 +303,7 @@ export class ImportExportContribution implements CommandContribution, MenuContri
                const modelName = this.readModelId(document) ?? ModelFileExtensions.getName(origin.base);
                const modelContent = this.readModelContent(document);
                const modelType = ModelFileExtensions.detectFileType(modelContent) ?? ModelFileType.Generic;
-               const modelExtension = ModelFileExtensions.getFileExtension(modelType) ?? origin.ext;
+               const modelExtension = ModelFileType.getFileExtension(modelType) ?? origin.ext;
                const relativePath = this.subFolder(modelType) + modelName + modelExtension;
                filesToWrite.set(relativePath, modelContent);
             }

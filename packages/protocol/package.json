@@ -28,7 +28,7 @@
     "watch": "tsc -w"
   },
   "dependencies": {
-    "@eclipse-glsp/protocol": "2.2.0",
+    "@eclipse-glsp/protocol": "2.2.1",
     "langium": "~2.1.3",
     "vscode-jsonrpc": "8.2.0"
   }

@@ -1,7 +1,24 @@
+// COMMON
 
 // Identification for cross references
 IDReference returns string:
     ID ('.' ID)*;
+
+// Custom properties
+interface WithCustomProperties {
+    customProperties: CustomProperty[];
+}
+
+fragment CustomProperties:
+    'customProperties' ':'
+        INDENT
+            ('-' customProperties+=CustomProperty)*
+        DEDENT
+    ;
+
+CustomProperty:
+    'name' ':' name=ID
+    ('value' ':' value=STRING)?;
 
 // Scalar values
 terminal STRING: /"[^"]*"|'[^']*'/;

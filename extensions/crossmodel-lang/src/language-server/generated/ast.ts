@@ -64,6 +64,7 @@ export interface AttributeMapping extends AstNode {
     readonly $container: TargetObject;
     readonly $type: 'AttributeMapping';
     attribute: AttributeMappingTarget
+    customProperties: Array<CustomProperty>
     expression?: string
     sources: Array<AttributeMappingSource>
 }
@@ -126,10 +127,24 @@ export function isCrossModelRoot(item: unknown): item is CrossModelRoot {
     return reflection.isInstance(item, CrossModelRoot);
 }
 
+export interface CustomProperty extends AstNode {
+    readonly $container: AttributeMapping | Entity | EntityNode | Mapping | Relationship | RelationshipAttribute | RelationshipEdge | SourceObject | SystemDiagram | TargetObject | WithCustomProperties;
+    readonly $type: 'CustomProperty';
+    name: string
+    value?: string
+}
+
+export const CustomProperty = 'CustomProperty';
+
+export function isCustomProperty(item: unknown): item is CustomProperty {
+    return reflection.isInstance(item, CustomProperty);
+}
+
 export interface Entity extends AstNode {
     readonly $container: CrossModelRoot;
     readonly $type: 'Entity';
     attributes: Array<EntityAttribute>
+    customProperties: Array<CustomProperty>
     description?: string
     id: string
     name?: string
@@ -144,6 +159,7 @@ export function isEntity(item: unknown): item is Entity {
 export interface EntityNode extends AstNode {
     readonly $container: SystemDiagram;
     readonly $type: 'EntityNode';
+    customProperties: Array<CustomProperty>
     description?: string
     entity: Reference<Entity>
     height: number
@@ -175,6 +191,7 @@ export function isJoinCondition(item: unknown): item is JoinCondition {
 export interface Mapping extends AstNode {
     readonly $container: CrossModelRoot;
     readonly $type: 'Mapping';
+    customProperties: Array<CustomProperty>
     id: string
     sources: Array<SourceObject>
     target: TargetObject
@@ -203,6 +220,7 @@ export interface Relationship extends AstNode {
     readonly $type: 'Relationship';
     attributes: Array<RelationshipAttribute>
     child: Reference<Entity>
+    customProperties: Array<CustomProperty>
     description?: string
     id: string
     name?: string
@@ -220,6 +238,7 @@ export interface RelationshipAttribute extends AstNode {
     readonly $container: Relationship;
     readonly $type: 'RelationshipAttribute';
     child: Reference<Attribute>
+    customProperties: Array<CustomProperty>
     parent: Reference<Attribute>
 }
 
@@ -232,6 +251,7 @@ export function isRelationshipAttribute(item: unknown): item is RelationshipAttr
 export interface RelationshipEdge extends AstNode {
     readonly $container: SystemDiagram;
     readonly $type: 'RelationshipEdge';
+    customProperties: Array<CustomProperty>
     id: string
     relationship: Reference<Relationship>
     sourceNode: Reference<EntityNode>
@@ -248,6 +268,7 @@ export interface SourceObject extends AstNode {
     readonly $container: Mapping;
     readonly $type: 'SourceObject';
     conditions: Array<SourceObjectCondition>
+    customProperties: Array<CustomProperty>
     dependencies: Array<SourceObjectDependency>
     entity: Reference<Entity>
     id: string
@@ -299,6 +320,7 @@ export function isStringLiteral(item: unknown): item is StringLiteral {
 export interface SystemDiagram extends AstNode {
     readonly $container: CrossModelRoot;
     readonly $type: 'SystemDiagram';
+    customProperties: Array<CustomProperty>
     description?: string
     edges: Array<RelationshipEdge>
     id?: string
@@ -315,6 +337,7 @@ export function isSystemDiagram(item: unknown): item is SystemDiagram {
 export interface TargetObject extends AstNode {
     readonly $container: Mapping;
     readonly $type: 'TargetObject';
+    customProperties: Array<CustomProperty>
     entity: Reference<Entity>
     mappings: Array<AttributeMapping>
 }
@@ -325,7 +348,18 @@ export function isTargetObject(item: unknown): item is TargetObject {
     return reflection.isInstance(item, TargetObject);
 }
 
-export interface EntityAttribute extends Attribute {
+export interface WithCustomProperties extends AstNode {
+    readonly $type: 'EntityAttribute' | 'EntityNodeAttribute' | 'SourceObjectAttribute' | 'TargetObjectAttribute' | 'WithCustomProperties';
+    customProperties: Array<CustomProperty>
+}
+
+export const WithCustomProperties = 'WithCustomProperties';
+
+export function isWithCustomProperties(item: unknown): item is WithCustomProperties {
+    return reflection.isInstance(item, WithCustomProperties);
+}
+
+export interface EntityAttribute extends Attribute, WithCustomProperties {
     readonly $type: 'EntityAttribute' | 'EntityNodeAttribute';
     identifier: boolean
 }
@@ -336,7 +370,7 @@ export function isEntityAttribute(item: unknown): item is EntityAttribute {
     return reflection.isInstance(item, EntityAttribute);
 }
 
-export interface SourceObjectAttribute extends Attribute {
+export interface SourceObjectAttribute extends Attribute, WithCustomProperties {
     readonly $type: 'SourceObjectAttribute';
 }
 
@@ -346,7 +380,7 @@ export function isSourceObjectAttribute(item: unknown): item is SourceObjectAttr
     return reflection.isInstance(item, SourceObjectAttribute);
 }
 
-export interface TargetObjectAttribute extends Attribute {
+export interface TargetObjectAttribute extends Attribute, WithCustomProperties {
     readonly $type: 'TargetObjectAttribute';
 }
 
@@ -356,7 +390,7 @@ export function isTargetObjectAttribute(item: unknown): item is TargetObjectAttr
     return reflection.isInstance(item, TargetObjectAttribute);
 }
 
-export interface EntityNodeAttribute extends EntityAttribute {
+export interface EntityNodeAttribute extends EntityAttribute, WithCustomProperties {
     readonly $type: 'EntityNodeAttribute';
 }
 
@@ -374,6 +408,7 @@ export type CrossModelAstType = {
     BinaryExpression: BinaryExpression
     BooleanExpression: BooleanExpression
     CrossModelRoot: CrossModelRoot
+    CustomProperty: CustomProperty
     Entity: Entity
     EntityAttribute: EntityAttribute
     EntityNode: EntityNode
@@ -393,12 +428,13 @@ export type CrossModelAstType = {
     SystemDiagram: SystemDiagram
     TargetObject: TargetObject
     TargetObjectAttribute: TargetObjectAttribute
+    WithCustomProperties: WithCustomProperties
 }
 
 export class CrossModelAstReflection extends AbstractAstReflection {
 
     getAllTypes(): string[] {
-        return ['Attribute', 'AttributeMapping', 'AttributeMappingSource', 'AttributeMappingTarget', 'BinaryExpression', 'BooleanExpression', 'CrossModelRoot', 'Entity', 'EntityAttribute', 'EntityNode', 'EntityNodeAttribute', 'JoinCondition', 'Mapping', 'NumberLiteral', 'Relationship', 'RelationshipAttribute', 'RelationshipEdge', 'SourceObject', 'SourceObjectAttribute', 'SourceObjectAttributeReference', 'SourceObjectCondition', 'SourceObjectDependency', 'StringLiteral', 'SystemDiagram', 'TargetObject', 'TargetObjectAttribute'];
+        return ['Attribute', 'AttributeMapping', 'AttributeMappingSource', 'AttributeMappingTarget', 'BinaryExpression', 'BooleanExpression', 'CrossModelRoot', 'CustomProperty', 'Entity', 'EntityAttribute', 'EntityNode', 'EntityNodeAttribute', 'JoinCondition', 'Mapping', 'NumberLiteral', 'Relationship', 'RelationshipAttribute', 'RelationshipEdge', 'SourceObject', 'SourceObjectAttribute', 'SourceObjectAttributeReference', 'SourceObjectCondition', 'SourceObjectDependency', 'StringLiteral', 'SystemDiagram', 'TargetObject', 'TargetObjectAttribute', 'WithCustomProperties'];
     }
 
     protected override computeIsSubtype(subtype: string, supertype: string): boolean {
@@ -406,10 +442,10 @@ export class CrossModelAstReflection extends AbstractAstReflection {
             case EntityAttribute:
             case SourceObjectAttribute:
             case TargetObjectAttribute: {
-                return this.isSubtype(Attribute, supertype);
+                return this.isSubtype(Attribute, supertype) || this.isSubtype(WithCustomProperties, supertype);
             }
             case EntityNodeAttribute: {
-                return this.isSubtype(EntityAttribute, supertype);
+                return this.isSubtype(EntityAttribute, supertype) || this.isSubtype(WithCustomProperties, supertype);
             }
             case JoinCondition: {
                 return this.isSubtype(SourceObjectCondition, supertype);
@@ -468,6 +504,7 @@ export class CrossModelAstReflection extends AbstractAstReflection {
                 return {
                     name: 'AttributeMapping',
                     mandatory: [
+                        { name: 'customProperties', type: 'array' },
                         { name: 'sources', type: 'array' }
                     ]
                 };
@@ -476,7 +513,16 @@ export class CrossModelAstReflection extends AbstractAstReflection {
                 return {
                     name: 'Entity',
                     mandatory: [
-                        { name: 'attributes', type: 'array' }
+                        { name: 'attributes', type: 'array' },
+                        { name: 'customProperties', type: 'array' }
+                    ]
+                };
+            }
+            case 'EntityNode': {
+                return {
+                    name: 'EntityNode',
+                    mandatory: [
+                        { name: 'customProperties', type: 'array' }
                     ]
                 };
             }
@@ -484,6 +530,7 @@ export class CrossModelAstReflection extends AbstractAstReflection {
                 return {
                     name: 'Mapping',
                     mandatory: [
+                        { name: 'customProperties', type: 'array' },
                         { name: 'sources', type: 'array' }
                     ]
                 };
@@ -492,7 +539,24 @@ export class CrossModelAstReflection extends AbstractAstReflection {
                 return {
                     name: 'Relationship',
                     mandatory: [
-                        { name: 'attributes', type: 'array' }
+                        { name: 'attributes', type: 'array' },
+                        { name: 'customProperties', type: 'array' }
+                    ]
+                };
+            }
+            case 'RelationshipAttribute': {
+                return {
+                    name: 'RelationshipAttribute',
+                    mandatory: [
+                        { name: 'customProperties', type: 'array' }
+                    ]
+                };
+            }
+            case 'RelationshipEdge': {
+                return {
+                    name: 'RelationshipEdge',
+                    mandatory: [
+                        { name: 'customProperties', type: 'array' }
                     ]
                 };
             }
@@ -501,6 +565,7 @@ export class CrossModelAstReflection extends AbstractAstReflection {
                     name: 'SourceObject',
                     mandatory: [
                         { name: 'conditions', type: 'array' },
+                        { name: 'customProperties', type: 'array' },
                         { name: 'dependencies', type: 'array' }
                     ]
                 };
@@ -509,6 +574,7 @@ export class CrossModelAstReflection extends AbstractAstReflection {
                 return {
                     name: 'SystemDiagram',
                     mandatory: [
+                        { name: 'customProperties', type: 'array' },
                         { name: 'edges', type: 'array' },
                         { name: 'nodes', type: 'array' }
                     ]
@@ -518,7 +584,16 @@ export class CrossModelAstReflection extends AbstractAstReflection {
                 return {
                     name: 'TargetObject',
                     mandatory: [
+                        { name: 'customProperties', type: 'array' },
                         { name: 'mappings', type: 'array' }
+                    ]
+                };
+            }
+            case 'WithCustomProperties': {
+                return {
+                    name: 'WithCustomProperties',
+                    mandatory: [
+                        { name: 'customProperties', type: 'array' }
                     ]
                 };
             }

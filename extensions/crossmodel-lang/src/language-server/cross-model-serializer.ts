@@ -49,7 +49,8 @@ const PROPERTY_ORDER = [
    'mappings',
    'source',
    'conditions',
-   'expression'
+   'expression',
+   'customProperties'
 ];
 
 const ID_OR_IDREF = [

@@ -34,7 +34,8 @@ describe('CrossModelLexer', () => {
             description: 'Test description',
             id: 'testId',
             name: 'test Name',
-            attributes: []
+            attributes: [],
+            customProperties: []
          };
 
          crossModelRootWithoutAttributes = _.cloneDeep(crossModelRoot);
@@ -46,7 +47,8 @@ describe('CrossModelLexer', () => {
                $type: 'EntityAttribute',
                id: 'Attribute1',
                name: 'Attribute1',
-               datatype: 'Datatype Attribute 1'
+               datatype: 'Datatype Attribute 1',
+               customProperties: []
             },
             {
                identifier: false,
@@ -54,7 +56,8 @@ describe('CrossModelLexer', () => {
                $type: 'EntityAttribute',
                id: 'Attribute2',
                name: 'Attribute2',
-               datatype: 'Datatype Attribute 2'
+               datatype: 'Datatype Attribute 2',
+               customProperties: []
             }
          ];
 
@@ -64,7 +67,8 @@ describe('CrossModelLexer', () => {
             description: 'Test description',
             attributes: [],
             id: 'testId',
-            name: 'test Name'
+            name: 'test Name',
+            customProperties: []
          };
          crossModelRootWithAttributesDifPlace.entity.attributes = [
             {
@@ -73,7 +77,8 @@ describe('CrossModelLexer', () => {
                $type: 'EntityAttribute',
                id: 'Attribute1',
                name: 'Attribute1',
-               datatype: 'Datatype Attribute 1'
+               datatype: 'Datatype Attribute 1',
+               customProperties: []
             },
             {
                identifier: false,
@@ -81,7 +86,8 @@ describe('CrossModelLexer', () => {
                $type: 'EntityAttribute',
                id: 'Attribute2',
                name: 'Attribute2',
-               datatype: 'Datatype Attribute 2'
+               datatype: 'Datatype Attribute 2',
+               customProperties: []
             }
          ];
       });
@@ -120,7 +126,8 @@ describe('CrossModelLexer', () => {
                description: 'Test description',
                attributes: [],
                id: 'Ref1',
-               name: 'test Name'
+               name: 'test Name',
+               customProperties: []
             }
          };
 
@@ -132,7 +139,8 @@ describe('CrossModelLexer', () => {
                description: 'Test description',
                attributes: [],
                id: 'Ref2',
-               name: 'test Name'
+               name: 'test Name',
+               customProperties: []
             }
          };
 
@@ -145,7 +153,8 @@ describe('CrossModelLexer', () => {
             parent: ref1,
             child: ref2,
             type: 'n:m',
-            attributes: []
+            attributes: [],
+            customProperties: []
          };
       });
 
@@ -171,7 +180,8 @@ describe('CrossModelLexer', () => {
                description: 'Test description',
                attributes: [],
                id: 'Ref1',
-               name: 'test Name'
+               name: 'test Name',
+               customProperties: []
             }
          };
 
@@ -183,7 +193,8 @@ describe('CrossModelLexer', () => {
                description: 'Test description',
                attributes: [],
                id: 'Ref2',
-               name: 'test Name'
+               name: 'test Name',
+               customProperties: []
             }
          };
 
@@ -198,7 +209,8 @@ describe('CrossModelLexer', () => {
                parent: ref1,
                child: ref2,
                type: 'n:m',
-               attributes: []
+               attributes: [],
+               customProperties: []
             }
          };
 
@@ -209,7 +221,8 @@ describe('CrossModelLexer', () => {
             id: 'testId',
             name: 'test Name',
             nodes: [],
-            edges: []
+            edges: [],
+            customProperties: []
          };
 
          crossModelRoot.systemDiagram.nodes = [
@@ -222,7 +235,8 @@ describe('CrossModelLexer', () => {
                height: 102,
                entity: ref1,
                id: 'Node1',
-               name: 'Node 1'
+               name: 'Node 1',
+               customProperties: []
             },
             {
                $container: crossModelRoot.systemDiagram,
@@ -233,7 +247,8 @@ describe('CrossModelLexer', () => {
                height: 102,
                entity: ref2,
                id: 'Node2',
-               name: 'Node 2'
+               name: 'Node 2',
+               customProperties: []
             }
          ];
 
@@ -244,7 +259,8 @@ describe('CrossModelLexer', () => {
                relationship: ref3,
                id: 'Edge1',
                sourceNode: { $refText: 'A' },
-               targetNode: { $refText: 'B' }
+               targetNode: { $refText: 'B' },
+               customProperties: []
             }
          ];
       });

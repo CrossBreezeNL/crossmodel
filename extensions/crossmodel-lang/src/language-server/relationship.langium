@@ -16,10 +16,12 @@ Relationship:
                     ('-' attributes+=RelationshipAttribute)+
                 DEDENT
             )?
+            CustomProperties?
         DEDENT
 ;
  
 RelationshipAttribute:
     'parent' ':' parent=[Attribute:IDReference]
     'child' ':' child=[Attribute:IDReference]
+    CustomProperties?
 ;

@@ -100,7 +100,8 @@ export function createSourceObject(entity: Entity | AstNodeDescription, containe
       entity: { $refText, ref },
       join: 'from',
       dependencies: [],
-      conditions: []
+      conditions: [],
+      customProperties: []
    };
 }
 
@@ -143,7 +144,20 @@ export function findDocument<T extends AstNode = AstNode>(node?: AstNode): Langi
    return result ? <LangiumDocument<T>>result : undefined;
 }
 
-export function fixDocument<T extends AstNode = AstNode>(node: T | undefined, document: LangiumDocument<T> | undefined): T | undefined {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function fixDocument<T extends AstNode = AstNode, R extends AstNode = AstNode>(
+   node: undefined,
+   document: LangiumDocument<R> | undefined
+): undefined;
+export function fixDocument<T extends AstNode = AstNode, R extends AstNode = AstNode>(node: T, document: LangiumDocument<R> | undefined): T;
+export function fixDocument<T extends AstNode = AstNode, R extends AstNode = AstNode>(
+   node: T | undefined,
+   document: LangiumDocument<R> | undefined
+): T | undefined;
+export function fixDocument<T extends AstNode = AstNode, R extends AstNode = AstNode>(
+   node: T | undefined,
+   document: LangiumDocument<R> | undefined
+): T | undefined {
    if (!node || !document) {
       return node;
    }

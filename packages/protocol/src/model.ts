@@ -120,26 +120,31 @@ export const ModelFileExtensions = {
 
 export namespace ModelStructure {
    export const System = {
-      ICON: 'codicon codicon-globe'
+      ICON_CLASS: 'codicon codicon-globe',
+      ICON: 'globe'
    };
 
    export const Entity = {
       FOLDER: 'entities',
-      ICON: 'codicon codicon-git-commit'
+      ICON_CLASS: 'codicon codicon-git-commit',
+      ICON: 'git-commit'
    };
 
    export const Relationship = {
       FOLDER: 'relationships',
-      ICON: 'codicon codicon-git-compare'
+      ICON_CLASS: 'codicon codicon-git-compare',
+      ICON: 'git-compare'
    };
 
    export const SystemDiagram = {
       FOLDER: 'diagrams',
-      ICON: 'codicon codicon-type-hierarchy-sub'
+      ICON_CLASS: 'codicon codicon-type-hierarchy-sub',
+      ICON: 'type-hierarchy-sub'
    };
 
    export const Mapping = {
       FOLDER: 'mappings',
-      ICON: 'codicon codicon-group-by-ref-type'
+      ICON_CLASS: 'codicon codicon-group-by-ref-type',
+      ICON: 'group-by-ref-type'
    };
 }

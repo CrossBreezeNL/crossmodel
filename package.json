@@ -14,7 +14,7 @@
     "format": "yarn prettier-eslint --write '**/*.{ts,tsx,js,cjs,mjs,css}' '**/package.json'",
     "postinstall": "theia check:theia-version",
     "lint": "lerna run lint",
-    "prepare": "lerna run prepare",
+    "prepare": "lerna run prepare && yarn theia:bundle",
     "start:browser": "yarn theia:browser start",
     "start:electron": "yarn theia:electron start",
     "start:verdaccio": "yarn verdaccio --config verdaccio-config.yaml",
@@ -22,6 +22,7 @@
     "test:cjs": "jest --config=configs/jest.config.js --passWithNoTests",
     "test:esm": "yarn --cwd extensions/crossmodel-lang test",
     "theia:browser": "yarn --cwd applications/browser-app",
+    "theia:bundle": "yarn theia:electron bundle && yarn theia:browser bundle",
     "theia:electron": "yarn --cwd applications/electron-app",
     "ui-test": "yarn --cwd e2e-tests ui-test",
     "watch": "lerna run --parallel watch"
@@ -56,7 +57,7 @@
     "verdaccio": "^5.23.1"
   },
   "engines": {
-    "node": ">=14.18.0",
+    "node": ">=16",
     "yarn": ">=1.7.0 <2"
   }
 }

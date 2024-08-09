@@ -10,8 +10,7 @@ import {
    Disposable,
    DragAwareMouseListener,
    EdgeCreationTool,
-   EnableDefaultToolsAction,
-   FeedbackEdgeEndMovingMouseListener,
+   FeedbackEmitter,
    GEdge,
    GLSPActionDispatcher,
    GModelElement,
@@ -22,8 +21,7 @@ import {
    TriggerEdgeCreationAction,
    cursorFeedbackAction,
    findParentByFeature,
-   isConnectable,
-   isCtrlOrCmd
+   isConnectable
 } from '@eclipse-glsp/client';
 import {
    DrawFeedbackEdgeAction,
@@ -35,20 +33,14 @@ const CSS_EDGE_CREATION = 'edge-creation';
 
 @injectable()
 export class SystemEdgeCreationTool extends EdgeCreationTool {
-   override doEnable(): void {
-      const mouseMovingFeedback = new FeedbackEdgeEndMovingMouseListener(this.anchorRegistry, this.feedbackDispatcher);
-      const listener = new SystemEdgeCreationToolMouseListener(this.triggerAction, this.actionDispatcher, this.typeHintProvider, this);
-      this.toDisposeOnDisable.push(
-         listener,
-         mouseMovingFeedback,
-         this.mouseTool.registerListener(listener),
-         this.mouseTool.registerListener(mouseMovingFeedback),
-         this.registerFeedback([], this, [
-            RemoveFeedbackEdgeAction.create(),
-            cursorFeedbackAction(),
-            ModifyCSSFeedbackAction.create({ remove: [CSS_EDGE_CREATION] })
-         ])
+   protected override creationListener(): void {
+      const creationListener = new SystemEdgeCreationToolMouseListener(
+         this.triggerAction,
+         this.actionDispatcher,
+         this.typeHintProvider,
+         this
       );
+      this.toDisposeOnDisable.push(creationListener, this.mouseTool.registerListener(creationListener));
    }
 }
 
@@ -68,8 +60,9 @@ export class SystemEdgeCreationToolMouseListener extends DragAwareMouseListener 
    protected proxyEdge: GEdge;
 
    protected dragContext?: DragConnectionContext;
-   protected mouseMoveFeedback?: Disposable;
-   protected sourceFeedback?: Disposable;
+   protected mouseMoveFeedback: FeedbackEmitter;
+   protected sourceFeedback: FeedbackEmitter;
+   protected feedbackEdgeFeedback: FeedbackEmitter;
 
    constructor(
       protected triggerAction: TriggerEdgeCreationAction,
@@ -80,6 +73,9 @@ export class SystemEdgeCreationToolMouseListener extends DragAwareMouseListener 
       super();
       this.proxyEdge = new GEdge();
       this.proxyEdge.type = triggerAction.elementTypeId;
+      this.feedbackEdgeFeedback = tool.createFeedbackEmitter();
+      this.mouseMoveFeedback = tool.createFeedbackEmitter();
+      this.sourceFeedback = tool.createFeedbackEmitter();
    }
 
    protected isSourceSelected(): boolean {
@@ -109,9 +105,13 @@ export class SystemEdgeCreationToolMouseListener extends DragAwareMouseListener 
          if (dragDistance > 3) {
             // assign source if possible
             this.source = this.dragContext.element.id;
-            this.tool.registerFeedback([
-               DrawFeedbackEdgeAction.create({ elementTypeId: this.triggerAction.elementTypeId, sourceId: this.source })
-            ]);
+            this.feedbackEdgeFeedback
+               .add(
+                  DrawFeedbackEdgeAction.create({ elementTypeId: this.triggerAction.elementTypeId, sourceId: this.source }),
+                  RemoveFeedbackEdgeAction.create()
+               )
+               .submit();
+
             this.dragContext = undefined;
          }
       }
@@ -133,18 +133,17 @@ export class SystemEdgeCreationToolMouseListener extends DragAwareMouseListener 
                   args: this.triggerAction.args
                })
             );
-            if (!isCtrlOrCmd(event)) {
-               result.push(EnableDefaultToolsAction.create());
-            }
          }
       }
-      this.reinitialize();
+      this.dispose();
+      this.updateFeedback(target, event);
       return result;
    }
 
-   override nonDraggingMouseUp(_element: GModelElement, event: MouseEvent): Action[] {
-      this.reinitialize();
-      return [EnableDefaultToolsAction.create()];
+   override nonDraggingMouseUp(element: GModelElement, event: MouseEvent): Action[] {
+      this.dispose();
+      this.updateFeedback(element, event);
+      return [];
    }
 
    protected canConnect(element: GModelElement | undefined, role: 'source' | 'target'): boolean {
@@ -161,11 +160,12 @@ export class SystemEdgeCreationToolMouseListener extends DragAwareMouseListener 
 
       // source element feedback
       if (this.isSourceSelected()) {
-         this.sourceFeedback = this.tool.registerFeedback(
-            [HoverFeedbackAction.create({ mouseoverElement: this.source!, mouseIsOver: true })],
-            this.proxyEdge,
-            [HoverFeedbackAction.create({ mouseoverElement: this.source!, mouseIsOver: false })]
-         );
+         this.sourceFeedback
+            .add(
+               HoverFeedbackAction.create({ mouseoverElement: this.source!, mouseIsOver: true }),
+               HoverFeedbackAction.create({ mouseoverElement: this.source!, mouseIsOver: false })
+            )
+            .submit();
       }
 
       // cursor feedback
@@ -190,10 +190,13 @@ export class SystemEdgeCreationToolMouseListener extends DragAwareMouseListener 
       );
    }
 
-   protected registerFeedback(feedbackActions: Action[], cleanupActions?: Action[]): Disposable {
-      this.mouseMoveFeedback?.dispose();
-      this.mouseMoveFeedback = this.tool.registerFeedback(feedbackActions, this, cleanupActions);
-      return this.mouseMoveFeedback;
+   protected registerFeedback(feedbackActions: Action[], cleanupActions?: Action[]): void {
+      this.mouseMoveFeedback.dispose();
+      feedbackActions.forEach(action => this.mouseMoveFeedback.add(action));
+      if (cleanupActions) {
+         this.mouseMoveFeedback.add(undefined, cleanupActions);
+      }
+      this.mouseMoveFeedback.submit();
    }
 
    protected calculateContext(target: GModelElement, event: MouseEvent, previousContext?: ConnectionContext): ConnectionContext {
@@ -212,16 +215,12 @@ export class SystemEdgeCreationToolMouseListener extends DragAwareMouseListener 
       return context;
    }
 
-   protected reinitialize(): void {
+   override dispose(): void {
+      super.dispose();
       this.source = undefined;
       this.target = undefined;
-      this.tool.registerFeedback([RemoveFeedbackEdgeAction.create()]);
-      this.dragContext = undefined;
-      this.mouseMoveFeedback?.dispose();
-      this.sourceFeedback?.dispose();
-   }
-
-   dispose(): void {
-      this.reinitialize();
+      this.feedbackEdgeFeedback.dispose();
+      this.mouseMoveFeedback.dispose();
+      this.sourceFeedback.dispose();
    }
 }

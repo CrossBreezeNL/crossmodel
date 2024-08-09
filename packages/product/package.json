@@ -30,9 +30,9 @@
     "watch": "tsc -w"
   },
   "dependencies": {
-    "@theia/core": "1.43.1",
-    "@theia/getting-started": "1.43.1",
-    "@theia/workspace": "1.43.1"
+    "@theia/core": "1.49.1",
+    "@theia/getting-started": "1.49.1",
+    "@theia/workspace": "1.49.1"
   },
   "theiaExtensions": [
     {

@@ -37,11 +37,20 @@ Open a new PowerShell window (this is needed after installing scoop) and execute
 
 ```powershell
 scoop install python@3.11.4
-scoop install yarn@1.22.19
+scoop install yarn@1.22.22
 scoop install nvm
-nvm install 16.20.0
-npm config set msvs_version 2022 --global
+nvm install 20
+nvm use 20
+npm config edit
 ```
+
+In the editor which opens, add a line at the end with the following contents:
+
+```
+msvs_version=2022
+```
+
+Save the file and close it.
 
 ## Troubleshooting
 

@@ -1,8 +1,8 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
+import { FileUri } from '@theia/core/lib/common/file-uri';
 import { EnvVariablesServerImpl } from '@theia/core/lib/node/env-variables';
-import { FileUri } from '@theia/core/lib/node/file-uri';
 import { injectable } from 'inversify';
 import { homedir } from 'os';
 import * as path from 'path';

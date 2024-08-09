@@ -53,7 +53,7 @@ const NEW_ELEMENT_TEMPLATES: NewElementTemplate[] = [
       label: 'Entity',
       fileExtension: ModelFileExtensions.Entity,
       category: TEMPLATE_CATEGORY,
-      iconClass: ModelStructure.Entity.ICON,
+      iconClass: ModelStructure.Entity.ICON_CLASS,
       content: name => INITIAL_ENTITY_CONTENT.replace(/\$\{name\}/gi, quote(name)).replace(/\$\{id\}/gi, toId(name))
    },
    {
@@ -61,7 +61,7 @@ const NEW_ELEMENT_TEMPLATES: NewElementTemplate[] = [
       label: 'Relationship',
       fileExtension: ModelFileExtensions.Relationship,
       category: TEMPLATE_CATEGORY,
-      iconClass: ModelStructure.Relationship.ICON,
+      iconClass: ModelStructure.Relationship.ICON_CLASS,
       content: name => INITIAL_RELATIONSHIP_CONTENT.replace(/\$\{name\}/gi, quote(name)).replace(/\$\{id\}/gi, toId(name))
    },
    {
@@ -69,7 +69,7 @@ const NEW_ELEMENT_TEMPLATES: NewElementTemplate[] = [
       label: 'SystemDiagram',
       fileExtension: ModelFileExtensions.SystemDiagram,
       category: TEMPLATE_CATEGORY,
-      iconClass: ModelStructure.SystemDiagram.ICON,
+      iconClass: ModelStructure.SystemDiagram.ICON_CLASS,
       content: name => INITIAL_DIAGRAM_CONTENT.replace(/\$\{name\}/gi, quote(name)).replace(/\$\{id\}/gi, toId(name))
    },
    {
@@ -77,7 +77,7 @@ const NEW_ELEMENT_TEMPLATES: NewElementTemplate[] = [
       label: 'Mapping',
       fileExtension: ModelFileExtensions.Mapping,
       category: TEMPLATE_CATEGORY,
-      iconClass: ModelStructure.Mapping.ICON,
+      iconClass: ModelStructure.Mapping.ICON_CLASS,
       content: name => INITIAL_MAPPING_CONTENT.replace(/\$\{name\}/gi, quote(name)).replace(/\$\{id\}/gi, toId(name))
    }
 ];

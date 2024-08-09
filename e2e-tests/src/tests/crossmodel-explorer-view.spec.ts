@@ -1,11 +1,27 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { expect } from '@playwright/test';
+import { expect, Page } from '@playwright/test';
 import test, { app } from '../fixtures/crossmodel-fixture';
 import { CrossModelExplorerView } from '../page-objects/crossmodel-explorer-view';
 
 let explorer: CrossModelExplorerView;
+
+async function checkOpenWithItem(page: Page, text: string): Promise<boolean> {
+   // Locate all elements matching the selector
+   const elements = await page.$$('.quick-input-list .monaco-highlighted-label');
+
+   // Iterate over elements to check for visibility and text content
+   for (const element of elements) {
+      if (await element.isVisible()) {
+         const textContent = await element.textContent();
+         if (textContent?.includes(text)) {
+            return true;
+         }
+      }
+   }
+   return false;
+}
 
 test.describe('CrossModel Explorer View', () => {
    test.beforeAll(async ({ browser }) => {
@@ -20,8 +36,9 @@ test.describe('CrossModel Explorer View', () => {
       const menu = await file.openContextMenu();
       expect(await menu.isOpen()).toBe(true);
       // Expect the Code and Form editor to be in the Open With menu option.
-      expect(await menu.menuItemByNamePath('Open With', 'Code Editor')).toBeDefined();
-      expect(await menu.menuItemByNamePath('Open With', 'Form Editor')).toBeDefined();
+      await menu.clickMenuItem('Open With...');
+      expect(await checkOpenWithItem(explorer.page, 'Text Editor')).toBeTruthy();
+      expect(await checkOpenWithItem(explorer.page, 'Form Editor')).toBeTruthy();
       await menu.close();
    });
 
@@ -32,8 +49,9 @@ test.describe('CrossModel Explorer View', () => {
       const menu = await file.openContextMenu();
       expect(await menu.isOpen()).toBe(true);
       // Expect the Code and Form editor to be in the Open With menu option.
-      expect(await menu.menuItemByNamePath('Open With', 'Code Editor')).toBeDefined();
-      expect(await menu.menuItemByNamePath('Open With', 'Form Editor')).toBeDefined();
+      await menu.clickMenuItem('Open With...');
+      expect(await checkOpenWithItem(explorer.page, 'Text Editor')).toBeTruthy();
+      expect(await checkOpenWithItem(explorer.page, 'Form Editor')).toBeTruthy();
       await menu.close();
    });
 
@@ -44,8 +62,9 @@ test.describe('CrossModel Explorer View', () => {
       const menu = await file.openContextMenu();
       expect(await menu.isOpen()).toBe(true);
       // Expect the Code and Form editor to be in the Open With menu option.
-      expect(await menu.menuItemByNamePath('Open With', 'Code Editor')).toBeDefined();
-      expect(await menu.menuItemByNamePath('Open With', 'System Diagram')).toBeDefined();
+      await menu.clickMenuItem('Open With...');
+      expect(await checkOpenWithItem(explorer.page, 'Text Editor')).toBeTruthy();
+      expect(await checkOpenWithItem(explorer.page, 'System Diagram')).toBeTruthy();
       await menu.close();
    });
 });

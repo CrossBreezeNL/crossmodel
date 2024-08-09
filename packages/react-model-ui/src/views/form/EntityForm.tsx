@@ -17,7 +17,7 @@ export function EntityForm(): React.ReactElement {
    const entity = useEntity();
 
    return (
-      <Form id={entity.id} name={entity.name ?? ModelFileType.Entity} iconClass={ModelStructure.Entity.ICON}>
+      <Form id={entity.id} name={entity.name ?? ModelFileType.Entity} iconClass={ModelStructure.Entity.ICON_CLASS}>
          <FormSection label='General'>
             <TextField
                fullWidth={true}

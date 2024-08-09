@@ -8,6 +8,7 @@ import {
    BaseEditTool,
    DragAwareMouseListener,
    GModelElement,
+   ModifyCSSFeedbackAction,
    Point,
    TriggerEdgeCreationAction,
    findParentByFeature
@@ -16,6 +17,8 @@ import { injectable } from 'inversify';
 import { AttributeCompartment } from '../../model';
 import { TargetObjectNode } from '../model';
 import { MappingEdgeCreationArgs } from './mapping-edge-creation-tool';
+
+const CSS_MAPPING_CREATION = 'mapping-creation';
 
 /**
  * A tool that is always enabled to track when the user wants to start using our edge creation tool.
@@ -30,6 +33,13 @@ export class DragEdgeCreationTool extends BaseEditTool {
 
    override enable(): void {
       this.toDisposeOnDisable.push(this.mouseTool.registerListener(new DragEdgeCreationMouseListener()));
+      const toolFeedback = this.createFeedbackEmitter()
+         .add(
+            ModifyCSSFeedbackAction.create({ add: [CSS_MAPPING_CREATION] }),
+            ModifyCSSFeedbackAction.create({ remove: [CSS_MAPPING_CREATION] })
+         )
+         .submit();
+      this.toDisposeOnDisable.push(toolFeedback);
    }
 }
 

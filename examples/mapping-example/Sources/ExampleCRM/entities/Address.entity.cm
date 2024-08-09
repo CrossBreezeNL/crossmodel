@@ -13,3 +13,11 @@ entity:
       - id: CountryCode
         name: "CountryCode"
         datatype: "Text"
+        customProperties:
+            - name: Author
+              value: "CrossBreeze"
+            - name: ExampleEntityAttribute
+    customProperties:
+        - name: Author
+          value: "CrossBreeze"
+        - name: ExampleEntity

@@ -20,6 +20,7 @@ SystemDiagram:
                     ('-' edges+=RelationshipEdge)+
                 DEDENT
             )?
+            CustomProperties?
         DEDENT
     )*
 ;
@@ -34,9 +35,10 @@ EntityNode:
     'y' ':' y=NUMBER
     'width' ':' width=NUMBER
     'height' ':' height=NUMBER
+    CustomProperties?
 ;
 
-interface EntityNodeAttribute extends EntityAttribute {
+interface EntityNodeAttribute extends EntityAttribute, WithCustomProperties {
 }
 
 RelationshipEdge:
@@ -44,4 +46,5 @@ RelationshipEdge:
     'relationship' ':' relationship=[Relationship:IDReference]
     'sourceNode' ':' sourceNode=[EntityNode:IDReference]
     'targetNode' ':' targetNode=[EntityNode:IDReference]
+    CustomProperties?
 ;

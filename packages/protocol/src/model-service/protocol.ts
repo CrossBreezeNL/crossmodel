@@ -26,6 +26,15 @@ export interface Identifiable {
    $globalId: string;
 }
 
+export interface WithCustomProperties {
+   customProperties?: Array<CustomProperty>;
+}
+
+export interface CustomProperty {
+   name: string;
+   value?: string;
+}
+
 export interface CrossModelRoot extends CrossModelElement {
    readonly $type: 'CrossModelRoot';
    entity?: Entity;
@@ -38,7 +47,7 @@ export function isCrossModelRoot(model?: any): model is CrossModelRoot {
 }
 
 export const EntityType = 'Entity';
-export interface Entity extends CrossModelElement, Identifiable {
+export interface Entity extends CrossModelElement, Identifiable, WithCustomProperties {
    readonly $type: typeof EntityType;
    attributes: Array<EntityAttribute>;
    description?: string;
@@ -52,13 +61,13 @@ export interface Attribute extends CrossModelElement, Identifiable {
 }
 
 export const EntityAttributeType = 'EntityAttribute';
-export interface EntityAttribute extends Attribute {
+export interface EntityAttribute extends Attribute, WithCustomProperties {
    readonly $type: typeof EntityAttributeType;
    identifier?: boolean;
 }
 
 export const RelationshipType = 'Relationship';
-export interface Relationship extends CrossModelElement, Identifiable {
+export interface Relationship extends CrossModelElement, Identifiable, WithCustomProperties {
    readonly $type: typeof RelationshipType;
    attributes: Array<RelationshipAttribute>;
    child?: Reference<Entity>;
@@ -69,14 +78,14 @@ export interface Relationship extends CrossModelElement, Identifiable {
 }
 
 export const RelationshipAttributeType = 'RelationshipAttribute';
-export interface RelationshipAttribute extends CrossModelElement {
+export interface RelationshipAttribute extends CrossModelElement, WithCustomProperties {
    readonly $type: typeof RelationshipAttributeType;
    parent?: Reference<EntityAttribute>;
    child?: Reference<EntityAttribute>;
 }
 
 export const MappingType = 'Mapping';
-export interface Mapping extends CrossModelElement, Identifiable {
+export interface Mapping extends CrossModelElement, Identifiable, WithCustomProperties {
    readonly $type: typeof MappingType;
    sources: Array<SourceObject>;
    target: TargetObject;
@@ -84,7 +93,7 @@ export interface Mapping extends CrossModelElement, Identifiable {
 
 export const SourceObjectType = 'SourceObject';
 export type SourceObjectJoinType = 'from' | 'inner-join' | 'cross-join' | 'left-join' | 'apply';
-export interface SourceObject extends CrossModelElement, Identifiable {
+export interface SourceObject extends CrossModelElement, Identifiable, WithCustomProperties {
    readonly $type: typeof SourceObjectType;
    entity?: Reference<Entity>;
    join?: SourceObjectJoinType;
@@ -135,14 +144,14 @@ export interface SourceObjectAttributeReference extends CrossModelElement {
 }
 
 export const TargetObjectType = 'TargetObject';
-export interface TargetObject extends CrossModelElement {
+export interface TargetObject extends CrossModelElement, WithCustomProperties {
    readonly $type: typeof TargetObjectType;
    entity?: Reference<Entity>;
    mappings: Array<AttributeMapping>;
 }
 
 export const AttributeMappingType = 'AttributeMapping';
-export interface AttributeMapping extends CrossModelElement {
+export interface AttributeMapping extends CrossModelElement, WithCustomProperties {
    readonly $type: typeof AttributeMappingType;
    attribute?: AttributeMappingTarget;
    sources: Array<AttributeMappingSource>;
@@ -156,7 +165,7 @@ export interface AttributeMappingTarget extends CrossModelElement {
 }
 
 export const TargetObjectAttributeType = 'TargetObjectAttribute';
-export interface TargetObjectAttribute extends Attribute {
+export interface TargetObjectAttribute extends Attribute, WithCustomProperties {
    readonly $type: typeof TargetObjectAttributeType;
 }
 
@@ -167,7 +176,7 @@ export interface AttributeMappingSource extends CrossModelElement {
 }
 
 export const SourceObjectAttributeType = 'SourceObjectAttribute';
-export interface SourceObjectAttribute extends Attribute {
+export interface SourceObjectAttribute extends Attribute, WithCustomProperties {
    readonly $type: typeof SourceObjectAttributeType;
 }
 

@@ -2,12 +2,21 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { AstNode, AstNodeDescription, DefaultScopeComputation, LangiumDocument, PrecomputedScopes, streamAllContents } from 'langium';
+import {
+   AstNode,
+   AstNodeDescription,
+   DefaultScopeComputation,
+   LangiumDocument,
+   PrecomputedScopes,
+   Reference,
+   streamAllContents
+} from 'langium';
 import { CancellationToken } from 'vscode-jsonrpc';
 import { CrossModelServices } from './cross-model-module.js';
 import { DefaultIdProvider, combineIds } from './cross-model-naming.js';
 import { CrossModelPackageManager, UNKNOWN_PROJECT_ID, UNKNOWN_PROJECT_REFERENCE } from './cross-model-package-manager.js';
 import {
+   Entity,
    EntityNode,
    EntityNodeAttribute,
    SourceObject,
@@ -18,7 +27,7 @@ import {
    isSourceObject,
    isTargetObject
 } from './generated/ast.js';
-import { findDocument, setAttributes, setImplicitId, setOwner } from './util/ast-util.js';
+import { fixDocument, setAttributes, setImplicitId, setOwner } from './util/ast-util.js';
 
 /**
  * Custom node description that wraps a given description under a potentially new name and also stores the package id for faster access.
@@ -123,43 +132,53 @@ export class CrossModelScopeComputation extends DefaultScopeComputation {
                this.processSourceObject(node, id, document).forEach(description => scopes.add(container, description));
             }
          }
-         if (isTargetObject(node) && node.entity?.ref?.id) {
-            this.processTargetObject(node, node.entity?.ref.id, document).forEach(description => scopes.add(container, description));
+         if (isTargetObject(node)) {
+            const entity = this.getEntity(node, document);
+            if (entity?.id) {
+               this.processTargetObject(node, entity.id, document).forEach(description => scopes.add(container, description));
+            }
          }
       }
    }
 
    protected processEntityNode(node: EntityNode, nodeId: string, document: LangiumDocument): AstNodeDescription[] {
-      try {
-         // TODO: Check if this is still necessary
-         if (node.entity?.ref) {
-            findDocument(node.entity.ref);
-         }
-      } catch (error) {
-         console.error(error);
+      const entity = this.getEntity(node, document);
+      if (!entity) {
          return [];
       }
       const attributes =
-         node.entity?.ref?.attributes.map<EntityNodeAttribute>(attribute => setOwner({ ...attribute, $type: EntityNodeAttribute }, node)) ??
-         [];
+         entity.attributes.map<EntityNodeAttribute>(attribute => setOwner({ ...attribute, $type: EntityNodeAttribute }, node)) ?? [];
       setAttributes(node, attributes);
       return attributes.map(attribute => this.descriptions.createDescription(attribute, combineIds(nodeId, attribute.id), document));
    }
 
+   protected getEntity(node: AstNode & { entity: Reference<Entity> }, document: LangiumDocument): Entity | undefined {
+      try {
+         return fixDocument(node, document).entity?.ref;
+      } catch (error) {
+         console.error(error);
+         return undefined;
+      }
+   }
+
    protected processSourceObject(node: SourceObject, nodeId: string, document: LangiumDocument): AstNodeDescription[] {
+      const entity = this.getEntity(node, document);
+      if (!entity) {
+         return [];
+      }
       const attributes =
-         node.entity?.ref?.attributes.map<SourceObjectAttribute>(attribute =>
-            setOwner({ ...attribute, $type: SourceObjectAttribute }, node)
-         ) ?? [];
+         entity.attributes.map<SourceObjectAttribute>(attribute => setOwner({ ...attribute, $type: SourceObjectAttribute }, node)) ?? [];
       setAttributes(node, attributes);
       return attributes.map(attribute => this.descriptions.createDescription(attribute, combineIds(nodeId, attribute.id), document));
    }
 
    protected processTargetObject(node: TargetObject, nodeId: string, document: LangiumDocument): AstNodeDescription[] {
+      const entity = this.getEntity(node, document);
+      if (!entity) {
+         return [];
+      }
       const attributes =
-         node.entity?.ref?.attributes.map<TargetObjectAttribute>(attribute =>
-            setOwner({ ...attribute, $type: TargetObjectAttribute }, node)
-         ) ?? [];
+         entity.attributes.map<TargetObjectAttribute>(attribute => setOwner({ ...attribute, $type: TargetObjectAttribute }, node)) ?? [];
       setImplicitId(node, nodeId);
       setAttributes(node, attributes);
       // for target attributes, we use simple names and not object-qualified ones

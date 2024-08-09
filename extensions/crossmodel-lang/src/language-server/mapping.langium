@@ -2,10 +2,10 @@ import 'terminals'
 import 'entity'
 import 'relationship'
 
-interface SourceObjectAttribute extends Attribute {
+interface SourceObjectAttribute extends Attribute, WithCustomProperties {
 }
 
-interface TargetObjectAttribute extends Attribute {
+interface TargetObjectAttribute extends Attribute, WithCustomProperties {
 }
 
 Mapping:
@@ -18,6 +18,7 @@ Mapping:
                 DEDENT
             )?
             'target' ':' target=TargetObject
+            CustomProperties?
         DEDENT
 ;
 
@@ -33,6 +34,12 @@ SourceObject:
     ('conditions' ':'
         INDENT 
             ('-' conditions+=SourceObjectCondition)*
+        DEDENT
+    )?
+    // for some reason using the CustomProperties fragment here causes parsing issues in the language server
+    ('customProperties' ':'
+        INDENT
+            ('-' customProperties+=CustomProperty)*
         DEDENT
     )?
 ;
@@ -67,6 +74,12 @@ TargetObject:
                 ('-' mappings+=AttributeMapping)+     
             DEDENT
         )?
+        // for some reason using the CustomProperties fragment here causes parsing issues in the language server
+        ('customProperties' ':'
+            INDENT
+                ('-' customProperties+=CustomProperty)*
+            DEDENT
+        )?
     DEDENT
 ;
 
@@ -78,6 +91,7 @@ AttributeMapping:
         DEDENT
     )?
     ('expression' ':' expression=STRING)?
+    CustomProperties?
 ;
 
 AttributeMappingTarget:

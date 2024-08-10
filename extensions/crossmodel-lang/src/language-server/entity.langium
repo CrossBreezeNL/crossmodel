@@ -12,6 +12,7 @@ Entity:
                     ('-' attributes+=EntityAttribute)+
                 DEDENT
             )?
+            CustomProperties?
         DEDENT
 ;
 
@@ -22,7 +23,7 @@ interface Attribute {
     description?: string;
 }
 
-interface EntityAttribute extends Attribute {
+interface EntityAttribute extends Attribute, WithCustomProperties {
     identifier?: boolean;
 }
 
@@ -31,4 +32,5 @@ EntityAttribute returns EntityAttribute:
     'name' ':'  name=STRING
     'datatype' ':' datatype=STRING
     (identifier?='identifier' ':' ('TRUE' | 'true'))?
-    ('description' ':' description=STRING)?;
+    ('description' ':' description=STRING)?
+    CustomProperties?;

@@ -19,7 +19,7 @@ import { CrossModelCommand } from '../../common/cross-model-command.js';
 import { SystemModelState } from '../model/system-model-state.js';
 
 @injectable()
-export class SystemDiagramCreateRelationsshipOperationHandler extends JsonCreateEdgeOperationHandler {
+export class SystemDiagramCreateRelationshipOperationHandler extends JsonCreateEdgeOperationHandler {
    override label = '1:1 Relationship';
    elementTypeIds = [RELATIONSHIP_EDGE_TYPE];
 
@@ -41,7 +41,7 @@ export class SystemDiagramCreateRelationsshipOperationHandler extends JsonCreate
             const edge: RelationshipEdge = {
                $type: RelationshipEdge,
                $container: this.modelState.systemDiagram,
-               id: this.modelState.idProvider.findNextId(RelationshipEdge, relationship.id, this.modelState.systemDiagram),
+               id: this.modelState.idProvider.findNextId(RelationshipEdge, relationship.id + 'Edge', this.modelState.systemDiagram),
                relationship: {
                   ref: relationship,
                   $refText: this.modelState.idProvider.getGlobalId(relationship) || relationship.id || ''
@@ -53,7 +53,8 @@ export class SystemDiagramCreateRelationsshipOperationHandler extends JsonCreate
                targetNode: {
                   ref: targetNode,
                   $refText: this.modelState.idProvider.getNodeId(targetNode) || targetNode.id || ''
-               }
+               },
+               customProperties: []
             };
             this.modelState.systemDiagram.edges.push(edge);
             this.actionDispatcher.dispatchAfterNextUpdate(
@@ -79,7 +80,8 @@ export class SystemDiagramCreateRelationsshipOperationHandler extends JsonCreate
          type: '1:1',
          attributes: [],
          parent: { $refText: sourceNode.entity?.$refText || '' },
-         child: { $refText: targetNode.entity?.$refText || '' }
+         child: { $refText: targetNode.entity?.$refText || '' },
+         customProperties: []
       };
 
       // search for unique file name for the relationship and use file base name as relationship name

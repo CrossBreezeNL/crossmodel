@@ -6,11 +6,14 @@ import { TARGET_ATTRIBUTE_MAPPING_EDGE_TYPE } from '@crossbreeze/protocol';
 import {
    Action,
    BaseEditTool,
+   CursorCSS,
    DragAwareMouseListener,
+   FeedbackEmitter,
    GModelElement,
    ModifyCSSFeedbackAction,
    Point,
    TriggerEdgeCreationAction,
+   cursorFeedbackAction,
    findParentByFeature
 } from '@eclipse-glsp/client';
 import { injectable } from 'inversify';
@@ -32,20 +35,29 @@ export class DragEdgeCreationTool extends BaseEditTool {
    }
 
    override enable(): void {
-      this.toDisposeOnDisable.push(this.mouseTool.registerListener(new DragEdgeCreationMouseListener()));
-      const toolFeedback = this.createFeedbackEmitter()
-         .add(
-            ModifyCSSFeedbackAction.create({ add: [CSS_MAPPING_CREATION] }),
-            ModifyCSSFeedbackAction.create({ remove: [CSS_MAPPING_CREATION] })
-         )
-         .submit();
-      this.toDisposeOnDisable.push(toolFeedback);
+      const listener = new DragEdgeCreationMouseListener(this);
+      this.toDisposeOnDisable.push(listener);
+      this.toDisposeOnDisable.push(this.mouseTool.registerListener(listener));
    }
 }
 
 export class DragEdgeCreationMouseListener extends DragAwareMouseListener {
    protected mappingEdgeCreationArgs?: MappingEdgeCreationArgs;
    protected dragStart?: Point;
+   protected diagramFeedback: FeedbackEmitter;
+   protected cursorFeedback: FeedbackEmitter;
+
+   constructor(protected tool: DragEdgeCreationTool) {
+      super();
+      this.diagramFeedback = tool.createFeedbackEmitter();
+      this.diagramFeedback
+         .add(
+            ModifyCSSFeedbackAction.create({ add: [CSS_MAPPING_CREATION] }),
+            ModifyCSSFeedbackAction.create({ remove: [CSS_MAPPING_CREATION] })
+         )
+         .submit();
+      this.cursorFeedback = tool.createFeedbackEmitter();
+   }
 
    override mouseDown(target: GModelElement, event: MouseEvent): Action[] {
       const result = super.mouseMove(target, event);
@@ -77,8 +89,24 @@ export class DragEdgeCreationMouseListener extends DragAwareMouseListener {
       return result;
    }
 
+   override mouseOver(target: GModelElement, event: MouseEvent): Action[] {
+      const attributeCompartment = findParentByFeature(target, AttributeCompartment.is);
+      if (attributeCompartment) {
+         this.cursorFeedback.revert();
+      } else {
+         this.cursorFeedback.add(cursorFeedbackAction(CursorCSS.OPERATION_NOT_ALLOWED), cursorFeedbackAction()).submit();
+      }
+      return [];
+   }
+
    override nonDraggingMouseUp(_element: GModelElement, _event: MouseEvent): Action[] {
       this.mappingEdgeCreationArgs = undefined;
       return [];
+   }
+
+   override dispose(): void {
+      super.dispose();
+      this.diagramFeedback.dispose();
+      this.cursorFeedback.dispose();
    }
 }

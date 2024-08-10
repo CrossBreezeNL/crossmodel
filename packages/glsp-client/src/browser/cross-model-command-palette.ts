@@ -5,6 +5,8 @@
 import { AddEntityOperation } from '@crossbreeze/protocol';
 import {
    Action,
+   GLSPMousePositionTracker,
+   GModelElement,
    GModelRoot,
    GlspCommandPalette,
    InsertIndicator,
@@ -12,12 +14,26 @@ import {
    Point,
    getAbsoluteClientBounds
 } from '@eclipse-glsp/client';
-import { injectable } from '@theia/core/shared/inversify';
+import { inject, injectable } from '@theia/core/shared/inversify';
+
+@injectable()
+export class CrossModelMousePositionTracker extends GLSPMousePositionTracker {
+   clientPosition: Point | undefined;
+   diagramOffset: Point | undefined;
+
+   override mouseMove(target: GModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+      this.clientPosition = { x: event.clientX, y: event.clientY };
+      this.diagramOffset = { x: event.offsetX, y: event.offsetY };
+      return super.mouseMove(target, event);
+   }
+}
 
 @injectable()
 export class CrossModelCommandPalette extends GlspCommandPalette {
    protected visible = false;
    protected creationPosition?: Point;
+
+   @inject(CrossModelMousePositionTracker) protected positionTracker: CrossModelMousePositionTracker;
 
    protected override onBeforeShow(containerElement: HTMLElement, root: Readonly<GModelRoot>, ...contextElementIds: string[]): void {
       if (contextElementIds.length === 1) {
@@ -30,6 +46,14 @@ export class CrossModelCommandPalette extends GlspCommandPalette {
             containerElement.style.width = `${this.defaultWidth}px`;
             return;
          }
+      }
+      const diagramOffset = this.positionTracker.diagramOffset;
+      if (diagramOffset) {
+         this.creationPosition = this.positionTracker.lastPositionOnDiagram;
+         containerElement.style.left = `${diagramOffset.x}px`;
+         containerElement.style.top = `${diagramOffset.y}px`;
+         containerElement.style.width = `${this.defaultWidth}px`;
+         return;
       }
       super.onBeforeShow(containerElement, root, ...contextElementIds);
    }

@@ -30,14 +30,28 @@ export class SourceObjectCreationTool extends BaseEditTool {
 
 @injectable()
 export class SourceObjectCreationMouseListener extends MouseListener implements Disposable {
-   cursorFeedback: FeedbackEmitter;
+   protected cursorFeedback: FeedbackEmitter;
+
    constructor(protected tool: SourceObjectCreationTool) {
       super();
       this.cursorFeedback = tool.createFeedbackEmitter();
       this.cursorFeedback.add(cursorFeedbackAction(CursorCSS.NODE_CREATION), cursorFeedbackAction()).submit();
    }
 
-   override mouseUp(_target: GModelElement, _event: MouseEvent): (Action | Promise<Action>)[] {
+   override mouseOver(target: GModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
+      if (target === target.root) {
+         // we are on the root diagram
+         this.cursorFeedback.add(cursorFeedbackAction(CursorCSS.NODE_CREATION), cursorFeedbackAction()).submit();
+      } else {
+         this.cursorFeedback.add(cursorFeedbackAction(CursorCSS.OPERATION_NOT_ALLOWED), cursorFeedbackAction()).submit();
+      }
+      return [];
+   }
+
+   override mouseUp(target: GModelElement, _event: MouseEvent): Action[] {
+      if (target !== target.root) {
+         return [];
+      }
       return [
          SetUIExtensionVisibilityAction.create({
             extensionId: CrossModelCommandPalette.ID,

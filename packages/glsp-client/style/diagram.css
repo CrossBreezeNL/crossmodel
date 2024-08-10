@@ -25,15 +25,15 @@
 
 .sprotty
    .edge-creation:not(.edge-check-pending-mode):not(.edge-creation-select-source-mode):not(.edge-creation-select-target-mode):not(
-      .edge-reconnect-select-target-mode:not(.edge-modification-not-allowed-mode)
-   ) {
+      .edge-reconnect-select-target-mode
+   ):not(.edge-modification-not-allowed-mode) {
    cursor: ew-resize;
 }
 
 .sprotty
    .mapping-creation:not(.edge-check-pending-mode):not(.edge-creation-select-source-mode):not(.edge-creation-select-target-mode):not(
-      .edge-reconnect-select-target-mode:not(.edge-modification-not-allowed-mode)
-   ) {
+      .edge-reconnect-select-target-mode
+   ):not(.edge-modification-not-allowed-mode) {
    cursor: ew-resize;
 }
 

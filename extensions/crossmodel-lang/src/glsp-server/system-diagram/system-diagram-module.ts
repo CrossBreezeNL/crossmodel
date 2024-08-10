@@ -26,7 +26,7 @@ import { SystemDiagramAddEntityActionProvider } from './command-palette/add-enti
 import { SystemDiagramAddEntityOperationHandler } from './handler/add-entity-operation-handler.js';
 import { SystemDiagramChangeBoundsOperationHandler } from './handler/change-bounds-operation-handler.js';
 import { SystemDiagramCreateEntityOperationHandler } from './handler/create-entity-operation-handler.js';
-import { SystemDiagramCreateRelationsshipOperationHandler as SystemDiagramCreateRelationshipOperationHandler } from './handler/create-relationship-operation-handler.js';
+import { SystemDiagramCreateRelationshipOperationHandler } from './handler/create-relationship-operation-handler.js';
 import { SystemDiagramDeleteOperationHandler } from './handler/delete-operation-handler.js';
 import { SystemDiagramDropEntityOperationHandler } from './handler/drop-entity-operation-handler.js';
 import { SystemDiagramGModelFactory } from './model/system-diagram-gmodel-factory.js';

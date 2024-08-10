@@ -30,8 +30,9 @@ export interface IdProvider extends NameProvider {
    getLocalId(node?: AstNode): string | undefined;
    getGlobalId(node?: AstNode): string | undefined;
 
-   findNextId(type: string, proposal: string | undefined): string;
-   findNextId(type: string, proposal: string | undefined, container: AstNode): string;
+   findNextId(type: string, proposal: string | undefined, container?: AstNode): string;
+   findNextLocalId(type: string, proposal: string | undefined, container: AstNode): string;
+   findNextGlobalId(type: string, proposal: string | undefined): string;
 }
 
 export const QUALIFIED_ID_SEPARATOR = '.';
@@ -120,17 +121,15 @@ export class DefaultIdProvider implements NameProvider, IdProvider {
    findNextId(type: string, proposal: string | undefined): string;
    findNextId(type: string, proposal: string | undefined, container: AstNode): string;
    findNextId(type: string, proposal: string | undefined, container?: AstNode): string {
-      if (isAstNode(container)) {
-         return this.findNextIdInContainer(type, proposal?.replaceAll('.', '_') ?? 'Element', container);
-      }
-      return this.findNextIdInIndex(type, proposal?.replaceAll('.', '_') ?? 'Element');
+      const idProposal = proposal?.replaceAll('.', '_');
+      return isAstNode(container) ? this.findNextLocalId(type, idProposal, container) : this.findNextGlobalId(type, idProposal);
    }
 
    protected getParent(node: AstNode): AstNode | undefined {
       return getOwner(node) ?? node.$container;
    }
 
-   protected findNextIdInContainer(type: string, proposal: string, container: AstNode): string {
+   findNextLocalId(type: string, proposal: string | undefined = 'Element', container: AstNode): string {
       const knownIds = streamAst(container)
          .filter(node => node.$type === type)
          .map(this.getNodeId)
@@ -139,7 +138,7 @@ export class DefaultIdProvider implements NameProvider, IdProvider {
       return this.countToNextId(knownIds, proposal);
    }
 
-   protected findNextIdInIndex(type: string, proposal: string): string {
+   findNextGlobalId(type: string, proposal: string | undefined = 'Element'): string {
       const knownIds = this.services.shared.workspace.IndexManager.allElements(type)
          .map(element => element.name)
          .toArray();

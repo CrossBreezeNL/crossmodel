@@ -3,10 +3,20 @@
  ********************************************************************************/
 
 import { GRID } from '@crossbreeze/protocol';
-import { ConsoleLogger, GlspCommandPalette, LogLevel, MouseDeleteTool, TYPES, ToolPalette, bindAsService } from '@eclipse-glsp/client';
+import {
+   ConsoleLogger,
+   GLSPMousePositionTracker,
+   GlspCommandPalette,
+   LogLevel,
+   MouseDeleteTool,
+   TYPES,
+   ToolPalette,
+   bindAsService,
+   bindOrRebind
+} from '@eclipse-glsp/client';
 import { GlspSelectionDataService, TheiaGLSPSelectionForwarder } from '@eclipse-glsp/theia-integration';
 import { ContainerModule, interfaces } from '@theia/core/shared/inversify';
-import { CrossModelCommandPalette } from './cross-model-command-palette';
+import { CrossModelCommandPalette, CrossModelMousePositionTracker } from './cross-model-command-palette';
 import { CrossModelMouseDeleteTool } from './cross-model-delete-tool';
 import { CrossModelDiagramStartup } from './cross-model-diagram-startup';
 import { CrossModelToolPalette } from './cross-model-tool-palette';
@@ -27,6 +37,9 @@ export function createCrossModelDiagramModule(registry: interfaces.ContainerModu
       registry(bind, unbind, isBound, rebind, unbindAsync, onActivation, onDeactivation);
       bind(CrossModelCommandPalette).toSelf().inSingletonScope();
       rebind(GlspCommandPalette).toService(CrossModelCommandPalette);
+
+      bind(CrossModelMousePositionTracker).toSelf().inSingletonScope();
+      bindOrRebind(context, GLSPMousePositionTracker).toService(CrossModelMousePositionTracker);
 
       // there is a bug in the GLSP client release that will be fixed with 2.2.1 but for now we need to workaround
       bind('selectionListener').toService(TheiaGLSPSelectionForwarder);

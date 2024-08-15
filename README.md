@@ -69,6 +69,12 @@ If you also made changes to the backend, you can close and restart the applicati
 
 You can work on CrossModel from within a Dev Container. The best way to do so is create a new Dev Container and cloning the repository in there. For instructions please consult [this](https://code.visualstudio.com/docs/devcontainers/containers#_quick-start-open-a-git-repository-or-github-pr-in-an-isolated-container-volume) page.
 
+Short steps:
+
+1. Install Docker with WSL 2 engine enabled.
+1. In VS Code press [CTRL] + [SHIFT] + [P] and type 'Dev Container: Clone Repository in Container Volume...' and press [Enter].
+1. Enter the current repository URL and press [Enter]. Now the dev container will be created with the Git repository cloned in it (faster then cloned locally in Windows).
+
 ## Packaging
 
 To package the application use
@@ -108,8 +114,8 @@ The repository itself contains the following components structured as follows:
 
 ## Used libraries and license
 
--   mui-x : MUI X is open core—base components are MIT-licensed, while more advanced features require a Pro or Premium commercial license. We are currently only using core-base
--   react-tabs: MIT
--   chevrotain: This library is a dependency of langium. To get the Yaml language working in crossmodel an example implementation of the python language of chevrotain has been used. This example has been modified to make it work for the yaml language.
-    -   <https://github.com/Chevrotain/chevrotain>
-    -   example that has been used: <https://github.com/Chevrotain/chevrotain/tree/master/examples/lexer/python_indentation>
+-  mui-x : MUI X is open core—base components are MIT-licensed, while more advanced features require a Pro or Premium commercial license. We are currently only using core-base
+-  react-tabs: MIT
+-  chevrotain: This library is a dependency of langium. To get the Yaml language working in crossmodel an example implementation of the python language of chevrotain has been used. This example has been modified to make it work for the yaml language.
+   -  <https://github.com/Chevrotain/chevrotain>
+   -  example that has been used: <https://github.com/Chevrotain/chevrotain/tree/master/examples/lexer/python_indentation>

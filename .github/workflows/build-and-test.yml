@@ -59,7 +59,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: unit-test-results
+          name: unit-test-results-${{ runner.os }}
           # Include the unit-test-results folders (which is in the root of the workspace).
           path: unit-test-results
           retention-days: 30
@@ -97,8 +97,9 @@ jobs:
       - name: Download Unit Test Results
         uses: actions/download-artifact@v4
         with:
-          name: unit-test-results
           path: unit-test-results
+          pattern: unit-test-results-*
+          merge-multiple: true
       # Publish Test Results
       - name: Publish Unit Test Results
         uses: EnricoMi/publish-unit-test-result-action@30eadd5010312f995f0d3b3cff7fe2984f69409e # v2.16.1

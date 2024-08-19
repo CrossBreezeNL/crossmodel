@@ -10,7 +10,6 @@ import {
    GModelIndex,
    InstanceMultiBinding,
    ModelState,
-   ModelSubmissionHandler,
    MultiBinding,
    OperationHandlerConstructor,
    SourceModelStorage,
@@ -21,7 +20,6 @@ import { injectable } from 'inversify';
 import { CrossModelIndex } from '../common/cross-model-index.js';
 import { CrossModelState } from '../common/cross-model-state.js';
 import { CrossModelStorage } from '../common/cross-model-storage.js';
-import { CrossModelSubmitHandler } from '../common/cross-model-submission-handler.js';
 import { SystemDiagramAddEntityActionProvider } from './command-palette/add-entity-action-provider.js';
 import { SystemDiagramAddEntityOperationHandler } from './handler/add-entity-operation-handler.js';
 import { SystemDiagramChangeBoundsOperationHandler } from './handler/change-bounds-operation-handler.js';
@@ -77,10 +75,6 @@ export class SystemDiagramModule extends DiagramModule {
 
    protected bindGModelFactory(): BindingTarget<GModelFactory> {
       return SystemDiagramGModelFactory;
-   }
-
-   protected override bindModelSubmissionHandler(): BindingTarget<ModelSubmissionHandler> {
-      return CrossModelSubmitHandler;
    }
 
    protected override bindToolPaletteItemProvider(): BindingTarget<ToolPaletteItemProvider> | undefined {

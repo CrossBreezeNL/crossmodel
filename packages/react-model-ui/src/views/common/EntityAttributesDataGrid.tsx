@@ -20,19 +20,10 @@ export function EntityAttributesDataGrid(): React.ReactElement {
    // Callback for when the user stops editing a cell.
    const handleRowUpdate = React.useCallback(
       (attribute: EntityAttributeRow): EntityAttributeRow => {
-         // Handle change of name property.
          dispatch({
             type: 'entity:attribute:update',
             attributeIdx: attribute.idx,
-            attribute: {
-               $type: EntityAttributeType,
-               $globalId: attribute.id,
-               id: attribute.id,
-               name: attribute.name,
-               datatype: attribute.datatype,
-               description: attribute.description,
-               identifier: attribute.identifier
-            }
+            attribute: GridComponentRow.getData(attribute)
          });
          return attribute;
       },
@@ -106,7 +97,7 @@ export function EntityAttributesDataGrid(): React.ReactElement {
             editable: true,
             flex: 100,
             type: 'singleSelect',
-            valueOptions: ['Integer', 'Float', 'Char', 'Varchar', 'Bool']
+            valueOptions: ['Integer', 'Float', 'Char', 'Varchar', 'Bool', 'Text']
          },
          {
             field: 'identifier',

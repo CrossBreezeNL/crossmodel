@@ -3,6 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  * ------------------------------------------------------------------------------------------ */
 // eslint-disable-next-line header/header
+import { NormalizedTextDocuments } from 'langium/lsp';
 import { basename } from 'path';
 import {
    CancellationToken,
@@ -16,7 +17,6 @@ import {
    HandlerResult,
    RequestHandler,
    TextDocumentChangeEvent,
-   TextDocuments,
    TextDocumentsConfiguration,
    TextDocumentSyncKind,
    TextDocumentWillSaveEvent,
@@ -36,7 +36,7 @@ export interface ClientTextDocumentChangeEvent<T> extends TextDocumentChangeEven
 /**
  * This subclass of `TextDocuments` supports multiple clients to open the same document and sync their state.
  */
-export class OpenableTextDocuments<T extends TextDocument> extends TextDocuments<T> {
+export class OpenableTextDocuments<T extends TextDocument> extends NormalizedTextDocuments<T> {
    protected __clientDocuments = new Map<string, Set<string>>();
    protected __changeHistory = new Map<string, string[]>();
 

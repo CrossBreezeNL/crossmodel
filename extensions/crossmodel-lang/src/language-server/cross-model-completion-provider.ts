@@ -2,22 +2,13 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 import { quote } from '@crossbreeze/protocol';
-import {
-   AstNodeDescription,
-   CompletionAcceptor,
-   CompletionContext,
-   DefaultCompletionProvider,
-   GrammarAST,
-   MaybePromise,
-   NextFeature,
-   getContainerOfType
-} from 'langium';
-import { getExplicitRuleType } from 'langium/internal';
+import { AstNodeDescription, AstUtils, GrammarAST, GrammarUtils, MaybePromise, ReferenceInfo, Stream } from 'langium';
+import { CompletionAcceptor, CompletionContext, DefaultCompletionProvider, NextFeature } from 'langium/lsp';
 import { v4 as uuid } from 'uuid';
 import { CompletionItemKind, InsertTextFormat, TextEdit } from 'vscode-languageserver-protocol';
 import type { Range } from 'vscode-languageserver-types';
 import { CrossModelServices } from './cross-model-module.js';
-import { AttributeMapping, RelationshipAttribute, isAttributeMapping } from './generated/ast.js';
+import { AttributeMapping, isAttributeMapping, RelationshipAttribute } from './generated/ast.js';
 import { fixDocument } from './util/ast-util.js';
 
 /**
@@ -26,7 +17,7 @@ import { fixDocument } from './util/ast-util.js';
 export class CrossModelCompletionProvider extends DefaultCompletionProvider {
    protected packageId?: string;
 
-   readonly completionOptions = {
+   override readonly completionOptions = {
       triggerCharacters: ['\n', ' ', '{']
    };
 
@@ -43,7 +34,7 @@ export class CrossModelCompletionProvider extends DefaultCompletionProvider {
       acceptor: CompletionAcceptor
    ): MaybePromise<void> {
       this.fixCompletionNode(context);
-      const assignment = getContainerOfType(next.feature, GrammarAST.isAssignment);
+      const assignment = AstUtils.getContainerOfType(next.feature, GrammarAST.isAssignment);
       if (!GrammarAST.isCrossReference(next.feature) && assignment) {
          return this.completionForAssignment(context, next, assignment, acceptor);
       }
@@ -57,11 +48,7 @@ export class CrossModelCompletionProvider extends DefaultCompletionProvider {
    }
 
    protected override filterKeyword(context: CompletionContext, keyword: GrammarAST.Keyword): boolean {
-      return this.isUndefinedProperty(context.node, keyword.value);
-   }
-
-   protected isUndefinedProperty(obj: any, property: string): boolean {
-      return obj?.[property] === undefined || (Array.isArray(obj[property]) && obj[property].length === 0);
+      return true;
    }
 
    protected completionForAssignment(
@@ -120,7 +107,7 @@ export class CrossModelCompletionProvider extends DefaultCompletionProvider {
       if (GrammarAST.isTerminalRule(rule)) {
          return rule.type?.name ?? 'string';
       }
-      const explicitType = getExplicitRuleType(rule);
+      const explicitType = GrammarUtils.getExplicitRuleType(rule);
       return explicitType ?? rule.name;
    }
 
@@ -224,14 +211,18 @@ export class CrossModelCompletionProvider extends DefaultCompletionProvider {
       }
    }
 
-   protected override filterCrossReference(context: CompletionContext, description: AstNodeDescription): boolean {
-      return this.services.references.ScopeProvider.filterCompletion(
-         description,
-         context.document,
-         this.packageId!,
-         context.node,
-         context.features[context.features.length - 1].property
-      );
+   protected override getReferenceCandidates(refInfo: ReferenceInfo, context: CompletionContext): Stream<AstNodeDescription> {
+      return super
+         .getReferenceCandidates(refInfo, context)
+         .filter(description =>
+            this.services.references.ScopeProvider.filterCompletion(
+               description,
+               context.document,
+               this.packageId!,
+               context.node,
+               context.features[context.features.length - 1].property
+            )
+         );
    }
 
    protected filterRelationshipAttribute(node: RelationshipAttribute, context: CompletionContext, desc: AstNodeDescription): boolean {

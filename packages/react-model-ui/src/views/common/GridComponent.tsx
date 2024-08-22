@@ -94,7 +94,8 @@ export default function GridComponent<T extends GridValidRowModel>({
 
    const handleRowUpdate = React.useCallback(
       async (newRow: GridComponentRow<T>, oldRow: GridComponentRow<T>): Promise<GridComponentRow<T>> => {
-         const updatedRow = mergeRightToLeft(oldRow, newRow);
+         const defaultRow: GridComponentRow<T> = { ...defaultEntry, idx: -1 };
+         const updatedRow = mergeRightToLeft(defaultRow, oldRow, newRow);
          if (updatedRow.idx === undefined || updatedRow.idx < 0) {
             removeSyntheticRows();
             await onAdd?.(updatedRow);
@@ -104,7 +105,7 @@ export default function GridComponent<T extends GridValidRowModel>({
          }
          return updatedRow;
       },
-      [onAdd, onUpdate, removeSyntheticRows]
+      [defaultEntry, onAdd, onUpdate, removeSyntheticRows]
    );
 
    const handleRowUpdateError = React.useCallback(async (error: any): Promise<void> => console.log(error), []);
@@ -123,7 +124,22 @@ export default function GridComponent<T extends GridValidRowModel>({
    const createSyntheticRow = React.useCallback(() => {
       const id = -1;
       if (!rows.find(row => row.idx === -1)) {
-         setRows(oldRows => [...oldRows, { ...defaultEntry, idx: id }]);
+         const syntheticRow = { ...defaultEntry, idx: id };
+         let _$type = syntheticRow.$type;
+         Object.defineProperty(syntheticRow, '$type', {
+            get() {
+               return _$type;
+            },
+            set(newValue) {
+               console.log(`$type is changing to ${newValue}`);
+               // eslint-disable-next-line no-debugger
+               debugger; // Pauses execution here
+               _$type = newValue;
+            },
+            configurable: true,
+            enumerable: true
+         });
+         setRows(oldRows => [...oldRows, syntheticRow]);
       }
 
       // put new row in edit mode
@@ -289,8 +305,11 @@ export default function GridComponent<T extends GridValidRowModel>({
 
 function mergeRightToLeft<T extends Record<string, any>>(one: T, ...more: T[]): T {
    let result = { ...one };
-   more.forEach(
-      right => (result = Object.entries(right).reduce((acc, [key, value]) => ({ ...acc, [key]: value ?? acc[key] }), { ...result }))
-   );
+   more
+      // eslint-disable-next-line no-null/no-null
+      .filter(entry => entry !== undefined && entry !== null)
+      .forEach(
+         right => (result = Object.entries(right).reduce((acc, [key, value]) => ({ ...acc, [key]: value ?? acc[key] }), { ...result }))
+      );
    return result;
 }

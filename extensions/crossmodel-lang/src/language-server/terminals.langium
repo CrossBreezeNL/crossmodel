@@ -12,7 +12,7 @@ interface WithCustomProperties {
 fragment CustomProperties:
     'customProperties' ':'
         INDENT
-            ('-' customProperties+=CustomProperty)*
+            (LIST_ITEM customProperties+=CustomProperty)*
         DEDENT
     ;
 
@@ -28,9 +28,10 @@ terminal NUMBER returns number: /(-)?[0-9]+(\.[0-9]*)?/;
 hidden terminal SL_COMMENT: /#[^\n\r]*/;
 
 // Terminals to get the indentation working
-hidden terminal NEWLINE: 'this_string_does_not_matter_newline#$%^&*((';
-terminal DEDENT: 'this_string_does_not_matter_dedent#$%^&*((';
-terminal INDENT: 'this_string_does_not_matter_indent#$%^&*((';
-hidden terminal SPACES: 'this_string_does_not_matter_spaces#$%^&*((';
+terminal INDENT: ':synthetic-indent:';
+terminal DEDENT: ':synthetic-dedent:';
+terminal LIST_ITEM: '- '; // block sequence entry
+hidden terminal NEWLINE: /[/\r\n|\r|\n/]+/;
+hidden terminal WS: /[ \t]+/; 
 
-terminal ID: /[_a-zA-Z][\w_\-~$#@/\d]*/;
+terminal ID: /[_a-zA-Z][\w_\-~$#@/\d]*/; 

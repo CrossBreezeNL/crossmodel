@@ -8,8 +8,8 @@ Entity:
             ('name' ':'  name=STRING)?
             ('description' ':' description=STRING)?
             ('attributes' ':'
-                INDENT 
-                    ('-' attributes+=EntityAttribute)+
+                INDENT
+                    (LIST_ITEM attributes+=EntityAttribute)+
                 DEDENT
             )?
             CustomProperties?

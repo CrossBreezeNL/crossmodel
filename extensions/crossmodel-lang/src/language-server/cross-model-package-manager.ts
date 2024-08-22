@@ -122,7 +122,7 @@ export class CrossModelPackageManager {
             if (entry.isDirectory) {
                await this.initializePackages(entry.uri);
             } else if (entry.isFile && isPackageUri(entry.uri)) {
-               const text = this.fileSystemProvider.readFileSync(entry.uri);
+               const text = await this.fileSystemProvider.readFile(entry.uri);
                this.updatePackage(entry.uri, text);
             }
          })

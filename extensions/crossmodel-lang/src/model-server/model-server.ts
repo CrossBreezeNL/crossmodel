@@ -29,7 +29,7 @@ import {
    UpdateModel,
    UpdateModelArgs
 } from '@crossbreeze/protocol';
-import { AstNode, findRootNode, getDocument, isReference } from 'langium';
+import { AstNode, AstUtils, isReference } from 'langium';
 import { Disposable } from 'vscode-jsonrpc';
 import * as rpc from 'vscode-jsonrpc/node.js';
 
@@ -83,8 +83,8 @@ export class ModelServer implements Disposable {
       if (!node) {
          return undefined;
       }
-      const uri = getDocument(node).uri.toString();
-      const model = this.toSerializable(findRootNode(node)) as CrossModelRoot;
+      const uri = AstUtils.getDocument(node).uri.toString();
+      const model = this.toSerializable(AstUtils.findRootNode(node)) as CrossModelRoot;
       return { uri, model };
    }
 

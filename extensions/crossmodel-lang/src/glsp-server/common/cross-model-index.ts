@@ -3,7 +3,7 @@
  ********************************************************************************/
 import { GModelElement, GModelIndex } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
-import { AstNode, streamAst } from 'langium';
+import { AstNode, AstUtils } from 'langium';
 import * as uuid from 'uuid';
 import { CrossModelLSPServices } from '../../integration.js';
 import { CrossModelRoot } from '../../language-server/generated/ast.js';
@@ -41,7 +41,7 @@ export class CrossModelIndex extends GModelIndex {
 
    indexSemanticRoot(root: CrossModelRoot): void {
       this.idToSemanticNode.clear();
-      streamAst(root).forEach(node => this.indexAstNode(node));
+      AstUtils.streamAst(root).forEach(node => this.indexAstNode(node));
    }
 
    protected indexAstNode(node: AstNode): void {

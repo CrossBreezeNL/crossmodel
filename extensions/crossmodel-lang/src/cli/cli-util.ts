@@ -3,7 +3,8 @@
  ********************************************************************************/
 import chalk from 'chalk';
 import fs from 'fs';
-import { AstNode, LangiumDocument, LangiumServices } from 'langium';
+import { AstNode, LangiumDocument } from 'langium';
+import { LangiumServices } from 'langium/lsp';
 import path from 'path';
 import { URI } from 'vscode-uri';
 
@@ -19,7 +20,7 @@ export async function extractDocument(fileName: string, services: LangiumService
       process.exit(1);
    }
 
-   const document = services.shared.workspace.LangiumDocuments.getOrCreateDocument(URI.file(path.resolve(fileName)));
+   const document = await services.shared.workspace.LangiumDocuments.getOrCreateDocument(URI.file(path.resolve(fileName)));
    await services.shared.workspace.DocumentBuilder.build([document], { validation: true });
 
    const validationErrors = (document.diagnostics ?? []).filter(e => e.severity === 1);

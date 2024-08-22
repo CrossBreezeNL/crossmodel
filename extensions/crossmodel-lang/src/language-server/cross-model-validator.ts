@@ -2,7 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 import { findAllExpressions, getExpression, getExpressionPosition, getExpressionText } from '@crossbreeze/protocol';
-import { AstNode, Reference, ValidationAcceptor, ValidationChecks, findNodeForProperty } from 'langium';
+import { AstNode, GrammarUtils, Reference, ValidationAcceptor, ValidationChecks } from 'langium';
 import type { CrossModelServices } from './cross-model-module.js';
 import { ID_PROPERTY, IdentifiableAstNode } from './cross-model-naming.js';
 import {
@@ -151,7 +151,7 @@ export class CrossModelValidator {
    }
 
    checkAttributeMapping(mapping: AttributeMapping, accept: ValidationAcceptor): void {
-      const mappingExpression = findNodeForProperty(mapping.$cstNode, 'expression');
+      const mappingExpression = GrammarUtils.findNodeForProperty(mapping.$cstNode, 'expression');
       if (!mappingExpression) {
          return;
       }

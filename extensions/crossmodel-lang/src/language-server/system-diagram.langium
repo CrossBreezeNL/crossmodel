@@ -12,12 +12,12 @@ SystemDiagram:
             ('description' ':' description=STRING)?
             ('nodes' ':'
                 INDENT 
-                    ('-' nodes+=EntityNode)+
+                    (LIST_ITEM nodes+=EntityNode)+
                 DEDENT
             )?
             ('edges' ':'
                 INDENT 
-                    ('-' edges+=RelationshipEdge)+
+                    (LIST_ITEM edges+=RelationshipEdge)+
                 DEDENT
             )?
             CustomProperties?

@@ -11,6 +11,7 @@ import {
    InstanceMultiBinding,
    LayoutEngine,
    ModelState,
+   ModelSubmissionHandler,
    OperationHandlerConstructor,
    SourceModelStorage,
    ToolPaletteItemProvider,
@@ -20,6 +21,7 @@ import { injectable } from 'inversify';
 import { CrossModelIndex } from '../common/cross-model-index.js';
 import { CrossModelState } from '../common/cross-model-state.js';
 import { CrossModelStorage } from '../common/cross-model-storage.js';
+import { CrossModelSubmissionHandler } from '../common/cross-model-submission-handler.js';
 import { MappingDiagramCommandPaletteActionProvider } from './command-palette/add-source-object-action-provider.js';
 import { MappingDiagramAddSourceObjectOperationHandler } from './handler/add-source-object-operation-handler.js';
 import { MappingEdgeCreationOperationHandler } from './handler/create-edge-operation-handler.js';
@@ -45,6 +47,10 @@ export class MappingDiagramModule extends DiagramModule {
 
    protected bindSourceModelStorage(): BindingTarget<SourceModelStorage> {
       return CrossModelStorage;
+   }
+
+   protected override bindModelSubmissionHandler(): BindingTarget<ModelSubmissionHandler> {
+      return CrossModelSubmissionHandler;
    }
 
    protected override configureOperationHandlers(binding: InstanceMultiBinding<OperationHandlerConstructor>): void {

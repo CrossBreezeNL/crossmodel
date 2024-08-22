@@ -3,78 +3,24 @@
  ********************************************************************************/
 
 import { quote } from '@crossbreeze/protocol';
-import { isReference } from 'langium';
+import { AstNode, GenericAstNode, Grammar, isAstNode, isReference } from 'langium';
+import { collectAst } from 'langium/grammar';
 import { Serializer } from '../model-server/serializer.js';
 import {
    CrossModelRoot,
-   Entity,
-   JoinCondition,
-   Mapping,
-   Relationship,
-   StringLiteral,
-   SystemDiagram,
+   EntityAttribute,
    isAttributeMappingSource,
    isAttributeMappingTarget,
+   isCustomProperty,
+   isEntityAttribute,
    isJoinCondition,
-   isSourceObjectDependency
+   isSourceObject,
+   isSourceObjectDependency,
+   JoinCondition,
+   reflection,
+   StringLiteral
 } from './generated/ast.js';
 import { isImplicitProperty } from './util/ast-util.js';
-
-const PROPERTY_ORDER = [
-   'id',
-   'name',
-   'datatype',
-   'identifier',
-   'description',
-   'entity',
-   'parent',
-   'child',
-   'type',
-   'attributes',
-   'nodes',
-   'edges',
-   'x',
-   'y',
-   'width',
-   'height',
-   'relationship',
-   'sourceNode',
-   'targetNode',
-   'attribute',
-   'sources',
-   'target',
-   'object',
-   'join',
-   'dependencies',
-   'mappings',
-   'source',
-   'conditions',
-   'expression',
-   'customProperties',
-   'value'
-];
-
-const ID_OR_IDREF = [
-   'id',
-   'relationship',
-   'entity',
-   'sourceNode',
-   'targetNode',
-   'object',
-   'source',
-   'sources',
-   'target',
-   'attribute',
-   'join',
-   'conditions',
-   'parent',
-   'child',
-   'dependencies',
-   'value'
-];
-
-/** Mapping from JavaScript property keys (AST) to YAML property keys (Grammar). */
-const PROPERTY_TO_KEY_MAP = new Map();
 
 /**
  * Hand-written AST serializer as there is currently no out-of-the box serializer from Langium, but it is on the roadmap.
@@ -91,130 +37,134 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot> {
    // The amount of spaces to use to indent an array.
    static readonly INDENTATION_AMOUNT_ARRAY = 2;
 
+   private propertyCache = new Map<string, string[]>();
+
+   constructor(
+      readonly grammar: Grammar,
+      readonly astTypes = collectAst(grammar)
+   ) {}
+
    serialize(root: CrossModelRoot): string {
-      const newRoot: CrossModelRoot | Entity | Relationship | SystemDiagram | Mapping = this.toSerializableObject(root);
-      return this.serializeValue(newRoot, CrossModelSerializer.INDENTATION_AMOUNT_OBJECT * -1, 'root');
+      return this.toYaml(root, '', root)?.trim() ?? '';
    }
 
-   private serializeValue(value: any, indentationLevel: number, key: string, container?: Record<string, any>): string {
-      if (this.isCustomProperty(container)) {
-         // custom properties need a special handling because they use properties that are already used differently in other places
-         // 'name:' typically used as a string but used as an identifier in the custom property
-         // 'value:' used for ID-based references in other places but used as a string value in the custom property
-         return key === 'name' ? value : JSON.stringify(value);
+   private toYaml(parent: AstNode | any[], key: string, value: any, indentationLevel = 0): string | undefined {
+      if (key.startsWith('$') || isImplicitProperty(key, parent)) {
+         return undefined;
       }
-
-      if (Array.isArray(value)) {
-         return this.serializeArray(value, indentationLevel, key);
-      } else if (typeof value === 'object' && value !== undefined) {
-         return this.serializeObject(value, indentationLevel + CrossModelSerializer.INDENTATION_AMOUNT_OBJECT, key);
-      } else if (this.isIdOrIdRef(key)) {
-         // for IDs and references (based on IDs) we guarantee that they do not contain spaces or other characters that break the string
-         return value;
-      } else {
-         return JSON.stringify(value);
-      }
-   }
-
-   private isIdOrIdRef(key: string): boolean {
-      return ID_OR_IDREF.includes(key);
-   }
-
-   private serializeObject(obj: Record<string, any>, indentationLevel: number, key: string): string {
-      const indentation = CrossModelSerializer.CHAR_INDENTATION.repeat(indentationLevel);
-
-      const serializedProperties = Object.entries(obj)
-         .sort((left, right) => PROPERTY_ORDER.indexOf(left[0]) - PROPERTY_ORDER.indexOf(right[0]))
-         .map(([objKey, objValue]) => {
-            if (Array.isArray(objValue) && objValue.length === 0) {
-               // skip empty arrays
-               return;
-            }
-            if (objKey === 'identifier' && objValue === false) {
-               // skip false identifiers for better readability
-               return;
-            }
-
-            const propKey = this.serializeKey(objKey);
-            const propValue = this.serializeValue(objValue, indentationLevel, propKey, obj);
-            if (typeof objValue === 'object') {
-               return `${indentation}${propKey}:${CrossModelSerializer.CHAR_NEWLINE}${propValue}`;
-            } else {
-               return `${indentation}${propKey}: ${propValue}`;
-            }
-         })
-         .filter(item => item !== undefined);
-
-      return serializedProperties.join(CrossModelSerializer.CHAR_NEWLINE);
-   }
-
-   private serializeKey(property: string): string {
-      return PROPERTY_TO_KEY_MAP.get(property) ?? property;
-   }
-
-   private serializeArray(arr: any[], indentationLevel: number, key: string): string {
-      const serializedItems = arr
-         .filter(item => item !== undefined)
-         .map(item => this.serializeValue(item, indentationLevel, key, arr))
-         .map(item => this.ensureArrayItem(item, indentationLevel + CrossModelSerializer.INDENTATION_AMOUNT_ARRAY))
-         .join(CrossModelSerializer.CHAR_NEWLINE);
-      return serializedItems;
-   }
-
-   private ensureArrayItem(input: any, indentationLevel: number): string {
-      if (indentationLevel < 0) {
-         return input;
-      }
-
-      const indentation = CrossModelSerializer.CHAR_INDENTATION.repeat(indentationLevel);
-      const modifiedString = indentation + '- ' + input.toString().trimStart();
-      return modifiedString;
-   }
-
-   /**
-    * Cleans the semantic object of any property that cannot be serialized as a String and thus cannot be sent to the client
-    * over the RPC connection.
-    *
-    * @param obj semantic object
-    * @returns serializable semantic object
-    */
-   toSerializableObject<T extends object>(obj: T): T {
-      // preprocess some objects that need special serialization
-      if (isAttributeMappingSource(obj) || isAttributeMappingTarget(obj)) {
-         // skip object structure
-         return this.resolvedValue(obj.value);
-      }
-      if (isSourceObjectDependency(obj)) {
-         return this.resolvedValue(obj.source);
-      }
-      if (isJoinCondition(obj)) {
-         // expressions are serialized not as the object tree but as user-level expression
-         return this.serializeJoinCondition(obj);
-      }
-      return <T>Object.entries(obj)
-         .filter(([key, value]) => !key.startsWith('$') && !isImplicitProperty(key, obj))
-         .reduce((acc, [key, value]) => ({ ...acc, [key]: this.cleanValue(value) }), {});
-   }
-
-   cleanValue(value: any): any {
-      if (Array.isArray(value)) {
-         return value.map(item => this.cleanValue(item));
-      } else if (this.isContainedObject(value)) {
-         return this.toSerializableObject(value);
-      } else {
-         return this.resolvedValue(value);
-      }
-   }
-
-   isContainedObject(value: any): boolean {
-      return value === Object(value) && !isReference(value);
-   }
-
-   resolvedValue(value: any): any {
       if (isReference(value)) {
-         return value.$refText;
+         return value.$refText ?? value.$nodeDescription?.name;
       }
-      return value;
+      if (
+         key === 'id' ||
+         propertyOf(parent, key, isCustomProperty, 'name') ||
+         propertyOf(parent, key, isSourceObject, 'join') ||
+         this.isValidReference(parent, key, value)
+      ) {
+         // values that we do not want to quote because they are ids or references
+         return value;
+      }
+      if (isAttributeMappingSource(value) || isAttributeMappingTarget(value)) {
+         return value.value?.$refText ?? value.value;
+      }
+      if (isSourceObjectDependency(value)) {
+         return value.source?.$refText ?? value.source;
+      }
+      if (isJoinCondition(value)) {
+         return this.serializeJoinCondition(value);
+      }
+      if (isAstNode(value)) {
+         let isFirstNested = isAstNode(parent);
+         const properties = this.getPropertyNames(value.$type)
+            .map(prop => {
+               const propValue = (value as GenericAstNode)[prop];
+               // eslint-disable-next-line no-null/no-null
+               if (propValue === undefined || propValue === null) {
+                  return undefined;
+               }
+               if (Array.isArray(propValue) && propValue.length === 0) {
+                  // skip empty arrays
+                  return undefined;
+               }
+               if (isEntityAttribute(value) && prop === 'identifier' && propValue === false) {
+                  // special: skip identifier property if it is false
+                  return undefined;
+               }
+               // arrays and objects start on a new line -- skip some objects that we do not actually serialize in object structure
+               const onNewLine =
+                  Array.isArray(propValue) ||
+                  (isAstNode(propValue) &&
+                     !isAttributeMappingSource(propValue) &&
+                     !isAttributeMappingTarget(propValue) &&
+                     !isSourceObjectDependency(propValue) &&
+                     !isJoinCondition(propValue));
+               const serializedPropValue = this.toYaml(value, prop, propValue, onNewLine ? indentationLevel + 1 : 0);
+               if (!serializedPropValue) {
+                  return undefined;
+               }
+               const separator = onNewLine ? CrossModelSerializer.CHAR_NEWLINE : ' ';
+               const serializedProp = `${prop}:${separator}${serializedPropValue}`;
+               const serialized = isFirstNested ? this.indent(serializedProp, indentationLevel) : serializedProp;
+               isFirstNested = false;
+               return serialized;
+            })
+            .filter(serializedProp => serializedProp !== undefined)
+            .join(CrossModelSerializer.CHAR_NEWLINE + this.indent('', indentationLevel));
+         return properties;
+      }
+      if (Array.isArray(value)) {
+         return value
+            .filter(item => item !== undefined)
+            .map(item => this.toYaml(value, key, item, indentationLevel))
+            .filter(serializedItem => serializedItem !== undefined)
+            .map(serializedItem => this.indent(`  - ${serializedItem}`, indentationLevel - 1))
+            .join(CrossModelSerializer.CHAR_NEWLINE);
+      }
+      return JSON.stringify(value);
+   }
+
+   protected indent(text: string, level: number): string {
+      return `${CrossModelSerializer.CHAR_INDENTATION.repeat(level * CrossModelSerializer.INDENTATION_AMOUNT_OBJECT)}${text}`;
+   }
+
+   protected isValidReference(node: AstNode | any[], key: string, value: any): value is string {
+      if (!isAstNode(node)) {
+         return false;
+      }
+      try {
+         // if finding the reference type fails, is it not a valid reference
+         reflection.getReferenceType({ container: node, property: key, reference: { $refText: value } });
+         return true;
+      } catch (error) {
+         return false;
+      }
+   }
+
+   protected getPropertyNames(elementType: string, kind: 'all' | 'mandatory' | 'optional' = 'all'): string[] {
+      const key = elementType + '$' + kind;
+      let cachedProperties = this.propertyCache.get(key);
+      if (!cachedProperties) {
+         cachedProperties = this.calcProperties(elementType, kind);
+         this.propertyCache.set(key, cachedProperties);
+      }
+      return cachedProperties;
+   }
+
+   protected calcProperties(elementType: string, kind: 'all' | 'mandatory' | 'optional'): string[] {
+      const interfaceType = this.astTypes.interfaces.find(type => type.name === elementType);
+      const allProperties = interfaceType?.allProperties;
+      if (elementType === EntityAttribute) {
+         // special handling cause the interface order does not reflect property order in grammar due to inheritance
+         const order = ['id', 'name', 'datatype', 'identifier', 'description', 'customProperties'];
+         allProperties?.sort((left, right) => order.indexOf(left.name) - order.indexOf(right.name));
+      }
+      return !allProperties
+         ? []
+         : kind === 'all'
+           ? allProperties.map(prop => prop.name)
+           : kind === 'optional'
+             ? allProperties.filter(prop => prop.optional).map(prop => prop.name)
+             : allProperties.filter(prop => !prop.optional).map(prop => prop.name);
    }
 
    private serializeJoinCondition(obj: JoinCondition): any {
@@ -226,14 +176,14 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot> {
       const right = obj.expression.right.$type === StringLiteral ? quote(obj.expression.right.value) : obj.expression.right.value;
       return [left, obj.expression.op, right].join(' ');
    }
+}
 
-   private isCustomProperty(obj: any): obj is { name: string; value?: string } {
-      // we need to be strict here cause other objects may also have name or value properties
-      return (
-         typeof obj === 'object' &&
-         'name' in obj &&
-         typeof (obj as any).name === 'string' &&
-         (Object.keys(obj).length === 1 || (Object.keys(obj).length === 2 && 'value' in obj && typeof (obj as any).value === 'string'))
-      );
-   }
+function propertyOf<T extends AstNode, K extends keyof T>(
+   obj: unknown,
+   key: string,
+   guard: (type: unknown) => type is T,
+   property: K
+): obj is T {
+   // type-safe check for a specific property
+   return guard(obj) && key === property;
 }

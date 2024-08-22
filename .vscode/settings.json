@@ -60,16 +60,17 @@
   "jest.debugMode": true,
   "cSpell.enabled": true,
   "cSpell.words": [
-    "Langium",
     "Chevrotain",
-    "CrossModel",
-    "Modelserver",
-    "CrossBreeze",
-    "Navigatable",
-    "Validateable",
     "codicon",
+    "CrossBreeze",
+    "CrossModel",
+    "dedents",
+    "Langium",
+    "Modelserver",
+    "Navigatable",
     "tabbar",
-    "uinteger"
+    "uinteger",
+    "Validateable"
   ],
   "cSpell.useGitignore": true,
   "cSpell.enabledLanguageIds": [

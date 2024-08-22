@@ -10,7 +10,7 @@ import { fixDocument } from './util/ast-util.js';
 import { Utils } from './util/uri-util.js';
 
 export class CrossModelLangiumDocuments extends DefaultLangiumDocuments {
-   override getOrCreateDocument(uri: URI): any {
+   override async getOrCreateDocument(uri: URI): Promise<LangiumDocument> {
       const document = this.getDocument(uri);
       if (document) {
          return document;
@@ -43,9 +43,5 @@ export class CrossModelLangiumDocuments extends DefaultLangiumDocuments {
       };
       fixDocument(document.parseResult.value, document);
       return document;
-   }
-
-   getDocument(uri: URI): LangiumDocument<CrossModelRoot> | undefined {
-      return this.documentMap.get(uri.toString()) as LangiumDocument<CrossModelRoot> | undefined;
    }
 }

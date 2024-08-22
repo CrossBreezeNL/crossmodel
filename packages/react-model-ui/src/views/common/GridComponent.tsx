@@ -28,6 +28,15 @@ export type GridComponentRow<T> = T &
       idx: number;
    };
 
+export namespace GridComponentRow {
+   export function getData<T>(row: GridComponentRow<T>): T {
+      // we just remove the artificially created index or any other fields we might have added
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { idx, _action, ...data } = row;
+      return data as T;
+   }
+}
+
 export type ValidationFunction<T> = <P extends keyof T, V extends T[P]>(field: P, value: V) => string | undefined;
 
 export interface GridComponentProps<T extends GridValidRowModel> extends Omit<DataGridProps<T>, 'rows' | 'columns' | 'processRowUpdate'> {

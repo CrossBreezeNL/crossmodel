@@ -2,14 +2,16 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { NavigatableWidgetOptions, OpenHandler, WidgetFactory } from '@theia/core/lib/browser';
+import { CrossModelWidgetOptions } from '@crossbreeze/core/lib/browser';
+import { FrontendApplicationContribution, NavigatableWidgetOptions, OpenHandler, WidgetFactory } from '@theia/core/lib/browser';
 import { ContainerModule } from '@theia/core/shared/inversify';
 import { FormEditorOpenHandler, createFormEditorId } from './form-editor-open-handler';
 import { FormEditorWidget, FormEditorWidgetOptions } from './form-editor-widget';
-import { CrossModelWidgetOptions } from '@crossbreeze/core/lib/browser';
 
 export default new ContainerModule(bind => {
-   bind(OpenHandler).to(FormEditorOpenHandler).inSingletonScope();
+   bind(FormEditorOpenHandler).toSelf().inSingletonScope();
+   bind(OpenHandler).toService(FormEditorOpenHandler);
+   bind(FrontendApplicationContribution).toService(FormEditorOpenHandler);
    bind<WidgetFactory>(WidgetFactory).toDynamicValue(context => ({
       id: FormEditorOpenHandler.ID, // must match the id in the open handler
       createWidget: (navigatableOptions: NavigatableWidgetOptions) => {

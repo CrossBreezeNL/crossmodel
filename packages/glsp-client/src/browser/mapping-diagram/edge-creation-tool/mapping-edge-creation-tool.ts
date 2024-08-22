@@ -2,42 +2,41 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 
-import { createLeftPortId, createRightPortId } from '@crossbreeze/protocol';
+import { createLeftPortId, createRightPortId, EnableDefaultToolsAction, EnableToolsAction } from '@crossbreeze/protocol';
 import {
    Action,
    AnchorComputerRegistry,
    Args,
    Bounds,
-   CursorCSS,
    Disposable,
    EdgeCreationTool,
    EdgeCreationToolMouseListener,
    FeedbackEdgeEndMovingMouseListener,
+   findChildrenAtPosition,
+   findParentByFeature,
    GConnectableElement,
+   getAbsolutePosition,
    GLSPActionDispatcher,
    GModelElement,
    HoverFeedbackAction,
    IFeedbackActionDispatcher,
+   isBoundsAware,
    ITypeHintProvider,
    MoveAction,
    Point,
-   TriggerEdgeCreationAction,
-   cursorFeedbackAction,
-   findChildrenAtPosition,
-   findParentByFeature,
-   getAbsolutePosition,
-   isBoundsAware,
-   toAbsoluteBounds
+   toAbsoluteBounds,
+   TriggerEdgeCreationAction
 } from '@eclipse-glsp/client';
 import {
    DrawFeedbackEdgeAction,
    FeedbackEdgeEnd,
-   RemoveFeedbackEdgeAction,
-   feedbackEdgeEndId
+   feedbackEdgeEndId,
+   RemoveFeedbackEdgeAction
 } from '@eclipse-glsp/client/lib/features/tools/edge-creation/dangling-edge-feedback';
 import { injectable } from 'inversify';
 import { AttributeCompartment } from '../../model';
 import { SourceObjectNode, TargetObjectNode } from '../model';
+import { DragEdgeCreationTool } from './drag-creation-tool';
 
 export type AttributeParent = 'target-object' | 'source-object';
 
@@ -58,25 +57,19 @@ export function revertAttributeParent(parent: AttributeParent): AttributeParent 
 export class MappingEdgeCreationTool extends EdgeCreationTool {
    protected override triggerAction: MappingEdgeCreationAction;
 
-   override doEnable(): void {
-      const feedbackListener = new MappingEdgeEndMovingListener(this.triggerAction, this.anchorRegistry, this.feedbackDispatcher);
+   protected override trackFeedbackEdge(): void {
+      const mouseMovingFeedback = new MappingEdgeEndMovingListener(this.triggerAction, this.anchorRegistry, this.feedbackDispatcher);
+      this.toDisposeOnDisable.push(mouseMovingFeedback, this.mouseTool.registerListener(mouseMovingFeedback));
+   }
+
+   protected override creationListener(): void {
       const creationListener = new MappingEdgeCreationToolMouseListener(
          this.triggerAction,
          this.actionDispatcher,
          this.typeHintProvider,
          this
       );
-
-      this.toDisposeOnDisable.push(
-         creationListener,
-         feedbackListener,
-         this.mouseTool.registerListener(creationListener),
-         this.mouseTool.registerListener(feedbackListener),
-         this.registerFeedback([cursorFeedbackAction(CursorCSS.OPERATION_NOT_ALLOWED)], this, [
-            RemoveFeedbackEdgeAction.create(),
-            cursorFeedbackAction()
-         ])
-      );
+      this.toDisposeOnDisable.push(creationListener, this.mouseTool.registerListener(creationListener));
    }
 }
 
@@ -105,7 +98,7 @@ export class MappingEdgeEndMovingListener extends FeedbackEdgeEndMovingMouseList
       const target = findChildrenAtPosition(root, position).reverse()[0];
 
       if (this.lastSnappedElement) {
-         actions.push(HoverFeedbackAction.create({ mouseoverElement: this.lastSnappedElement.id, mouseIsOver: false }));
+         this.feedback.add(HoverFeedbackAction.create({ mouseoverElement: this.lastSnappedElement.id, mouseIsOver: false }));
       }
 
       const attributeCompartment = findAttribute(target, this.expectedParent);
@@ -116,22 +109,20 @@ export class MappingEdgeEndMovingListener extends FeedbackEdgeEndMovingMouseList
             const anchor = this.computeAbsoluteAnchor(targetPort, Bounds.center(toAbsoluteBounds(edge.source)));
             this.lastSnappedElement = attributeCompartment;
             if (Point.euclideanDistance(anchor, edgeEnd.position) > 1) {
-               actions.push(MoveAction.create([{ elementId: edgeEnd.id, toPosition: anchor }], { animate: false }));
+               this.feedback.add(MoveAction.create([{ elementId: edgeEnd.id, toPosition: anchor }], { animate: false }));
             }
          }
       } else {
-         actions.push(MoveAction.create([{ elementId: edgeEnd.id, toPosition: position }], { animate: false }));
+         this.feedback.add(MoveAction.create([{ elementId: edgeEnd.id, toPosition: position }], { animate: false }));
          this.lastSnappedElement = undefined;
          this.feedbackDispatcher.registerFeedback(this, actions);
       }
 
       if (this.lastSnappedElement) {
-         actions.push(HoverFeedbackAction.create({ mouseoverElement: this.lastSnappedElement.id, mouseIsOver: true }));
+         this.feedback.add(HoverFeedbackAction.create({ mouseoverElement: this.lastSnappedElement.id, mouseIsOver: true }));
       }
 
-      if (actions.length > 0) {
-         this.feedbackDispatcher.registerFeedback(this, actions);
-      }
+      this.feedback.submit();
       return [];
    }
 }
@@ -145,9 +136,12 @@ export class MappingEdgeCreationToolMouseListener extends EdgeCreationToolMouseL
    ) {
       super(triggerAction, actionDispatcher, typeHintProvider, tool);
       this.source = createPortId(this.triggerAction.args.sourceAttributeId, this.triggerAction.args.sourceAttributeParent);
-      this.tool.registerFeedback([
-         DrawFeedbackEdgeAction.create({ elementTypeId: this.triggerAction.elementTypeId, sourceId: this.source })
-      ]);
+      this.feedbackEdgeFeedback
+         .add(
+            DrawFeedbackEdgeAction.create({ elementTypeId: this.triggerAction.elementTypeId, sourceId: this.source }),
+            RemoveFeedbackEdgeAction.create()
+         )
+         .submit();
    }
 
    override mouseOver(target: GModelElement, _event: MouseEvent): Action[] {
@@ -163,8 +157,14 @@ export class MappingEdgeCreationToolMouseListener extends EdgeCreationToolMouseL
       return [this.updateEdgeFeedback()];
    }
 
-   dispose(): void {
-      // do nothing
+   override nonDraggingMouseUp(element: GModelElement, event: MouseEvent): Action[] {
+      const actions = super.nonDraggingMouseUp(element, event);
+      const enableDefaultToolsIndex = actions.findIndex(action => EnableDefaultToolsAction.is(action));
+      if (enableDefaultToolsIndex >= 0) {
+         actions.splice(enableDefaultToolsIndex, 1);
+         actions.push(EnableToolsAction.create([DragEdgeCreationTool.ID]));
+      }
+      return actions;
    }
 }
 

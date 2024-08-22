@@ -32,19 +32,19 @@ export class CrossModelLabelProvider implements LabelProviderContribution, TreeD
 
    getIcon(node: FileStatNode): string {
       if (this.isSystemDirectory(node)) {
-         return ModelStructure.System.ICON + ' default-folder-icon';
+         return ModelStructure.System.ICON_CLASS + ' default-folder-icon';
       }
       if (this.isSystemDirectory(node.parent) && node.fileStat.name === ModelStructure.Entity.FOLDER) {
-         return ModelStructure.Entity.ICON + ' default-folder-icon';
+         return ModelStructure.Entity.ICON_CLASS + ' default-folder-icon';
       }
       if (this.isSystemDirectory(node.parent) && node.fileStat.name === ModelStructure.Relationship.FOLDER) {
-         return ModelStructure.Relationship.ICON + ' default-folder-icon';
+         return ModelStructure.Relationship.ICON_CLASS + ' default-folder-icon';
       }
       if (this.isSystemDirectory(node.parent) && node.fileStat.name === ModelStructure.SystemDiagram.FOLDER) {
-         return ModelStructure.SystemDiagram.ICON + ' default-folder-icon';
+         return ModelStructure.SystemDiagram.ICON_CLASS + ' default-folder-icon';
       }
       if (this.isSystemDirectory(node.parent) && node.fileStat.name === ModelStructure.Mapping.FOLDER) {
-         return ModelStructure.Mapping.ICON + ' default-folder-icon';
+         return ModelStructure.Mapping.ICON_CLASS + ' default-folder-icon';
       }
       return this.labelProvider.getIcon(node.fileStat);
    }

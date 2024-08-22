@@ -2,31 +2,46 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 
+import { GRID } from '@crossbreeze/protocol';
 import {
    ConsoleLogger,
+   GLSPMousePositionTracker,
+   GlspCommandPalette,
    LogLevel,
-   SetViewportAction,
+   MouseDeleteTool,
    TYPES,
+   ToolPalette,
    bindAsService,
-   bindOrRebind,
-   configureActionHandler
+   bindOrRebind
 } from '@eclipse-glsp/client';
-import { TheiaGLSPSelectionForwarder } from '@eclipse-glsp/theia-integration';
+import { GlspSelectionDataService, TheiaGLSPSelectionForwarder } from '@eclipse-glsp/theia-integration';
 import { ContainerModule, interfaces } from '@theia/core/shared/inversify';
-import { GridAlignmentHandler } from './crossmodel-grid-handler';
-import { CrossModelGridSnapper } from './crossmodel-grid-snapper';
+import { CrossModelCommandPalette, CrossModelMousePositionTracker } from './cross-model-command-palette';
+import { CrossModelMouseDeleteTool } from './cross-model-delete-tool';
+import { CrossModelDiagramStartup } from './cross-model-diagram-startup';
+import { CrossModelToolPalette } from './cross-model-tool-palette';
 import { CrossModelGLSPSelectionDataService } from './crossmodel-selection-data-service';
-import { CrossModelSelectionDataService, CrossModelTheiaGLSPSelectionForwarder } from './crossmodel-selection-forwarder';
 
 export function createCrossModelDiagramModule(registry: interfaces.ContainerModuleCallBack): ContainerModule {
    return new ContainerModule((bind, unbind, isBound, rebind, unbindAsync, onActivation, onDeactivation) => {
+      const context = { bind, unbind, isBound, rebind };
       rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
       rebind(TYPES.LogLevel).toConstantValue(LogLevel.warn);
-      bindAsService(bind, CrossModelSelectionDataService, CrossModelGLSPSelectionDataService);
-      bind(CrossModelTheiaGLSPSelectionForwarder).toSelf().inSingletonScope();
-      bindOrRebind({ bind, isBound, rebind }, TheiaGLSPSelectionForwarder).toService(CrossModelTheiaGLSPSelectionForwarder);
-      bind(TYPES.ISnapper).to(CrossModelGridSnapper);
-      configureActionHandler({ bind, isBound }, SetViewportAction.KIND, GridAlignmentHandler);
+      rebind(TYPES.Grid).toConstantValue(GRID);
+      bind(CrossModelToolPalette).toSelf().inSingletonScope();
+      bind(CrossModelMouseDeleteTool).toSelf().inSingletonScope();
+      rebind(MouseDeleteTool).toService(CrossModelMouseDeleteTool);
+      rebind(ToolPalette).toService(CrossModelToolPalette);
+      bindAsService(context, GlspSelectionDataService, CrossModelGLSPSelectionDataService);
+      bindAsService(context, TYPES.IDiagramStartup, CrossModelDiagramStartup);
       registry(bind, unbind, isBound, rebind, unbindAsync, onActivation, onDeactivation);
+      bind(CrossModelCommandPalette).toSelf().inSingletonScope();
+      rebind(GlspCommandPalette).toService(CrossModelCommandPalette);
+
+      bind(CrossModelMousePositionTracker).toSelf().inSingletonScope();
+      bindOrRebind(context, GLSPMousePositionTracker).toService(CrossModelMousePositionTracker);
+
+      // there is a bug in the GLSP client release that will be fixed with 2.2.1 but for now we need to workaround
+      bind('selectionListener').toService(TheiaGLSPSelectionForwarder);
    });
 }

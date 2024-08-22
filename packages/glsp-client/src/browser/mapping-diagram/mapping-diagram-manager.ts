@@ -2,19 +2,27 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 
+import { codiconCSSString } from '@eclipse-glsp/client';
 import { GLSPDiagramManager } from '@eclipse-glsp/theia-integration';
 import { URI } from '@theia/core';
-import { WidgetOpenerOptions } from '@theia/core/lib/browser';
-import { injectable } from '@theia/core/shared/inversify';
+import { OpenWithHandler, OpenWithService, WidgetOpenerOptions } from '@theia/core/lib/browser';
+import { inject, injectable, postConstruct } from '@theia/core/shared/inversify';
 import { MappingDiagramLanguage } from '../../common/crossmodel-diagram-language';
-import { codiconCSSString } from '@eclipse-glsp/client';
 
 export interface ProblemMarkerOpenerOptions extends WidgetOpenerOptions {
    selection?: Range;
 }
 
 @injectable()
-export class MappingDiagramManager extends GLSPDiagramManager {
+export class MappingDiagramManager extends GLSPDiagramManager implements OpenWithHandler {
+   @inject(OpenWithService) protected readonly openWithService: OpenWithService;
+
+   @postConstruct()
+   protected override init(): void {
+      this.openWithService.registerHandler(this);
+      super.init();
+   }
+
    get label(): string {
       return MappingDiagramLanguage.label;
    }

@@ -6,8 +6,6 @@
    --sprotty-background: var(--theia-layout-color3);
    --sprotty-edge: var(--theia-editor-foreground);
    --sprotty-border: var(--theia-editor-foreground);
-
-   --background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30"><g><line x1="10" y1="15" x2="20" y2="15" stroke="black" stroke-width="1" stroke-linecap="round" stroke-opacity="0.15" /><line x1="15" y1="10" x2="15" y2="20" stroke="black" stroke-width="1" stroke-linecap="round" stroke-opacity="0.15" /></g></svg>');
 }
 
 /* Standard sprotty */
@@ -22,15 +20,20 @@
 .sprotty-graph {
    font-size: 15pt;
    height: 100%;
-   background: var(--sprotty-background);
-   background-image: var(--background-image);
    background-size: 11px;
 }
 
 .sprotty
    .edge-creation:not(.edge-check-pending-mode):not(.edge-creation-select-source-mode):not(.edge-creation-select-target-mode):not(
-      .edge-reconnect-select-target-mode:not(.edge-modification-not-allowed-mode)
-   ) {
+      .edge-reconnect-select-target-mode
+   ):not(.edge-modification-not-allowed-mode) {
+   cursor: ew-resize;
+}
+
+.sprotty
+   .mapping-creation:not(.edge-check-pending-mode):not(.edge-creation-select-source-mode):not(.edge-creation-select-target-mode):not(
+      .edge-reconnect-select-target-mode
+   ):not(.edge-modification-not-allowed-mode) {
    cursor: ew-resize;
 }
 
@@ -103,7 +106,7 @@
    stroke-linecap: round;
 }
 
-.sprotty[id^='system-diagram'] .tool-palette {
+/* .sprotty[id^='system-diagram'] .tool-palette {
    top: 11px;
    right: 11px;
    width: 150px;
@@ -120,7 +123,6 @@
    outline-width: 0;
 }
 
-/* we know there is only the 1:1 relationship tool for now, if we ever need more styling, better to create a complete custom toolbar */
 .sprotty[id^='system-diagram'] .tool-palette .tool-button::before {
    margin-right: var(--theia-ui-padding);
    font-size: var(--theia-icon-size);
@@ -133,7 +135,7 @@
 .sprotty[id^='system-diagram'] .tool-palette .tool-button.clicked {
    background: var(--theia-activityBarBadge-background);
    color: var(--theia-activityBarBadge-foreground);
-}
+} */
 
 .command-palette {
    animation: none;
@@ -142,4 +144,28 @@
 .attribute.identifier .icon-path {
    transform: scale(0.0105) translate(-400px, 1375px);
    fill: #000;
+}
+
+.grid-background .sprotty-graph,
+.grid-background.sprotty-graph {
+   --background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30"><g><line x1="10" y1="15" x2="20" y2="15" stroke="black" stroke-width="1" stroke-linecap="round" stroke-opacity="0.15" /><line x1="15" y1="10" x2="15" y2="20" stroke="black" stroke-width="1" stroke-linecap="round" stroke-opacity="0.15" /></g></svg>');
+   background-image: var(--background-image);
+   background-size: var(--grid-background-width) var(--grid-background-height);
+   background-position: var(--grid-background-x) var(--grid-background-y);
+}
+
+.sprotty .header-icon {
+   display: flex;
+}
+
+.sprotty .header-icon i {
+   display: none;
+}
+
+.sprotty .header-icon i {
+   margin-right: 0.2em;
+}
+
+.sprotty .palette-header {
+   flex-direction: row;
 }

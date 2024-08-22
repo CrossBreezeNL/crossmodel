@@ -1,6 +1,6 @@
 # We use the Node-16 on Debian Bullseye.
-ARG VARIANT="16-bullseye"
-FROM mcr.microsoft.com/devcontainers/typescript-node:0-${VARIANT}
+ARG VARIANT="20-bookworm"
+FROM mcr.microsoft.com/devcontainers/typescript-node:${VARIANT}
 
 # Install OS packages needed for building Theia.
 RUN apt-get update \

@@ -13,6 +13,7 @@ import {
    LangiumDocument,
    LangiumDocuments
 } from 'langium';
+import * as path from 'path';
 import { Disposable } from 'vscode-languageserver';
 import { TextDocumentIdentifier, TextDocumentItem, VersionedTextDocumentIdentifier } from 'vscode-languageserver-protocol';
 import { TextDocument } from 'vscode-languageserver-textdocument';
@@ -20,7 +21,6 @@ import { URI } from 'vscode-uri';
 import { CrossModelLanguageMetaData } from '../language-server/generated/module.js';
 import { AddedSharedModelServices } from './model-module.js';
 import { OpenableTextDocuments } from './openable-text-documents.js';
-
 export interface UpdateInfo {
    changed: URI[];
    deleted: URI[];
@@ -138,6 +138,8 @@ export class OpenTextDocumentManager {
 
    async save(uri: string, text: string, clientId: string): Promise<void> {
       const vscUri = URI.parse(uri);
+      const dirName = path.dirname(vscUri.fsPath);
+      fs.mkdirSync(dirName, { recursive: true });
       fs.writeFileSync(vscUri.fsPath, text);
       this.textDocuments.notifyDidSaveTextDocument({ textDocument: TextDocumentIdentifier.create(uri), text }, clientId);
    }

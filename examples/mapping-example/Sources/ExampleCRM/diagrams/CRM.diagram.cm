@@ -22,9 +22,9 @@ systemDiagram:
         width: 159.649658203125
         height: 96
         customProperties:
-            - name: Author
-              value: "CrossBreeze"
-            - name: ExampleNode
+          - name: Author
+            value: "CrossBreeze"
+          - name: ExampleNode
     edges:
       - id: CustomerToOrder
         relationship: Order_Customer
@@ -35,10 +35,10 @@ systemDiagram:
         sourceNode: AddressNode
         targetNode: CustomerNode
         customProperties:
-            - name: Author
-              value: "CrossBreeze"
-            - name: ExampleEdge
+          - name: Author
+            value: "CrossBreeze"
+          - name: ExampleEdge
     customProperties:
-        - name: Author
-          value: "CrossBreeze"
-        - name: ExampleDiagram
+      - name: Author
+        value: "CrossBreeze"
+      - name: ExampleDiagram

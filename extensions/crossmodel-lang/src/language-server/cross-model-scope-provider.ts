@@ -31,7 +31,7 @@ import {
    isSourceObjectAttributeReference,
    isSourceObjectDependency
 } from './generated/ast.js';
-import { fixDocument } from './util/ast-util.js';
+import { findDocument, fixDocument } from './util/ast-util.js';
 
 /**
  * A custom scope provider that considers the dependencies between packages to indicate which elements form the global scope
@@ -146,7 +146,8 @@ export class CrossModelScopeProvider extends PackageScopeProvider {
 
    protected fixContext(context: ReferenceInfo): ReferenceInfo {
       // for some reason the document is not always properly set on the container node
-      fixDocument(context.container, context.container.$cstNode?.root.astNode.$document);
+      const cstNode = context.container.$cstNode ?? context.reference.$refNode;
+      fixDocument(context.container, findDocument(cstNode?.astNode));
       return context;
    }
 

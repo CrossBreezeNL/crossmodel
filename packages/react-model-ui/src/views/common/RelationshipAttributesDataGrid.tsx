@@ -68,11 +68,7 @@ export function RelationshipAttributesDataGrid(): React.ReactElement {
          dispatch({
             type: 'relationship:attribute:update',
             attributeIdx: attribute.idx,
-            attribute: {
-               $type: 'RelationshipAttribute',
-               child: attribute.child,
-               parent: attribute.parent
-            }
+            attribute: GridComponentRow.getData(attribute)
          });
          return attribute;
       },

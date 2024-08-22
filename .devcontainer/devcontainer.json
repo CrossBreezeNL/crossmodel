@@ -51,6 +51,7 @@
     "DISPLAY": ":0",
     "WAYLAND_DISPLAY": "wayland-0",
     "XDG_RUNTIME_DIR": "/mnt/wslg/runtime-dir",
-    "PULSE_SERVER": "/mnt/wslg/PulseServer"
+    "PULSE_SERVER": "/mnt/wslg/PulseServer",
+    "NODE_OPTIONS": "--max-old-space-size=8192"
   }
 }

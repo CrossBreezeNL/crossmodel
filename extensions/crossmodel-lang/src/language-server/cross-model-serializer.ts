@@ -50,7 +50,8 @@ const PROPERTY_ORDER = [
    'source',
    'conditions',
    'expression',
-   'customProperties'
+   'customProperties',
+   'value'
 ];
 
 const ID_OR_IDREF = [
@@ -64,7 +65,6 @@ const ID_OR_IDREF = [
    'sources',
    'target',
    'attribute',
-   'from',
    'join',
    'conditions',
    'parent',
@@ -96,13 +96,23 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot> {
       return this.serializeValue(newRoot, CrossModelSerializer.INDENTATION_AMOUNT_OBJECT * -1, 'root');
    }
 
-   private serializeValue(value: any, indentationLevel: number, key: string): string {
+   private serializeValue(value: any, indentationLevel: number, key: string, container?: Record<string, any>): string {
+      if (this.isCustomProperty(container)) {
+         // custom properties need a special handling because they use properties that are already used differently in other places
+         // 'name:' typically used as a string but used as an identifier in the custom property
+         // 'value:' used for ID-based references in other places but used as a string value in the custom property
+         return key === 'name' ? value : JSON.stringify(value);
+      }
+
       if (Array.isArray(value)) {
          return this.serializeArray(value, indentationLevel, key);
       } else if (typeof value === 'object' && value !== undefined) {
          return this.serializeObject(value, indentationLevel + CrossModelSerializer.INDENTATION_AMOUNT_OBJECT, key);
+      } else if (this.isIdOrIdRef(key)) {
+         // for IDs and references (based on IDs) we guarantee that they do not contain spaces or other characters that break the string
+         return value;
       } else {
-         return this.isIdOrIdRef(key) ? value : JSON.stringify(value);
+         return JSON.stringify(value);
       }
    }
 
@@ -117,14 +127,16 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot> {
          .sort((left, right) => PROPERTY_ORDER.indexOf(left[0]) - PROPERTY_ORDER.indexOf(right[0]))
          .map(([objKey, objValue]) => {
             if (Array.isArray(objValue) && objValue.length === 0) {
+               // skip empty arrays
                return;
             }
             if (objKey === 'identifier' && objValue === false) {
+               // skip false identifiers for better readability
                return;
             }
 
             const propKey = this.serializeKey(objKey);
-            const propValue = this.serializeValue(objValue, indentationLevel, propKey);
+            const propValue = this.serializeValue(objValue, indentationLevel, propKey, obj);
             if (typeof objValue === 'object') {
                return `${indentation}${propKey}:${CrossModelSerializer.CHAR_NEWLINE}${propValue}`;
             } else {
@@ -143,7 +155,7 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot> {
    private serializeArray(arr: any[], indentationLevel: number, key: string): string {
       const serializedItems = arr
          .filter(item => item !== undefined)
-         .map(item => this.serializeValue(item, indentationLevel, key))
+         .map(item => this.serializeValue(item, indentationLevel, key, arr))
          .map(item => this.ensureArrayItem(item, indentationLevel + CrossModelSerializer.INDENTATION_AMOUNT_ARRAY))
          .join(CrossModelSerializer.CHAR_NEWLINE);
       return serializedItems;
@@ -213,5 +225,15 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot> {
       const left = obj.expression.left.$type === StringLiteral ? quote(obj.expression.left.value) : obj.expression.left.value;
       const right = obj.expression.right.$type === StringLiteral ? quote(obj.expression.right.value) : obj.expression.right.value;
       return [left, obj.expression.op, right].join(' ');
+   }
+
+   private isCustomProperty(obj: any): obj is { name: string; value?: string } {
+      // we need to be strict here cause other objects may also have name or value properties
+      return (
+         typeof obj === 'object' &&
+         'name' in obj &&
+         typeof (obj as any).name === 'string' &&
+         (Object.keys(obj).length === 1 || (Object.keys(obj).length === 2 && 'value' in obj && typeof (obj as any).value === 'string'))
+      );
    }
 }

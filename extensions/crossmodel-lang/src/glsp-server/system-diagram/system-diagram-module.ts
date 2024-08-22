@@ -10,27 +10,28 @@ import {
    GModelIndex,
    InstanceMultiBinding,
    ModelState,
-   ModelSubmissionHandler,
    MultiBinding,
    OperationHandlerConstructor,
    SourceModelStorage,
+   ToolPaletteItemProvider,
    bindAsService
 } from '@eclipse-glsp/server';
 import { injectable } from 'inversify';
 import { CrossModelIndex } from '../common/cross-model-index.js';
 import { CrossModelState } from '../common/cross-model-state.js';
 import { CrossModelStorage } from '../common/cross-model-storage.js';
-import { CrossModelSubmitHandler } from '../common/cross-model-submission-handler.js';
 import { SystemDiagramAddEntityActionProvider } from './command-palette/add-entity-action-provider.js';
 import { SystemDiagramAddEntityOperationHandler } from './handler/add-entity-operation-handler.js';
 import { SystemDiagramChangeBoundsOperationHandler } from './handler/change-bounds-operation-handler.js';
-import { SystemDiagramCreateEdgeOperationHandler } from './handler/create-edge-operation-handler.js';
+import { SystemDiagramCreateEntityOperationHandler } from './handler/create-entity-operation-handler.js';
+import { SystemDiagramCreateRelationshipOperationHandler } from './handler/create-relationship-operation-handler.js';
 import { SystemDiagramDeleteOperationHandler } from './handler/delete-operation-handler.js';
 import { SystemDiagramDropEntityOperationHandler } from './handler/drop-entity-operation-handler.js';
 import { SystemDiagramGModelFactory } from './model/system-diagram-gmodel-factory.js';
+import { SystemModelIndex } from './model/system-model-index.js';
 import { SystemModelState } from './model/system-model-state.js';
 import { SystemDiagramConfiguration } from './system-diagram-configuration.js';
-import { SystemModelIndex } from './model/system-model-index.js';
+import { SystemToolPaletteProvider } from './tool-palette/system-tool-palette-provider.js';
 
 /**
  * Provides configuration about our system diagrams.
@@ -50,10 +51,11 @@ export class SystemDiagramModule extends DiagramModule {
    protected override configureOperationHandlers(binding: InstanceMultiBinding<OperationHandlerConstructor>): void {
       super.configureOperationHandlers(binding);
       binding.add(SystemDiagramChangeBoundsOperationHandler); // move + resize behavior
-      binding.add(SystemDiagramCreateEdgeOperationHandler); // create 1:1 relationship
+      binding.add(SystemDiagramCreateRelationshipOperationHandler); // create 1:1 relationship
       binding.add(SystemDiagramDeleteOperationHandler); // delete elements
       binding.add(SystemDiagramDropEntityOperationHandler);
       binding.add(SystemDiagramAddEntityOperationHandler);
+      binding.add(SystemDiagramCreateEntityOperationHandler);
    }
 
    protected override configureContextActionProviders(binding: MultiBinding<ContextActionsProvider>): void {
@@ -75,7 +77,7 @@ export class SystemDiagramModule extends DiagramModule {
       return SystemDiagramGModelFactory;
    }
 
-   protected override bindModelSubmissionHandler(): BindingTarget<ModelSubmissionHandler> {
-      return CrossModelSubmitHandler;
+   protected override bindToolPaletteItemProvider(): BindingTarget<ToolPaletteItemProvider> | undefined {
+      return SystemToolPaletteProvider;
    }
 }

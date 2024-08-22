@@ -1,11 +1,9 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { AddSourceObjectOperation } from '@crossbreeze/protocol';
-import { LabeledAction } from '@eclipse-glsp/protocol';
-import { Args, CommandPaletteActionProvider, GModelElement, Point } from '@eclipse-glsp/server';
+import { AddSourceObjectOperation, codiconCSSString } from '@crossbreeze/protocol';
+import { Args, CommandPaletteActionProvider, GModelElement, LabeledAction, Point } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
-import { codiconCSSString } from 'sprotty';
 import { SourceObject } from '../../../language-server/generated/ast.js';
 import { MappingModelState } from '../model/mapping-model-state.js';
 

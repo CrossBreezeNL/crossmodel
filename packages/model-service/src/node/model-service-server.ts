@@ -4,6 +4,7 @@
 import {
    CloseModel,
    CloseModelArgs,
+   CrossModelDocument,
    CrossModelRoot,
    CrossReference,
    CrossReferenceContext,
@@ -135,7 +136,7 @@ export class ModelServiceServerImpl implements ModelServiceServer {
       return pendingContent.promise;
    }
 
-   async open(args: OpenModelArgs): Promise<CrossModelRoot | undefined> {
+   async open(args: OpenModelArgs): Promise<CrossModelDocument | undefined> {
       await this.initializeServerConnection();
       return this.connection.sendRequest(OpenModel, args);
    }
@@ -145,12 +146,12 @@ export class ModelServiceServerImpl implements ModelServiceServer {
       await this.connection.sendRequest(CloseModel, args);
    }
 
-   async request(uri: string): Promise<CrossModelRoot | undefined> {
+   async request(uri: string): Promise<CrossModelDocument | undefined> {
       await this.initializeServerConnection();
       return this.connection.sendRequest(RequestModel, uri);
    }
 
-   async update(args: UpdateModelArgs<CrossModelRoot>): Promise<CrossModelRoot> {
+   async update(args: UpdateModelArgs<CrossModelRoot>): Promise<CrossModelDocument> {
       await this.initializeServerConnection();
       return this.connection.sendRequest(UpdateModel, args);
    }

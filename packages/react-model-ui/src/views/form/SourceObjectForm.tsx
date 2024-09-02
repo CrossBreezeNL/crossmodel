@@ -5,7 +5,7 @@
 import { SourceObjectJoinType } from '@crossbreeze/protocol';
 import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, TextField } from '@mui/material';
 import * as React from 'react';
-import { useMapping, useModelDispatch } from '../../ModelContext';
+import { useMapping, useModelDispatch, useReadonly } from '../../ModelContext';
 import { modelComponent } from '../../ModelViewer';
 import { themed } from '../../ThemedViewer';
 import { FormSection } from '../FormSection';
@@ -20,6 +20,7 @@ export interface SourceObjectRenderProps {
 export function SourceObjectForm(props: SourceObjectRenderProps): React.ReactElement {
    const mapping = useMapping();
    const dispatch = useModelDispatch();
+   const readonly = useReadonly();
    const sourceObject = mapping.sources[props.sourceObjectIndex];
    if (!sourceObject) {
       return <></>;
@@ -45,6 +46,7 @@ export function SourceObjectForm(props: SourceObjectRenderProps): React.ReactEle
                   id='join-select'
                   value={sourceObject.join}
                   label='Join'
+                  disabled={readonly}
                   onChange={changeJoinType}
                   fullWidth={true}
                >

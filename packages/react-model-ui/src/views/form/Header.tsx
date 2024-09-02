@@ -4,7 +4,7 @@
 
 import { OpenInNewOutlined, SaveOutlined } from '@mui/icons-material';
 import { AppBar, Box, Button, Icon, Toolbar, Typography } from '@mui/material';
-import { useDirty, useModelOpen, useModelSave } from '../../ModelContext';
+import { useDiagnostics, useDirty, useModelOpen, useModelSave } from '../../ModelContext';
 import React = require('react');
 
 export interface HeaderProps {
@@ -17,6 +17,7 @@ export function Header({ name, id, iconClass }: HeaderProps): React.ReactElement
    const saveModel = useModelSave();
    const openModel = useModelOpen();
    const dirty = useDirty();
+   const diagnostics = useDiagnostics();
 
    return (
       <AppBar position='sticky'>
@@ -45,6 +46,20 @@ export function Header({ name, id, iconClass }: HeaderProps): React.ReactElement
                )}
             </Box>
          </Toolbar>
+         {diagnostics.length > 0 && (
+            <Toolbar
+               variant='dense'
+               className='diagnostics-readonly'
+               sx={{ backgroundColor: 'var(--theia-errorBackground)', color: 'var(--theia-errorForeground)', minHeight: '25px' }}
+            >
+               <Box sx={{ display: { xs: 'none', sm: 'flex' }, flexGrow: 1, gap: '0.2em', alignItems: 'center' }}>
+                  {iconClass && <Icon baseClassName='codicon' className={'codicon-error'} sx={{ fontSize: '1em !important' }} />}
+                  <Typography variant='caption' component='div'>
+                     Model has errors and is set to read-only. Please fix the errors in the code editor.
+                  </Typography>
+               </Box>
+            </Toolbar>
+         )}
       </AppBar>
    );
 }

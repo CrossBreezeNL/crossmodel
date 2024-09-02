@@ -4,7 +4,7 @@
 import { CrossReferenceContext, EntityType, RelationshipAttribute, RelationshipAttributeType } from '@crossbreeze/protocol';
 import { GridColDef, GridRenderEditCellParams, useGridApiContext } from '@mui/x-data-grid';
 import * as React from 'react';
-import { useModelDispatch, useModelQueryApi, useRelationship } from '../../ModelContext';
+import { useModelDispatch, useModelQueryApi, useReadonly, useRelationship } from '../../ModelContext';
 import AsyncAutoComplete from './AsyncAutoComplete';
 import GridComponent, { GridComponentRow } from './GridComponent';
 
@@ -22,6 +22,7 @@ export function EditAttributePropertyComponent({
    const relationship = useRelationship();
    const queryApi = useModelQueryApi();
    const gridApi = useGridApiContext();
+   const readonly = useReadonly();
 
    const referenceCtx: CrossReferenceContext = React.useMemo(
       () => ({
@@ -50,6 +51,7 @@ export function EditAttributePropertyComponent({
          value={{ uri: '', label: value ?? '', type: EntityType }}
          clearOnBlur={true}
          selectOnFocus={true}
+         disabled={readonly}
          textFieldProps={{ sx: { margin: '0' } }}
       />
    );
@@ -60,6 +62,7 @@ export type RelationshipAttributeRow = GridComponentRow<RelationshipAttribute>;
 export function RelationshipAttributesDataGrid(): React.ReactElement {
    const relationship = useRelationship();
    const dispatch = useModelDispatch();
+   const readonly = useReadonly();
 
    // Callback for when the user stops editing a cell.
    const handleRowUpdate = React.useCallback(
@@ -120,7 +123,7 @@ export function RelationshipAttributesDataGrid(): React.ReactElement {
             field: 'parent',
             headerName: 'Parent',
             flex: 200,
-            editable: true,
+            editable: !readonly,
             renderEditCell: params => <EditAttributePropertyComponent {...params} property='parent' />,
             type: 'singleSelect'
          },
@@ -128,12 +131,12 @@ export function RelationshipAttributesDataGrid(): React.ReactElement {
             field: 'child',
             headerName: 'Child',
             flex: 200,
-            editable: true,
+            editable: !readonly,
             renderEditCell: params => <EditAttributePropertyComponent {...params} property='child' />,
             type: 'singleSelect'
          }
       ],
-      []
+      [readonly]
    );
 
    return (

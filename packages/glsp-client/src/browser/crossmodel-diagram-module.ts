@@ -9,13 +9,15 @@ import {
    GlspCommandPalette,
    LogLevel,
    MouseDeleteTool,
+   StatusOverlay,
    TYPES,
+   ToolManager,
    ToolPalette,
    bindAsService,
    bindOrRebind
 } from '@eclipse-glsp/client';
 import { GlspSelectionDataService } from '@eclipse-glsp/theia-integration';
-import { ContainerModule, interfaces } from '@theia/core/shared/inversify';
+import { ContainerModule, injectable, interfaces } from '@theia/core/shared/inversify';
 import { CrossModelCommandPalette, CrossModelMousePositionTracker } from './cross-model-command-palette';
 import { CrossModelMouseDeleteTool } from './cross-model-delete-tool';
 import { CrossModelDiagramStartup } from './cross-model-diagram-startup';
@@ -40,5 +42,32 @@ export function createCrossModelDiagramModule(registry: interfaces.ContainerModu
 
       bind(CrossModelMousePositionTracker).toSelf().inSingletonScope();
       bindOrRebind(context, GLSPMousePositionTracker).toService(CrossModelMousePositionTracker);
+
+      bind(CrossModelStatusOverlay).toSelf().inSingletonScope();
+      bindOrRebind(context, StatusOverlay).toService(CrossModelStatusOverlay);
+
+      bind(CrossModelToolManager).toSelf().inSingletonScope();
+      bindOrRebind(context, TYPES.IToolManager).toService(CrossModelToolManager);
    });
+}
+
+@injectable()
+export class CrossModelStatusOverlay extends StatusOverlay {
+   override preInitialize(): void {
+      // initialize the container in pre request model as otherwise the HTML container is on the wrong root that gets replaced
+   }
+
+   preRequestModel(): void {
+      this.show(this.editorContext.modelRoot);
+   }
+}
+
+@injectable()
+export class CrossModelToolManager extends ToolManager {
+   override enableDefaultTools(): void {
+      super.enableDefaultTools();
+      // since setting the _defaultToolsEnabled flag to true will short-circuit the enableDefaultTools method
+      // we only set it to true if truly all default tools are enabled
+      this._defaultToolsEnabled = this.activeTools.length === this.defaultTools.length;
+   }
 }

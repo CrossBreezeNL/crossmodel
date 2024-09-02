@@ -35,6 +35,12 @@ export interface CustomProperty {
    value?: string;
 }
 
+export interface CrossModelDocument<T = CrossModelRoot, D = ModelDiagnostic> {
+   uri: string;
+   root: T;
+   diagnostics: D[];
+}
+
 export interface CrossModelRoot extends CrossModelElement {
    readonly $type: 'CrossModelRoot';
    entity?: Entity;
@@ -191,24 +197,28 @@ export interface OpenModelArgs extends ClientModelArgs {
 
 export interface CloseModelArgs extends ClientModelArgs {}
 
-export interface UpdateModelArgs<T> extends ClientModelArgs {
+export interface UpdateModelArgs<T = CrossModelRoot> extends ClientModelArgs {
    model: T | string;
 }
 
-export interface SaveModelArgs<T> extends ClientModelArgs {
+export interface SaveModelArgs<T = CrossModelRoot> extends ClientModelArgs {
    model: T | string;
 }
 
-export interface ModelUpdatedEvent<T> {
-   uri: string;
-   model: T;
+export interface ModelDiagnostic {
+   type: 'lexing-error' | 'parsing-error' | 'validation-error';
+   message: string;
+   severity: 'error' | 'warning' | 'info';
+}
+
+export interface ModelUpdatedEvent<D = CrossModelDocument> {
+   document: D;
    sourceClientId: string;
    reason: 'changed' | 'deleted' | 'updated' | 'saved';
 }
 
-export interface ModelSavedEvent<T> {
-   uri: string;
-   model: T;
+export interface ModelSavedEvent<D = CrossModelDocument> {
+   document: D;
    sourceClientId: string;
 }
 
@@ -300,13 +310,6 @@ export interface ResolvedElement {
    model: CrossModelRoot;
 }
 
-export interface ModelUpdatedEvent<T> {
-   uri: string;
-   model: T;
-   sourceClientId: string;
-   reason: 'changed' | 'deleted' | 'updated' | 'saved';
-}
-
 export interface SystemInfoArgs {
    contextUri: string;
 }
@@ -325,18 +328,18 @@ export interface SystemUpdatedEvent {
 }
 export type SystemUpdateListener = (event: SystemUpdatedEvent) => void | Promise<void>;
 
-export const OpenModel = new rpc.RequestType1<OpenModelArgs, CrossModelRoot | undefined, void>('server/open');
+export const OpenModel = new rpc.RequestType1<OpenModelArgs, CrossModelDocument | undefined, void>('server/open');
 export const CloseModel = new rpc.RequestType1<CloseModelArgs, void, void>('server/close');
-export const RequestModel = new rpc.RequestType1<string, CrossModelRoot | undefined, void>('server/request');
+export const RequestModel = new rpc.RequestType1<string, CrossModelDocument | undefined, void>('server/request');
 export const RequestModelDiagramNode = new rpc.RequestType2<string, string, Element | undefined, void>('server/requestModelDiagramNode');
 
 export const FindReferenceableElements = new rpc.RequestType1<CrossReferenceContext, ReferenceableElement[], void>('server/complete');
 export const ResolveReference = new rpc.RequestType1<CrossReference, ResolvedElement | undefined, void>('server/resolve');
 
-export const UpdateModel = new rpc.RequestType1<UpdateModelArgs<CrossModelRoot>, CrossModelRoot, void>('server/update');
-export const SaveModel = new rpc.RequestType1<SaveModelArgs<CrossModelRoot>, void, void>('server/save');
-export const OnModelSaved = new rpc.NotificationType1<ModelSavedEvent<CrossModelRoot>>('server/onSave');
-export const OnModelUpdated = new rpc.NotificationType1<ModelUpdatedEvent<CrossModelRoot>>('server/onUpdated');
+export const UpdateModel = new rpc.RequestType1<UpdateModelArgs, CrossModelDocument, void>('server/update');
+export const SaveModel = new rpc.RequestType1<SaveModelArgs, void, void>('server/save');
+export const OnModelSaved = new rpc.NotificationType1<ModelSavedEvent>('server/onSave');
+export const OnModelUpdated = new rpc.NotificationType1<ModelUpdatedEvent>('server/onUpdated');
 
 export const RequestSystemInfos = new rpc.RequestType1<void, SystemInfo[], void>('server/systems');
 export const RequestSystemInfo = new rpc.RequestType1<SystemInfoArgs, SystemInfo | undefined, void>('server/system');

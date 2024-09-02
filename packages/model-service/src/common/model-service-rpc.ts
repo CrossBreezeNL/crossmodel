@@ -4,7 +4,7 @@
 
 import {
    CloseModelArgs,
-   CrossModelRoot,
+   CrossModelDocument,
    CrossReference,
    CrossReferenceContext,
    ModelUpdatedEvent,
@@ -35,13 +35,13 @@ export interface ModelService
 export const ModelServiceServer = Symbol('ModelServiceServer');
 export interface ModelServiceServer extends RpcServer<ModelServiceClient> {
    // Model API
-   open(args: OpenModelArgs): Promise<CrossModelRoot | undefined>;
+   open(args: OpenModelArgs): Promise<CrossModelDocument | undefined>;
    close(args: CloseModelArgs): Promise<void>;
-   update(args: UpdateModelArgs<CrossModelRoot>): Promise<CrossModelRoot>;
-   save(args: SaveModelArgs<CrossModelRoot>): Promise<void>;
+   update(args: UpdateModelArgs): Promise<CrossModelDocument>;
+   save(args: SaveModelArgs): Promise<void>;
 
    // Query API
-   request(uri: string): Promise<CrossModelRoot | undefined>;
+   request(uri: string): Promise<CrossModelDocument | undefined>;
    findReferenceableElements(args: CrossReferenceContext): Promise<ReferenceableElement[]>;
    resolveReference(reference: CrossReference): Promise<ResolvedElement | undefined>;
 
@@ -55,8 +55,8 @@ export interface ModelServiceClient {
    getName(): Promise<string>;
    ready(): Promise<void>;
    onReady: Event<void>;
-   updateModel(args: ModelUpdatedEvent<CrossModelRoot>): Promise<void>;
-   onModelUpdate: Event<ModelUpdatedEvent<CrossModelRoot>>;
+   updateModel(args: ModelUpdatedEvent): Promise<void>;
+   onModelUpdate: Event<ModelUpdatedEvent>;
    updateSystem(args: SystemUpdatedEvent): Promise<void>;
    onSystemUpdate: Event<SystemUpdatedEvent>;
 }

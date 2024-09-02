@@ -13,7 +13,7 @@ export const PROPERTY_CLIENT_ID = 'property-view-client';
 
 export interface PropertiesRenderData {
    uri: string;
-   renderProps?: RenderProps;
+   renderProps?: Partial<RenderProps>;
 }
 
 @injectable()

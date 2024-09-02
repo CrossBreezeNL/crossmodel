@@ -5,7 +5,7 @@
 import { ModelFileType, ModelStructure } from '@crossbreeze/protocol';
 import { TextField } from '@mui/material';
 import * as React from 'react';
-import { useEntity, useModelDispatch } from '../../ModelContext';
+import { useEntity, useModelDispatch, useReadonly } from '../../ModelContext';
 import { modelComponent } from '../../ModelViewer';
 import { themed } from '../../ThemedViewer';
 import { FormSection } from '../FormSection';
@@ -15,6 +15,7 @@ import { Form } from './Form';
 export function EntityForm(): React.ReactElement {
    const dispatch = useModelDispatch();
    const entity = useEntity();
+   const readonly = useReadonly();
 
    return (
       <Form id={entity.id} name={entity.name ?? ModelFileType.Entity} iconClass={ModelStructure.Entity.ICON_CLASS}>
@@ -24,6 +25,7 @@ export function EntityForm(): React.ReactElement {
                label='Name'
                margin='normal'
                variant='outlined'
+               disabled={readonly}
                value={entity.name ?? ''}
                onChange={event => dispatch({ type: 'entity:change-name', name: event.target.value ?? '' })}
             />
@@ -33,6 +35,7 @@ export function EntityForm(): React.ReactElement {
                label='Description'
                margin='normal'
                variant='outlined'
+               disabled={readonly}
                multiline={true}
                rows={2}
                value={entity.description ?? ''}

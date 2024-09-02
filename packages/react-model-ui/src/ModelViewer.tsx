@@ -2,7 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { CrossModelRoot } from '@crossbreeze/protocol';
+import { CrossModelDocument } from '@crossbreeze/protocol';
 import * as React from 'react';
 import { ModelQueryApi, OpenCallback, SaveCallback } from './ModelContext';
 import { ModelProvider, UpdateCallback } from './ModelProvider';
@@ -12,7 +12,7 @@ export interface ModelProviderProps {
    /**
     * The model object that will be provided to the child components.
     */
-   model?: CrossModelRoot;
+   document: CrossModelDocument;
 
    dirty: boolean;
 
@@ -41,11 +41,11 @@ export function modelComponent<P, MVP extends ModelProviderProps>(
    WrappedComponent: React.ComponentType<P>
 ): React.ComponentType<P & MVP & React.JSX.IntrinsicAttributes> {
    const ModelViewerReadyComponent = (props: P & MVP & React.JSX.IntrinsicAttributes): React.ReactElement => {
-      if (!props.model) {
+      if (!props.document) {
          return <ErrorView errorMessage='No Model Set!' />;
       }
       return (
-         <ModelProvider {...props} model={props.model!}>
+         <ModelProvider {...props}>
             <WrappedComponent {...props} />
          </ModelProvider>
       );

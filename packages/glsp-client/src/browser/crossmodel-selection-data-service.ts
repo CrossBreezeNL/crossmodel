@@ -18,7 +18,7 @@ export class CrossModelGLSPSelectionDataService extends GlspSelectionDataService
 export interface GModelElementInfo {
    type: string;
    reference?: CrossReference;
-   renderProps?: RenderProps;
+   renderProps?: Partial<RenderProps>;
 }
 
 export interface CrossModelSelectionData {
@@ -51,6 +51,6 @@ export function getCrossReference(element: GModelElement): CrossReference | unde
    return undefined;
 }
 
-export function getRenderProps(element: GModelElement): RenderProps {
+export function getRenderProps(element: GModelElement): Partial<RenderProps> {
    return hasArgs(element) ? RenderProps.read(element.args) : {};
 }

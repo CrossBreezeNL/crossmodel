@@ -1,0 +1,16 @@
+entity:
+    id: DigitalProduct
+    name: "DigitalProduct"
+    inherits:
+      - entity: Product
+    attributes:
+      - id: Attribute
+        name: "ProductID"
+        datatype: "Integer"
+        identifier: true
+      - id: SizeInKB
+        name: "SizeInKB"
+        datatype: "Float"
+      - id: DownloadURL
+        name: "DownloadURL"
+        datatype: "Varchar"

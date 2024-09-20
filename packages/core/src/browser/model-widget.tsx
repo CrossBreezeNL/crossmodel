@@ -132,7 +132,7 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
 
    protected async handleExternalUpdate({ document, reason, sourceClientId }: ModelUpdatedEvent): Promise<void> {
       if (this.document && !deepEqual(this.document.root, document.root)) {
-         console.log(`[${this.options.clientId}] Receive update from ${sourceClientId} due to '${reason}'`);
+         console.debug(`[${this.options.clientId}] Receive update from ${sourceClientId} due to '${reason}'`);
          this.document = document;
          this.update();
       }
@@ -142,7 +142,7 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
       if (this.document && !deepEqual(this.document.root, root)) {
          this.document.root = root;
          this.setDirty(true);
-         console.log(`[${this.options.clientId}] Send update to server`);
+         console.debug(`[${this.options.clientId}] Send update to server`);
          await this.modelService.update({ uri: this.document.uri, model: root, clientId: this.options.clientId });
          if (this.autoSave !== 'off' && this.dirty) {
             const saveTimeout = setTimeout(() => {
@@ -159,10 +159,10 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
       }
       if (doc.diagnostics.length > 0) {
          // we do not support saving erroneous models in model widgets as we cannot deal with them properly, fixes are done via code editor
-         console.log(`[${this.options.clientId}] Abort Save as we have an erroneous model`);
+         console.debug(`[${this.options.clientId}] Abort Save as we have an erroneous model`);
          return;
       }
-      console.log(`[${this.options.clientId}] Save model`);
+      console.debug(`[${this.options.clientId}] Save model`);
       this.setDirty(false);
       await this.modelService.save({ uri: doc.uri.toString(), model: doc.root, clientId: this.options.clientId });
    }

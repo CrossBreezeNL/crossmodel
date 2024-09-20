@@ -1,0 +1,14 @@
+entity:
+    id: PerishableProduct
+    name: "PerishableProduct"
+    inherits:
+      - entity: PhysicalProduct
+    description: "A product with an expiration date"
+    attributes:
+      - id: ProductID
+        name: "ProductID"
+        datatype: "Integer"
+        identifier: true
+      - id: ExpirationDate
+        name: "ExpirationDate"
+        datatype: "Varchar"

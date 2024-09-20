@@ -1,0 +1,28 @@
+systemDiagram:
+    id: ProductInheritance
+    name: "ProductInheritance"
+    nodes:
+      - id: ExampleDWH_ProductNode
+        entity: ExampleDWH.Product
+        x: 242
+        y: 33
+        width: 154.649658203125
+        height: 116
+      - id: ExampleDWH_NewEntityNode
+        entity: ExampleDWH.DigitalProduct
+        x: 187
+        y: 275
+        width: 154.22557544708252
+        height: 73.93824672698975
+      - id: PhysicalProductNode
+        entity: PhysicalProduct
+        x: 429
+        y: 275
+        width: 156.57902002334595
+        height: 136
+      - id: PerishableProductNode
+        entity: PerishableProduct
+        x: 429
+        y: 495
+        width: 155.22567415237427
+        height: 73.93824672698975

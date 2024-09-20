@@ -6,6 +6,7 @@ import { OpenInNewOutlined, SaveOutlined } from '@mui/icons-material';
 import { AppBar, Box, Button, Icon, Toolbar, Typography } from '@mui/material';
 import { useDiagnostics, useDirty, useModelOpen, useModelSave } from '../../ModelContext';
 import React = require('react');
+import { ERRONEOUS_MODEL } from '@crossbreeze/protocol';
 
 export interface HeaderProps {
    name: string;
@@ -55,7 +56,7 @@ export function Header({ name, id, iconClass }: HeaderProps): React.ReactElement
                <Box sx={{ display: { xs: 'none', sm: 'flex' }, flexGrow: 1, gap: '0.2em', alignItems: 'center' }}>
                   {iconClass && <Icon baseClassName='codicon' className={'codicon-error'} sx={{ fontSize: '1em !important' }} />}
                   <Typography variant='caption' component='div'>
-                     Model has errors and is set to read-only. Please fix the errors in the code editor.
+                     {ERRONEOUS_MODEL}
                   </Typography>
                </Box>
             </Toolbar>

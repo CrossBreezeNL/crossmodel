@@ -3,7 +3,7 @@
  ********************************************************************************/
 
 import { ModelService, ModelServiceClient } from '@crossbreeze/model-service/lib/common';
-import { CrossModelDocument, CrossModelRoot, RenderProps } from '@crossbreeze/protocol';
+import { CrossModelDocument, CrossModelRoot, ModelUpdatedEvent, RenderProps } from '@crossbreeze/protocol';
 import {
    EntityComponent,
    ErrorView,
@@ -65,7 +65,7 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
       this.toDispose.pushAll([
          this.serviceClient.onModelUpdate(event => {
             if (event.sourceClientId !== this.options.clientId && event.document.uri === this.document?.uri) {
-               this.handleExternalUpdate(event.document);
+               this.handleExternalUpdate(event);
             }
          }),
          this.editorPreferences.onPreferenceChanged(event => {
@@ -130,10 +130,10 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
       return this.saveModel();
    }
 
-   protected async handleExternalUpdate(doc: CrossModelDocument): Promise<void> {
-      if (this.document && !deepEqual(this.document.root, doc.root)) {
-         this.document.root = doc.root;
-         this.document.diagnostics = doc.diagnostics;
+   protected async handleExternalUpdate({ document, reason, sourceClientId }: ModelUpdatedEvent): Promise<void> {
+      if (this.document && !deepEqual(this.document.root, document.root)) {
+         console.log(`[${this.options.clientId}] Receive update from ${sourceClientId} due to '${reason}'`);
+         this.document = document;
          this.update();
       }
    }
@@ -142,6 +142,7 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
       if (this.document && !deepEqual(this.document.root, root)) {
          this.document.root = root;
          this.setDirty(true);
+         console.log(`[${this.options.clientId}] Send update to server`);
          await this.modelService.update({ uri: this.document.uri, model: root, clientId: this.options.clientId });
          if (this.autoSave !== 'off' && this.dirty) {
             const saveTimeout = setTimeout(() => {
@@ -158,8 +159,10 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
       }
       if (doc.diagnostics.length > 0) {
          // we do not support saving erroneous models in model widgets as we cannot deal with them properly, fixes are done via code editor
+         console.log(`[${this.options.clientId}] Abort Save as we have an erroneous model`);
          return;
       }
+      console.log(`[${this.options.clientId}] Save model`);
       this.setDirty(false);
       await this.modelService.save({ uri: doc.uri.toString(), model: doc.root, clientId: this.options.clientId });
    }
@@ -183,7 +186,7 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
    }
 
    protected handleUpdateRequest = debounce(async (root: CrossModelRoot): Promise<void> => {
-      this.updateModel(root);
+      await this.updateModel(root);
    }, 200);
 
    protected handleSaveRequest?: SaveCallback = () => this.save();

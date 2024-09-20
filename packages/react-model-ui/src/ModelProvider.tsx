@@ -48,12 +48,15 @@ export function ModelProvider({
 
    React.useEffect(() => {
       // triggered when a new model is passed from the outside via props -> update internal state
+      // we only use 'document' as dependency as the root also changes on internal updates
+      console.log('[ModelProvider] Receive external update through props');
       dispatch({ type: 'model:update', model: document.root });
-   }, [dispatch, document.root]);
+   }, [dispatch, document]);
 
    React.useEffect(() => {
       if (appState.reason !== 'model:initial' && appState.reason !== 'model:update') {
          // triggered when the internal model is updated, pass update to callback
+         console.log('[ModelProvider] Trigger external update through callback');
          onModelUpdate(appState.model);
       }
    }, [appState, onModelUpdate]);

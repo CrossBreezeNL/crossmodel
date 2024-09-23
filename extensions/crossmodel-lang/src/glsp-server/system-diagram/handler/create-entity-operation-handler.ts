@@ -13,7 +13,7 @@ import {
 } from '@eclipse-glsp/server';
 import { inject, injectable } from '@theia/core/shared/inversify';
 import { URI, Utils as UriUtils } from 'vscode-uri';
-import { CrossModelRoot, Entity, EntityNode, isCrossModelRoot } from '../../../language-server/generated/ast.js';
+import { CrossModelRoot, Entity, EntityNode } from '../../../language-server/generated/ast.js';
 import { Utils } from '../../../language-server/util/uri-util.js';
 import { CrossModelCommand } from '../../common/cross-model-command.js';
 import { SystemModelState } from '../model/system-model-state.js';
@@ -48,7 +48,8 @@ export class SystemDiagramCreateEntityOperationHandler extends JsonCreateNodeOpe
          x: location.x,
          y: location.y,
          width: 10,
-         height: 10
+         height: 10,
+         customProperties: []
       };
       container.nodes.push(node);
    }
@@ -65,7 +66,8 @@ export class SystemDiagramCreateEntityOperationHandler extends JsonCreateNodeOpe
          $container: entityRoot,
          id,
          name: id,
-         attributes: []
+         attributes: [],
+         customProperties: []
       };
 
       const dirName = UriUtils.joinPath(UriUtils.dirname(URI.parse(this.modelState.semanticUri)), '..', 'entities');
@@ -76,7 +78,7 @@ export class SystemDiagramCreateEntityOperationHandler extends JsonCreateNodeOpe
       const text = this.modelState.semanticSerializer.serialize(entityRoot);
 
       await this.modelState.modelService.save({ uri: uri.toString(), model: text, clientId: this.modelState.clientId });
-      const root = await this.modelState.modelService.request<CrossModelRoot>(uri.toString(), isCrossModelRoot);
-      return root?.entity;
+      const document = await this.modelState.modelService.request(uri.toString());
+      return document?.root?.entity;
    }
 }

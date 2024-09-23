@@ -33,7 +33,7 @@ export class MappingDiagramDeleteElementOperationHandler extends JsonOperationHa
       const container = this.modelState.mapping.sources;
       remove(container, ...deleteInfo.sources);
       deleteInfo.attributeSources.forEach(source => remove(source.$container.sources, source));
-      deleteInfo.dependencies.forEach(relation => remove(relation.$container.relations, relation));
+      deleteInfo.dependencies.forEach(relation => remove(relation.$container.dependencies, relation));
    }
 
    protected findElementsToDelete(operation: DeleteElementOperation): DeleteInfo {

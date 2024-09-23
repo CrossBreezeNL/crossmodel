@@ -43,7 +43,8 @@ export class SystemDiagramAddEntityOperationHandler extends JsonOperationHandler
             x: operation.position.x,
             y: operation.position.y,
             width: 10,
-            height: 10
+            height: 10,
+            customProperties: []
          };
          container.nodes.push(node);
       }

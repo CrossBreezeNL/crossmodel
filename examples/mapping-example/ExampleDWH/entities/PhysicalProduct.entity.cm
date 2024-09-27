@@ -2,7 +2,7 @@ entity:
     id: PhysicalProduct
     name: "PhysicalProduct"
     inherits:
-      - entity: Product
+      - Product
     attributes:
       - id: ProductID
         name: "ProductID"

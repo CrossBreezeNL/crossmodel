@@ -17,7 +17,7 @@ import {
 } from '@crossbreeze/protocol';
 import { DataGridProps, GridColDef, GridRenderEditCellParams, useGridApiContext } from '@mui/x-data-grid';
 import * as React from 'react';
-import { useModelDispatch, useModelQueryApi } from '../../ModelContext';
+import { useModelDispatch, useModelQueryApi, useReadonly } from '../../ModelContext';
 import AsyncAutoComplete from './AsyncAutoComplete';
 import GridComponent, { GridComponentRow } from './GridComponent';
 
@@ -35,6 +35,7 @@ export function EditSourceObjectConditionComponent({
 }: EditSourceObjectConditionComponentProps): React.ReactElement {
    const queryApi = useModelQueryApi();
    const gridApi = useGridApiContext();
+   const readonly = useReadonly();
 
    const referenceCtx: CrossReferenceContext = React.useMemo(
       () => ({
@@ -74,6 +75,7 @@ export function EditSourceObjectConditionComponent({
          onChange={handleValueChange}
          value={value}
          clearOnBlur={true}
+         disabled={readonly}
          selectOnFocus={true}
          freeSolo={true as any}
          textFieldProps={{ sx: { margin: '0' }, autoFocus: hasFocus, placeholder: 'Select a source object or specify a string or number' }}
@@ -95,6 +97,7 @@ export function SourceObjectConditionDataGrid({
    ...props
 }: SourceObjectConditionDataGridProps): React.ReactElement {
    const dispatch = useModelDispatch();
+   const readonly = useReadonly();
 
    const sourceObject = React.useMemo<SourceObject>(() => mapping.sources[sourceObjectIdx], [mapping.sources, sourceObjectIdx]);
 
@@ -165,7 +168,7 @@ export function SourceObjectConditionDataGrid({
          {
             field: 'left',
             flex: 200,
-            editable: true,
+            editable: !readonly,
             renderHeader: () => 'Left',
             valueGetter: (_value, row) => row.left,
             valueFormatter: (value, row) => (row.left.$type === 'StringLiteral' ? quote(row.left.value) : row.left.value),
@@ -175,7 +178,7 @@ export function SourceObjectConditionDataGrid({
          {
             field: 'op',
             flex: 50,
-            editable: true,
+            editable: !readonly,
             renderHeader: () => 'Operator',
             type: 'singleSelect',
             valueOptions: ['=', '!=', '<', '<=', '>', '>=']
@@ -183,7 +186,7 @@ export function SourceObjectConditionDataGrid({
          {
             field: 'right',
             flex: 200,
-            editable: true,
+            editable: !readonly,
             renderHeader: () => 'Right',
             valueGetter: (_value, row) => row.right,
             valueFormatter: (value, row) => (row.right.$type === 'StringLiteral' ? quote(row.right.value) : row.right.value),
@@ -191,7 +194,7 @@ export function SourceObjectConditionDataGrid({
             type: 'singleSelect'
          }
       ],
-      [sourceObject]
+      [readonly, sourceObject]
    );
 
    return (

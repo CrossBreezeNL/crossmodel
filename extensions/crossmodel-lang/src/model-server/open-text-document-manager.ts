@@ -2,7 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { CloseModelArgs, ModelSavedEvent, ModelUpdatedEvent, OpenModelArgs } from '@crossbreeze/protocol';
+import { CloseModelArgs, CrossModelDocument, ModelSavedEvent, ModelUpdatedEvent, OpenModelArgs } from '@crossbreeze/protocol';
 import * as fs from 'fs';
 import {
    AstNode,
@@ -11,20 +11,25 @@ import {
    FileSystemProvider,
    LangiumDefaultSharedServices,
    LangiumDocument,
-   LangiumDocuments
+   LangiumDocuments,
+   UriUtils
 } from 'langium';
 import * as path from 'path';
 import { Disposable } from 'vscode-languageserver';
-import { TextDocumentIdentifier, TextDocumentItem, VersionedTextDocumentIdentifier } from 'vscode-languageserver-protocol';
+import { Diagnostic, TextDocumentIdentifier, TextDocumentItem, VersionedTextDocumentIdentifier } from 'vscode-languageserver-protocol';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { URI } from 'vscode-uri';
+import { CrossModelRoot } from '../language-server/generated/ast.js';
 import { CrossModelLanguageMetaData } from '../language-server/generated/module.js';
 import { AddedSharedModelServices } from './model-module.js';
 import { OpenableTextDocuments } from './openable-text-documents.js';
+
 export interface UpdateInfo {
    changed: URI[];
    deleted: URI[];
 }
+
+export type AstCrossModelDocument = CrossModelDocument<CrossModelRoot, Diagnostic>;
 
 /**
  * A manager class that supports handling documents with a simple open-update-save/close lifecycle.
@@ -62,34 +67,44 @@ export class OpenTextDocumentManager {
     * @param listener Callback to be called
     * @returns Disposable object
     */
-   onSave<T extends AstNode>(uri: string, listener: (model: ModelSavedEvent<T>) => void): Disposable {
+   onSave(uri: string, listener: (model: ModelSavedEvent<AstCrossModelDocument>) => void): Disposable {
       return this.textDocuments.onDidSave(event => {
          const documentURI = URI.parse(event.document.uri);
 
          // Check if the uri of the saved document and the uri of the listener are equal.
          if (event.document.uri === uri && documentURI !== undefined && this.langiumDocs.hasDocument(documentURI)) {
             const document = this.langiumDocs.getOrCreateDocument(documentURI);
-            const root = document.parseResult.value;
-            return listener({ model: root as T, uri: event.document.uri, sourceClientId: event.clientId });
+            const root = document.parseResult.value as CrossModelRoot;
+            return listener({
+               document: {
+                  root,
+                  diagnostics: document.diagnostics ?? [],
+                  uri: event.document.uri
+               },
+               sourceClientId: event.clientId
+            });
          }
 
          return undefined;
       });
    }
 
-   onUpdate<T extends AstNode>(uri: string, listener: (model: ModelUpdatedEvent<T>) => void): Disposable {
+   onUpdate(uri: string, listener: (model: ModelUpdatedEvent<AstCrossModelDocument>) => void): Disposable {
       return this.documentBuilder.onBuildPhase(DocumentState.Validated, (allChangedDocuments, _token) => {
          const changedDocument = allChangedDocuments.find(document => document.uri.toString() === uri);
          if (changedDocument) {
             const buildTrigger = allChangedDocuments.find(document => document.uri.toString() === this.lastUpdate?.changed?.[0].toString());
             const sourceClientId = this.getSourceClientId(buildTrigger ?? changedDocument, allChangedDocuments);
-            const event: ModelUpdatedEvent<T> = {
-               model: changedDocument.parseResult.value as T,
+            const event: ModelUpdatedEvent<AstCrossModelDocument> = {
+               document: {
+                  root: changedDocument.parseResult.value as CrossModelRoot,
+                  diagnostics: changedDocument.diagnostics ?? [],
+                  uri: changedDocument.textDocument.uri
+               },
                sourceClientId,
-               uri: changedDocument.textDocument.uri,
-               reason: this.lastUpdate?.changed.includes(changedDocument.uri)
+               reason: this.lastUpdate?.changed.find(changed => UriUtils.equals(changed, changedDocument.uri))
                   ? 'changed'
-                  : this.lastUpdate?.deleted.includes(changedDocument.uri)
+                  : this.lastUpdate?.deleted.find(deleted => UriUtils.equals(deleted, changedDocument.uri))
                     ? 'deleted'
                     : 'updated'
             };
@@ -103,11 +118,7 @@ export class OpenTextDocumentManager {
       if (clientId) {
          return clientId;
       }
-      return (
-         rest
-            .map(document => this.textDocuments.getChangeSource(document.textDocument.uri, document.textDocument.version))
-            .find(source => source !== undefined) || 'unknown'
-      );
+      return 'unknown';
    }
 
    async open(args: OpenModelArgs): Promise<Disposable> {
@@ -115,6 +126,8 @@ export class OpenTextDocumentManager {
       const textDocument = this.isOpen(args.uri)
          ? this.createDummyDocument(args.uri)
          : await this.createDocumentFromFileSystem(args.uri, args.languageId);
+
+      // open will trigger a change event which in turn will trigger a build
       this.textDocuments.notifyDidOpenTextDocument({ textDocument }, args.clientId);
       return Disposable.create(() => this.close(args));
    }

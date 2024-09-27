@@ -4,7 +4,7 @@
 
 import { TextField } from '@mui/material';
 import * as React from 'react';
-import { useMapping, useModelDispatch } from '../../ModelContext';
+import { useMapping, useModelDispatch, useReadonly } from '../../ModelContext';
 import { modelComponent } from '../../ModelViewer';
 import { themed } from '../../ThemedViewer';
 import { FormSection } from '../FormSection';
@@ -18,6 +18,8 @@ export interface MappingRenderProps {
 export function MappingForm(props: MappingRenderProps): React.ReactElement {
    const mapping = useMapping();
    const dispatch = useModelDispatch();
+   const readonly = useReadonly();
+
    const attributeMapping = mapping.target.mappings[props.mappingIndex];
    if (!attributeMapping) {
       return <></>;
@@ -34,6 +36,7 @@ export function MappingForm(props: MappingRenderProps): React.ReactElement {
             <TextField
                label='Expression'
                value={attributeMapping.expression ?? ''}
+               disabled={readonly}
                onChange={event =>
                   dispatch({
                      type: 'attribute-mapping:change-expression',

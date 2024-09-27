@@ -6,7 +6,6 @@ import { DropEntityOperation } from '@crossbreeze/protocol';
 import { Command, JsonOperationHandler, ModelState } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
 import { URI } from 'vscode-uri';
-import { CrossModelRoot, isCrossModelRoot } from '../../../language-server/generated/ast.js';
 import { createSourceObject } from '../../../language-server/util/ast-util.js';
 import { CrossModelCommand } from '../../common/cross-model-command.js';
 import { MappingModelState } from '../model/mapping-model-state.js';
@@ -28,9 +27,9 @@ export class MappingDiagramDropEntityOperationHandler extends JsonOperationHandl
    protected async createSourceObject(operation: DropEntityOperation): Promise<void> {
       const container = this.modelState.mapping;
       for (const filePath of operation.filePaths) {
-         const root = await this.modelState.modelService.request<CrossModelRoot>(URI.file(filePath).toString(), isCrossModelRoot);
-         if (root?.entity) {
-            const sourceObject = createSourceObject(root.entity, container, this.modelState.idProvider);
+         const document = await this.modelState.modelService.request(URI.file(filePath).toString());
+         if (document?.root?.entity) {
+            const sourceObject = createSourceObject(document.root.entity, container, this.modelState.idProvider);
             container.sources.push(sourceObject);
          }
       }

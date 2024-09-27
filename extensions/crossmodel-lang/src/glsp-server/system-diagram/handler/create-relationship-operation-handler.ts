@@ -13,7 +13,7 @@ import {
 } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
 import { URI, Utils as UriUtils } from 'vscode-uri';
-import { CrossModelRoot, EntityNode, Relationship, RelationshipEdge, isCrossModelRoot } from '../../../language-server/generated/ast.js';
+import { CrossModelRoot, EntityNode, Relationship, RelationshipEdge } from '../../../language-server/generated/ast.js';
 import { Utils } from '../../../language-server/util/uri-util.js';
 import { CrossModelCommand } from '../../common/cross-model-command.js';
 import { SystemModelState } from '../model/system-model-state.js';
@@ -94,7 +94,7 @@ export class SystemDiagramCreateRelationshipOperationHandler extends JsonCreateE
       const text = this.modelState.semanticSerializer.serialize(relationshipRoot);
 
       await this.modelState.modelService.save({ uri: uri.toString(), model: text, clientId: this.modelState.clientId });
-      const root = await this.modelState.modelService.request<CrossModelRoot>(uri.toString(), isCrossModelRoot);
-      return root?.relationship;
+      const document = await this.modelState.modelService.request(uri.toString());
+      return document?.root.relationship;
    }
 }

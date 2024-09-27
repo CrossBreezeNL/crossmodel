@@ -2,14 +2,14 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { CrossModelRoot, ModelUpdatedEvent, SystemUpdatedEvent } from '@crossbreeze/protocol';
+import { ModelUpdatedEvent, SystemUpdatedEvent } from '@crossbreeze/protocol';
 import { Emitter } from '@theia/core';
 import { injectable } from '@theia/core/shared/inversify';
 import { ModelServiceClient } from '../common/model-service-rpc';
 
 @injectable()
 export class ModelServiceClientImpl implements ModelServiceClient {
-   protected onModelUpdateEmitter = new Emitter<ModelUpdatedEvent<CrossModelRoot>>();
+   protected onModelUpdateEmitter = new Emitter<ModelUpdatedEvent>();
    onModelUpdate = this.onModelUpdateEmitter.event;
 
    protected onSystemUpdateEmitter = new Emitter<SystemUpdatedEvent>();
@@ -26,7 +26,7 @@ export class ModelServiceClientImpl implements ModelServiceClient {
       this.onReadyEmitter.fire();
    }
 
-   async updateModel(event: ModelUpdatedEvent<CrossModelRoot>): Promise<void> {
+   async updateModel(event: ModelUpdatedEvent): Promise<void> {
       this.onModelUpdateEmitter.fire(event);
    }
 

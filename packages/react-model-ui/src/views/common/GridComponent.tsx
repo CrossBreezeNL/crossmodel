@@ -22,6 +22,7 @@ import {
    GridValidRowModel
 } from '@mui/x-data-grid';
 import * as React from 'react';
+import { useReadonly } from '../../ModelContext';
 
 export type GridComponentRow<T> = T &
    GridValidRowModel & {
@@ -72,6 +73,7 @@ export default function GridComponent<T extends GridValidRowModel>({
    const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>({});
    const [columns, setColumns] = React.useState<GridColDef<GridComponentRow<T>>[]>([]);
    const [rows, setRows] = React.useState<GridComponentRow<T>[]>([]);
+   const readonly = useReadonly();
 
    const validateRow = React.useCallback(
       (params: GridPreProcessEditCellProps, column: GridColDef<T>): GridEditCellProps => {
@@ -162,7 +164,7 @@ export default function GridComponent<T extends GridValidRowModel>({
                label='Delete'
                onClick={() => deleteEntry(params.row)}
                color='inherit'
-               disabled={deleteEntry === undefined}
+               disabled={deleteEntry === undefined || readonly}
             />,
             <GridActionsCellItem
                key='move-up'
@@ -170,7 +172,7 @@ export default function GridComponent<T extends GridValidRowModel>({
                label='Move Up'
                onClick={() => onMoveUp?.(params.row)}
                color='inherit'
-               disabled={onMoveUp === undefined || params.row.idx === 0}
+               disabled={onMoveUp === undefined || params.row.idx === 0 || readonly}
             />,
             <GridActionsCellItem
                key='move-down'
@@ -178,12 +180,12 @@ export default function GridComponent<T extends GridValidRowModel>({
                label='Move Down'
                onClick={() => onMoveDown?.(params.row)}
                color='inherit'
-               disabled={onMoveDown === undefined || params.row.idx === rows.length - 1}
+               disabled={onMoveDown === undefined || params.row.idx === rows.length - 1 || readonly}
             />
          ]
       });
       setColumns(allColumns);
-   }, [gridColumns, deleteEntry, onMoveDown, onMoveUp, rows.length, validateRow]);
+   }, [gridColumns, deleteEntry, onMoveDown, onMoveUp, rows.length, validateRow, readonly]);
 
    const EditToolbar = React.useMemo(
       () => (
@@ -193,7 +195,7 @@ export default function GridComponent<T extends GridValidRowModel>({
                startIcon={<AddIcon />}
                size='small'
                onClick={() => createSyntheticRow()}
-               disabled={onAdd === undefined}
+               disabled={onAdd === undefined || readonly}
             >
                {newEntryText ?? 'Add'}
             </Button>
@@ -209,7 +211,7 @@ export default function GridComponent<T extends GridValidRowModel>({
             )}
          </GridToolbarContainer>
       ),
-      [createSyntheticRow, label, newEntryText, onAdd]
+      [createSyntheticRow, label, newEntryText, onAdd, readonly]
    );
 
    const NoRowsOverlay = React.useMemo(() => <GridOverlay>{noEntriesText ?? 'No Entries'}</GridOverlay>, [noEntriesText]);

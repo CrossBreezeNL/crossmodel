@@ -1,7 +1,15 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { CrossModelRoot, CrossReferenceContext, Entity, Mapping, ReferenceableElement, Relationship } from '@crossbreeze/protocol';
+import {
+   CrossModelRoot,
+   CrossReferenceContext,
+   Entity,
+   Mapping,
+   ModelDiagnostic,
+   ReferenceableElement,
+   Relationship
+} from '@crossbreeze/protocol';
 import * as React from 'react';
 import { DispatchAction, ModelReducer } from './ModelReducer';
 
@@ -30,6 +38,8 @@ export const ModelQueryApiContext = React.createContext<ModelQueryApi>(DEFAULT_Q
 
 export const ModelDirtyContext = React.createContext<boolean>(false);
 
+export const ModelDiagnosticsContext = React.createContext<ModelDiagnostic[]>([]);
+
 export function useModel(): CrossModelRoot {
    return React.useContext(ModelContext);
 }
@@ -50,8 +60,16 @@ export function useModelQueryApi(): ModelQueryApi {
    return React.useContext(ModelQueryApiContext);
 }
 
+export function useDiagnostics(): ModelDiagnostic[] {
+   return React.useContext(ModelDiagnosticsContext);
+}
+
 export function useDirty(): boolean {
    return React.useContext(ModelDirtyContext);
+}
+
+export function useReadonly(): boolean {
+   return useDiagnostics().length > 0;
 }
 
 export function useEntity(): Entity {

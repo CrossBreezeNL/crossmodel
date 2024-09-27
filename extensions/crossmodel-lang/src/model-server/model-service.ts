@@ -21,7 +21,9 @@ import { Disposable, OptionalVersionedTextDocumentIdentifier, Range, TextDocumen
 import { URI, Utils as UriUtils } from 'vscode-uri';
 import { CrossModelServices, CrossModelSharedServices } from '../language-server/cross-model-module.js';
 import { PACKAGE_JSON } from '../language-server/cross-model-package-manager.js';
+import { CrossModelRoot, isCrossModelRoot } from '../language-server/generated/ast.js';
 import { findDocument } from '../language-server/util/ast-util.js';
+import { AstCrossModelDocument } from './open-text-document-manager.js';
 import { LANGUAGE_CLIENT_ID } from './openable-text-documents.js';
 
 /**
@@ -92,21 +94,24 @@ export class ModelService {
     * If the document was not already open for modification, it will be opened automatically.
     *
     * @param uri document URI
+    * @param state minimum state the document should have before returning
     */
-   request(uri: string): Promise<AstNode | undefined>;
-   /**
-    * Requests the semantic model stored in the document with the given URI if it matches the given guard function.
-    * If the document was not already open for modification, it will be opened automatically.
-    *
-    * @param uri document URI
-    * @param guard guard function to ensure a certain type of semantic model
-    */
-   request<T extends AstNode>(uri: string, guard: (item: unknown) => item is T): Promise<T | undefined>;
-   async request<T extends AstNode>(uri: string, guard?: (item: unknown) => item is T): Promise<AstNode | T | undefined> {
+   async request(uri: string, state = DocumentState.Validated): Promise<AstCrossModelDocument | undefined> {
       const document = this.documents.getOrCreateDocument(URI.parse(uri));
+      // should be replaced once we upgrade to newer Langium versions so we can use documentBuilder.waitUntil or the waitUntilPhase function
+      if (document.state < state) {
+         this.documentBuilder;
+         await new Promise<void>(resolve => {
+            const listener = this.documentBuilder.onBuildPhase(state, (allChangedDocuments, _token) => {
+               if (allChangedDocuments.some(doc => doc.uri.toString() === uri)) {
+                  listener.dispose();
+                  resolve();
+               }
+            });
+         });
+      }
       const root = document.parseResult.value;
-      const check = guard ?? isAstNode;
-      return check(root) ? root : undefined;
+      return isCrossModelRoot(root) ? { root, diagnostics: document.diagnostics ?? [], uri } : undefined;
    }
 
    /**
@@ -118,7 +123,7 @@ export class ModelService {
     * @param model semantic model or textual representation of it
     * @returns the stored semantic model
     */
-   async update<T extends AstNode>(args: UpdateModelArgs<T>): Promise<T> {
+   async update(args: UpdateModelArgs<CrossModelRoot>): Promise<AstCrossModelDocument> {
       await this.open(args);
       const documentUri = URI.parse(args.uri);
       const document = this.documents.getOrCreateDocument(documentUri);
@@ -129,20 +134,28 @@ export class ModelService {
       const textDocument = document.textDocument;
       const text = typeof args.model === 'string' ? args.model : this.serialize(documentUri, args.model);
       if (text === textDocument.getText()) {
-         return document.parseResult.value as T;
+         return {
+            diagnostics: document.diagnostics ?? [],
+            root: document.parseResult.value as CrossModelRoot,
+            uri: args.uri
+         };
       }
       const newVersion = textDocument.version + 1;
-      const pendingUpdate = new Deferred<T>();
+      const pendingUpdate = new Deferred<AstCrossModelDocument>();
       const listener = this.documentBuilder.onBuildPhase(DocumentState.Validated, (allChangedDocuments, _token) => {
          const updatedDocument = allChangedDocuments.find(
             doc => doc.uri.toString() === documentUri.toString() && doc.textDocument.version === newVersion
          );
          if (updatedDocument) {
-            pendingUpdate.resolve(updatedDocument.parseResult.value as T);
+            pendingUpdate.resolve({
+               diagnostics: updatedDocument.diagnostics ?? [],
+               root: updatedDocument.parseResult.value as CrossModelRoot,
+               uri: args.uri
+            });
             listener.dispose();
          }
       });
-      const timeout = new Promise<T>((_, reject) =>
+      const timeout = new Promise<AstCrossModelDocument>((_, reject) =>
          setTimeout(() => {
             listener.dispose();
             reject('Update timed out.');
@@ -152,11 +165,11 @@ export class ModelService {
       return Promise.race([pendingUpdate.promise, timeout]);
    }
 
-   onModelUpdated<T extends AstNode>(uri: string, listener: (model: ModelUpdatedEvent<T>) => void): Disposable {
+   onModelUpdated(uri: string, listener: (model: ModelUpdatedEvent<AstCrossModelDocument>) => void): Disposable {
       return this.documentManager.onUpdate(uri, listener);
    }
 
-   onModelSaved<T extends AstNode>(uri: string, listener: (model: ModelSavedEvent<T>) => void): Disposable {
+   onModelSaved(uri: string, listener: (model: ModelSavedEvent<AstCrossModelDocument>) => void): Disposable {
       return this.documentManager.onSave(uri, listener);
    }
 
@@ -166,7 +179,7 @@ export class ModelService {
     * @param uri document uri
     * @param model semantic model or text
     */
-   async save<T extends AstNode>(args: SaveModelArgs<T>): Promise<void> {
+   async save(args: SaveModelArgs<CrossModelRoot>): Promise<void> {
       // sync: implicit update of internal data structure to match file system (similar to workspace initialization)
       if (this.documents.hasDocument(URI.parse(args.uri))) {
          await this.update(args);

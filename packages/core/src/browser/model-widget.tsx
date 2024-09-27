@@ -3,7 +3,7 @@
  ********************************************************************************/
 
 import { ModelService, ModelServiceClient } from '@crossbreeze/model-service/lib/common';
-import { CrossModelRoot, RenderProps } from '@crossbreeze/protocol';
+import { CrossModelDocument, CrossModelRoot, ModelUpdatedEvent, RenderProps } from '@crossbreeze/protocol';
 import {
    EntityComponent,
    ErrorView,
@@ -33,11 +33,6 @@ export interface CrossModelWidgetOptions {
    uri?: string;
 }
 
-interface Model {
-   uri: URI;
-   root: CrossModelRoot;
-}
-
 @injectable()
 export class CrossModelWidget extends ReactWidget implements Saveable {
    @inject(CrossModelWidgetOptions) protected options: CrossModelWidgetOptions;
@@ -54,7 +49,7 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
    autoSave: 'off' | 'afterDelay' | 'onFocusChange' | 'onWindowChange';
    autoSaveDelay: number;
 
-   protected model?: Model;
+   protected document?: CrossModelDocument;
    protected error: string | undefined;
 
    @postConstruct()
@@ -69,8 +64,8 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
 
       this.toDispose.pushAll([
          this.serviceClient.onModelUpdate(event => {
-            if (event.sourceClientId !== this.options.clientId && event.uri === this.model?.uri.toString()) {
-               this.handleExternalUpdate(event.model);
+            if (event.sourceClientId !== this.options.clientId && event.document.uri === this.document?.uri) {
+               this.handleExternalUpdate(event);
             }
          }),
          this.editorPreferences.onPreferenceChanged(event => {
@@ -86,11 +81,11 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
    }
 
    protected async setModel(uri?: string): Promise<void> {
-      if (this.model?.uri) {
-         await this.closeModel(this.model.uri.toString());
+      if (this.document?.uri) {
+         await this.closeModel(this.document.uri.toString());
       }
-      this.model = uri ? await this.openModel(uri) : undefined;
-      this.updateTitle(this.model?.uri);
+      this.document = uri ? await this.openModel(uri) : undefined;
+      this.updateTitle(new URI(this.document?.uri));
       this.setDirty(false);
       this.update();
       this.focusInput();
@@ -107,17 +102,14 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
    }
 
    protected async closeModel(uri: string): Promise<void> {
-      this.model = undefined;
+      this.document = undefined;
       await this.modelService.close({ clientId: this.options.clientId, uri });
    }
 
-   protected async openModel(uri: string): Promise<Model | undefined> {
+   protected async openModel(uri: string): Promise<CrossModelDocument | undefined> {
       try {
-         const model = await this.modelService.open({ clientId: this.options.clientId, uri });
-         if (model) {
-            return { root: model, uri: new URI(uri) };
-         }
-         return undefined;
+         const document = await this.modelService.open({ clientId: this.options.clientId, uri });
+         return document;
       } catch (error: any) {
          this.error = error;
          return undefined;
@@ -138,18 +130,20 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
       return this.saveModel();
    }
 
-   protected async handleExternalUpdate(root: CrossModelRoot): Promise<void> {
-      if (this.model && !deepEqual(this.model.root, root)) {
-         this.model.root = root;
+   protected async handleExternalUpdate({ document, reason, sourceClientId }: ModelUpdatedEvent): Promise<void> {
+      if (this.document && !deepEqual(this.document.root, document.root)) {
+         console.debug(`[${this.options.clientId}] Receive update from ${sourceClientId} due to '${reason}'`);
+         this.document = document;
          this.update();
       }
    }
 
    protected async updateModel(root: CrossModelRoot): Promise<void> {
-      if (this.model && !deepEqual(this.model.root, root)) {
-         this.model.root = root;
+      if (this.document && !deepEqual(this.document.root, root)) {
+         this.document.root = root;
          this.setDirty(true);
-         await this.modelService.update({ uri: this.model.uri.toString(), model: root, clientId: this.options.clientId });
+         console.debug(`[${this.options.clientId}] Send update to server`);
+         await this.modelService.update({ uri: this.document.uri, model: root, clientId: this.options.clientId });
          if (this.autoSave !== 'off' && this.dirty) {
             const saveTimeout = setTimeout(() => {
                this.save();
@@ -159,25 +153,30 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
       }
    }
 
-   protected async saveModel(model = this.model): Promise<void> {
-      if (model === undefined) {
+   protected async saveModel(doc = this.document): Promise<void> {
+      if (doc === undefined) {
          throw new Error('Cannot save undefined model');
       }
-
+      if (doc.diagnostics.length > 0) {
+         // we do not support saving erroneous models in model widgets as we cannot deal with them properly, fixes are done via code editor
+         console.debug(`[${this.options.clientId}] Abort Save as we have an erroneous model`);
+         return;
+      }
+      console.debug(`[${this.options.clientId}] Save model`);
       this.setDirty(false);
-      await this.modelService.save({ uri: model.uri.toString(), model: model.root, clientId: this.options.clientId });
+      await this.modelService.save({ uri: doc.uri.toString(), model: doc.root, clientId: this.options.clientId });
    }
 
    protected async openModelInEditor(): Promise<void> {
-      if (this.model?.uri === undefined) {
+      if (this.document?.uri === undefined) {
          throw new Error('Cannot open undefined model');
       }
-      open(this.openerService, this.model.uri);
+      open(this.openerService, new URI(this.document.uri));
    }
 
-   protected getModelProviderProps(model: CrossModelRoot): ModelProviderProps {
+   protected getModelProviderProps(): ModelProviderProps {
       return {
-         model,
+         document: this.document!,
          dirty: this.dirty,
          onModelUpdate: this.handleUpdateRequest,
          onModelSave: this.handleSaveRequest,
@@ -187,7 +186,7 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
    }
 
    protected handleUpdateRequest = debounce(async (root: CrossModelRoot): Promise<void> => {
-      this.updateModel(root);
+      await this.updateModel(root);
    }, 200);
 
    protected handleSaveRequest?: SaveCallback = () => this.save();
@@ -195,70 +194,26 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
    protected handleOpenRequest?: OpenCallback = () => this.openModelInEditor();
 
    override close(): void {
-      if (this.model) {
-         this.closeModel(this.model.uri.toString());
+      if (this.document) {
+         this.closeModel(this.document.uri.toString());
       }
       super.close();
    }
 
    render(): React.ReactNode {
-      if (this.model?.root?.entity) {
-         return (
-            <EntityComponent
-               dirty={this.dirty}
-               model={this.model.root}
-               onModelUpdate={this.handleUpdateRequest}
-               onModelSave={this.handleSaveRequest}
-               onModelOpen={this.handleOpenRequest}
-               modelQueryApi={this.modelService}
-               theme={this.themeService.getCurrentTheme().type}
-               {...this.getRenderProperties(this.model.root)}
-            />
-         );
+      if (this.document?.root?.entity) {
+         return <EntityComponent {...this.getModelProviderProps()} {...this.getRenderProperties()} />;
       }
-      if (this.model?.root?.relationship) {
-         return (
-            <RelationshipComponent
-               dirty={this.dirty}
-               model={this.model.root}
-               onModelUpdate={this.handleUpdateRequest}
-               onModelSave={this.handleSaveRequest}
-               onModelOpen={this.handleOpenRequest}
-               modelQueryApi={this.modelService}
-               theme={this.themeService.getCurrentTheme().type}
-               {...this.getRenderProperties(this.model.root)}
-            />
-         );
+      if (this.document?.root?.relationship) {
+         return <RelationshipComponent {...this.getModelProviderProps()} {...this.getRenderProperties()} />;
       }
-      if (this.model?.root?.mapping) {
-         const renderProps = this.getRenderProperties(this.model.root) as unknown as MappingRenderProps & SourceObjectRenderProps;
+      if (this.document?.root?.mapping) {
+         const renderProps = this.getRenderProperties() as RenderProps & MappingRenderProps & SourceObjectRenderProps;
          if (renderProps?.mappingIndex >= 0) {
-            return (
-               <MappingComponent
-                  dirty={this.dirty}
-                  model={this.model.root}
-                  onModelUpdate={this.handleUpdateRequest}
-                  onModelSave={this.handleSaveRequest}
-                  onModelOpen={this.handleOpenRequest}
-                  modelQueryApi={this.modelService}
-                  theme={this.themeService.getCurrentTheme().type}
-                  {...renderProps}
-               />
-            );
+            return <MappingComponent {...this.getModelProviderProps()} {...renderProps} />;
          }
          if (renderProps?.sourceObjectIndex >= 0) {
-            return (
-               <SourceObjectComponent
-                  dirty={this.dirty}
-                  model={this.model.root}
-                  onModelUpdate={this.handleUpdateRequest}
-                  onModelSave={this.handleSaveRequest}
-                  onModelOpen={this.handleOpenRequest}
-                  modelQueryApi={this.modelService}
-                  theme={this.themeService.getCurrentTheme().type}
-                  {...renderProps}
-               />
-            );
+            return <SourceObjectComponent {...this.getModelProviderProps()} {...renderProps} />;
          }
       }
       if (this.error) {
@@ -267,8 +222,10 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
       return <div className='theia-widget-noInfo'>No properties available.</div>;
    }
 
-   protected getRenderProperties(root: CrossModelRoot): RenderProps {
-      return {};
+   protected getRenderProperties(): RenderProps {
+      return {
+         theme: this.themeService.getCurrentTheme().type
+      };
    }
 
    protected focusInput(): void {

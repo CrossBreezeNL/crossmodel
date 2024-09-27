@@ -2,12 +2,15 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
+import { ERRONEOUS_MODEL } from '@crossbreeze/protocol';
 import {
+   Action,
    ActionDispatcher,
    ClientSession,
    ClientSessionListener,
    ClientSessionManager,
    DisposableCollection,
+   EditMode,
    GLSPServerError,
    Logger,
    MaybePromise,
@@ -15,12 +18,16 @@ import {
    RequestModelAction,
    SOURCE_URI_ARG,
    SaveModelAction,
-   SourceModelStorage
+   SetEditModeAction,
+   SourceModelStorage,
+   StatusAction
 } from '@eclipse-glsp/server';
 import { inject, injectable, postConstruct } from 'inversify';
 import { findRootNode, streamReferences } from 'langium';
+import debounce from 'p-debounce';
 import { URI } from 'vscode-uri';
-import { CrossModelRoot, isCrossModelRoot } from '../../language-server/generated/ast.js';
+import { CrossModelRoot } from '../../language-server/generated/ast.js';
+import { AstCrossModelDocument } from '../../model-server/open-text-document-manager.js';
 import { CrossModelState } from './cross-model-state.js';
 
 /**
@@ -47,30 +54,53 @@ export class CrossModelStorage implements SourceModelStorage, ClientSessionListe
       // load semantic model from document in language model service
       const sourceUri = this.getSourceUri(action);
       const rootUri = URI.file(sourceUri).toString();
-      const root = await this.update(rootUri);
-      if (!root) {
+      const document = await this.update(rootUri);
+      if (!document) {
          return;
       }
       this.toDispose.push(await this.state.modelService.open({ uri: rootUri, clientId: this.state.clientId }));
       this.toDispose.push(
-         this.state.modelService.onModelUpdated<CrossModelRoot>(rootUri, async event => {
+         this.state.modelService.onModelUpdated(rootUri, async event => {
             if (this.state.clientId !== event.sourceClientId || event.reason !== 'changed') {
-               await this.update(rootUri, event.model);
-               this.actionDispatcher.dispatchAll(await this.submissionHandler.submitModel('external'));
+               const result = await this.updateAndSubmit(rootUri, event.document);
+               this.actionDispatcher.dispatchAll(result);
             }
          })
       );
    }
 
-   protected async update(uri: string, root?: CrossModelRoot): Promise<CrossModelRoot | undefined> {
-      const newRoot = root ?? (await this.state.modelService.request(uri, isCrossModelRoot));
-      if (newRoot) {
-         this.state.setSemanticRoot(uri, newRoot);
+   protected async update(uri: string, document?: AstCrossModelDocument): Promise<AstCrossModelDocument | undefined> {
+      const doc = document ?? (await this.state.modelService.request(uri));
+      if (doc) {
+         this.state.setSemanticRoot(uri, doc.root);
+         const actions = await this.updateEditMode(doc);
+         if (actions.length > 0) {
+            setTimeout(() => this.actionDispatcher.dispatchAll(actions), 0);
+         }
       } else {
          this.logger.error('Could not find model for ' + uri);
       }
-      return newRoot;
+      return doc;
    }
+
+   protected async updateEditMode(document: AstCrossModelDocument): Promise<Action[]> {
+      const actions = [];
+      const prevEditMode = this.state.editMode;
+      this.state.editMode = document.diagnostics.length > 0 ? EditMode.READONLY : EditMode.EDITABLE;
+      if (prevEditMode !== this.state.editMode) {
+         if (this.state.isReadonly) {
+            actions.push(SetEditModeAction.create(EditMode.READONLY), StatusAction.create(ERRONEOUS_MODEL, { severity: 'ERROR' }));
+         } else {
+            actions.push(SetEditModeAction.create(EditMode.EDITABLE), StatusAction.create('', { severity: 'NONE' }));
+         }
+      }
+      return actions;
+   }
+
+   protected updateAndSubmit = debounce(async (rootUri: string, document: AstCrossModelDocument): Promise<Action[]> => {
+      await this.update(rootUri, document);
+      return [...(await this.submissionHandler.submitModel('external')), ...(await this.updateEditMode(document))];
+   }, 250);
 
    saveSourceModel(action: SaveModelAction): MaybePromise<void> {
       const saveUri = this.getFileUri(action);
@@ -80,7 +110,7 @@ export class CrossModelStorage implements SourceModelStorage, ClientSessionListe
       streamReferences(this.state.semanticRoot)
          .map(refInfo => refInfo.reference.ref)
          .nonNullable()
-         .map(ref => findRootNode(ref))
+         .map(ref => findRootNode(ref) as CrossModelRoot)
          .forEach(root =>
             this.state.modelService.save({ uri: root.$document!.uri.toString(), model: root, clientId: this.state.clientId })
          );

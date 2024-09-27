@@ -4,7 +4,7 @@
 
 import {
    CloseModelArgs,
-   CrossModelRoot,
+   CrossModelDocument,
    CrossReference,
    CrossReferenceContext,
    ModelUpdatedEvent,
@@ -45,7 +45,7 @@ export class ModelServiceImpl implements ModelService {
       });
    }
 
-   open(args: OpenModelArgs): Promise<CrossModelRoot | undefined> {
+   open(args: OpenModelArgs): Promise<CrossModelDocument | undefined> {
       return this.server.open(args);
    }
 
@@ -53,15 +53,15 @@ export class ModelServiceImpl implements ModelService {
       return this.server.close(args);
    }
 
-   update(args: UpdateModelArgs<CrossModelRoot>): Promise<CrossModelRoot> {
+   update(args: UpdateModelArgs): Promise<CrossModelDocument> {
       return this.server.update(args);
    }
 
-   save(args: SaveModelArgs<CrossModelRoot>): Promise<void> {
+   save(args: SaveModelArgs): Promise<void> {
       return this.server.save(args);
    }
 
-   request(uri: string): Promise<CrossModelRoot | undefined> {
+   request(uri: string): Promise<CrossModelDocument | undefined> {
       return this.server.request(uri);
    }
 
@@ -81,7 +81,7 @@ export class ModelServiceImpl implements ModelService {
       return this.server.getSystemInfo(args);
    }
 
-   get onModelUpdate(): Event<ModelUpdatedEvent<CrossModelRoot>> {
+   get onModelUpdate(): Event<ModelUpdatedEvent> {
       return this.client.onModelUpdate;
    }
 

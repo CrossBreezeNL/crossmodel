@@ -6,7 +6,7 @@ import CheckBoxOutlineBlankOutlined from '@mui/icons-material/CheckBoxOutlineBla
 import CheckBoxOutlined from '@mui/icons-material/CheckBoxOutlined';
 import { GridColDef } from '@mui/x-data-grid';
 import * as React from 'react';
-import { useEntity, useModelDispatch } from '../../ModelContext';
+import { useEntity, useModelDispatch, useReadonly } from '../../ModelContext';
 import { ErrorView } from '../ErrorView';
 import GridComponent, { GridComponentRow, ValidationFunction } from './GridComponent';
 import { KeyIcon } from './Icons';
@@ -16,6 +16,7 @@ export type EntityAttributeRow = GridComponentRow<EntityAttribute>;
 export function EntityAttributesDataGrid(): React.ReactElement {
    const entity = useEntity();
    const dispatch = useModelDispatch();
+   const readonly = useReadonly();
 
    // Callback for when the user stops editing a cell.
    const handleRowUpdate = React.useCallback(
@@ -88,13 +89,13 @@ export function EntityAttributesDataGrid(): React.ReactElement {
             field: 'name',
             headerName: 'Name',
             flex: 200,
-            editable: true,
+            editable: !readonly,
             type: 'string'
          },
          {
             field: 'datatype',
             headerName: 'Data type',
-            editable: true,
+            editable: !readonly,
             flex: 100,
             type: 'singleSelect',
             valueOptions: ['Integer', 'Float', 'Char', 'Varchar', 'Bool', 'Text']
@@ -109,12 +110,12 @@ export function EntityAttributesDataGrid(): React.ReactElement {
                   <CheckBoxOutlineBlankOutlined style={{ color: 'rgba(0, 0, 0, 0.6)' }} fontSize='small' />
                ),
             maxWidth: 50,
-            editable: true,
+            editable: !readonly,
             type: 'boolean'
          },
          { field: 'description', headerName: 'Description', editable: true, flex: 200 }
       ],
-      []
+      [readonly]
    );
 
    const defaultEntry = React.useMemo<EntityAttribute>(

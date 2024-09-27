@@ -5,8 +5,8 @@
 import { codiconCSSString } from '@eclipse-glsp/client';
 import { GLSPDiagramManager } from '@eclipse-glsp/theia-integration';
 import { URI } from '@theia/core';
-import { OpenWithHandler, OpenWithService, WidgetOpenerOptions } from '@theia/core/lib/browser';
-import { inject, injectable, postConstruct } from '@theia/core/shared/inversify';
+import { OpenWithHandler, WidgetOpenerOptions } from '@theia/core/lib/browser';
+import { injectable } from '@theia/core/shared/inversify';
 import { MappingDiagramLanguage } from '../../common/crossmodel-diagram-language';
 
 export interface ProblemMarkerOpenerOptions extends WidgetOpenerOptions {
@@ -15,14 +15,7 @@ export interface ProblemMarkerOpenerOptions extends WidgetOpenerOptions {
 
 @injectable()
 export class MappingDiagramManager extends GLSPDiagramManager implements OpenWithHandler {
-   @inject(OpenWithService) protected readonly openWithService: OpenWithService;
-
-   @postConstruct()
-   protected override init(): void {
-      this.openWithService.registerHandler(this);
-      super.init();
-   }
-
+   static readonly ID = 'mapping-diagram-manager';
    get label(): string {
       return MappingDiagramLanguage.label;
    }
@@ -41,6 +34,10 @@ export class MappingDiagramManager extends GLSPDiagramManager implements OpenWit
 
    override get contributionId(): string {
       return MappingDiagramLanguage.contributionId;
+   }
+
+   override get id(): string {
+      return MappingDiagramManager.ID;
    }
 
    override canHandle(uri: URI, options?: ProblemMarkerOpenerOptions | undefined): number {

@@ -12,7 +12,7 @@ import {
 } from '@crossbreeze/protocol';
 import { GridColDef, GridRenderEditCellParams, useGridApiContext } from '@mui/x-data-grid';
 import * as React from 'react';
-import { useMapping, useModelDispatch, useModelQueryApi } from '../../ModelContext';
+import { useMapping, useModelDispatch, useModelQueryApi, useReadonly } from '../../ModelContext';
 import AsyncAutoComplete from './AsyncAutoComplete';
 import GridComponent, { GridComponentRow } from './GridComponent';
 
@@ -27,6 +27,7 @@ export function EditAttributeMappingSourceComponent({
    const mapping = useMapping();
    const queryApi = useModelQueryApi();
    const gridApi = useGridApiContext();
+   const readonly = useReadonly();
 
    const referenceCtx: CrossReferenceContext = React.useMemo(
       () => ({
@@ -60,6 +61,7 @@ export function EditAttributeMappingSourceComponent({
          optionLoader={referenceableElements}
          onChange={handleValueChange}
          value={value}
+         disabled={readonly}
          clearOnBlur={true}
          selectOnFocus={true}
          textFieldProps={{ sx: { margin: '0' }, autoFocus: hasFocus, placeholder: 'Select an attribute' }}

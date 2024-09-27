@@ -64,11 +64,12 @@ export class CrossModelState extends DefaultModelState implements JsonModelState
    }
 
    async updateSourceModel(sourceModel: CrossModelSourceModel): Promise<void> {
-      this._semanticRoot = await this.modelService.update<CrossModelRoot>({
+      const document = await this.modelService.update({
          uri: this.semanticUri,
          model: sourceModel.text ?? this.semanticRoot,
          clientId: this.clientId
       });
+      this._semanticRoot = document.root;
       this.index.indexSemanticRoot(this.semanticRoot);
    }
 

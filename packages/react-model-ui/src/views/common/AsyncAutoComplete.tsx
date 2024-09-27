@@ -3,6 +3,7 @@
  ********************************************************************************/
 /* eslint-disable no-null/no-null */
 import { Autocomplete, AutocompleteProps, CircularProgress, TextField, TextFieldProps } from '@mui/material';
+import { useReadonly } from '../../ModelContext';
 import React = require('react');
 
 export interface AsyncAutoCompleteProps<T> extends Omit<AutocompleteProps<T, false, true, false>, 'renderInput' | 'options'> {
@@ -21,6 +22,7 @@ export default function AsyncAutoComplete<T>({
    const [open, setOpen] = React.useState(props.open);
    const [options, setOptions] = React.useState<readonly T[]>([]);
    const loading = open && options.length === 0;
+   const readonly = useReadonly();
 
    React.useEffect(() => {
       let active = true;
@@ -47,6 +49,7 @@ export default function AsyncAutoComplete<T>({
          onClose={() => setOpen(false)}
          options={options}
          loading={loading}
+         disabled={readonly}
          disableClearable={true}
          handleHomeEndKeys={true}
          {...props}

@@ -5,10 +5,12 @@
 import {
    CloseModel,
    CloseModelArgs,
+   CrossModelDocument,
    CrossModelRoot,
    CrossReference,
    CrossReferenceContext,
    FindReferenceableElements,
+   ModelDiagnostic,
    OnModelSaved,
    OnModelUpdated,
    OnSystemsUpdated,
@@ -30,10 +32,11 @@ import {
 import { AstNode, findRootNode, getDocument, isReference } from 'langium';
 import { Disposable } from 'vscode-jsonrpc';
 import * as rpc from 'vscode-jsonrpc/node.js';
-import { isCrossModelRoot } from '../language-server/generated/ast.js';
 
-import { ModelService } from './model-service.js';
+import { Diagnostic, DiagnosticSeverity } from 'vscode-languageserver-protocol';
+import * as ast from '../language-server/generated/ast.js';
 import { IMPLICIT_ID_PROPERTY } from '../language-server/util/ast-util.js';
+import { ModelService } from './model-service.js';
 
 /**
  * The model server handles request messages on the RPC connection and ensures that any return value
@@ -85,7 +88,7 @@ export class ModelServer implements Disposable {
       return { uri, model };
    }
 
-   protected async openModel(args: OpenModelArgs): Promise<CrossModelRoot | undefined> {
+   protected async openModel(args: OpenModelArgs): Promise<CrossModelDocument | undefined> {
       if (!this.modelService.isOpen(args.uri)) {
          await this.modelService.open(args);
       }
@@ -99,16 +102,14 @@ export class ModelServer implements Disposable {
       listenersForClient.push(
          this.modelService.onModelSaved(args.uri, event =>
             this.connection.sendNotification(OnModelSaved, {
-               uri: args.uri,
-               model: this.toSerializable(event.model) as CrossModelRoot,
-               sourceClientId: event.sourceClientId
+               sourceClientId: event.sourceClientId,
+               document: this.toDocument(event.document)
             })
          ),
          this.modelService.onModelUpdated(args.uri, event =>
             this.connection.sendNotification(OnModelUpdated, {
-               uri: args.uri,
-               model: this.toSerializable(event.model) as CrossModelRoot,
                sourceClientId: event.sourceClientId,
+               document: this.toDocument(event.document),
                reason: event.reason
             })
          )
@@ -126,22 +127,46 @@ export class ModelServer implements Disposable {
       return this.modelService.close(args);
    }
 
-   protected async requestModel(uri: string): Promise<CrossModelRoot | undefined> {
-      const root = await this.modelService.request(uri, isCrossModelRoot);
-      return this.toSerializable(root) as CrossModelRoot;
+   protected async requestModel(uri: string): Promise<CrossModelDocument | undefined> {
+      const document = await this.modelService.request(uri);
+      return document ? this.toDocument(document) : undefined;
    }
 
-   protected async updateModel(args: UpdateModelArgs<CrossModelRoot>): Promise<CrossModelRoot> {
-      const updated = await this.modelService.update(args);
-      return this.toSerializable(updated) as CrossModelRoot;
+   protected async updateModel(args: UpdateModelArgs<CrossModelRoot>): Promise<CrossModelDocument> {
+      const updated = await this.modelService.update({ ...args, model: args.model as ast.CrossModelRoot });
+      return this.toDocument(updated);
    }
 
    protected async saveModel(args: SaveModelArgs<CrossModelRoot>): Promise<void> {
-      await this.modelService.save(args);
+      await this.modelService.save({ ...args, model: args.model as ast.CrossModelRoot });
    }
 
    dispose(): void {
       this.toDispose.forEach(disposable => disposable.dispose());
+   }
+
+   protected toDocument<T extends CrossModelDocument<ast.CrossModelRoot, Diagnostic>>(
+      document: T
+   ): CrossModelDocument<CrossModelRoot, ModelDiagnostic> {
+      return {
+         uri: document.uri,
+         diagnostics: document.diagnostics.map(diagnostic => this.toModelDiagnostic(diagnostic)),
+         root: this.toSerializable(document.root)!
+      };
+   }
+
+   protected toModelDiagnostic(diagnostic: Diagnostic): ModelDiagnostic {
+      const langiumCode = diagnostic.data?.code;
+      return {
+         message: diagnostic.message,
+         severity:
+            diagnostic.severity === DiagnosticSeverity.Error
+               ? 'warning'
+               : diagnostic.severity === DiagnosticSeverity.Warning
+                 ? 'error'
+                 : 'info',
+         type: langiumCode === 'lexing-error' ? 'lexing-error' : langiumCode === 'parsing-error' ? 'parsing-error' : 'validation-error'
+      };
    }
 
    /**
@@ -151,7 +176,7 @@ export class ModelServer implements Disposable {
     * @param obj semantic object
     * @returns serializable semantic object
     */
-   protected toSerializable<T extends AstNode, O extends object>(obj?: T): O | undefined {
+   protected toSerializable<T extends AstNode = ast.CrossModelRoot, O extends object = CrossModelRoot>(obj?: T): O | undefined {
       if (!obj) {
          return;
       }

@@ -173,8 +173,9 @@ export class CrossModelWorkspaceContribution extends WorkspaceCommandContributio
                return;
             }
 
-            const root = await this.modelService.request(entityElement.uri);
-            if (!root?.entity) {
+            const document = await this.modelService.request(entityElement.uri);
+            const entity = document?.root.entity;
+            if (!entity) {
                this.messageService.error('Could not resolve entity element at ' + entityUri.path.fsPath());
                return;
             }
@@ -188,7 +189,7 @@ export class CrossModelWorkspaceContribution extends WorkspaceCommandContributio
                   }
                }
             };
-            root.entity.attributes.forEach(attribute => mapping.mapping.target.mappings.push({ attribute: attribute.id }));
+            entity.attributes.forEach(attribute => mapping.mapping.target.mappings.push({ attribute: attribute.id }));
             const content = yaml.stringify(mapping, { indent: 4 });
             await this.fileService.create(mappingUri, content);
             this.fireCreateNewFile({ parent: parentUri, uri: mappingUri });

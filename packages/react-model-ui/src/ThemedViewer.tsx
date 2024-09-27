@@ -2,7 +2,7 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import { CssBaseline, Theme, ThemeOptions, ThemeProvider, createTheme } from '@mui/material';
+import { Theme, ThemeOptions, ThemeProvider, createTheme } from '@mui/material';
 import React = require('react');
 
 const sharedThemeOptions: ThemeOptions = {
@@ -164,7 +164,7 @@ export function themed<P, TP extends ThemingProps>(
 ): React.ComponentType<P & TP & React.JSX.IntrinsicAttributes> {
    const ThemedComponent = (props: P & TP & React.JSX.IntrinsicAttributes): React.ReactElement => (
       <ThemeProvider theme={getTheme(props.theme)}>
-         <CssBaseline />
+         {/* do no include CssBaseline as it introduces global styles that conflict with Theia: <CssBaseline /> */}
          <WrappedComponent {...props} />
       </ThemeProvider>
    );

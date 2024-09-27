@@ -11,7 +11,7 @@ import {
 } from '@crossbreeze/protocol';
 import { GridColDef, GridRenderEditCellParams, useGridApiContext } from '@mui/x-data-grid';
 import * as React from 'react';
-import { useModelDispatch, useModelQueryApi } from '../../ModelContext';
+import { useModelDispatch, useModelQueryApi, useReadonly } from '../../ModelContext';
 import AsyncAutoComplete from './AsyncAutoComplete';
 import GridComponent, { GridComponentRow } from './GridComponent';
 
@@ -28,6 +28,7 @@ export function EditSourceObjectDependencySourceComponent({
 }: EditSourceObjectDependencySourceComponentProps): React.ReactElement {
    const queryApi = useModelQueryApi();
    const gridApi = useGridApiContext();
+   const readonly = useReadonly();
 
    const referenceCtx: CrossReferenceContext = React.useMemo(
       () => ({
@@ -59,6 +60,7 @@ export function EditSourceObjectDependencySourceComponent({
          value={value}
          clearOnBlur={true}
          selectOnFocus={true}
+         disabled={readonly}
          textFieldProps={{ sx: { margin: '0' }, autoFocus: hasFocus, placeholder: 'Select a source object' }}
          isOptionEqualToValue={(option, val) => option.label === val.label}
       />
@@ -74,6 +76,7 @@ export interface SourceObjectDependencyDataGridProps {
 
 export function SourceObjectDependencyDataGrid({ mapping, sourceObjectIdx }: SourceObjectDependencyDataGridProps): React.ReactElement {
    const dispatch = useModelDispatch();
+   const readonly = useReadonly();
 
    const sourceObject = React.useMemo<SourceObject>(() => mapping.sources[sourceObjectIdx], [mapping.sources, sourceObjectIdx]);
 
@@ -130,7 +133,7 @@ export function SourceObjectDependencyDataGrid({ mapping, sourceObjectIdx }: Sou
          {
             field: 'source',
             flex: 100,
-            editable: true,
+            editable: !readonly,
             renderHeader: () => <>Source</>,
             valueGetter: (_value, row) => row,
             valueSetter: (value, row) => value,
@@ -139,7 +142,7 @@ export function SourceObjectDependencyDataGrid({ mapping, sourceObjectIdx }: Sou
             type: 'singleSelect'
          }
       ],
-      []
+      [readonly, sourceObject]
    );
 
    return (

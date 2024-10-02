@@ -8,12 +8,15 @@ import { Reference } from 'langium';
 import _ from 'lodash';
 import { CrossModelSerializer } from '../../../src/language-server/cross-model-serializer.js';
 import { CrossModelRoot, Entity, Relationship } from '../../../src/language-server/generated/ast.js';
+import { createCrossModelTestServices } from '../test-utils/utils.js';
+
+const services = createCrossModelTestServices();
 
 describe('CrossModelLexer', () => {
    let serializer: CrossModelSerializer;
 
    beforeAll(() => {
-      serializer = new CrossModelSerializer();
+      serializer = services.serializer.Serializer;
    });
 
    describe('Serialize entity', () => {

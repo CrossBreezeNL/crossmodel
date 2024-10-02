@@ -13,14 +13,14 @@ import {
 import {
    AstNode,
    AstNodeDescription,
+   AstUtils,
    DefaultScopeProvider,
    EMPTY_SCOPE,
    LangiumDocument,
    ReferenceInfo,
    Scope,
    StreamScope,
-   URI,
-   getDocument
+   URI
 } from 'langium';
 import { CrossModelServices } from './cross-model-module.js';
 import { GlobalAstNodeDescription, PackageAstNodeDescription } from './cross-model-scope.js';
@@ -68,7 +68,7 @@ export class PackageScopeProvider extends DefaultScopeProvider {
       const globalScope = super.getGlobalScope(referenceType, context);
 
       // see from which package this request is coming from based on the given context
-      const source = getDocument(context.container);
+      const source = AstUtils.getDocument(context.container);
       const sourcePackage = this.packageManager.getPackageIdByUri(source.uri);
 
       // dependencyScope: hide those elements from the global scope that are not visible from the requesting package
@@ -153,7 +153,7 @@ export class CrossModelScopeProvider extends PackageScopeProvider {
 
    getCompletionScope(ctx: CrossReferenceContext): CompletionScope {
       const referenceInfo = this.referenceContextToInfo(ctx);
-      const document = getDocument(referenceInfo.container);
+      const document = AstUtils.getDocument(referenceInfo.container);
       const packageId = this.packageManager.getPackageIdByDocument(document);
       const filteredDescriptions = this.getScope(referenceInfo)
          .getAllElements()

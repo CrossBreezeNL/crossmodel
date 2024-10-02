@@ -1,7 +1,8 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { AbstractFormatter, AstNode } from 'langium';
+import { AstNode } from 'langium';
+import { AbstractFormatter } from 'langium/lsp';
 
 export class CrossModelModelFormatter extends AbstractFormatter {
    protected format(node: AstNode): void {

@@ -14,7 +14,7 @@ Mapping:
             'id' ':' id=ID
             ('sources' ':'
                 INDENT 
-                    ('-' sources+=SourceObject)+
+                    (LIST_ITEM sources+=SourceObject)+
                 DEDENT
             )?
             'target' ':' target=TargetObject
@@ -28,18 +28,18 @@ SourceObject:
     'join' ':' join=JoinType
     ('dependencies' ':'
         INDENT
-            ('-' dependencies+=SourceObjectDependency)*
+            (LIST_ITEM dependencies+=SourceObjectDependency)*
         DEDENT
     )?
     ('conditions' ':'
         INDENT 
-            ('-' conditions+=SourceObjectCondition)*
+            (LIST_ITEM conditions+=SourceObjectCondition)*
         DEDENT
     )?
     // for some reason using the CustomProperties fragment here causes parsing issues in the language server
     ('customProperties' ':'
         INDENT
-            ('-' customProperties+=CustomProperty)*
+            (LIST_ITEM customProperties+=CustomProperty)*
         DEDENT
     )?
 ;
@@ -71,13 +71,13 @@ TargetObject:
         'entity' ':' entity=[Entity:IDReference] // implies attributes through entity
         ('mappings' ':'
             INDENT 
-                ('-' mappings+=AttributeMapping)+     
+                (LIST_ITEM mappings+=AttributeMapping)+     
             DEDENT
         )?
         // for some reason using the CustomProperties fragment here causes parsing issues in the language server
         ('customProperties' ':'
             INDENT
-                ('-' customProperties+=CustomProperty)*
+                (LIST_ITEM customProperties+=CustomProperty)*
             DEDENT
         )?
     DEDENT
@@ -87,7 +87,7 @@ AttributeMapping:
     'attribute' ':' attribute=AttributeMappingTarget
     ('sources' ':' 
         INDENT 
-            ('-' sources+=AttributeMappingSource)+     
+            (LIST_ITEM sources+=AttributeMappingSource)+     
         DEDENT
     )?
     ('expression' ':' expression=STRING)?

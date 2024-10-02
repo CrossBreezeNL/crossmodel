@@ -2,7 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { AstNode, CstNode, findNodeForProperty, isAstNode, NameProvider, streamAst } from 'langium';
+import { AstNode, AstUtils, CstNode, GrammarUtils, isAstNode, NameProvider } from 'langium';
 import { CrossModelServices } from './cross-model-module.js';
 import { UNKNOWN_PROJECT_REFERENCE } from './cross-model-package-manager.js';
 import { findDocument, getOwner } from './util/ast-util.js';
@@ -115,7 +115,7 @@ export class DefaultIdProvider implements NameProvider, IdProvider {
    }
 
    getNameNode(node: AstNode): CstNode | undefined {
-      return findNodeForProperty(node.$cstNode, ID_PROPERTY);
+      return GrammarUtils.findNodeForProperty(node.$cstNode, ID_PROPERTY);
    }
 
    findNextId(type: string, proposal: string | undefined): string;
@@ -130,7 +130,7 @@ export class DefaultIdProvider implements NameProvider, IdProvider {
    }
 
    findNextLocalId(type: string, proposal: string | undefined = 'Element', container: AstNode): string {
-      const knownIds = streamAst(container)
+      const knownIds = AstUtils.streamAst(container)
          .filter(node => node.$type === type)
          .map(this.getNodeId)
          .nonNullable()

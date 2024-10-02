@@ -13,7 +13,7 @@ Relationship:
             'type' ':' type=STRING
             ('attributes' ':'
                 INDENT 
-                    ('-' attributes+=RelationshipAttribute)+
+                    (LIST_ITEM attributes+=RelationshipAttribute)+
                 DEDENT
             )?
             CustomProperties?

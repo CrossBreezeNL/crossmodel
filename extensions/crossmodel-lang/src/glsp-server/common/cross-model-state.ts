@@ -3,6 +3,7 @@
  ********************************************************************************/
 import { DefaultModelState, JsonModelState, ModelState, hasFunctionProp } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
+import { DocumentState } from 'langium';
 import { URI } from 'vscode-uri';
 import { CrossModelLSPServices } from '../../integration.js';
 import { IdProvider } from '../../language-server/cross-model-naming.js';
@@ -21,7 +22,7 @@ export interface CrossModelSourceModel {
  */
 @injectable()
 export class CrossModelState extends DefaultModelState implements JsonModelState<CrossModelSourceModel> {
-   @inject(CrossModelIndex) override readonly index!: CrossModelIndex;
+   @inject(CrossModelIndex) declare readonly index: CrossModelIndex;
    @inject(CrossModelLSPServices) readonly services!: CrossModelLSPServices;
 
    protected _semanticUri!: string;
@@ -76,6 +77,10 @@ export class CrossModelState extends DefaultModelState implements JsonModelState
    /** Textual representation of the current semantic root. */
    semanticText(): string {
       return this.services.language.serializer.Serializer.serialize(this.semanticRoot);
+   }
+
+   ready(state = DocumentState.Validated): Promise<void> {
+      return this.modelService.ready(state, this.semanticUri);
    }
 }
 

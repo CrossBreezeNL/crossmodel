@@ -10,6 +10,7 @@ import {
    GModelIndex,
    InstanceMultiBinding,
    ModelState,
+   ModelSubmissionHandler,
    MultiBinding,
    OperationHandlerConstructor,
    SourceModelStorage,
@@ -32,6 +33,7 @@ import { SystemModelIndex } from './model/system-model-index.js';
 import { SystemModelState } from './model/system-model-state.js';
 import { SystemDiagramConfiguration } from './system-diagram-configuration.js';
 import { SystemToolPaletteProvider } from './tool-palette/system-tool-palette-provider.js';
+import { CrossModelSubmissionHandler } from '../common/cross-model-submission-handler.js';
 
 /**
  * Provides configuration about our system diagrams.
@@ -46,6 +48,10 @@ export class SystemDiagramModule extends DiagramModule {
 
    protected bindSourceModelStorage(): BindingTarget<SourceModelStorage> {
       return CrossModelStorage;
+   }
+
+   protected override bindModelSubmissionHandler(): BindingTarget<ModelSubmissionHandler> {
+      return CrossModelSubmissionHandler;
    }
 
    protected override configureOperationHandlers(binding: InstanceMultiBinding<OperationHandlerConstructor>): void {

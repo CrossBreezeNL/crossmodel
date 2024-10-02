@@ -29,11 +29,11 @@ const plugins = [
 ];
 
 const ctx = await esbuild.context({
-   // Entry points for the vscode extension and the language server
-   entryPoints: ['src/extension.ts', 'src/main.ts'],
+   // Entry points for the vscode extension and the language server and the parser worker threads
+   entryPoints: ['src/extension.ts', 'src/main.ts', 'src/language-server/parser/worker-thread.ts'],
    outdir: 'out',
    bundle: true,
-   target: 'ES2017',
+   target: 'ES2022',
    // VSCode's extension host is still using cjs, so we need to transform the code
    format: 'cjs',
    // To prevent confusing node, we explicitly use the `.cjs` extension

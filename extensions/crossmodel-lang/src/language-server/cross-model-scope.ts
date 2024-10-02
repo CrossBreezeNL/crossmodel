@@ -2,15 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import {
-   AstNode,
-   AstNodeDescription,
-   DefaultScopeComputation,
-   LangiumDocument,
-   PrecomputedScopes,
-   Reference,
-   streamAllContents
-} from 'langium';
+import { AstNode, AstNodeDescription, AstUtils, DefaultScopeComputation, LangiumDocument, PrecomputedScopes, Reference } from 'langium';
 import { CancellationToken } from 'vscode-jsonrpc';
 import { CrossModelServices } from './cross-model-module.js';
 import { DefaultIdProvider, combineIds } from './cross-model-naming.js';
@@ -92,7 +84,7 @@ export class CrossModelScopeComputation extends DefaultScopeComputation {
    override async computeExportsForNode(
       parentNode: AstNode,
       document: LangiumDocument<AstNode>,
-      children: (root: AstNode) => Iterable<AstNode> = streamAllContents,
+      children: (root: AstNode) => Iterable<AstNode> = AstUtils.streamAllContents,
       cancelToken: CancellationToken = CancellationToken.None
    ): Promise<AstNodeDescription[]> {
       return super.computeExportsForNode(parentNode, document, children, cancelToken);

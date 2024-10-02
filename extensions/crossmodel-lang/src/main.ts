@@ -3,7 +3,7 @@
  ********************************************************************************/
 import 'reflect-metadata';
 
-import { startLanguageServer } from 'langium';
+import { startLanguageServer } from 'langium/lsp';
 import { NodeFileSystem } from 'langium/node';
 import { createConnection, ProposedFeatures } from 'vscode-languageserver/node.js';
 import { startGLSPServer } from './glsp-server/launch.js';

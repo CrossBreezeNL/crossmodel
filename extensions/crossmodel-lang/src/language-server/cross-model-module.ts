@@ -1,21 +1,17 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
+
+import { AstNode, DefaultServiceRegistry, IndentationAwareLexer, Module, ServiceRegistry, inject } from 'langium';
 import {
-   AstNode,
-   createDefaultModule,
-   createDefaultSharedModule,
-   DefaultServiceRegistry,
    DefaultSharedModuleContext,
-   inject,
-   JsonSerializer,
    LangiumServices,
    LangiumSharedServices,
-   Module,
    PartialLangiumServices,
    PartialLangiumSharedServices,
-   ServiceRegistry
-} from 'langium';
+   createDefaultModule,
+   createDefaultSharedModule
+} from 'langium/lsp';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { URI } from 'vscode-uri';
 import { AddedSharedModelServices } from '../model-server/model-module.js';
@@ -38,22 +34,29 @@ import { CrossModelSerializer } from './cross-model-serializer.js';
 import { CrossModelValidator, registerValidationChecks } from './cross-model-validator.js';
 import { CrossModelWorkspaceManager } from './cross-model-workspace-manager.js';
 import { CrossModelGeneratedModule, CrossModelGeneratedSharedModule } from './generated/module.js';
-import { createCrossModelCompletionParser } from './lexer/cross-model-completion-parser.js';
-import { CrossModelLexer } from './lexer/cross-model-lexer.js';
-import { CrossModelTokenBuilder } from './lexer/cross-model-token-generator.js';
+import { CrossModelTokenBuilder } from './parser/cross-model-indentation-aware.js';
 import { CrossModelLinker } from './references/cross-model-linker.js';
 
 /***************************
  * Shared Module
  ***************************/
-export interface ExtendedLangiumServices extends LangiumServices {
+export type ExtendedLangiumServices = LangiumServices & {
    serializer: {
-      JsonSerializer: JsonSerializer;
       Serializer: Serializer<AstNode>;
    };
-}
+};
 
 export class DefaultExtendedServiceRegistry extends DefaultServiceRegistry {
+   protected _crossModelService!: CrossModelServices;
+
+   get CrossModel(): CrossModelServices {
+      return this._crossModelService;
+   }
+
+   set CrossModel(service: CrossModelServices) {
+      this._crossModelService = service;
+   }
+
    override register(language: ExtendedLangiumServices): void {
       super.register(language);
    }
@@ -64,6 +67,7 @@ export class DefaultExtendedServiceRegistry extends DefaultServiceRegistry {
 }
 
 export interface ExtendedServiceRegistry extends ServiceRegistry {
+   CrossModel: CrossModelServices;
    register(language: ExtendedLangiumServices): void;
    getServices(uri: URI): ExtendedLangiumServices;
 }
@@ -144,6 +148,9 @@ export interface CrossModelAddedServices {
    serializer: {
       Serializer: CrossModelSerializer;
    };
+   parser: {
+      TokenBuilder: CrossModelTokenBuilder;
+   };
    /* override */ shared: CrossModelSharedServices;
 }
 
@@ -178,12 +185,11 @@ export function createCrossModelModule(
          Formatter: () => new CrossModelModelFormatter()
       },
       serializer: {
-         Serializer: () => new CrossModelSerializer()
+         Serializer: services => new CrossModelSerializer(services.Grammar)
       },
       parser: {
          TokenBuilder: () => new CrossModelTokenBuilder(),
-         Lexer: services => new CrossModelLexer(services),
-         CompletionParser: services => createCrossModelCompletionParser(services)
+         Lexer: services => new IndentationAwareLexer(services)
       },
       shared: () => context.shared
    };
@@ -210,8 +216,8 @@ export function createCrossModelServices(context: DefaultSharedModuleContext): {
 } {
    const shared = inject(createDefaultSharedModule(context), CrossModelGeneratedSharedModule, CrossModelSharedModule);
    const CrossModel = inject(createDefaultModule({ shared }), CrossModelGeneratedModule, createCrossModelModule({ shared }));
+   shared.ServiceRegistry.CrossModel = CrossModel;
    shared.ServiceRegistry.register(CrossModel);
-   shared.CrossModel = CrossModel;
    registerValidationChecks(CrossModel);
    return { shared, CrossModel };
 }

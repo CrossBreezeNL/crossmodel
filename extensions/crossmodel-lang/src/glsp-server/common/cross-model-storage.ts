@@ -23,7 +23,7 @@ import {
    StatusAction
 } from '@eclipse-glsp/server';
 import { inject, injectable, postConstruct } from 'inversify';
-import { findRootNode, streamReferences } from 'langium';
+import { AstUtils } from 'langium';
 import debounce from 'p-debounce';
 import { URI } from 'vscode-uri';
 import { CrossModelRoot } from '../../language-server/generated/ast.js';
@@ -107,10 +107,10 @@ export class CrossModelStorage implements SourceModelStorage, ClientSessionListe
 
       // save document and all related documents
       this.state.modelService.save({ uri: saveUri, model: this.state.semanticRoot, clientId: this.state.clientId });
-      streamReferences(this.state.semanticRoot)
+      AstUtils.streamReferences(this.state.semanticRoot)
          .map(refInfo => refInfo.reference.ref)
          .nonNullable()
-         .map(ref => findRootNode(ref) as CrossModelRoot)
+         .map(ref => AstUtils.findRootNode(ref) as CrossModelRoot)
          .forEach(root =>
             this.state.modelService.save({ uri: root.$document!.uri.toString(), model: root, clientId: this.state.clientId })
          );

@@ -45,36 +45,6 @@
           },
           "end": "(?=$)",
           "name": "comment.line.cross-model"
-        },
-        {
-          "name": "comment.block.cross-model",
-          "begin": "this_string_does_not_matter_newline#\\$%\\^&\\*\\(\\(",
-          "beginCaptures": {
-            "0": {
-              "name": "punctuation.definition.comment.cross-model"
-            }
-          },
-          "end": "this_string_does_not_matter_newline#\\$%\\^&\\*\\(\\(",
-          "endCaptures": {
-            "0": {
-              "name": "punctuation.definition.comment.cross-model"
-            }
-          }
-        },
-        {
-          "name": "comment.block.cross-model",
-          "begin": "this_string_does_not_matter_spaces#\\$%\\^&\\*\\(\\(",
-          "beginCaptures": {
-            "0": {
-              "name": "punctuation.definition.comment.cross-model"
-            }
-          },
-          "end": "this_string_does_not_matter_spaces#\\$%\\^&\\*\\(\\(",
-          "endCaptures": {
-            "0": {
-              "name": "punctuation.definition.comment.cross-model"
-            }
-          }
         }
       ]
     },

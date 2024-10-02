@@ -35,7 +35,8 @@ export class ModelService {
       protected shared: CrossModelSharedServices,
       protected documentManager = shared.workspace.TextDocumentManager,
       protected documents = shared.workspace.LangiumDocuments,
-      protected documentBuilder = shared.workspace.DocumentBuilder
+      protected documentBuilder = shared.workspace.DocumentBuilder,
+      protected fileSystemProvider = shared.workspace.FileSystemProvider
    ) {
       // sync updates with language client
       this.documentBuilder.onBuildPhase(DocumentState.Validated, (allChangedDocuments, _token) => {
@@ -84,9 +85,18 @@ export class ModelService {
    async close(args: CloseModelArgs): Promise<void> {
       if (this.documentManager.isOnlyOpenInClient(args.uri, args.clientId)) {
          // we need to restore the original state without any unsaved changes
-         await this.update({ ...args, model: this.documentManager.readFile(args.uri) });
+         await this.update({ ...args, model: await this.documentManager.readFile(args.uri) });
       }
       return this.documentManager.close(args);
+   }
+
+   /**
+    * Waits until the document with the given URI has reached the given state.
+    * @param state minimum state the document should have before returning
+    * @param uri document URI
+    */
+   async ready(state = DocumentState.Validated, uri?: string): Promise<void> {
+      await this.documentBuilder.waitUntil(state, uri ? URI.parse(uri) : undefined);
    }
 
    /**
@@ -97,19 +107,9 @@ export class ModelService {
     * @param state minimum state the document should have before returning
     */
    async request(uri: string, state = DocumentState.Validated): Promise<AstCrossModelDocument | undefined> {
-      const document = this.documents.getOrCreateDocument(URI.parse(uri));
-      // should be replaced once we upgrade to newer Langium versions so we can use documentBuilder.waitUntil or the waitUntilPhase function
-      if (document.state < state) {
-         this.documentBuilder;
-         await new Promise<void>(resolve => {
-            const listener = this.documentBuilder.onBuildPhase(state, (allChangedDocuments, _token) => {
-               if (allChangedDocuments.some(doc => doc.uri.toString() === uri)) {
-                  listener.dispose();
-                  resolve();
-               }
-            });
-         });
-      }
+      const documentUri = URI.parse(uri);
+      await this.documentBuilder.waitUntil(state, documentUri);
+      const document = await this.documents.getOrCreateDocument(documentUri);
       const root = document.parseResult.value;
       return isCrossModelRoot(root) ? { root, diagnostics: document.diagnostics ?? [], uri } : undefined;
    }
@@ -126,7 +126,7 @@ export class ModelService {
    async update(args: UpdateModelArgs<CrossModelRoot>): Promise<AstCrossModelDocument> {
       await this.open(args);
       const documentUri = URI.parse(args.uri);
-      const document = this.documents.getOrCreateDocument(documentUri);
+      const document = await this.documents.getOrCreateDocument(documentUri);
       const root = document.parseResult.value;
       if (!isAstNode(root)) {
          throw new Error(`No AST node to update exists in '${args.uri}'`);
@@ -217,11 +217,11 @@ export class ModelService {
    }
 
    async findReferenceableElements(args: CrossReferenceContext): Promise<ReferenceableElement[]> {
-      return this.shared.CrossModel.references.ScopeProvider.complete(args);
+      return this.shared.ServiceRegistry.CrossModel.references.ScopeProvider.complete(args);
    }
 
    async resolveCrossReference(args: CrossReference): Promise<AstNode | undefined> {
-      return this.shared.CrossModel.references.ScopeProvider.resolveCrossReference(args);
+      return this.shared.ServiceRegistry.CrossModel.references.ScopeProvider.resolveCrossReference(args);
    }
 
    async getSystemInfos(): Promise<SystemInfo[]> {

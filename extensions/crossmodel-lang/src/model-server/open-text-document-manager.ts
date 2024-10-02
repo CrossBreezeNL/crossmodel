@@ -9,7 +9,7 @@ import {
    DocumentBuilder,
    DocumentState,
    FileSystemProvider,
-   LangiumDefaultSharedServices,
+   LangiumDefaultSharedCoreServices,
    LangiumDocument,
    LangiumDocuments,
    UriUtils
@@ -44,7 +44,7 @@ export class OpenTextDocumentManager {
 
    protected lastUpdate?: UpdateInfo;
 
-   constructor(services: AddedSharedModelServices & LangiumDefaultSharedServices) {
+   constructor(services: AddedSharedModelServices & LangiumDefaultSharedCoreServices) {
       this.textDocuments = services.workspace.TextDocuments;
       this.fileSystemProvider = services.workspace.FileSystemProvider;
       this.langiumDocs = services.workspace.LangiumDocuments;
@@ -68,12 +68,12 @@ export class OpenTextDocumentManager {
     * @returns Disposable object
     */
    onSave(uri: string, listener: (model: ModelSavedEvent<AstCrossModelDocument>) => void): Disposable {
-      return this.textDocuments.onDidSave(event => {
+      return this.textDocuments.onDidSave(async event => {
          const documentURI = URI.parse(event.document.uri);
 
          // Check if the uri of the saved document and the uri of the listener are equal.
          if (event.document.uri === uri && documentURI !== undefined && this.langiumDocs.hasDocument(documentURI)) {
-            const document = this.langiumDocs.getOrCreateDocument(documentURI);
+            const document = await this.langiumDocs.getOrCreateDocument(documentURI);
             const root = document.parseResult.value as CrossModelRoot;
             return listener({
                document: {
@@ -177,11 +177,11 @@ export class OpenTextDocumentManager {
       uri: string,
       languageId: string = CrossModelLanguageMetaData.languageId
    ): Promise<TextDocumentItem> {
-      return TextDocumentItem.create(uri, languageId, 0, this.readFile(uri));
+      return TextDocumentItem.create(uri, languageId, 0, await this.readFile(uri));
    }
 
-   readFile(uri: string): string {
-      return this.fileSystemProvider.readFileSync(URI.parse(uri));
+   async readFile(uri: string): Promise<string> {
+      return this.fileSystemProvider.readFile(URI.parse(uri));
    }
 
    protected normalizedUri(uri: string): string {

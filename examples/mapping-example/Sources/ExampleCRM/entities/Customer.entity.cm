@@ -23,4 +23,4 @@ entity:
         datatype: "Text"
       - id: BirthDate
         name: "BirthDate"
-        datatype: "DateTime"
+        datatype: "Date"

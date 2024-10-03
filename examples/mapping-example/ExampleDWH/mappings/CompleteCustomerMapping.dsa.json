@@ -1,0 +1,132 @@
+{
+    "?": "https://data-solution-automation-engine.github.io/data-warehouse-automation-metadata-schema/overview/jsonschema.html",
+    "dataObjectMappings": [
+        {
+            "name": "CompleteCustomerMapping",
+            "sourceDataObjects": [
+                {
+                    "id": "CustomerSourceObject",
+                    "name": "Customer",
+                    "dataItems": [
+                        {
+                            "name": "Id",
+                            "dataType": "Integer"
+                        },
+                        {
+                            "name": "FirstName",
+                            "dataType": "Text",
+                            "characterLength": 200
+                        },
+                        {
+                            "name": "LastName",
+                            "dataType": "Text",
+                            "characterLength": 200
+                        },
+                        {
+                            "name": "BirthDate",
+                            "dataType": "Date"
+                        }
+                    ],
+                    "dataConnection": {
+                        "name": "ExampleCRM"
+                    }
+                },
+                {
+                    "id": "CalcAgeSourceObject",
+                    "name": "CalcAge",
+                    "dataItems": [
+                        {
+                            "name": "BirthDate",
+                            "dataType": "Date"
+                        },
+                        {
+                            "name": "Age",
+                            "dataType": "Integer"
+                        }
+                    ],
+                    "dataConnection": {
+                        "name": "ExampleDWH"
+                    }
+                }
+            ],
+            "targetDataObject": {
+                "name": "CompleteCustomer",
+                "dataItems": [
+                    {
+                        "name": "BirthDate",
+                        "dataType": "Date"
+                    },
+                    {
+                        "name": "Age",
+                        "dataType": "Integer"
+                    }
+                ],
+                "dataConnection": {
+                    "name": "ExampleDWH"
+                }
+            },
+            "relatedDataObjects": [
+                {
+                    "?": "How to add join information?"
+                }
+            ],
+            "dataItemMapping": [
+                {
+                    "sourceDataItems": [
+                        {
+                            "dataObject": "CustomerSourceObject",
+                            "name": "Country"
+                        }
+                    ],
+                    "targetDataItem": {
+                        "dataObject": "CompleteCustomer",
+                        "name": "Country"
+                    }
+                },
+                {
+                    "sourceDataItems": [
+                        {
+                            "queryCode": "1"
+                        }
+                    ],
+                    "targetDataItem": {
+                        "dataObject": "CompleteCustomer",
+                        "name": "FixedNumber"
+                    }
+                },
+                {
+                    "sourceDataItems": [
+                        {
+                            "queryCode": "Hoppa"
+                        }
+                    ],
+                    "targetDataItem": {
+                        "name": "FixedString"
+                    }
+                },
+                {
+                    "sourceDataItems": [
+                        {
+                            "queryCode": "CONCAT_WS(CustomerSourceObject.FirstName, CustomerSourceObject.LastName, ' ')"
+                        }
+                    ],
+                    "targetDataItem": {
+                        "dataObject": "CompleteCustomer",
+                        "name": "Name"
+                    }
+                },
+                {
+                    "sourceDataItems": [
+                        {
+                            "queryCode": "DATEDIFF(YEAR, NOW(), CustomerSourceObject.BirthDate)"
+                        }
+                    ],
+                    "targetDataItem": {
+                        "dataObject": "CompleteCustomer",
+                        "name": "Age"
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -35,3 +35,23 @@ input[type='number'] {
 :root {
    --theia-private-file-dialog-input-height: 24px; /* from: 21px - better aligns with the file name panel size */
 }
+
+.editor-diagnostics-error {
+   background-color: var(--theia-errorBackground);
+   color: var(--theia-problemsErrorIcon-foreground);
+   font-family: var(--theia-ui-font-family);
+   font-size: 1.2em;
+   padding: 0 1em;
+   display: flex;
+   align-items: center;
+   gap: 1em;
+   min-height: 4em;
+}
+
+.editor-diagnostics-error-icon {
+   font-size: 1.2em !important;
+}
+
+.editor-diagnostics-error-message {
+   font-weight: 500;
+}

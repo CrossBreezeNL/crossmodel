@@ -2,7 +2,6 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { ERRONEOUS_MODEL } from '@crossbreeze/protocol';
 import {
    Action,
    ActionDispatcher,
@@ -19,8 +18,7 @@ import {
    SOURCE_URI_ARG,
    SaveModelAction,
    SetEditModeAction,
-   SourceModelStorage,
-   StatusAction
+   SourceModelStorage
 } from '@eclipse-glsp/server';
 import { inject, injectable, postConstruct } from 'inversify';
 import { AstUtils } from 'langium';
@@ -89,9 +87,9 @@ export class CrossModelStorage implements SourceModelStorage, ClientSessionListe
       this.state.editMode = document.diagnostics.length > 0 ? EditMode.READONLY : EditMode.EDITABLE;
       if (prevEditMode !== this.state.editMode) {
          if (this.state.isReadonly) {
-            actions.push(SetEditModeAction.create(EditMode.READONLY), StatusAction.create(ERRONEOUS_MODEL, { severity: 'ERROR' }));
+            actions.push(SetEditModeAction.create(EditMode.READONLY));
          } else {
-            actions.push(SetEditModeAction.create(EditMode.EDITABLE), StatusAction.create('', { severity: 'NONE' }));
+            actions.push(SetEditModeAction.create(EditMode.EDITABLE));
          }
       }
       return actions;

@@ -85,20 +85,9 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
          await this.closeModel(this.document.uri.toString());
       }
       this.document = uri ? await this.openModel(uri) : undefined;
-      this.updateTitle(new URI(this.document?.uri));
       this.setDirty(false);
       this.update();
       this.focusInput();
-   }
-
-   private updateTitle(uri?: URI): void {
-      if (uri) {
-         this.title.label = this.labelProvider.getName(uri);
-         this.title.iconClass = this.labelProvider.getIcon(uri);
-      } else {
-         this.title.label = 'Model Widget';
-         this.title.iconClass = 'no-icon';
-      }
    }
 
    protected async closeModel(uri: string): Promise<void> {

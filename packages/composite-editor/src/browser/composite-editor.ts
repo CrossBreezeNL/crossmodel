@@ -188,6 +188,7 @@ export class CompositeEditor extends BaseWidget implements Saveable, Navigatable
       const options: NavigatableWidgetOptions = { kind, uri, counter };
       const codeWidget = await this.widgetManager.getOrCreateWidget(EditorPreviewWidgetFactory.ID, options);
       codeWidget.title.label = 'Code Editor';
+      codeWidget.title.iconClass = codiconCSSString('code');
       codeWidget.title.closable = false;
       return codeWidget;
    }
@@ -196,8 +197,9 @@ export class CompositeEditor extends BaseWidget implements Saveable, Navigatable
       const { kind, uri, counter } = this.options;
       const options: NavigatableWidgetOptions = { kind, uri, counter };
       const formEditor = await this.widgetManager.getOrCreateWidget<FormEditorWidget>(FormEditorOpenHandler.ID, options);
-      formEditor.title.closable = false;
       formEditor.title.label = 'Form Editor';
+      formEditor.title.iconClass = codiconCSSString('symbol-keyword');
+      formEditor.title.closable = false;
       return formEditor;
    }
 

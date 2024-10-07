@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { EntityAttribute, EntityAttributeType } from '@crossbreeze/protocol';
+import { EntityAttribute, EntityAttributeType, findNextUnique, toId } from '@crossbreeze/protocol';
 import CheckBoxOutlineBlankOutlined from '@mui/icons-material/CheckBoxOutlineBlankOutlined';
 import CheckBoxOutlined from '@mui/icons-material/CheckBoxOutlined';
 import { GridColDef } from '@mui/x-data-grid';
@@ -36,7 +36,7 @@ export function EntityAttributesDataGrid(): React.ReactElement {
          if (attribute.name) {
             dispatch({
                type: 'entity:attribute:add-attribute',
-               attribute: { ...attribute, id: findName('Attribute', entity.attributes, attr => attr.id!) }
+               attribute: { ...attribute, id: findNextUnique(toId(attribute.name), entity.attributes, attr => attr.id!) }
             });
          }
       },
@@ -121,9 +121,9 @@ export function EntityAttributesDataGrid(): React.ReactElement {
    const defaultEntry = React.useMemo<EntityAttribute>(
       () => ({
          $type: EntityAttributeType,
-         id: findName('Attribute', entity.attributes, attr => attr.id!),
+         id: findNextUnique('Attribute', entity.attributes, attr => attr.id!),
          $globalId: 'toBeAssigned',
-         name: findName('New Attribute', entity.attributes, attr => attr.name!),
+         name: findNextUnique('New Attribute', entity.attributes, attr => attr.name!),
          datatype: 'Varchar'
       }),
       [entity.attributes]
@@ -149,14 +149,4 @@ export function EntityAttributesDataGrid(): React.ReactElement {
          validateField={validateAttribute}
       />
    );
-}
-
-export function findName<T>(suggestion: string, data: T[], nameGetter: (element: T) => string): string {
-   const names = data.map(nameGetter);
-   let name = suggestion;
-   let index = 1;
-   while (names.includes(name)) {
-      name = name + index++;
-   }
-   return name;
 }

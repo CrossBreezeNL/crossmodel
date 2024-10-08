@@ -5,10 +5,10 @@ import {
    CrossReference,
    CrossReferenceContainer,
    CrossReferenceContext,
-   ReferenceableElement,
    isGlobalElementReference,
    isRootElementReference,
-   isSyntheticDocument
+   isSyntheticDocument,
+   ReferenceableElement
 } from '@crossbreeze/protocol';
 import {
    AstNode,
@@ -23,7 +23,8 @@ import {
    URI
 } from 'langium';
 import { CrossModelServices } from './cross-model-module.js';
-import { GlobalAstNodeDescription, PackageAstNodeDescription } from './cross-model-scope.js';
+import { QUALIFIED_ID_SEPARATOR } from './cross-model-naming.js';
+import { GlobalAstNodeDescription, isGlobalDescriptionForLocalPackage, PackageAstNodeDescription } from './cross-model-scope.js';
 import {
    isAttributeMapping,
    isRelationshipAttribute,
@@ -151,16 +152,23 @@ export class CrossModelScopeProvider extends PackageScopeProvider {
       return context;
    }
 
-   getCompletionScope(ctx: CrossReferenceContext): CompletionScope {
-      const referenceInfo = this.referenceContextToInfo(ctx);
+   getCompletionScope(ctx: CrossReferenceContext | ReferenceInfo): CompletionScope {
+      const referenceInfo = 'reference' in ctx ? ctx : this.referenceContextToInfo(ctx);
       const document = AstUtils.getDocument(referenceInfo.container);
       const packageId = this.packageManager.getPackageIdByDocument(document);
       const filteredDescriptions = this.getScope(referenceInfo)
          .getAllElements()
          .filter(description => this.filterCompletion(description, document, packageId, referenceInfo.container, referenceInfo.property))
-         .distinct(description => description.name);
+         .distinct(description => description.name)
+         .toArray()
+         .sort((left, right) => this.sortText(left).localeCompare(this.sortText(right)));
       const elementScope = this.createScope(filteredDescriptions);
       return { elementScope, source: referenceInfo };
+   }
+
+   sortText(description: AstNodeDescription): string {
+      // prefix with number of segments in the qualified name to ensure that local names are sorted first
+      return description.name.split(QUALIFIED_ID_SEPARATOR).length + '_' + description.name;
    }
 
    complete(ctx: CrossReferenceContext): ReferenceableElement[] {
@@ -171,8 +179,7 @@ export class CrossModelScopeProvider extends PackageScopeProvider {
             type: description.type,
             label: description.name
          }))
-         .toArray()
-         .sort((left, right) => left.label.localeCompare(right.label));
+         .toArray();
    }
 
    filterCompletion(
@@ -213,7 +220,7 @@ export class CrossModelScopeProvider extends PackageScopeProvider {
          const allowedOwners = [sourceObject.id, ...sourceObject.dependencies.map(dependency => dependency.source.$refText)];
          return !!allowedOwners.find(allowedOwner => description.name.startsWith(allowedOwner + '.'));
       }
-      return true;
+      return !isGlobalDescriptionForLocalPackage(description, packageId);
    }
 }
 

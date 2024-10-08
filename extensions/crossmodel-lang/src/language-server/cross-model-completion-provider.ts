@@ -3,11 +3,12 @@
  ********************************************************************************/
 import { quote } from '@crossbreeze/protocol';
 import { AstNodeDescription, AstUtils, GrammarAST, GrammarUtils, MaybePromise, ReferenceInfo, Stream } from 'langium';
-import { CompletionAcceptor, CompletionContext, DefaultCompletionProvider, NextFeature } from 'langium/lsp';
+import { CompletionAcceptor, CompletionContext, CompletionValueItem, DefaultCompletionProvider, NextFeature } from 'langium/lsp';
 import { v4 as uuid } from 'uuid';
 import { CompletionItemKind, InsertTextFormat, TextEdit } from 'vscode-languageserver-protocol';
 import type { Range } from 'vscode-languageserver-types';
 import { CrossModelServices } from './cross-model-module.js';
+import { CrossModelScopeProvider } from './cross-model-scope-provider.js';
 import { AttributeMapping, isAttributeMapping, RelationshipAttribute } from './generated/ast.js';
 import { fixDocument } from './util/ast-util.js';
 
@@ -20,6 +21,8 @@ export class CrossModelCompletionProvider extends DefaultCompletionProvider {
    override readonly completionOptions = {
       triggerCharacters: ['\n', ' ', '{']
    };
+
+   protected declare readonly scopeProvider: CrossModelScopeProvider;
 
    constructor(
       protected services: CrossModelServices,
@@ -212,17 +215,7 @@ export class CrossModelCompletionProvider extends DefaultCompletionProvider {
    }
 
    protected override getReferenceCandidates(refInfo: ReferenceInfo, context: CompletionContext): Stream<AstNodeDescription> {
-      return super
-         .getReferenceCandidates(refInfo, context)
-         .filter(description =>
-            this.services.references.ScopeProvider.filterCompletion(
-               description,
-               context.document,
-               this.packageId!,
-               context.node,
-               context.features[context.features.length - 1].property
-            )
-         );
+      return this.services.references.ScopeProvider.getCompletionScope(refInfo).elementScope.getAllElements();
    }
 
    protected filterRelationshipAttribute(node: RelationshipAttribute, context: CompletionContext, desc: AstNodeDescription): boolean {
@@ -234,5 +227,13 @@ export class CrossModelCompletionProvider extends DefaultCompletionProvider {
          return desc.name.startsWith(node.$container.parent?.$refText + '.');
       }
       return true;
+   }
+
+   protected override createReferenceCompletionItem(description: AstNodeDescription): CompletionValueItem {
+      const item = super.createReferenceCompletionItem(description);
+      return {
+         ...item,
+         sortText: this.scopeProvider.sortText(description)
+      };
    }
 }

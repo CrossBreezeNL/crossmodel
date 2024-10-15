@@ -115,12 +115,9 @@
       "name": "Debug All CJS Jest Tests",
       "type": "node",
       "request": "launch",
-      "runtimeArgs": [
-        "--inspect-brk",
-        "${workspaceRoot}/node_modules/jest/bin/jest.js",
-        "--runInBand",
-        "--config=${workspaceRoot}/configs/jest.config.js"
-      ],
+      "cwd": "${workspaceRoot}",
+      "runtimeArgs": ["--inspect-brk", "node_modules/jest/bin/jest.js"],
+      "args": ["--runInBand", "--config=configs/jest.config.js"],
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
     },
@@ -128,13 +125,13 @@
       "name": "Debug All ESM Jest Tests",
       "type": "node",
       "request": "launch",
+      "cwd": "${workspaceRoot}",
       "runtimeArgs": [
         "--experimental-vm-modules",
         "--inspect-brk",
-        "${workspaceRoot}/node_modules/jest/bin/jest.js",
-        "--runInBand",
-        "--config=${workspaceRoot}/configs/esm.jest.config.js"
+        "node_modules/jest/bin/jest.js"
       ],
+      "args": ["--runInBand", "--config=configs/esm.jest.config.js"],
       "env": {
         "NODE_NO_WARNINGS": "1"
       },
@@ -145,13 +142,9 @@
       "name": "Debug Open CJS Jest Test",
       "type": "node",
       "request": "launch",
-      "runtimeArgs": [
-        "--inspect-brk",
-        "${workspaceRoot}/node_modules/jest/bin/jest.js",
-        "--runInBand",
-        "--config=${workspaceRoot}/configs/jest.config.js",
-        "${file}"
-      ],
+      "cwd": "${workspaceRoot}",
+      "runtimeArgs": ["--inspect-brk", "node_modules/jest/bin/jest.js"],
+      "args": ["--runInBand", "--config=configs/jest.config.js", "${fileBasenameNoExtension}"],
       "env": {
         "NODE_NO_WARNINGS": "1"
       },
@@ -162,20 +155,44 @@
       "name": "Debug Open ESM Jest Test",
       "type": "node",
       "request": "launch",
+      "cwd": "${workspaceRoot}",
       "runtimeArgs": [
         "--experimental-vm-modules",
         "--inspect-brk",
-        "${workspaceRoot}/node_modules/jest/bin/jest.js",
+        "node_modules/jest/bin/jest.js"
+      ],
+      "args": ["--runInBand", "--config=configs/esm.jest.config.js", "${fileBasenameNoExtension}"],
+      "env": {
+        "NODE_NO_WARNINGS": "1"
+      },
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "name": "vscode-jest-tests.v2.crossmodel",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceRoot}",
+      "runtimeArgs": [
+        "--experimental-vm-modules",
+        "--inspect-brk",
+        "node_modules/jest/bin/jest.js"
+      ],
+      "args": [
         "--runInBand",
-        "--config=${workspaceRoot}/configs/esm.jest.config.js",
-        "${file}"
+        "--watchAll=false",
+        "--config=configs/esm.jest.config.js",
+        "--testNamePattern",
+        "${jest.testNamePattern}",
+        "--runTestsByPath",
+        "${jest.testFile}"
       ],
       "env": {
         "NODE_NO_WARNINGS": "1"
       },
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
-      "outFiles": []
+      "disableOptimisticBPs": true
     }
   ],
   "compounds": [

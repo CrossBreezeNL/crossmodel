@@ -2,6 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
+import { findNextUnique, identity } from '@crossbreeze/protocol';
 import { AstNode, AstUtils, CstNode, GrammarUtils, isAstNode, NameProvider } from 'langium';
 import { CrossModelServices } from './cross-model-module.js';
 import { UNKNOWN_PROJECT_REFERENCE } from './cross-model-package-manager.js';
@@ -135,22 +136,13 @@ export class DefaultIdProvider implements NameProvider, IdProvider {
          .map(this.getNodeId)
          .nonNullable()
          .toArray();
-      return this.countToNextId(knownIds, proposal);
+      return findNextUnique(proposal, knownIds, identity);
    }
 
    findNextGlobalId(type: string, proposal: string | undefined = 'Element'): string {
       const knownIds = this.services.shared.workspace.IndexManager.allElements(type)
          .map(element => element.name)
          .toArray();
-      return this.countToNextId(knownIds, proposal);
-   }
-
-   protected countToNextId(knownIds: string[], proposal: string): string {
-      let nextId = proposal;
-      let counter = 1;
-      while (knownIds.includes(nextId)) {
-         nextId = proposal + counter++;
-      }
-      return nextId;
+      return findNextUnique(proposal, knownIds, identity);
    }
 }

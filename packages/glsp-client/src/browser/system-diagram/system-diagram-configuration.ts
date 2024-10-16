@@ -1,13 +1,16 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { ATTRIBUTE_COMPARTMENT_TYPE, ENTITY_NODE_TYPE, RELATIONSHIP_EDGE_TYPE } from '@crossbreeze/protocol';
+import { ATTRIBUTE_COMPARTMENT_TYPE, ENTITY_NODE_TYPE, LABEL_ENTITY, RELATIONSHIP_EDGE_TYPE } from '@crossbreeze/protocol';
 import {
    ContainerConfiguration,
+   GLabelView,
    configureDefaultModelElements,
    configureModelElement,
+   editLabelFeature,
    gridModule,
-   initializeDiagramContainer
+   initializeDiagramContainer,
+   withEditLabelFeature
 } from '@eclipse-glsp/client';
 import { GLSPDiagramConfiguration } from '@eclipse-glsp/theia-integration';
 import { Container } from '@theia/core/shared/inversify/index';
@@ -16,7 +19,7 @@ import { createCrossModelDiagramModule } from '../crossmodel-diagram-module';
 import { AttributeCompartment } from '../model';
 import { AttributeCompartmentView } from '../views';
 import { systemEdgeCreationToolModule } from './edge-creation-tool/edge-creation-tool-module';
-import { EntityNode, RelationshipEdge } from './model';
+import { EntityNode, GEditableLabel, RelationshipEdge } from './model';
 import { systemNodeCreationModule } from './node-creation-tool/node-creation-tool-module';
 import { systemSelectModule } from './select-tool/select-tool-module';
 import { EntityNodeView, RelationshipEdgeView } from './views';
@@ -50,7 +53,8 @@ const systemDiagramModule = createCrossModelDiagramModule((bind, unbind, isBound
    // The glsp-server can send a request to render a specific view given a type, e.g. node:entity
    // The model class holds the client-side model and properties
    // The view class shows how to draw the svg element given the properties of the model class
-   configureModelElement(context, ENTITY_NODE_TYPE, EntityNode, EntityNodeView);
+   configureModelElement(context, ENTITY_NODE_TYPE, EntityNode, EntityNodeView, { enable: [withEditLabelFeature] });
    configureModelElement(context, RELATIONSHIP_EDGE_TYPE, RelationshipEdge, RelationshipEdgeView);
    configureModelElement(context, ATTRIBUTE_COMPARTMENT_TYPE, AttributeCompartment, AttributeCompartmentView);
+   configureModelElement(context, LABEL_ENTITY, GEditableLabel, GLabelView, { enable: [editLabelFeature] });
 });

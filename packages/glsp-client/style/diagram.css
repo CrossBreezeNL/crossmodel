@@ -169,3 +169,11 @@
 .sprotty .palette-header {
    flex-direction: row;
 }
+
+.label-edit input {
+   text-align: center;
+   background-color: transparent;
+   outline-color: transparent;
+   border: 0;
+   letter-spacing: 0.9px;
+}

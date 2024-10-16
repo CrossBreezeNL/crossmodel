@@ -20,11 +20,13 @@ export class CrossModelDocumentBuilder extends DefaultDocumentBuilder {
    }
 
    override update(changed: URI[], deleted: URI[], cancelToken?: CancellationToken | undefined): Promise<void> {
-      return super.update(
-         changed.flatMap(uri => this.flattenAndAdaptURI(uri)),
-         deleted.flatMap(uri => this.collectDeletedURIs(uri)),
-         cancelToken
-      );
+      const changedURIs = changed.flatMap(uri => this.flattenAndAdaptURI(uri));
+      const deletedURIs = deleted.flatMap(uri => this.collectDeletedURIs(uri));
+      for (const deletedUri of deletedURIs) {
+         // ensure associated text documents are deleted as otherwise we face problems if documents with same URI are created
+         this.services.workspace.TextDocuments.delete(deletedUri);
+      }
+      return super.update(changedURIs, deletedURIs, cancelToken);
    }
 
    protected flattenAndAdaptURI(uri: URI): URI[] {

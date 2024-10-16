@@ -96,9 +96,7 @@ export interface CrossModelAddedSharedServices {
 export const CrossModelSharedServices = Symbol('CrossModelSharedServices');
 export type CrossModelSharedServices = Omit<LangiumSharedServices, 'ServiceRegistry'> &
    CrossModelAddedSharedServices &
-   AddedSharedModelServices & {
-      CrossModel: CrossModelServices;
-   };
+   AddedSharedModelServices;
 
 export const CrossModelSharedModule: Module<
    CrossModelSharedServices,

@@ -93,7 +93,9 @@ export class OpenTextDocumentManager {
       return this.documentBuilder.onBuildPhase(DocumentState.Validated, (allChangedDocuments, _token) => {
          const changedDocument = allChangedDocuments.find(document => document.uri.toString() === uri);
          if (changedDocument) {
-            const buildTrigger = allChangedDocuments.find(document => document.uri.toString() === this.lastUpdate?.changed?.[0].toString());
+            const buildTrigger = allChangedDocuments.find(
+               document => document.uri.toString() === this.lastUpdate?.changed?.[0]?.toString()
+            );
             const sourceClientId = this.getSourceClientId(buildTrigger ?? changedDocument, allChangedDocuments);
             const event: ModelUpdatedEvent<AstCrossModelDocument> = {
                document: {

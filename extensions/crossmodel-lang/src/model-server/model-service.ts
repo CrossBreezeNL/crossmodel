@@ -181,11 +181,12 @@ export class ModelService {
     */
    async save(args: SaveModelArgs<CrossModelRoot>): Promise<void> {
       // sync: implicit update of internal data structure to match file system (similar to workspace initialization)
+      const text = typeof args.model === 'string' ? args.model : this.serialize(URI.parse(args.uri), args.model);
       if (this.documents.hasDocument(URI.parse(args.uri))) {
          await this.update(args);
+      } else {
+         this.documents.createDocument(URI.parse(args.uri), text);
       }
-
-      const text = typeof args.model === 'string' ? args.model : this.serialize(URI.parse(args.uri), args.model);
       return this.documentManager.save(args.uri, text, args.clientId);
    }
 

@@ -5,6 +5,9 @@
 import { CrossModelRegex } from './model-service/protocol';
 
 export function quote(text: string, quoteChar = '"', replaceChar = "'"): string {
+   if (text.length === 0) {
+      return quoteChar + quoteChar;
+   }
    let quoted = text;
    if (!quoted.startsWith(quoteChar)) {
       quoted = quoteChar + quoted;
@@ -34,8 +37,11 @@ export function toId(text: string): string {
       return text;
    }
    let id = text;
-   // replace all non-matching characters with '_'
-   id = id.replace(/[^\w_\-~$#@/\d]/g, '_');
+   // remove diacritics for nicer conversion (e.g., ä to a) and then replace all non-matching characters with '_'
+   id = id
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^\w_\-~$#@/\d]/g, '_');
    if (CrossModelRegex.ID.test(id)) {
       return id;
    }
@@ -45,4 +51,18 @@ export function toId(text: string): string {
 
 export function codiconCSSString(icon: string): string {
    return `codicon codicon-${icon}`;
+}
+
+export function identity<T>(value: T): T {
+   return value;
+}
+
+export function findNextUnique<T>(suggestion: string, existing: T[], nameGetter: (element: T) => string): string {
+   const names = existing.map(nameGetter);
+   let name = suggestion;
+   let index = 1;
+   while (names.includes(name)) {
+      name = suggestion + index++;
+   }
+   return name;
 }

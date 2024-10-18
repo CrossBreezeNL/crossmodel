@@ -2,6 +2,7 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 import { injectable } from 'inversify';
+import { AstNode } from 'langium';
 import {
    Entity,
    EntityNode,
@@ -30,5 +31,12 @@ export class SystemModelIndex extends CrossModelIndex {
 
    findRelationshipEdge(id: string): RelationshipEdge | undefined {
       return this.findSemanticElement(id, isRelationshipEdge);
+   }
+
+   protected override indexAstNode(node: AstNode): void {
+      super.indexAstNode(node);
+      if (isEntityNode(node)) {
+         this.indexSemanticElement(`${this.createId(node)}_label`, node);
+      }
    }
 }

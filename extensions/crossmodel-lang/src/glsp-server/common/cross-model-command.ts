@@ -12,7 +12,9 @@ import { CrossModelSourceModel, CrossModelState } from './cross-model-state.js';
 export class CrossModelCommand extends JsonRecordingCommand<CrossModelSourceModel> {
    constructor(
       protected state: CrossModelState,
-      protected runnable: () => MaybePromise<void>
+      protected runnable: () => MaybePromise<void>,
+      protected undoAction?: () => MaybePromise<void>,
+      protected redoAction?: () => MaybePromise<void>
    ) {
       super(state, runnable);
    }
@@ -33,6 +35,7 @@ export class CrossModelCommand extends JsonRecordingCommand<CrossModelSourceMode
    override async undo(): Promise<void> {
       if (this.undoPatch) {
          const result = this.applyPatch(await this.getJsonObject(), this.undoPatch);
+         await this.undoAction?.();
          await this.postChange?.(result.newDocument);
       }
    }
@@ -40,6 +43,7 @@ export class CrossModelCommand extends JsonRecordingCommand<CrossModelSourceMode
    override async redo(): Promise<void> {
       if (this.redoPatch) {
          const result = this.applyPatch(await this.getJsonObject(), this.redoPatch);
+         await this.redoAction?.();
          await this.postChange?.(result.newDocument);
       }
    }

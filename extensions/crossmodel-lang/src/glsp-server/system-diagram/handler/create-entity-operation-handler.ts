@@ -3,6 +3,7 @@
  ********************************************************************************/
 import { ENTITY_NODE_TYPE } from '@crossbreeze/protocol';
 import {
+   Action,
    ActionDispatcher,
    Command,
    CreateNodeOperation,
@@ -23,7 +24,7 @@ export class SystemDiagramCreateEntityOperationHandler extends JsonCreateNodeOpe
    override label = 'Create Entity';
    elementTypeIds = [ENTITY_NODE_TYPE];
 
-   @inject(ModelState) protected override modelState!: SystemModelState;
+   @inject(ModelState) protected declare modelState: SystemModelState;
    @inject(ActionDispatcher) protected actionDispatcher!: ActionDispatcher;
 
    override createCommand(operation: CreateNodeOperation): MaybePromise<Command | undefined> {
@@ -52,6 +53,10 @@ export class SystemDiagramCreateEntityOperationHandler extends JsonCreateNodeOpe
          customProperties: []
       };
       container.nodes.push(node);
+      this.actionDispatcher.dispatchAfterNextUpdate({
+         kind: 'EditLabel',
+         labelId: `${this.modelState.index.createId(node)}_label`
+      } as Action);
    }
 
    /**

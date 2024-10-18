@@ -3,11 +3,11 @@
  ********************************************************************************/
 
 import { ATTRIBUTE_COMPARTMENT_TYPE, createLeftPortId, createRightPortId } from '@crossbreeze/protocol';
-import { GCompartment, GCompartmentBuilder, GLabel, GPort } from '@eclipse-glsp/server';
+import { DefaultTypes, GCompartment, GCompartmentBuilder, GLabel, GPort } from '@eclipse-glsp/server';
 import { Attribute } from '../../language-server/generated/ast.js';
 import { CrossModelIndex } from './cross-model-index.js';
 
-export function createHeader(text: string, containerId: string): GCompartment {
+export function createHeader(text: string, containerId: string, labelType = DefaultTypes.LABEL): GCompartment {
    return GCompartment.builder()
       .id(`${containerId}_header`)
       .layout('hbox')
@@ -15,7 +15,7 @@ export function createHeader(text: string, containerId: string): GCompartment {
       .addLayoutOption('vAlign', 'center')
       .addLayoutOption('paddingTop', 3)
       .addCssClass('header-compartment')
-      .add(GLabel.builder().text(text).id(`${containerId}_label`).addCssClass('header-label').build())
+      .add(GLabel.builder().type(labelType).text(text).id(`${containerId}_label`).addCssClass('header-label').build())
       .build();
 }
 

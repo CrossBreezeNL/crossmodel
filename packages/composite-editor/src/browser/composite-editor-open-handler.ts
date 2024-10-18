@@ -4,7 +4,13 @@
 
 import { ModelFileExtensions, ModelFileType } from '@crossbreeze/protocol';
 import { RecursivePartial, URI } from '@theia/core';
-import { NavigatableWidgetOpenHandler, NavigatableWidgetOptions, OpenWithHandler, OpenWithService } from '@theia/core/lib/browser';
+import {
+   FrontendApplicationContribution,
+   NavigatableWidgetOpenHandler,
+   NavigatableWidgetOptions,
+   OpenWithHandler,
+   OpenWithService
+} from '@theia/core/lib/browser';
 import { inject, injectable, postConstruct } from '@theia/core/shared/inversify';
 import { Range } from '@theia/core/shared/vscode-languageserver-types';
 import { EditorOpenerOptions } from '@theia/editor/lib/browser';
@@ -17,7 +23,10 @@ export interface CompositeEditorOptions extends NavigatableWidgetOptions {
 }
 
 @injectable()
-export class CompositeEditorOpenHandler extends NavigatableWidgetOpenHandler<CompositeEditor> implements OpenWithHandler {
+export class CompositeEditorOpenHandler
+   extends NavigatableWidgetOpenHandler<CompositeEditor>
+   implements OpenWithHandler, FrontendApplicationContribution
+{
    static readonly ID = 'cm-composite-editor-handler';
    static readonly PRIORITY = 2000;
 
@@ -31,6 +40,10 @@ export class CompositeEditorOpenHandler extends NavigatableWidgetOpenHandler<Com
    protected override init(): void {
       super.init();
       this.openWithService.registerHandler(this);
+   }
+
+   initialize(): void {
+      // ensure this class is instantiated early
    }
 
    protected override createWidgetOptions(resourceUri: URI, options?: EditorOpenerOptions): CompositeEditorOptions {

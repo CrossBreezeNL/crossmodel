@@ -177,3 +177,8 @@
    border: 0;
    letter-spacing: 0.9px;
 }
+
+.error-extension {
+   position: absolute;
+   width: 100%;
+}

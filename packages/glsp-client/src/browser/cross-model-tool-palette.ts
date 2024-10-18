@@ -3,6 +3,8 @@
  ********************************************************************************/
 import {
    Action,
+   CSS_HIDDEN_EXTENSION_CLASS,
+   CSS_UI_EXTENSION_CLASS,
    EnableDefaultToolsAction,
    FitToScreenAction,
    ICommand,
@@ -110,6 +112,17 @@ export class CrossModelToolPalette extends ToolPalette {
             // if focus was deliberately taken do not restore focus to the palette
             this.focusTracker.diagramElement?.focus();
          }
+      }
+   }
+
+   protected override setContainerVisible(visible: boolean): void {
+      super.setContainerVisible(visible);
+      // also toggle the visibility of the palette button
+      const minimizePaletteButton = document.getElementById(this.options.baseDiv)?.getElementsByClassName('minimize-palette-button')[0];
+      if (visible) {
+         minimizePaletteButton?.classList.remove(CSS_HIDDEN_EXTENSION_CLASS, CSS_UI_EXTENSION_CLASS);
+      } else {
+         minimizePaletteButton?.classList.add(CSS_HIDDEN_EXTENSION_CLASS, CSS_UI_EXTENSION_CLASS);
       }
    }
 }

@@ -21,6 +21,7 @@ import { ContainerModule, injectable, interfaces } from '@theia/core/shared/inve
 import { CrossModelCommandPalette, CrossModelMousePositionTracker } from './cross-model-command-palette';
 import { CrossModelMouseDeleteTool } from './cross-model-delete-tool';
 import { CrossModelDiagramStartup } from './cross-model-diagram-startup';
+import { CrossModelErrorExtension } from './cross-model-error-extension';
 import { CrossModelToolPalette } from './cross-model-tool-palette';
 import { CrossModelGLSPSelectionDataService } from './crossmodel-selection-data-service';
 
@@ -48,6 +49,8 @@ export function createCrossModelDiagramModule(registry: interfaces.ContainerModu
 
       bind(CrossModelToolManager).toSelf().inSingletonScope();
       bindOrRebind(context, TYPES.IToolManager).toService(CrossModelToolManager);
+
+      bindAsService(bind, TYPES.IUIExtension, CrossModelErrorExtension);
    });
 }
 

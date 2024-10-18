@@ -30,9 +30,9 @@ test.describe('CrossModel Explorer View', () => {
    });
 
    test('code and form editor options available in the context menu on an entity', async () => {
-      const file = await explorer.getFileStatNodeByLabel('example-entity.cm');
+      const file = await explorer.getFileStatNodeByLabel('example-entity.entity.cm');
       expect(file).toBeDefined();
-      expect(await file.label()).toBe('example-entity.cm');
+      expect(await file.label()).toBe('example-entity.entity.cm');
       const menu = await file.openContextMenu();
       expect(await menu.isOpen()).toBe(true);
       // Expect the Code and Form editor to be in the Open With menu option.

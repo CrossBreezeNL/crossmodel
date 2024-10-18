@@ -123,7 +123,7 @@ export class CrossModelPackageManager {
                await this.initializePackages(entry.uri);
             } else if (entry.isFile && isPackageUri(entry.uri)) {
                const text = await this.fileSystemProvider.readFile(entry.uri);
-               this.updatePackage(entry.uri, text);
+               await this.updatePackage(entry.uri, text);
             }
          })
       );
@@ -190,7 +190,7 @@ export class CrossModelPackageManager {
       return visible;
    }
 
-   protected onBuildUpdate(changed: URI[], deleted: URI[]): void {
+   protected async onBuildUpdate(changed: URI[], deleted: URI[]): Promise<void> {
       // convert 'package.json' updates to document updates
       // - remove 'package.json' updates and track necessary changes
       // - build all text documents that are within updated packages
@@ -198,7 +198,7 @@ export class CrossModelPackageManager {
       const affectedPackages: string[] = [];
       const changedPackages = getAndRemovePackageUris(changed);
       for (const changedPackage of changedPackages) {
-         affectedPackages.push(...this.updatePackage(changedPackage));
+         affectedPackages.push(...(await this.updatePackage(changedPackage)));
       }
       const deletedPackages = getAndRemovePackageUris(deleted);
       for (const deletedPackage of deletedPackages) {
@@ -256,8 +256,9 @@ export class CrossModelPackageManager {
       return [];
    }
 
-   protected updatePackage(uri: URI, text = this.shared.workspace.TextDocuments.get(uri.toString())?.getText()): string[] {
-      const newPackageJson = parsePackageJson(text || Utils.readFile(uri));
+   protected async updatePackage(uri: URI, text = this.shared.workspace.TextDocuments.get(uri.toString())?.getText()): Promise<string[]> {
+      const documentText = text ?? (await this.shared.workspace.FileSystemProvider.readFile(uri));
+      const newPackageJson = parsePackageJson(documentText);
       if (!newPackageJson) {
          return [];
       }

@@ -2,10 +2,8 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 import * as fs from 'fs';
-import * as nodePath from 'path';
+import * as path from 'path';
 import { URI, Utils as UriUtils } from 'vscode-uri';
-
-const posixPath = nodePath.posix || nodePath;
 
 export namespace Utils {
    /**
@@ -14,8 +12,34 @@ export namespace Utils {
     * @returns true if the child URI is actually a child of the parent URI
     */
    export function isChildOf(parent: URI, child: URI): boolean {
-      const relative = posixPath.relative(parent.fsPath, child.fsPath);
-      return !!relative && !relative.startsWith('..') && !posixPath.isAbsolute(relative);
+      // 1. Schemes and auhorities must match
+      if (parent.scheme !== child.scheme || parent.authority !== child.authority) {
+         return false;
+      }
+      // 2. Both URIs must have hierarchical paths
+      if (!parent.path || !child.path) {
+         return false;
+      }
+      // 3. Handle 'file' scheme separately to account for filesystem specifics
+      if (parent.scheme === 'file') {
+         const relative = path.relative(parent.fsPath, child.fsPath);
+         return !!relative && !relative.startsWith('..') && !path.isAbsolute(relative);
+      }
+      // 4. Handle other hierarchical schemes
+      const childPath = normalizePath(child.path);
+      const parentPath = normalizePath(parent.path);
+      return childPath.startsWith(parentPath + '/');
+   }
+
+   /**
+    * Normalizes a URI path by resolving '.' and '..' segments and removing trailing slashes.
+    * Converts backslashes to forward slashes for consistency.
+    * @param toNormalize The path to normalize.
+    * @returns The normalized path.
+    */
+   function normalizePath(toNormalize: string): string {
+      // Replace backslashes with forward slashes, normalize and remove trailing slashes
+      return path.posix.normalize(toNormalize.replace(/\\/g, '/')).replace(/\/+$/, '');
    }
 
    /**

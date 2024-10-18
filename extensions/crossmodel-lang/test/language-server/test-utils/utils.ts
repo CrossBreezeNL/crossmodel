@@ -125,5 +125,5 @@ export class MockFileSystemProvider implements FileSystemProvider {
 
 export function testUri(...segments: string[]): string {
    // making sure the URI works on both Windows and Unix
-   return 'test:///' + path.join(...segments);
+   return 'test:///' + path.posix.join(...segments);
 }

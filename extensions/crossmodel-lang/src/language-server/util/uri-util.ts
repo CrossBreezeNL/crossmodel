@@ -2,10 +2,8 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 import * as fs from 'fs';
-import * as nodePath from 'path';
+import * as path from 'path';
 import { URI, Utils as UriUtils } from 'vscode-uri';
-
-const posixPath = nodePath.posix || nodePath;
 
 export namespace Utils {
    /**
@@ -24,8 +22,8 @@ export namespace Utils {
       }
       // 3. Handle 'file' scheme separately to account for filesystem specifics
       if (parent.scheme === 'file') {
-         const relative = posixPath.relative(parent.fsPath, child.fsPath);
-         return !!relative && !relative.startsWith('..') && !posixPath.isAbsolute(relative);
+         const relative = path.relative(parent.fsPath, child.fsPath);
+         return !!relative && !relative.startsWith('..') && !path.isAbsolute(relative);
       }
       // 4. Handle other hierarchical schemes
       const childPath = normalizePath(child.path);
@@ -41,7 +39,7 @@ export namespace Utils {
     */
    function normalizePath(toNormalize: string): string {
       // Replace backslashes with forward slashes, normalize and remove trailing slashes
-      return nodePath.posix.normalize(toNormalize.replace(/\\/g, '/')).replace(/\/+$/, '');
+      return path.posix.normalize(toNormalize.replace(/\\/g, '/')).replace(/\/+$/, '');
    }
 
    /**

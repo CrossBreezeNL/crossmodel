@@ -10,11 +10,11 @@
   ],
   "scripts": {
     "build": "lerna run build",
+    "build:extensions": "lerna run --scope=\"crossmodel-lang\" build",
     "clean": "lerna run clean && rimraf node_modules",
     "format": "yarn prettier-eslint --write '**/*.{ts,tsx,js,cjs,mjs,css}' '**/package.json'",
     "postinstall": "theia check:theia-version",
     "lint": "lerna run lint",
-    "prepare": "lerna run prepare && yarn theia:bundle",
     "start:browser": "yarn theia:browser start",
     "start:electron": "yarn theia:electron start",
     "start:verdaccio": "yarn verdaccio --config verdaccio-config.yaml",

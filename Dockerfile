@@ -22,7 +22,7 @@ COPY . .
 RUN yarn --pure-lockfile --skip-integrity-check --network-timeout 100000 && \
     yarn build:protocol && \
     yarn build:extensions && \
-    yarn theia:browser build \
+    yarn theia:browser build && \
     yarn autoclean --init && \
     echo *.ts >> .yarnclean && \
     echo *.ts.map >> .yarnclean && \

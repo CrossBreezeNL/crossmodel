@@ -1,6 +1,6 @@
 {
   "name": "@crossbreeze/property-view",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "private": true,
   "description": "Property view for crossmodel",
   "keywords": [
@@ -24,7 +24,7 @@
   ],
   "scripts": {
     "build": "tsc -b",
-    "clean": "rimraf lib && rimraf tsconfig.tsbuildinfo",
+    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "lint": "eslint -c ../../.eslintrc.js --ext .ts,.tsx ./src",
     "prepare": "yarn clean && yarn build",
     "test": "jest --passWithNoTests",
@@ -32,8 +32,8 @@
   },
   "dependencies": {
     "@crossbreeze/glsp-client": "0.0.0",
-    "@crossbreeze/model-service": "^1.0.0",
-    "@crossbreeze/protocol": "^0.0.0",
+    "@crossbreeze/model-service": "0.0.0",
+    "@crossbreeze/protocol": "0.0.0",
     "@crossbreeze/react-model-ui": "0.0.0",
     "@eclipse-glsp/theia-integration": "2.2.1",
     "@theia/core": "1.49.1",

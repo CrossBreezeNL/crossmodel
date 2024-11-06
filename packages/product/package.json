@@ -23,7 +23,7 @@
   ],
   "scripts": {
     "build": "tsc -b",
-    "clean": "rimraf lib && rimraf tsconfig.tsbuildinfo",
+    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "lint": "eslint -c ../../.eslintrc.js --ext .ts,.tsx ./src",
     "prepare": "yarn clean && yarn build",
     "test": "jest --passWithNoTests",

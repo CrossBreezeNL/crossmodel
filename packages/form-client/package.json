@@ -22,7 +22,7 @@
   ],
   "scripts": {
     "build": "tsc -b",
-    "clean": "rimraf lib && rimraf tsconfig.tsbuildinfo",
+    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "lint": "eslint -c ../../.eslintrc.js --ext .ts,.tsx ./src",
     "prepare": "yarn clean && yarn build",
     "test": "jest --passWithNoTests",
@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@crossbreeze/core": "0.0.0",
-    "@crossbreeze/model-service": "^1.0.0",
+    "@crossbreeze/model-service": "0.0.0",
     "@crossbreeze/protocol": "0.0.0",
     "@crossbreeze/react-model-ui": "0.0.0",
     "@theia/core": "1.49.1",

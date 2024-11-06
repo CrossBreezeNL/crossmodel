@@ -1,6 +1,6 @@
 {
   "name": "@crossbreeze/model-service",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "private": true,
   "description": "Model service to talk to the back-end server from the front-end via a JSON-rpc connection",
   "keywords": [
@@ -25,14 +25,14 @@
   ],
   "scripts": {
     "build": "tsc -b",
-    "clean": "rimraf lib && rimraf tsconfig.tsbuildinfo",
+    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "lint": "eslint -c ../../.eslintrc.js --ext .ts,.tsx ./src",
     "prepare": "yarn clean && yarn build",
     "test": "jest --passWithNoTests",
     "watch": "tsc -w"
   },
   "dependencies": {
-    "@crossbreeze/protocol": "^0.0.0",
+    "@crossbreeze/protocol": "0.0.0",
     "@theia/core": "1.49.1"
   },
   "theiaExtensions": [

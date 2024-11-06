@@ -20,7 +20,7 @@ COPY . .
 # - Use yarn autoclean to remove unnecessary files from package dependencies
 # - Remove unnecesarry files for the browser application
 RUN yarn --pure-lockfile --skip-integrity-check --network-timeout 100000 && \
-    yarn build:protocol && \
+    yarn build:packages && \
     yarn build:extensions && \
     yarn theia:browser build && \
     yarn autoclean --init && \

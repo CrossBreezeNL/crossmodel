@@ -11,6 +11,7 @@
   "scripts": {
     "build": "lerna run build",
     "build:extensions": "lerna run --scope=\"crossmodel-lang\" build",
+    "build:protocol": "lerna run --scope=\"@crossbreeze/protocol\" build",
     "clean": "lerna run clean && rimraf node_modules",
     "format": "yarn prettier-eslint --write '**/*.{ts,tsx,js,cjs,mjs,css}' '**/package.json'",
     "postinstall": "theia check:theia-version",

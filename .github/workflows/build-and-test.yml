@@ -113,7 +113,6 @@ jobs:
 
   docker:
     runs-on: ubuntu-latest
-    if: always() && runner.os == 'Linux'
     steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3

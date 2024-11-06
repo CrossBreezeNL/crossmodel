@@ -1,16 +1,8 @@
 # Stage 1: Builder stage
-FROM node:20-bookworm AS build-stage
+FROM node:20-alpine AS build-stage
 
 # Install OS packages needed for building Theia.
-RUN apt-get update \
-    && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -y install --no-install-recommends \
-    libsecret-1-dev \
-    libxkbfile-dev \
-    make \
-    python3 \
-    build-essential \
-    git
+RUN apk add yarn libsecret-dev libxkbfile-dev python3 py3-setuptools g++ make git
 
 # Set the working directory
 WORKDIR /home/crossmodel
@@ -35,10 +27,11 @@ RUN yarn --pure-lockfile --skip-integrity-check --network-timeout 100000 && \
     rm -rf .devcontainer .git .github .vscode applications/electron-app docs e2e-tests examples
 
 # Stage 2: Production stage, using a slim image
-FROM node:20-bookworm-slim AS production-stage
+FROM node:20-alpine AS production-stage
 
 # Create a non-root user with a fixed user id and setup the environment
-RUN adduser --system --group crossmodel && \
+RUN addgroup -S crossmodel && \
+    adduser -S crossmodel crossmodel && \
     chmod g+rw /home && \
     mkdir -p /home/crossmodel && \
     chown -R crossmodel:crossmodel /home/crossmodel

@@ -32,7 +32,7 @@ RUN yarn --pure-lockfile --skip-integrity-check --network-timeout 100000 && \
     echo *.spec.* >> .yarnclean && \
     yarn autoclean --force && \
     yarn cache clean && \
-    rm -rf .devcontainer .git .github .vscode applications/electron-app docs e2e-tests examples
+    rm -rf .devcontainer .git .github .vscode applications/electron-app docs e2e-tests
 
 # Stage 2: Production stage, using a slim image
 FROM node:20-bookworm-slim AS production-stage

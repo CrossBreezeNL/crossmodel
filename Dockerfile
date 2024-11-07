@@ -2,14 +2,14 @@
 FROM node:20-bookworm AS build-stage
 
 # Install OS packages needed for building Theia.
-RUN apt-get update \
-    && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -y install --no-install-recommends \
-    libsecret-1-dev \
-    libxkbfile-dev \
-    make \
-    python3 \
-    build-essential
+RUN apt-get update && \
+    export DEBIAN_FRONTEND=noninteractive && \
+    apt-get -y install --no-install-recommends \
+        libsecret-1-dev \
+        libxkbfile-dev \
+        make \
+        python3 \
+        build-essential
 
 # Set the working directory
 WORKDIR /home/crossmodel
@@ -70,11 +70,10 @@ COPY --from=build-stage --chown=crossmodel:crossmodel /home/crossmodel /home/cro
 EXPOSE 3000
 
 # Specify default shell for Theia and the Built-In plugins directory
-ENV SHELL=/bin/bash \
-    THEIA_DEFAULT_PLUGINS=local-dir:/home/theia/plugins
-
 # Use installed git instead of dugite
-ENV USE_LOCAL_GIT=true
+ENV SHELL=/bin/bash \
+    THEIA_DEFAULT_PLUGINS=local-dir:/home/theia/plugins \
+    USE_LOCAL_GIT=true
 
 # Use the non-root user
 USER crossmodel

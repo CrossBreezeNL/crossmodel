@@ -38,7 +38,7 @@ FROM node:20-bookworm-slim AS production-stage
 
 # Create a non-root user with a fixed user id and setup the environment
 # Default workspace is located at /home/project
-RUN adduser -m --system --group crossmodel && \
+RUN adduser --system --group --home /home/crossmodel crossmodel && \
     chmod g+rw /home && \
     mkdir -p /home/project && \
     chown -R crossmodel:crossmodel /home/crossmodel

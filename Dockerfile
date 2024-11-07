@@ -38,7 +38,7 @@ FROM node:20-bookworm-slim AS production-stage
 
 # Create a non-root user with a fixed user id and setup the environment
 # Default workspace is located at /home/project
-RUN adduser --system --group crossmodel && \
+RUN adduser -m --system --group crossmodel && \
     chmod g+rw /home && \
     mkdir -p /home/project && \
     chown -R crossmodel:crossmodel /home/crossmodel
@@ -68,7 +68,7 @@ ENV SHELL=/bin/bash \
     THEIA_DEFAULT_PLUGINS=local-dir:/home/theia/plugins
 
 # Use installed git instead of dugite
-ENV USE_LOCAL_GIT true
+ENV USE_LOCAL_GIT=true
 
 # Use the non-root user
 USER crossmodel

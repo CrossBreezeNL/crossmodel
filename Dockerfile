@@ -45,7 +45,13 @@ RUN adduser --system --group --home /home/crossmodel crossmodel && \
 
 # Install required tools for application: Git, SSH, Bash
 # Node is already available in base image
-RUN apt-get install -y git openssh-client openssh-server bash libsecret-1-0 && \
+RUN apt-get update && \
+    apt-get install -y \
+        git \
+        openssh-client \
+        openssh-server \
+        bash \
+        libsecret-1-0 && \
     apt-get clean
 
 # Copy the mapping example workspace into the project folder.

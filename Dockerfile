@@ -25,8 +25,8 @@ RUN yarn --pure-lockfile --skip-integrity-check --network-timeout 100000 && \
     yarn build:packages && \
     yarn build:extensions && \
     yarn package:extensions && \
-    cp extensions/crossmodel-lang/*.vsix applications/browser-app/plugins && \
     yarn theia:browser build && \
+    cp extensions/crossmodel-lang/*.vsix applications/browser-app/plugins && \
     yarn autoclean --init && \
     echo *.ts >> .yarnclean && \
     echo *.ts.map >> .yarnclean && \
@@ -74,7 +74,7 @@ EXPOSE 3000
 # Specify default shell for Theia and the Built-In plugins directory
 # Use installed git instead of dugite
 ENV SHELL=/bin/bash \
-    THEIA_DEFAULT_PLUGINS=local-dir:/home/theia/plugins \
+    THEIA_DEFAULT_PLUGINS=local-dir:/home/crossmodel/plugins \
     USE_LOCAL_GIT=true
 
 # Use the non-root user

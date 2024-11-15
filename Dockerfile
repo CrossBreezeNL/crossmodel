@@ -24,6 +24,8 @@ COPY . .
 RUN yarn --pure-lockfile --skip-integrity-check --network-timeout 100000 && \
     yarn build:packages && \
     yarn build:extensions && \
+    yarn package:extensions && \
+    cp extensions/crossmodel-lang/*.vsix applications/browser-app/plugins && \
     yarn theia:browser build && \
     yarn autoclean --init && \
     echo *.ts >> .yarnclean && \

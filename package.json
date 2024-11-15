@@ -11,6 +11,7 @@
   "scripts": {
     "build": "lerna run build",
     "build:extensions": "lerna run --scope=\"crossmodel-lang\" build",
+    "package:extensions": "lerna run --scope=\"crossmodel-lang\" package:vsix",
     "build:packages": "lerna run --scope=\"@crossbreeze/*\" build",
     "clean": "lerna run clean && rimraf node_modules",
     "format": "yarn prettier-eslint --write '**/*.{ts,tsx,js,cjs,mjs,css}' '**/package.json'",

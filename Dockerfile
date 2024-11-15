@@ -9,7 +9,8 @@ RUN apt-get update && \
         libxkbfile-dev \
         make \
         python3 \
-        build-essential
+        build-essential \
+        unzip
 
 # Set the working directory
 WORKDIR /home/crossmodel
@@ -26,7 +27,7 @@ RUN yarn --pure-lockfile --skip-integrity-check --network-timeout 100000 && \
     yarn build:extensions && \
     yarn package:extensions && \
     yarn theia:browser build && \
-    cp extensions/crossmodel-lang/*.vsix applications/browser-app/plugins && \
+    unzip extensions/crossmodel-lang/*.vsix -d applications/browser-app/plugins/crossmodel-lang && \
     yarn autoclean --init && \
     echo *.ts >> .yarnclean && \
     echo *.ts.map >> .yarnclean && \

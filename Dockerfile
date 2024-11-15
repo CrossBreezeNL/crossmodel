@@ -74,7 +74,7 @@ EXPOSE 3000
 # Specify default shell for Theia and the Built-In plugins directory
 # Use installed git instead of dugite
 ENV SHELL=/bin/bash \
-    THEIA_DEFAULT_PLUGINS=local-dir:/home/crossmodel/application/browser-app/plugins \
+    THEIA_DEFAULT_PLUGINS=local-dir:/home/crossmodel/applications/browser-app/plugins \
     USE_LOCAL_GIT=true
 
 # Use the non-root user

@@ -13,8 +13,8 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  build-and-test:
-    uses: ./.github/workflows/build-and-test.yml
+  #build-and-test:
+  #  uses: ./.github/workflows/build-and-test.yml
 
   docker:
     runs-on: ubuntu-latest

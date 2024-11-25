@@ -51,15 +51,7 @@
     "@theia/preferences": "1.49.1",
     "@theia/process": "1.49.1",
     "@theia/terminal": "1.49.1",
-    "@theia/workspace": "1.49.1",
-    "cpu-features": "*",
-    "drivelist": "*",
-    "find-git-repositories": "*",
-    "keytar": "*",
-    "native-keymap": "*",
-    "node-pty": "*",
-    "nsfw": "*",
-    "ssh2": "*"
+    "@theia/workspace": "1.49.1"
   },
   "devDependencies": {
     "@theia/cli": "1.49.1",

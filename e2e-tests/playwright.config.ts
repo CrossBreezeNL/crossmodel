@@ -1,6 +1,8 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
+import 'reflect-metadata';
+
 import { defineConfig } from '@playwright/test';
 
 export default defineConfig({

@@ -1082,10 +1082,10 @@
     snabbdom "~3.5.1"
     vscode-jsonrpc "8.2.0"
 
-"@eclipse-glsp/glsp-playwright@2.2.1":
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/@eclipse-glsp/glsp-playwright/-/glsp-playwright-2.2.1.tgz#2a66256f28d1165632f68d4bfbb74dd238ea1ecd"
-  integrity sha512-xtrdOxE965Nnq0fB9ciVK4kcZyOWLkGnfQ57CypCzUfbmZL0S6emlRMbx+27s5ShO+vBjDgWysJQzcVFdFIG2w==
+"@eclipse-glsp/glsp-playwright@ 2.3.0-next.6":
+  version "2.3.0-next.6"
+  resolved "https://registry.yarnpkg.com/@eclipse-glsp/glsp-playwright/-/glsp-playwright-2.3.0-next.6.tgz#3b555b5bf123888723b09b40e449275fe34df81f"
+  integrity sha512-JYoEj8Gx2svu350s3kGFNFLHPmeZkdEcqRzLykAef4Vb4Nx2gPeW2PpdBcE2pL1Wt7pc58mhDiZ5PR57+/OROw==
   dependencies:
     "@vscode/test-electron" "^2.3.2"
     uuid "^9.0.0"
@@ -14567,6 +14567,11 @@ ts-api-utils@^1.0.1:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/ts-api-utils/-/ts-api-utils-1.0.3.tgz#f12c1c781d04427313dbac808f453f050e54a331"
   integrity sha512-wNMeqtMz5NtwpT/UZGY5alT+VoKdSsOOP/kqHFcUW1P/VRhH2wJ48+DN2WwUliNbQ976ETwDL0Ifd2VVvgonvg==
+
+ts-dedent@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/ts-dedent/-/ts-dedent-2.2.0.tgz#39e4bd297cd036292ae2394eb3412be63f563bb5"
+  integrity sha512-q5W7tVM71e2xjHZTlgfTDoPF/SmqKG5hddq9SzR49CH2hayqRKJtQ4mtRlSxKaJlR/+9rEM+mnBHf7I2/BQcpQ==
 
 ts-jest@^29.1.1:
   version "29.1.1"

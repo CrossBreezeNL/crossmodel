@@ -1,11 +1,9 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { expect, Page } from '@playwright/test';
-import test, { app } from '../fixtures/crossmodel-fixture';
-import { CrossModelExplorerView } from '../page-objects/crossmodel-explorer-view';
-
-let explorer: CrossModelExplorerView;
+import { expect, Page, test } from '@playwright/test';
+import { CMApp } from '../page-objects/cm-app';
+import { CMExplorerView } from '../page-objects/cm-explorer-view';
 
 async function checkOpenWithItem(page: Page, text: string): Promise<boolean> {
    // Locate all elements matching the selector
@@ -24,9 +22,12 @@ async function checkOpenWithItem(page: Page, text: string): Promise<boolean> {
 }
 
 test.describe('CrossModel Explorer View', () => {
-   test.beforeAll(async ({ browser }) => {
-      explorer = await app.openView(CrossModelExplorerView);
-      await explorer.waitForVisibleFileNodes();
+   let app: CMApp;
+   let explorer: CMExplorerView;
+
+   test.beforeAll(async ({ browser, playwright }) => {
+      app = await CMApp.load({ browser, playwright });
+      explorer = await app.openExplorerView();
    });
 
    test('code and form editor options available in the context menu on an entity', async () => {

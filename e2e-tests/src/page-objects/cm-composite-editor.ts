@@ -3,16 +3,26 @@
  ********************************************************************************/
 
 import { ElementHandle, Page } from '@playwright/test';
-import { isElementVisible, normalizeId, OSUtil, TheiaApp, TheiaEditor, TheiaTextEditor, urlEncodePath } from '@theia/playwright';
+import { OSUtil, TheiaEditor, isElementVisible, normalizeId, urlEncodePath } from '@theia/playwright';
 import { TheiaMonacoEditor } from '@theia/playwright/lib/theia-monaco-editor';
 import { join } from 'path';
+import { CMApp } from './cm-app';
+import { IntegratedEditor, IntegratedTextEditor } from './cm-integrated-editor';
+import { IntegratedFormEditor } from './form/integrated-form-editor';
+import { IntegratedSystemDiagramEditor } from './system-diagram/integrated-system-diagram-editor';
 
-export type CompositeEditorName = 'Code Editor' | 'Form Editor' | 'System Diagram' | 'Mapping Diagram';
+export type CompositeEditorName = keyof IntegratedEditorType;
+export interface IntegratedEditorType {
+   'Code Editor': IntegratedCodeEditor;
+   'Form Editor': IntegratedFormEditor;
+   'System Diagram': IntegratedSystemDiagramEditor;
+   'Mapping Diagram': IntegratedMappingDiagramEditor;
+}
 
-export class CrossModelCompositeEditor extends TheiaEditor {
+export class CMCompositeEditor extends TheiaEditor {
    constructor(
       protected filePath: string,
-      app: TheiaApp
+      public override app: CMApp
    ) {
       // shell-tab-code-editor-opener:file:///c%3A/Users/user/AppData/Local/Temp/cloud-ws-JBUhb6/sample.txt:1
       // code-editor-opener:file:///c%3A/Users/user/AppData/Local/Temp/cloud-ws-JBUhb6/sample.txt:1
@@ -52,92 +62,60 @@ export class CrossModelCompositeEditor extends TheiaEditor {
 
    async switchToCodeEditor(): Promise<IntegratedCodeEditor> {
       await this.switchToEditor('Code Editor');
-      const textEditor = new IntegratedCodeEditor(this.filePath, this.app, this.editorTabSelector('Code Editor'));
-      await textEditor.waitForVisible();
+      const textEditor = new IntegratedCodeEditor(this.filePath, this, this.editorTabSelector('Code Editor'));
+      await textEditor.activate();
       return textEditor;
    }
 
    async switchToFormEditor(): Promise<IntegratedFormEditor> {
       await this.switchToEditor('Form Editor');
-      const formEditor = new IntegratedFormEditor(this.filePath, this.app, this.editorTabSelector('Form Editor'));
-      await formEditor.waitForVisible();
+      const formEditor = new IntegratedFormEditor(this.filePath, this, this.editorTabSelector('Form Editor'));
+      await formEditor.activate();
+
       return formEditor;
    }
 
    async switchToSystemDiagram(): Promise<IntegratedSystemDiagramEditor> {
       await this.switchToEditor('System Diagram');
-      const diagramEditor = new IntegratedSystemDiagramEditor(this.filePath, this.app, this.editorTabSelector('System Diagram'));
+      const diagramEditor = new IntegratedSystemDiagramEditor(this.filePath, this, this.editorTabSelector('System Diagram'));
       await diagramEditor.waitForVisible();
+      await diagramEditor.activate();
+
       return diagramEditor;
    }
 
    async switchToMappingDiagram(): Promise<IntegratedMappingDiagramEditor> {
       await this.switchToEditor('Mapping Diagram');
-      const diagramEditor = new IntegratedMappingDiagramEditor(this.filePath, this.app, this.editorTabSelector('Mapping Diagram'));
+      const diagramEditor = new IntegratedMappingDiagramEditor(this.filePath, this, this.editorTabSelector('Mapping Diagram'));
       await diagramEditor.waitForVisible();
+      await diagramEditor.activate();
       return diagramEditor;
    }
 }
 
-export class IntegratedCodeEditor extends TheiaTextEditor {
-   constructor(filePath: string, app: TheiaApp, tabSelector: string) {
+export class IntegratedCodeEditor extends IntegratedTextEditor {
+   constructor(filePath: string, parent: CMCompositeEditor, tabSelector: string) {
       // shell-tab-code-editor-opener:file:///c%3A/Users/user/AppData/Local/Temp/cloud-ws-JBUhb6/sample.txt:1
       // code-editor-opener:file:///c%3A/Users/user/AppData/Local/Temp/cloud-ws-JBUhb6/sample.txt:1
-      super(filePath, app);
+      super(filePath, parent);
       this.data.viewSelector = normalizeId(
-         `#code-editor-opener:file://${urlEncodePath(join(app.workspace.escapedPath, OSUtil.fileSeparator, filePath))}`
+         `#code-editor-opener:file://${urlEncodePath(join(this.app.workspace.escapedPath, OSUtil.fileSeparator, filePath))}`
       );
       this.data.tabSelector = tabSelector;
-      this.monacoEditor = new TheiaMonacoEditor(this.viewSelector, app);
+      this.monacoEditor = new TheiaMonacoEditor(this.viewSelector, parent.app);
    }
 }
 
-export class IntegratedFormEditor extends TheiaEditor {
-   constructor(filePath: string, app: TheiaApp, tabSelector: string) {
+export class IntegratedMappingDiagramEditor extends IntegratedEditor {
+   constructor(filePath: string, parent: CMCompositeEditor, tabSelector: string) {
       super(
          {
             tabSelector,
             viewSelector: normalizeId(
-               `#form-editor-opener:file://${urlEncodePath(join(app.workspace.escapedPath, OSUtil.fileSeparator, filePath))}`
+               `#mapping-diagram:file://${urlEncodePath(join(parent.app.workspace.escapedPath, OSUtil.fileSeparator, filePath))}`
             )
          },
-         app
-      );
-   }
-
-   async hasError(errorMessage: string): Promise<boolean> {
-      return hasViewError(this.page, this.viewSelector, errorMessage);
-   }
-}
-
-export class IntegratedSystemDiagramEditor extends TheiaEditor {
-   constructor(filePath: string, app: TheiaApp, tabSelector: string) {
-      super(
-         {
-            tabSelector,
-            viewSelector: normalizeId(
-               `#system-diagram:file://${urlEncodePath(join(app.workspace.escapedPath, OSUtil.fileSeparator, filePath))}`
-            )
-         },
-         app
-      );
-   }
-
-   async hasError(errorMessage: string): Promise<boolean> {
-      return hasViewError(this.page, this.viewSelector, errorMessage);
-   }
-}
-
-export class IntegratedMappingDiagramEditor extends TheiaEditor {
-   constructor(filePath: string, app: TheiaApp, tabSelector: string) {
-      super(
-         {
-            tabSelector,
-            viewSelector: normalizeId(
-               `#mapping-diagram:file://${urlEncodePath(join(app.workspace.escapedPath, OSUtil.fileSeparator, filePath))}`
-            )
-         },
-         app
+         parent
       );
    }
 

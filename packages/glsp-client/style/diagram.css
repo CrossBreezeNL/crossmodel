@@ -137,6 +137,9 @@
    color: var(--theia-activityBarBadge-foreground);
 } */
 
+.tool-palette .group-header {
+   display: none;
+}
 .command-palette {
    animation: none;
 }

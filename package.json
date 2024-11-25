@@ -31,7 +31,8 @@
     "theia:bundle": "yarn theia:electron bundle && yarn theia:browser bundle",
     "theia:electron": "yarn --cwd applications/electron-app",
     "ui-test": "yarn --cwd e2e-tests ui-test",
-    "watch": "lerna run --parallel watch"
+    "watch:browser": "lerna run --parallel --ignore=\"applications/electron-app\" watch",
+    "watch:electron": "lerna run --parallel --ignore=\"applications/browser-app\" watch"
   },
   "devDependencies": {
     "@testing-library/react": "^11.2.7",

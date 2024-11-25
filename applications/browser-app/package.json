@@ -16,7 +16,7 @@
   "scripts": {
     "build": "yarn -s rebuild && theia build --app-target=\"browser\" --mode development && yarn download:plugins",
     "build:prod": "yarn -s rebuild && theia build --app-target=\"browser\"",
-    "clean": "theia clean && rimraf lib src-gen node_modules",
+    "clean": "theia clean && rimraf lib src-gen",
     "download:plugins": "theia download:plugins",
     "rebuild": "theia rebuild:browser --cacheRoot ../..",
     "start": "theia start --plugins=local-dir:plugins",

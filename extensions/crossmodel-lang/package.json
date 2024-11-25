@@ -32,7 +32,7 @@
     "build:esbuild": "node esbuild.mjs",
     "build:tsc": "tsc -b tsconfig.json",
     "build:webpack": "webpack --mode development",
-    "clean": "rimraf out tsconfig.tsbuildinfo node_modules",
+    "clean": "rimraf out tsconfig.tsbuildinfo",
     "langium:generate": "langium generate",
     "langium:watch": "langium generate --watch",
     "lint": "eslint -c ./.eslintrc.cjs --ext .ts,.tsx ./src",

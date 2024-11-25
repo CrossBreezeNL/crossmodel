@@ -16,7 +16,7 @@
   "main": "scripts/electron-main.js",
   "scripts": {
     "bundle": "cross-env NODE_OPTIONS=--max-old-space-size=8192 && yarn rebuild && theia build --mode development && yarn download:plugins",
-    "clean": "theia clean && rimraf lib src-gen node_modules",
+    "clean": "theia clean && rimraf lib src-gen",
     "deploy": "rimraf dist && electron-builder -c.mac.identity=null --publish always",
     "download:plugins": "theia download:plugins",
     "package": "yarn package:pre && electron-builder -c.mac.identity=null --publish never && yarn package:post",

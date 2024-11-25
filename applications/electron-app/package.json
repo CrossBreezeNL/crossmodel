@@ -15,7 +15,8 @@
   },
   "main": "scripts/electron-main.js",
   "scripts": {
-    "bundle": "cross-env NODE_OPTIONS=--max-old-space-size=8192 && yarn rebuild && theia build --mode development && yarn download:plugins",
+    "build": "yarn -s rebuild && theia build --app-target=\"electron\" --mode development && yarn download:plugins",
+    "bundle": "cross-env NODE_OPTIONS=--max-old-space-size=8192 && yarn build",
     "clean": "theia clean && rimraf lib src-gen",
     "deploy": "rimraf dist && electron-builder -c.mac.identity=null --publish always",
     "download:plugins": "theia download:plugins",
@@ -50,7 +51,15 @@
     "@theia/preferences": "1.49.1",
     "@theia/process": "1.49.1",
     "@theia/terminal": "1.49.1",
-    "@theia/workspace": "1.49.1"
+    "@theia/workspace": "1.49.1",
+    "cpu-features": "*",
+    "drivelist": "*",
+    "find-git-repositories": "*",
+    "keytar": "*",
+    "native-keymap": "*",
+    "node-pty": "*",
+    "nsfw": "*",
+    "ssh2": "*"
   },
   "devDependencies": {
     "@theia/cli": "1.49.1",

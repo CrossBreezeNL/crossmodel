@@ -12,15 +12,19 @@ For detailed instructions for a Windows machine, follow [this](./docs/Prerequisi
 
 ## Running the application
 
+### Browser
+
+This will build and start CrossModel as a web application. When the web application is running you can open <http://localhost:3000> in your browser to use CrossModel.
+
+    yarn build:browser &&
+    yarn start:browser
+
+### Electron (desktop application)
+
+This will build and start CrossModel as a native desktop application for the OS (Windows, Linux or MacOS) where the command is started.
+
+    yarn build:electron &&
     yarn start:electron
-
-_or:_
-
-    yarn rebuild:electron
-    cd applications/electron-app
-    yarn start
-
-_or:_ launch `Launch CrossModel Electron` configuration from VS code.
 
 ## Example Workspace
 

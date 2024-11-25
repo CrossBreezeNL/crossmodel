@@ -10,7 +10,8 @@
   ],
   "scripts": {
     "build": "lerna run build",
-    "build:dev": "yarn build:packages && yarn build:extensions && yarn symlink:browser && yarn theia:browser build",
+    "build:browser": "yarn build:packages && yarn build:extensions && yarn symlink:browser && yarn theia:browser build",
+    "build:electron": "yarn build:packages && yarn build:extensions && yarn symlink:electron && yarn theia:electron build",
     "build:extensions": "lerna run --scope=\"crossmodel-lang\" build",
     "build:packages": "lerna run --scope=\"@crossbreeze/*\" build",
     "clean": "lerna run clean",
@@ -22,6 +23,7 @@
     "start:electron": "yarn theia:electron start",
     "start:verdaccio": "yarn verdaccio --config verdaccio-config.yaml",
     "symlink:browser": "lerna run --scope=\"crossmodel-lang\" symlink:browser",
+    "symlink:electron": "lerna run --scope=\"crossmodel-lang\" symlink:electron",
     "test": "rimraf unit-test-results && yarn run test:cjs && yarn run test:esm",
     "test:cjs": "jest --config=configs/jest.config.js --passWithNoTests",
     "test:esm": "yarn --cwd extensions/crossmodel-lang test",

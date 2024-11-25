@@ -10,14 +10,20 @@
   ],
   "scripts": {
     "build": "lerna run build",
-    "clean": "lerna run clean && rimraf node_modules",
+    "build:browser": "yarn build:packages && yarn build:extensions && yarn symlink:browser && yarn theia:browser build",
+    "build:electron": "yarn build:packages && yarn build:extensions && yarn symlink:electron && yarn theia:electron build",
+    "build:extensions": "lerna run --scope=\"crossmodel-lang\" build",
+    "build:packages": "lerna run --scope=\"@crossbreeze/*\" build",
+    "clean": "lerna run clean",
     "format": "yarn prettier-eslint --write '**/*.{ts,tsx,js,cjs,mjs,css}' '**/package.json'",
     "postinstall": "theia check:theia-version",
     "lint": "lerna run lint",
-    "prepare": "lerna run prepare && yarn theia:bundle",
+    "package:extensions": "lerna run --scope=\"crossmodel-lang\" package:vsix",
     "start:browser": "yarn theia:browser start",
     "start:electron": "yarn theia:electron start",
     "start:verdaccio": "yarn verdaccio --config verdaccio-config.yaml",
+    "symlink:browser": "lerna run --scope=\"crossmodel-lang\" symlink:browser",
+    "symlink:electron": "lerna run --scope=\"crossmodel-lang\" symlink:electron",
     "test": "rimraf unit-test-results && yarn run test:cjs && yarn run test:esm",
     "test:cjs": "jest --config=configs/jest.config.js --passWithNoTests",
     "test:esm": "yarn --cwd extensions/crossmodel-lang test",
@@ -25,7 +31,8 @@
     "theia:bundle": "yarn theia:electron bundle && yarn theia:browser bundle",
     "theia:electron": "yarn --cwd applications/electron-app",
     "ui-test": "yarn --cwd e2e-tests ui-test",
-    "watch": "lerna run --parallel watch"
+    "watch:browser": "lerna run --parallel --ignore=\"applications/electron-app\" watch",
+    "watch:electron": "lerna run --parallel --ignore=\"applications/browser-app\" watch"
   },
   "devDependencies": {
     "@testing-library/react": "^11.2.7",

@@ -14,8 +14,9 @@
     "email": "devops@crossbreeze.nl"
   },
   "scripts": {
-    "bundle": "yarn rebuild && theia build --mode development && yarn download:plugins",
-    "clean": "theia clean && rimraf lib && rimraf src-gen",
+    "build": "yarn -s rebuild && theia build --app-target=\"browser\" --mode development && yarn download:plugins",
+    "build:prod": "yarn -s rebuild && theia build --app-target=\"browser\"",
+    "clean": "theia clean && rimraf lib src-gen",
     "download:plugins": "theia download:plugins",
     "rebuild": "theia rebuild:browser --cacheRoot ../..",
     "start": "theia start --plugins=local-dir:plugins",
@@ -27,9 +28,9 @@
     "@crossbreeze/core": "0.0.0",
     "@crossbreeze/form-client": "0.0.0",
     "@crossbreeze/glsp-client": "0.0.0",
-    "@crossbreeze/model-service": "^1.0.0",
+    "@crossbreeze/model-service": "0.0.0",
     "@crossbreeze/product": "0.0.0",
-    "@crossbreeze/property-view": "^1.0.0",
+    "@crossbreeze/property-view": "0.0.0",
     "@theia/core": "1.49.1",
     "@theia/editor": "1.49.1",
     "@theia/filesystem": "1.49.1",

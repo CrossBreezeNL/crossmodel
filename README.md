@@ -12,15 +12,19 @@ For detailed instructions for a Windows machine, follow [this](./docs/Prerequisi
 
 ## Running the application
 
+### Browser
+
+This will build and start CrossModel as a web application. When the web application is running you can open <http://localhost:3000> in your browser to use CrossModel.
+
+    yarn build:browser &&
+    yarn start:browser
+
+### Electron (desktop application)
+
+This will build and start CrossModel as a native desktop application for the OS (Windows, Linux or MacOS) where the command is started.
+
+    yarn build:electron &&
     yarn start:electron
-
-_or:_
-
-    yarn rebuild:electron
-    cd applications/electron-app
-    yarn start
-
-_or:_ launch `Launch CrossModel Electron` configuration from VS code.
 
 ## Example Workspace
 
@@ -45,9 +49,13 @@ Currently there is still an issue where new files are not recognized automatical
 
 ## Developing
 
-Start watching all packages, including `electron-app`, of your application with
+Start watching all packages of your application for either browser or electron version.
 
-    yarn watch
+    yarn watch:browser
+
+_or_
+
+    yarn watch:electron
 
 _or_ watch only specific packages with
 
@@ -77,11 +85,30 @@ Short steps:
 
 ## Packaging
 
-To package the application use
+We package CrossModel either for the browser (Docker) or desktop application (Electron).
+
+### Docker
+
+To package the web application we build a docker image. There are currently two Dockerfile definitions, one based on [Alpine Linux](./Dockerfile) and one based on [Ubuntu](./Dockerfile.ubuntu). Some users might prefer Ubuntu over Alpine as based, which is why we have both options.
+
+To create the Alpine based image, execute the following command:
+
+    docker build -t crossmodel:0.0.0-alpine -f .\Dockerfile .
+
+To create the Ubuntu based image, execute the following command:
+
+    docker build -t crossmodel:0.0.0-ubuntu -f .\Dockerfile.ubuntu .
+
+In the main build action we build and publish the Alpine version.
+
+### Electron
+
+To package CrossModel as a desktop application, execute the following command:
 
     yarn theia:electron package
 
 Depending on the platform, this will produce an executable or an installer for the application under `applications/electron-app/dist`.
+
 Details about the packaging can be configured in `applications/electron-app/electron-builder.yml`.
 
 ## Structure

@@ -23,14 +23,13 @@
   ],
   "scripts": {
     "build": "tsc -b",
-    "clean": "rimraf lib && rimraf tsconfig.tsbuildinfo",
+    "clean": "rimraf lib tsconfig.tsbuildinfo",
     "lint": "eslint -c ../../.eslintrc.js --ext .ts,.tsx ./src",
-    "prepare": "yarn clean && yarn build",
     "test": "jest --passWithNoTests",
     "watch": "tsc -w"
   },
   "dependencies": {
-    "@crossbreeze/model-service": "^1.0.0",
+    "@crossbreeze/model-service": "0.0.0",
     "@crossbreeze/protocol": "0.0.0",
     "@theia/core": "1.49.1",
     "@theia/filesystem": "1.49.1",

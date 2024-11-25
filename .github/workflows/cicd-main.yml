@@ -68,6 +68,8 @@ jobs:
 
   # Create Docker image with CrossModel web application.
   docker:
+    # Only make the docker image when build and test succeeded.
+    needs: build-and-test
     runs-on: ubuntu-latest
 
     permissions:

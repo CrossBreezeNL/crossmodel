@@ -1,7 +1,7 @@
 {
   "name": "crossmodel-lang",
   "displayName": "crossmodel-lang",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "private": true,
   "description": "CrossModel Language",
   "categories": [
@@ -39,7 +39,6 @@
     "package": "rimraf out && yarn package:webpack && yarn package:vsix",
     "package:vsix": "vsce package --yarn --allow-star-activation",
     "package:webpack": "webpack --mode production --devtool hidden-source-map",
-    "prepare": "yarn run clean && yarn run build && yarn symlink",
     "symlink": "yarn symlink:browser && yarn symlink:electron",
     "symlink:browser": "symlink-dir . ../../applications/browser-app/plugins/crossmodel-lang",
     "symlink:electron": "symlink-dir . ../../applications/electron-app/plugins/crossmodel-lang",

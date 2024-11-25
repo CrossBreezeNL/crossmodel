@@ -25,7 +25,6 @@
     "build": "tsc -b",
     "clean": "rimraf lib tsconfig.tsbuildinfo",
     "lint": "eslint -c ../../.eslintrc.js --ext .ts,.tsx ./src",
-    "prepare": "yarn clean && yarn build",
     "test": "jest --passWithNoTests",
     "watch": "tsc -w"
   },

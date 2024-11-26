@@ -89,15 +89,15 @@ We package CrossModel either for the browser (Docker) or desktop application (El
 
 ### Docker
 
-To package the web application we build a docker image. There are currently two Dockerfile definitions, one based on [Alpine Linux](./Dockerfile) and one based on [Ubuntu](./Dockerfile.ubuntu). Some users might prefer Ubuntu over Alpine as based, which is why we have both options.
+To package the web application we build a docker image. There are currently two Dockerfile definitions, one based on [Alpine Linux](./Dockerfile) and one based on [Debian](./Dockerfile.debian). Some users might prefer Debian over Alpine as based, which is why we have both options.
 
 To create the Alpine based image, execute the following command:
 
     docker build -t crossmodel:0.0.0-alpine -f .\Dockerfile .
 
-To create the Ubuntu based image, execute the following command:
+To create the Debian based image, execute the following command:
 
-    docker build -t crossmodel:0.0.0-ubuntu -f .\Dockerfile.ubuntu .
+    docker build -t crossmodel:0.0.0-debian -f .\Dockerfile.debian .
 
 In the main build action we build and publish the Alpine version.
 

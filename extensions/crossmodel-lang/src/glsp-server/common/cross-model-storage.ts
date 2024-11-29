@@ -23,6 +23,7 @@ import {
 import { inject, injectable, postConstruct } from 'inversify';
 import { AstUtils } from 'langium';
 import debounce from 'p-debounce';
+import { DiagnosticSeverity } from 'vscode-languageserver-protocol';
 import { URI } from 'vscode-uri';
 import { CrossModelRoot } from '../../language-server/generated/ast.js';
 import { AstCrossModelDocument } from '../../model-server/open-text-document-manager.js';
@@ -84,7 +85,10 @@ export class CrossModelStorage implements SourceModelStorage, ClientSessionListe
    protected async updateEditMode(document: AstCrossModelDocument): Promise<Action[]> {
       const actions = [];
       const prevEditMode = this.state.editMode;
-      this.state.editMode = document.diagnostics.length > 0 ? EditMode.READONLY : EditMode.EDITABLE;
+      this.state.editMode =
+         document.diagnostics.filter(diagnostic => diagnostic.severity === DiagnosticSeverity.Error).length > 0
+            ? EditMode.READONLY
+            : EditMode.EDITABLE;
       if (prevEditMode !== this.state.editMode) {
          if (this.state.isReadonly) {
             actions.push(SetEditModeAction.create(EditMode.READONLY));

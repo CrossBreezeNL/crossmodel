@@ -2,7 +2,7 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 
-import { ERRONEOUS_MODEL } from '@crossbreeze/protocol';
+import { ERRONEOUS_MODEL, ModelDiagnostic } from '@crossbreeze/protocol';
 import { OpenInNewOutlined, SaveOutlined } from '@mui/icons-material';
 import { AppBar, Box, Button, Icon, Toolbar, Typography } from '@mui/material';
 import { useDiagnostics, useDirty, useModelOpen, useModelSave } from '../../ModelContext';
@@ -23,7 +23,7 @@ export function Header({ name, id, iconClass }: HeaderProps): React.ReactElement
 
    return (
       <AppBar position='sticky'>
-         {diagnostics.length > 0 && createEditorError(ERRONEOUS_MODEL)}
+         {ModelDiagnostic.hasErrors(diagnostics) && createEditorError(ERRONEOUS_MODEL)}
          <Toolbar variant='dense' sx={{ minHeight: '40px' }}>
             <Box sx={{ display: { xs: 'none', sm: 'flex' }, flexGrow: 1, gap: '1em', alignItems: 'center' }}>
                {iconClass && <Icon baseClassName='codicon' className={iconClass} sx={{ fontSize: '1.7em !important' }} />}

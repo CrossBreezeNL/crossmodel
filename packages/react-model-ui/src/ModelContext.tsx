@@ -69,7 +69,7 @@ export function useDirty(): boolean {
 }
 
 export function useReadonly(): boolean {
-   return useDiagnostics().length > 0;
+   return ModelDiagnostic.hasErrors(useDiagnostics());
 }
 
 export function useEntity(): Entity {

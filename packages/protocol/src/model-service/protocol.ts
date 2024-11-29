@@ -211,6 +211,20 @@ export interface ModelDiagnostic {
    severity: 'error' | 'warning' | 'info';
 }
 
+export namespace ModelDiagnostic {
+   export function isError(diagnostic: ModelDiagnostic): boolean {
+      return diagnostic.severity === 'error';
+   }
+
+   export function errors(diagnostics: ModelDiagnostic[]): ModelDiagnostic[] {
+      return diagnostics.filter(isError);
+   }
+
+   export function hasErrors(diagnostics: ModelDiagnostic[]): boolean {
+      return diagnostics.some(isError);
+   }
+}
+
 export interface ModelUpdatedEvent<D = CrossModelDocument> {
    document: D;
    sourceClientId: string;

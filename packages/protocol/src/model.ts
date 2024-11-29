@@ -113,6 +113,11 @@ export const ModelFileExtensions = {
       return undefined;
    },
 
+   getFileExtension(uri: string): string | undefined {
+      const fileType = this.getFileType(uri);
+      return !fileType ? undefined : ModelFileType.getFileExtension(fileType);
+   },
+
    getIconClass(uri: string): string | undefined {
       const fileType = this.getFileType(uri);
       if (!fileType) {

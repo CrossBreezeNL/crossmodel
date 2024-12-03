@@ -16,8 +16,8 @@ describe('CrossModel language Diagram', () => {
          expect(systemDiagram?.id).toBe('Systemdiagram1');
       });
 
-      test('Diagram with indentation error', async () => {
-         await parseSystemDiagram({ services, text: diagram4 }, { parserErrors: 1 });
+      test('Diagram with indentation and dedentation error', async () => {
+         await parseSystemDiagram({ services, text: diagram4 }, { parserErrors: 2 });
       });
    });
 

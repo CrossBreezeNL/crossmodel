@@ -2,7 +2,8 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 import { AttributeMappingSourceType } from '@crossbreeze/protocol';
-import { AstNode, AstNodeDescription, AstUtils, LangiumDocument, isAstNode, isAstNodeDescription } from 'langium';
+import { Dimension, Point } from '@eclipse-glsp/server';
+import { AstNode, AstNodeDescription, AstUtils, LangiumDocument, Reference, isAstNode, isAstNodeDescription } from 'langium';
 import { ID_PROPERTY, IdProvider } from '../cross-model-naming.js';
 import { getLocalName } from '../cross-model-scope.js';
 import {
@@ -12,10 +13,12 @@ import {
    AttributeMappingTarget,
    CrossModelRoot,
    Entity,
+   EntityAttribute,
    EntityNode,
    EntityNodeAttribute,
    Mapping,
    Relationship,
+   RelationshipEdge,
    SourceObject,
    SourceObjectAttribute,
    SystemDiagram,
@@ -85,6 +88,114 @@ export function isImplicitProperty(prop: string, obj: any): boolean {
       prop === IMPLICIT_ID_PROPERTY ||
       (obj[IMPLICIT_ID_PROPERTY] === true && prop === ID_PROPERTY)
    );
+}
+
+export function createEntity(container: CrossModelRoot, id: string, opts?: Partial<Omit<Entity, '$container' | '$type' | 'id'>>): Entity {
+   return {
+      $container: container,
+      $type: 'Entity',
+      id,
+      attributes: [],
+      customProperties: [],
+      superEntities: [],
+      ...opts
+   };
+}
+
+export function createEntityAttribute(
+   container: Entity,
+   id: string,
+   name: string,
+   datatype: string,
+   opts?: Partial<Omit<EntityAttribute, '$container' | '$type' | 'id' | 'name' | 'attribute'>>
+): EntityAttribute {
+   return {
+      $container: container,
+      $type: 'EntityAttribute',
+      id,
+      name,
+      datatype,
+      identifier: false,
+      customProperties: [],
+      ...opts
+   };
+}
+
+export function createRelationship(
+   container: CrossModelRoot,
+   id: string,
+   type: string,
+   parent: Reference<Entity>,
+   child: Reference<Entity>,
+   opts?: Partial<Omit<Relationship, '$container' | '$type' | 'id' | 'type' | 'parent' | 'child'>>
+): Relationship {
+   return {
+      $container: container,
+      $type: 'Relationship',
+      id,
+      type,
+      parent,
+      child,
+      attributes: [],
+      customProperties: [],
+      ...opts
+   };
+}
+
+export function createSystemDiagram(
+   container: CrossModelRoot,
+   id: string,
+   opts?: Partial<Omit<SystemDiagram, '$container' | '$type' | 'id'>>
+): SystemDiagram {
+   return {
+      $container: container,
+      $type: 'SystemDiagram',
+      id,
+      nodes: [],
+      edges: [],
+      customProperties: [],
+      ...opts
+   };
+}
+
+export function createEntityNode(
+   container: SystemDiagram,
+   id: string,
+   entity: Reference<Entity>,
+   position: Point,
+   dimension: Dimension,
+   opts?: Partial<Omit<EntityNode, '$container' | '$type' | 'id' | 'entity'>>
+): EntityNode {
+   return {
+      $container: container,
+      $type: 'EntityNode',
+      id,
+      entity,
+      ...position,
+      ...dimension,
+      customProperties: [],
+      ...opts
+   };
+}
+
+export function createRelationshipEdge(
+   container: SystemDiagram,
+   id: string,
+   relationship: Reference<Relationship>,
+   sourceNode: Reference<EntityNode>,
+   targetNode: Reference<EntityNode>,
+   opts?: Partial<Omit<RelationshipEdge, '$container' | '$type' | 'id' | 'relationship' | 'sourceNode' | 'targetNode'>>
+): RelationshipEdge {
+   return {
+      $container: container,
+      $type: 'RelationshipEdge',
+      id,
+      relationship,
+      sourceNode,
+      targetNode,
+      customProperties: [],
+      ...opts
+   };
 }
 
 export function createSourceObject(entity: Entity | AstNodeDescription, container: Mapping, idProvider: IdProvider): SourceObject {

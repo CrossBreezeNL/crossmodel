@@ -49,6 +49,7 @@ export type CrossModelKeywordNames =
     | "height"
     | "id"
     | "identifier"
+    | "inherits"
     | "inner-join"
     | "join"
     | "left-join"
@@ -202,6 +203,7 @@ export interface Entity extends AstNode {
     description?: string;
     id: string;
     name?: string;
+    superEntities: Array<Reference<Entity>>;
 }
 
 export const Entity = 'Entity';
@@ -377,7 +379,7 @@ export interface SystemDiagram extends AstNode {
     customProperties: Array<CustomProperty>;
     description?: string;
     edges: Array<RelationshipEdge>;
-    id?: string;
+    id: string;
     name?: string;
     nodes: Array<EntityNode>;
 }
@@ -525,6 +527,7 @@ export class CrossModelAstReflection extends AbstractAstReflection {
             case 'AttributeMappingTarget:value': {
                 return TargetObjectAttribute;
             }
+            case 'Entity:superEntities':
             case 'EntityNode:entity':
             case 'Relationship:child':
             case 'Relationship:parent':
@@ -630,7 +633,8 @@ export class CrossModelAstReflection extends AbstractAstReflection {
                         { name: 'customProperties', defaultValue: [] },
                         { name: 'description' },
                         { name: 'id' },
-                        { name: 'name' }
+                        { name: 'name' },
+                        { name: 'superEntities', defaultValue: [] }
                     ]
                 };
             }

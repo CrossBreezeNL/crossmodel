@@ -1,14 +1,20 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { findAllExpressions, getExpression, getExpressionPosition, getExpressionText } from '@crossbreeze/protocol';
-import { AstNode, GrammarUtils, Reference, ValidationAcceptor, ValidationChecks } from 'langium';
+import { findAllExpressions, getExpression, getExpressionPosition, getExpressionText, ModelFileExtensions } from '@crossbreeze/protocol';
+import { AstNode, GrammarUtils, Reference, UriUtils, ValidationAcceptor, ValidationChecks } from 'langium';
+import { Diagnostic } from 'vscode-languageserver-protocol';
 import type { CrossModelServices } from './cross-model-module.js';
 import { ID_PROPERTY, IdentifiableAstNode } from './cross-model-naming.js';
 import {
    Attribute,
    AttributeMapping,
    CrossModelAstType,
+   isEntity,
+   isEntityAttribute,
+   isMapping,
+   isRelationship,
+   isSystemDiagram,
    Mapping,
    Relationship,
    RelationshipEdge,
@@ -17,14 +23,25 @@ import {
    SourceObjectCondition,
    SourceObjectDependency,
    TargetObject,
-   TargetObjectAttribute,
-   isEntity,
-   isEntityAttribute,
-   isMapping,
-   isRelationship,
-   isSystemDiagram
+   TargetObjectAttribute
 } from './generated/ast.js';
-import { findDocument, getOwner } from './util/ast-util.js';
+import { findDocument, getOwner, isSemanticRoot } from './util/ast-util.js';
+
+export namespace CrossModelIssueCodes {
+   export const FilenameNotMatching = 'filename-not-matching';
+}
+
+export interface FilenameNotMatchingDiagnostic extends Diagnostic {
+   data: {
+      code: typeof CrossModelIssueCodes.FilenameNotMatching;
+   };
+}
+
+export namespace FilenameNotMatchingDiagnostic {
+   export function is(diagnostic: Diagnostic): diagnostic is FilenameNotMatchingDiagnostic {
+      return diagnostic.data?.code === CrossModelIssueCodes.FilenameNotMatching;
+   }
+}
 
 /**
  * Register custom validation checks.
@@ -56,6 +73,31 @@ export class CrossModelValidator {
    checkNode(node: AstNode, accept: ValidationAcceptor): void {
       this.checkUniqueGlobalId(node, accept);
       this.checkUniqueNodeId(node, accept);
+      this.checkMatchingFilename(node, accept);
+   }
+
+   protected checkMatchingFilename(node: AstNode, accept: ValidationAcceptor): void {
+      if (!isSemanticRoot(node)) {
+         return;
+      }
+      if (!node.id) {
+         // diagrams may not have ids set and therefore are not required to match the filename
+         return;
+      }
+      const document = findDocument(node);
+      if (!document) {
+         return;
+      }
+      const basename = UriUtils.basename(document.uri);
+      const extname = ModelFileExtensions.getFileExtension(basename) ?? UriUtils.extname(document.uri);
+      const basenameWithoutExt = basename.slice(0, -extname.length);
+      if (basenameWithoutExt.toLowerCase() !== node.id.toLocaleLowerCase()) {
+         accept('warning', `Filename should match element id: ${node.id}`, {
+            node,
+            property: ID_PROPERTY,
+            data: { code: CrossModelIssueCodes.FilenameNotMatching }
+         });
+      }
    }
 
    protected checkUniqueGlobalId(node: AstNode, accept: ValidationAcceptor): void {

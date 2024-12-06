@@ -12,8 +12,9 @@ import {
    relationship_with_attribute_wrong_entity,
    relationship_with_duplicate_attributes
 } from './test-utils/test-documents/relationship/index.js';
-import { createCrossModelTestServices, parseDocuments, parseRelationship } from './test-utils/utils.js';
+import { createCrossModelTestServices, parseDocuments, parseRelationship, testUri } from './test-utils/utils.js';
 
+import { ModelFileExtensions } from '@crossbreeze/protocol';
 import { address } from './test-utils/test-documents/entity/address.js';
 import { customer } from './test-utils/test-documents/entity/customer.js';
 import { order } from './test-utils/test-documents/entity/order.js';
@@ -48,19 +49,34 @@ describe('CrossModel language Relationship', () => {
    });
 
    test('relationship with attributes', async () => {
-      const relationship = await parseRelationship({ services, text: relationship_with_attribute, validation: true });
+      const relationship = await parseRelationship({
+         services,
+         text: relationship_with_attribute,
+         validation: true,
+         documentUri: testUri('Order_CustomerWithAttribute' + ModelFileExtensions.Relationship)
+      });
 
       expect(relationship.attributes).toHaveLength(1);
       expect(relationship.$document.diagnostics).toHaveLength(0);
    });
 
    test('relationship with wrong entity', async () => {
-      const relationship = await parseRelationship({ services, text: relationship_with_attribute_wrong_entity, validation: true });
+      const relationship = await parseRelationship({
+         services,
+         text: relationship_with_attribute_wrong_entity,
+         validation: true,
+         documentUri: testUri('Order_CustomerWithAttributeWrongEntity' + ModelFileExtensions.Relationship)
+      });
       expect(relationship.$document.diagnostics).toHaveLength(1);
    });
 
    test('relationship with duplicates', async () => {
-      const relationship = await parseRelationship({ services, text: relationship_with_duplicate_attributes, validation: true });
+      const relationship = await parseRelationship({
+         services,
+         text: relationship_with_duplicate_attributes,
+         validation: true,
+         documentUri: testUri('Order_CustomerWithDuplicateAttributes' + ModelFileExtensions.Relationship)
+      });
       expect(relationship.$document.diagnostics).toHaveLength(2);
    });
 });

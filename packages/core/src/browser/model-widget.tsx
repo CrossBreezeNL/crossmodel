@@ -3,7 +3,7 @@
  ********************************************************************************/
 
 import { ModelService, ModelServiceClient } from '@crossbreeze/model-service/lib/common';
-import { CrossModelDocument, CrossModelRoot, ModelUpdatedEvent, RenderProps } from '@crossbreeze/protocol';
+import { CrossModelDocument, CrossModelRoot, ModelDiagnostic, ModelUpdatedEvent, RenderProps } from '@crossbreeze/protocol';
 import {
    EntityComponent,
    ErrorView,
@@ -146,7 +146,7 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
       if (doc === undefined) {
          throw new Error('Cannot save undefined model');
       }
-      if (doc.diagnostics.length > 0) {
+      if (ModelDiagnostic.hasErrors(doc.diagnostics)) {
          // we do not support saving erroneous models in model widgets as we cannot deal with them properly, fixes are done via code editor
          console.debug(`[${this.options.clientId}] Abort Save as we have an erroneous model`);
          return;

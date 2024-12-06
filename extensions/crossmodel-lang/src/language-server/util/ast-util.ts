@@ -172,6 +172,10 @@ export type WithDocument<T> = T & { $document: LangiumDocument<CrossModelRoot> }
 export type DocumentContent = LangiumDocument | AstNode;
 export type TypeGuard<T> = (item: unknown) => item is T;
 
+export function isSemanticRoot(element: unknown): element is SemanticRoot {
+   return isEntity(element) || isMapping(element) || isRelationship(element) || isSystemDiagram(element);
+}
+
 export function findSemanticRoot(input: DocumentContent): SemanticRoot | undefined;
 export function findSemanticRoot<T extends SemanticRoot>(input: DocumentContent, guard: TypeGuard<T>): T | undefined;
 export function findSemanticRoot<T extends SemanticRoot>(input: DocumentContent, guard?: TypeGuard<T>): SemanticRoot | T | undefined {

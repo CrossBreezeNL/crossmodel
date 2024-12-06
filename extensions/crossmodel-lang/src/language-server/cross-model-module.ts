@@ -20,6 +20,7 @@ import { OpenTextDocumentManager } from '../model-server/open-text-document-mana
 import { OpenableTextDocuments } from '../model-server/openable-text-documents.js';
 import { Serializer } from '../model-server/serializer.js';
 import { ClientLogger } from './cross-model-client-logger.js';
+import { CrossModelCodeActionProvider } from './cross-model-code-action-provider.js';
 import { CrossModelCompletionProvider } from './cross-model-completion-provider.js';
 import { CrossModelDocumentBuilder } from './cross-model-document-builder.js';
 import { CrossModelModelFormatter } from './cross-model-formatter.js';
@@ -149,6 +150,9 @@ export interface CrossModelAddedServices {
    parser: {
       TokenBuilder: CrossModelTokenBuilder;
    };
+   lsp: {
+      /* implement */ CodeActionProvider: CrossModelCodeActionProvider;
+   };
    /* override */ shared: CrossModelSharedServices;
 }
 
@@ -179,6 +183,7 @@ export function createCrossModelModule(
          CrossModelValidator: services => new CrossModelValidator(services)
       },
       lsp: {
+         CodeActionProvider: () => new CrossModelCodeActionProvider(),
          CompletionProvider: services => new CrossModelCompletionProvider(services),
          Formatter: () => new CrossModelModelFormatter()
       },

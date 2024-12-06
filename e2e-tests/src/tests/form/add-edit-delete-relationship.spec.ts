@@ -5,11 +5,11 @@ import { expect, test } from '@playwright/test';
 import { CMApp } from '../../page-objects/cm-app';
 import { TheiaSingleInputDialog } from '../../page-objects/theia-single-input-dialog';
 
-async function confirmCreationDialog(app: CMApp, entityName: string): Promise<void> {
+async function confirmCreationDialog(app: CMApp, relationshipName: string): Promise<void> {
    const dialog = new TheiaSingleInputDialog(app);
    dialog.waitForVisible();
    expect(await dialog.title()).toBe('New Relationship...');
-   await dialog.enterSingleInput(entityName);
+   await dialog.enterSingleInput(relationshipName);
    await dialog.waitUntilMainButtonIsEnabled();
    await dialog.confirm();
    await dialog.waitForClosed();
@@ -31,15 +31,15 @@ test.describe('Add/Edit/Delete relationship from explorer', () => {
       await explorer.getFileStatNodeByLabel('ExampleCRM/relationships');
       await explorer.selectTreeNode('ExampleCRM/relationships');
 
-      const tabBarToolbarNewEntity = await explorer.tabBarToolbar.toolBarItem('crossbreeze.new.relationship.toolbar');
-      expect(tabBarToolbarNewEntity).toBeDefined();
-      if (!tabBarToolbarNewEntity) {
+      const tabBarToolbarNewRelationship = await explorer.tabBarToolbar.toolBarItem('crossbreeze.new.relationship.toolbar');
+      expect(tabBarToolbarNewRelationship).toBeDefined();
+      if (!tabBarToolbarNewRelationship) {
          return;
       }
-      await tabBarToolbarNewEntity.trigger();
+      await tabBarToolbarNewRelationship.trigger();
       await confirmCreationDialog(app, 'NewRelationship');
 
-      // Verify that the entity was created as expected
+      // Verify that the relationship was created as expected
       explorer.activate();
       expect(await explorer.existsFileNode(NEW_RELATIONSHIP_PATH)).toBeTruthy();
 
@@ -62,7 +62,7 @@ test.describe('Add/Edit/Delete relationship from explorer', () => {
       await formEditor.waitForDirty();
       await formEditor.saveAndClose();
 
-      // Verify that the entity was changed as expected
+      // Verify that the relationship file was changed as expected
       const editor = await app.openCompositeEditor(TEST_RELATIONSHIP_PATH, 'Code Editor');
       expect(await editor.textContentOfLineByLineNumber(3)).toMatch('name: "NewRelationshipRenamed"');
       expect(await editor.textContentOfLineByLineNumber(4)).toMatch('description: "NewRelationshipRenamed"');

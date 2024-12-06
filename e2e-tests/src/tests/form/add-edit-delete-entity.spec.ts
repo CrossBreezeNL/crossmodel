@@ -43,6 +43,7 @@ test.describe('Add/Edit/Delete entity from explorer', () => {
       explorer.activate();
       expect(await explorer.existsFileNode(NEW_ENTITY_PATH)).toBeTruthy();
 
+      // Verify the entity file contents is as expected.
       const editor = await app.openCompositeEditor(NEW_ENTITY_PATH, 'Code Editor');
       expect(await editor.textContentOfLineByLineNumber(1)).toBe('entity:');
       expect(await editor.textContentOfLineByLineNumber(2)).toMatch('id: NewEntity');
@@ -50,7 +51,7 @@ test.describe('Add/Edit/Delete entity from explorer', () => {
       await editor.saveAndClose();
    });
 
-   test('Edit entity name & description using form editor ', async () => {
+   test('Edit entity name & description using form editor', async () => {
       const formEditor = await app.openCompositeEditor(NEW_ENTITY_PATH, 'Form Editor');
       const form = await formEditor.formFor('entity');
       const general = await form.generalSection;
@@ -59,7 +60,7 @@ test.describe('Add/Edit/Delete entity from explorer', () => {
       await formEditor.waitForDirty();
       await formEditor.saveAndClose();
 
-      // Verify that the entity was changed as expected
+      // Verify that the entity file was changed as expected
       const editor = await app.openCompositeEditor(NEW_ENTITY_PATH, 'Code Editor');
       expect(await editor.textContentOfLineByLineNumber(3)).toMatch('name: "NewEntityRenamed"');
       expect(await editor.textContentOfLineByLineNumber(4)).toMatch('description: "NewEntityDescription"');

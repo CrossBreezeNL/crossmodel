@@ -1,0 +1,16 @@
+systemDiagram:
+    id: CRM
+    name: "CRM"
+    nodes:
+      - id: OrderNode
+        entity: Order
+        x: 1034
+        y: 253
+        width: 163.921875
+        height: 136
+      - id: CustomerNode
+        entity: Customer
+        x: 693
+        y: 231
+        width: 157.5
+        height: 176

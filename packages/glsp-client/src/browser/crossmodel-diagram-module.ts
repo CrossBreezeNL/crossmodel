@@ -8,6 +8,7 @@ import {
    GLSPMousePositionTracker,
    GlspCommandPalette,
    LogLevel,
+   MetadataPlacer,
    MouseDeleteTool,
    StatusOverlay,
    TYPES,
@@ -18,6 +19,7 @@ import {
 } from '@eclipse-glsp/client';
 import { GlspSelectionDataService } from '@eclipse-glsp/theia-integration';
 import { ContainerModule, injectable, interfaces } from '@theia/core/shared/inversify';
+import { CmMetadataPlacer } from './cm-metadata-placer';
 import { CrossModelCommandPalette, CrossModelMousePositionTracker } from './cross-model-command-palette';
 import { CrossModelMouseDeleteTool } from './cross-model-delete-tool';
 import { CrossModelDiagramStartup } from './cross-model-diagram-startup';
@@ -51,6 +53,7 @@ export function createCrossModelDiagramModule(registry: interfaces.ContainerModu
       bindOrRebind(context, TYPES.IToolManager).toService(CrossModelToolManager);
 
       bindAsService(bind, TYPES.IUIExtension, CrossModelErrorExtension);
+      rebind(MetadataPlacer).to(CmMetadataPlacer).inSingletonScope();
    });
 }
 

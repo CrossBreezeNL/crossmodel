@@ -27,7 +27,7 @@ export function Header({ name, id, iconClass }: HeaderProps): React.ReactElement
          <Toolbar variant='dense' sx={{ minHeight: '40px' }}>
             <Box sx={{ display: { xs: 'none', sm: 'flex' }, flexGrow: 1, gap: '1em', alignItems: 'center' }}>
                {iconClass && <Icon baseClassName='codicon' className={iconClass} sx={{ fontSize: '1.7em !important' }} />}
-               <Typography variant='h6' component='div'>
+               <Typography variant='h6' component='div' className='form-title'>
                   {name}
                   {saveModel && dirty ? '*' : ''}
                </Typography>

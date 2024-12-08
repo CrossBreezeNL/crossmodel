@@ -26,3 +26,9 @@ systemDiagram:
         y: 495
         width: 155.22567415237427
         height: 73.93824672698975
+      - id: SomeProductNode
+        entity: ExampleOtherModel.SomeProduct
+        x: 671
+        y: 352
+        width: 207.14583730697632
+        height: 55.33333396911621

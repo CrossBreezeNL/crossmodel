@@ -1,0 +1,7 @@
+entity:
+    id: SomeProduct
+    name: "SomeProduct"
+    attributes:
+      - id: SomeProductAttribute
+        name: "SomeProductAttribute"
+        datatype: "Varchar"

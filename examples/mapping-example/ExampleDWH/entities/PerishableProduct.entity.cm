@@ -1,10 +1,10 @@
 entity:
     id: PerishableProduct
     name: "PerishableProduct"
+    description: "A product with an expiration date"
     inherits:
       - PhysicalProduct
       - ExampleOtherModel.SomeProduct
-    description: "A product with an expiration date"
     attributes:
       - id: ProductID
         name: "ProductID"

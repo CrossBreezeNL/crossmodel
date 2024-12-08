@@ -193,6 +193,12 @@
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
       "disableOptimisticBPs": true
+    },
+    {
+      "name": "Debug CrossModel Theme",
+      "type": "extensionHost",
+      "request": "launch",
+      "args": ["--extensionDevelopmentPath=${workspaceFolder}/extensions/crossmodel-theme"]
     }
   ],
   "compounds": [

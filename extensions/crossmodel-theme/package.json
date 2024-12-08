@@ -42,7 +42,7 @@
     ]
   },
   "devDependencies": {
-    "@vscode/vsce": "^2.17.0"
+    "@vscode/vsce": "^2.32.1-0"
   },
   "engines": {
     "vscode": "^1.95.0"

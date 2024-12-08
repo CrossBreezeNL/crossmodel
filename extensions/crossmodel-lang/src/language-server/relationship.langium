@@ -1,7 +1,7 @@
 import 'terminals'
 import 'entity'
 
-// Relationship defintion
+// Relationship definition
 Relationship:
     'relationship' ':' 
         INDENT

@@ -3,12 +3,24 @@
  ********************************************************************************/
 
 import { beforeAll, describe, expect, test } from '@jest/globals';
-import { Reference } from 'langium';
+import { Reference, URI } from 'langium';
 
 import _ from 'lodash';
 import { CrossModelSerializer } from '../../../src/language-server/cross-model-serializer.js';
 import { CrossModelRoot, Entity, Relationship } from '../../../src/language-server/generated/ast.js';
-import { createCrossModelTestServices } from '../test-utils/utils.js';
+import {
+   createEntity,
+   createEntityAttribute,
+   createEntityNode,
+   createRelationship,
+   createRelationshipEdge,
+   createSystemDiagram
+} from '../../../src/language-server/util/ast-util.js';
+import { customer } from '../test-utils/test-documents/entity/customer.js';
+import { sub_customer } from '../test-utils/test-documents/entity/sub_customer.js';
+import { sub_customer_cycle } from '../test-utils/test-documents/entity/sub_customer_cycle.js';
+import { sub_customer_multi } from '../test-utils/test-documents/entity/sub_customer_multi.js';
+import { createCrossModelTestServices, parseDocuments, parseEntity, testUri } from '../test-utils/utils.js';
 
 const services = createCrossModelTestServices();
 
@@ -25,73 +37,27 @@ describe('CrossModelLexer', () => {
       let crossModelRootWithAttributesDifPlace: CrossModelRoot;
 
       beforeAll(() => {
-         crossModelRoot = {
-            $type: 'CrossModelRoot'
-         };
-
-         crossModelRootWithAttributesDifPlace = _.cloneDeep(crossModelRoot);
-
-         crossModelRoot.entity = {
-            $container: crossModelRoot,
-            $type: 'Entity',
+         crossModelRoot = { $type: 'CrossModelRoot' };
+         crossModelRoot.entity = createEntity(crossModelRoot, 'testId', {
             description: 'Test description',
-            id: 'testId',
-            name: 'test Name',
-            attributes: [],
-            customProperties: []
-         };
+            name: 'test Name'
+         });
 
          crossModelRootWithoutAttributes = _.cloneDeep(crossModelRoot);
 
          crossModelRoot.entity.attributes = [
-            {
-               identifier: false,
-               $container: crossModelRoot.entity,
-               $type: 'EntityAttribute',
-               id: 'Attribute1',
-               name: 'Attribute1',
-               datatype: 'Datatype Attribute 1',
-               customProperties: []
-            },
-            {
-               identifier: false,
-               $container: crossModelRoot.entity,
-               $type: 'EntityAttribute',
-               id: 'Attribute2',
-               name: 'Attribute2',
-               datatype: 'Datatype Attribute 2',
-               customProperties: []
-            }
+            createEntityAttribute(crossModelRoot.entity, 'Attribute1', 'Attribute1', 'Datatype Attribute 1'),
+            createEntityAttribute(crossModelRoot.entity, 'Attribute2', 'Attribute2', 'Datatype Attribute 2')
          ];
 
-         crossModelRootWithAttributesDifPlace.entity = {
-            $container: crossModelRoot,
-            $type: 'Entity',
-            description: 'Test description',
-            attributes: [],
-            id: 'testId',
+         crossModelRootWithAttributesDifPlace = { $type: 'CrossModelRoot' };
+         crossModelRootWithAttributesDifPlace.entity = createEntity(crossModelRoot, 'testId', {
             name: 'test Name',
-            customProperties: []
-         };
+            description: 'Test description'
+         });
          crossModelRootWithAttributesDifPlace.entity.attributes = [
-            {
-               identifier: false,
-               $container: crossModelRoot.entity,
-               $type: 'EntityAttribute',
-               id: 'Attribute1',
-               name: 'Attribute1',
-               datatype: 'Datatype Attribute 1',
-               customProperties: []
-            },
-            {
-               identifier: false,
-               $container: crossModelRoot.entity,
-               $type: 'EntityAttribute',
-               id: 'Attribute2',
-               name: 'Attribute2',
-               datatype: 'Datatype Attribute 2',
-               customProperties: []
-            }
+            createEntityAttribute(crossModelRoot.entity, 'Attribute1', 'Attribute1', 'Datatype Attribute 1'),
+            createEntityAttribute(crossModelRoot.entity, 'Attribute2', 'Attribute2', 'Datatype Attribute 2')
          ];
       });
 
@@ -102,13 +68,16 @@ describe('CrossModelLexer', () => {
 
       test('serialize entity without attributes', () => {
          const parseResult = serializer.serialize(crossModelRootWithoutAttributes);
-
          expect(parseResult).toBe(expected_result2);
       });
 
       test('serialize entity with attributes in different place', () => {
          const parseResult = serializer.serialize(crossModelRootWithAttributesDifPlace);
+         expect(parseResult).toBe(expected_result3);
+      });
 
+      test('serialize entity with inheritance in different place', () => {
+         const parseResult = serializer.serialize(crossModelRootWithAttributesDifPlace);
          expect(parseResult).toBe(expected_result3);
       });
    });
@@ -123,42 +92,24 @@ describe('CrossModelLexer', () => {
 
          const ref1: Reference<Entity> = {
             $refText: 'Ref1',
-            ref: {
-               $container: crossModelRoot,
-               $type: 'Entity',
-               description: 'Test description',
-               attributes: [],
-               id: 'Ref1',
+            ref: createEntity(crossModelRoot, 'Ref1', {
                name: 'test Name',
-               customProperties: []
-            }
+               description: 'Test description'
+            })
          };
 
          const ref2: Reference<Entity> = {
             $refText: 'Ref2',
-            ref: {
-               $container: crossModelRoot,
-               $type: 'Entity',
-               description: 'Test description',
-               attributes: [],
-               id: 'Ref2',
+            ref: createEntity(crossModelRoot, 'Ref2', {
                name: 'test Name',
-               customProperties: []
-            }
+               description: 'Test description'
+            })
          };
 
-         crossModelRoot.relationship = {
-            $container: crossModelRoot,
-            $type: 'Relationship',
+         crossModelRoot.relationship = createRelationship(crossModelRoot, 'testId', 'n:m', ref1, ref2, {
             description: 'Test description',
-            id: 'testId',
-            name: 'test Name',
-            parent: ref1,
-            child: ref2,
-            type: 'n:m',
-            attributes: [],
-            customProperties: []
-         };
+            name: 'test Name'
+         });
       });
 
       test('serialize entity with attributes', () => {
@@ -177,100 +128,96 @@ describe('CrossModelLexer', () => {
 
          const ref1: Reference<Entity> = {
             $refText: 'Ref1',
-            ref: {
-               $container: crossModelRoot,
-               $type: 'Entity',
-               description: 'Test description',
-               attributes: [],
-               id: 'Ref1',
+            ref: createEntity(crossModelRoot, 'Ref1', {
                name: 'test Name',
-               customProperties: []
-            }
+               description: 'Test description'
+            })
          };
 
          const ref2: Reference<Entity> = {
             $refText: 'Ref2',
-            ref: {
-               $container: crossModelRoot,
-               $type: 'Entity',
-               description: 'Test description',
-               attributes: [],
-               id: 'Ref2',
+            ref: createEntity(crossModelRoot, 'Ref2', {
                name: 'test Name',
-               customProperties: []
-            }
+               description: 'Test description'
+            })
          };
 
          const ref3: Reference<Relationship> = {
             $refText: 'Ref3',
-            ref: {
-               $container: crossModelRoot,
-               $type: 'Relationship',
+            ref: createRelationship(crossModelRoot, 'testId', 'n:m', ref1, ref2, {
                description: 'Test description',
-               id: 'testId',
-               name: 'test Name',
-               parent: ref1,
-               child: ref2,
-               type: 'n:m',
-               attributes: [],
-               customProperties: []
-            }
+               name: 'test Name'
+            })
          };
 
-         crossModelRoot.systemDiagram = {
-            $container: crossModelRoot,
-            $type: 'SystemDiagram',
+         crossModelRoot.systemDiagram = createSystemDiagram(crossModelRoot, 'testId', {
             description: 'Test description',
-            id: 'testId',
-            name: 'test Name',
-            nodes: [],
-            edges: [],
-            customProperties: []
-         };
+            name: 'test Name'
+         });
 
          crossModelRoot.systemDiagram.nodes = [
-            {
-               $container: crossModelRoot.systemDiagram,
-               $type: 'EntityNode',
-               x: 100,
-               y: 101,
-               width: 102,
-               height: 102,
-               entity: ref1,
-               id: 'Node1',
-               name: 'Node 1',
-               customProperties: []
-            },
-            {
-               $container: crossModelRoot.systemDiagram,
-               $type: 'EntityNode',
-               x: 100,
-               y: 101,
-               width: 102,
-               height: 102,
-               entity: ref2,
-               id: 'Node2',
-               name: 'Node 2',
-               customProperties: []
-            }
+            createEntityNode(
+               crossModelRoot.systemDiagram,
+               'Node1',
+               ref1,
+               { x: 100, y: 101 },
+               { width: 102, height: 102 },
+               {
+                  name: 'Node 1'
+               }
+            ),
+            createEntityNode(
+               crossModelRoot.systemDiagram,
+               'Node2',
+               ref2,
+               { x: 100, y: 101 },
+               { width: 102, height: 102 },
+               {
+                  name: 'Node 2'
+               }
+            )
          ];
 
          crossModelRoot.systemDiagram.edges = [
-            {
-               $container: crossModelRoot.systemDiagram,
-               $type: 'RelationshipEdge',
-               relationship: ref3,
-               id: 'Edge1',
-               sourceNode: { $refText: 'A' },
-               targetNode: { $refText: 'B' },
-               customProperties: []
-            }
+            createRelationshipEdge(crossModelRoot.systemDiagram, 'Edge1', ref3, { $refText: 'A' }, { $refText: 'B' })
          ];
       });
 
       test('serialize entity with attributes', () => {
          const parseResult = serializer.serialize(crossModelRoot);
          expect(parseResult).toBe(expected_result5);
+      });
+   });
+
+   describe('Serialize entity with inheritance', () => {
+      const customerDocumentUri = testUri('customer');
+
+      beforeAll(async () => {
+         await parseDocuments([{ services, text: customer, documentUri: customerDocumentUri }]);
+      });
+
+      test('Single inheritance', async () => {
+         const subCustomer = await parseEntity({ services, text: sub_customer });
+         expect(subCustomer.superEntities).toHaveLength(1);
+         expect(subCustomer.superEntities[0].$refText).toBe('Customer');
+      });
+
+      test('Multiple inheritance', async () => {
+         const subCustomer = await parseEntity({ services, text: sub_customer_multi });
+         expect(subCustomer.superEntities).toHaveLength(2);
+         expect(subCustomer.superEntities[0].$refText).toBe('Customer');
+         expect(subCustomer.superEntities[1].$refText).toBe('SubCustomer');
+      });
+
+      test('Inheritance Cycle', async () => {
+         services.shared.workspace.LangiumDocuments.deleteDocument(URI.parse(customerDocumentUri));
+         const newCustomer = await parseEntity({ services, text: sub_customer_cycle, documentUri: 'customer', validation: true });
+         expect(newCustomer.$document.diagnostics).toBeDefined();
+         expect(newCustomer.$document.diagnostics).toEqual(
+            expect.arrayContaining([
+               expect.objectContaining({ message: 'Inheritance cycle detected: Customer -> SubCustomer -> Customer.' })
+            ])
+         );
       });
    });
 });

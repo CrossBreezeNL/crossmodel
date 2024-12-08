@@ -1,0 +1,22 @@
+entity:
+    id: PhysicalProduct
+    name: "PhysicalProduct"
+    inherits:
+      - Product
+    attributes:
+      - id: ProductID
+        name: "ProductID"
+        datatype: "Integer"
+        identifier: true
+      - id: WeightInKG
+        name: "WeightInKG"
+        datatype: "Float"
+      - id: Width
+        name: "Width"
+        datatype: "Integer"
+      - id: Attribute12
+        name: "Height"
+        datatype: "Integer"
+      - id: Depth
+        name: "Depth"
+        datatype: "Integer"

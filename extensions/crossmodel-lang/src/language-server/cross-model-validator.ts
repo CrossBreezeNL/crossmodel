@@ -44,22 +44,6 @@ export namespace FilenameNotMatchingDiagnostic {
    }
 }
 
-export namespace CrossModelIssueCodes {
-   export const FilenameNotMatching = 'filename-not-matching';
-}
-
-export interface FilenameNotMatchingDiagnostic extends Diagnostic {
-   data: {
-      code: typeof CrossModelIssueCodes.FilenameNotMatching;
-   };
-}
-
-export namespace FilenameNotMatchingDiagnostic {
-   export function is(diagnostic: Diagnostic): diagnostic is FilenameNotMatchingDiagnostic {
-      return diagnostic.data?.code === CrossModelIssueCodes.FilenameNotMatching;
-   }
-}
-
 /**
  * Register custom validation checks.
  */

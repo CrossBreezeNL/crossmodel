@@ -112,10 +112,10 @@
   "devDependencies": {
     "@types/jest": "^29.5.6",
     "@types/node": "~16.18.41",
-    "@types/vscode": "~1.67.0",
+    "@types/vscode": "^1.95.0",
     "@typescript-eslint/eslint-plugin": "~6.4.1",
     "@typescript-eslint/parser": "~6.4.1",
-    "@vscode/vsce": "^2.17.0",
+    "@vscode/vsce": "^2.32.1-0",
     "cross-env": "~7.0.3",
     "esbuild": "~0.19.7",
     "eslint": "^8.17.0",
@@ -124,6 +124,6 @@
     "typescript": "~5.3.2"
   },
   "engines": {
-    "vscode": "^1.67.0"
+    "vscode": "^1.95.0"
   }
 }

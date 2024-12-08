@@ -54,6 +54,7 @@
     "frontend": {
       "config": {
         "applicationName": "CrossModel Community Edition",
+        "defaultTheme": "crossmodel-light",
         "preferences": {
           "security.workspace.trust.enabled": false,
           "files.associations": {

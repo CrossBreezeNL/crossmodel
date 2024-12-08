@@ -1,0 +1,50 @@
+{
+  "name": "crossmodel-theme",
+  "displayName": "crossmodel-theme",
+  "version": "0.0.0",
+  "private": true,
+  "description": "CrossModel Theme",
+  "categories": [
+    "Themes"
+  ],
+  "homepage": "https://github.com/CrossBreezeNL/crossmodel",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CrossBreezeNL/crossmodel"
+  },
+  "license": "AGPL-3.0-or-later",
+  "author": {
+    "name": "CrossBreeze",
+    "email": "devops@crossbreeze.nl"
+  },
+  "scripts": {
+    "build": "echo \"Nothing to build\"",
+    "clean": "rimraf out *.vsix",
+    "package:vsix": "vsce package --yarn",
+    "symlink": "yarn symlink:browser && yarn symlink:electron",
+    "symlink:browser": "symlink-dir . ../../applications/browser-app/plugins/crossmodel-theme",
+    "symlink:electron": "symlink-dir . ../../applications/electron-app/plugins/crossmodel-theme"
+  },
+  "contributes": {
+    "themes": [
+      {
+        "id": "crossmodel-light",
+        "label": "CrossModel Light",
+        "uiTheme": "vs",
+        "path": "./themes/crossmodel-light-color-theme.json"
+      },
+      {
+        "id": "crossmodel-dark",
+        "label": "CrossModel Dark",
+        "uiTheme": "vs-dark",
+        "path": "./themes/crossmodel-dark-color-theme.json"
+      }
+    ]
+  },
+  "devDependencies": {
+    "@vscode/vsce": "^2.17.0"
+  },
+  "engines": {
+    "vscode": "^1.95.0"
+  }
+}

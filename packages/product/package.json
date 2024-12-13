@@ -31,8 +31,12 @@
   "dependencies": {
     "@theia/core": "1.49.1",
     "@theia/getting-started": "1.49.1",
+    "@theia/markers": "1.49.1",
     "@theia/monaco": "1.49.1",
-    "@theia/workspace": "1.49.1"
+    "@theia/navigator": "1.49.1",
+    "@theia/property-view": "1.49.1",
+    "@theia/workspace": "1.49.1",
+    "@theia/search-in-workspace": "1.49.1"
   },
   "theiaExtensions": [
     {

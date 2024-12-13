@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "@crossbreeze/protocol": "0.0.0",
-    "@theia/core": "1.49.1"
+    "@theia/core": "1.57.1"
   },
   "theiaExtensions": [
     {

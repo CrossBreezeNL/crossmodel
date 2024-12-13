@@ -10,7 +10,6 @@ import {
    LogLevel,
    MetadataPlacer,
    MouseDeleteTool,
-   StatusOverlay,
    TYPES,
    ToolManager,
    ToolPalette,
@@ -46,26 +45,12 @@ export function createCrossModelDiagramModule(registry: interfaces.ContainerModu
       bind(CrossModelMousePositionTracker).toSelf().inSingletonScope();
       bindOrRebind(context, GLSPMousePositionTracker).toService(CrossModelMousePositionTracker);
 
-      bind(CrossModelStatusOverlay).toSelf().inSingletonScope();
-      bindOrRebind(context, StatusOverlay).toService(CrossModelStatusOverlay);
-
       bind(CrossModelToolManager).toSelf().inSingletonScope();
       bindOrRebind(context, TYPES.IToolManager).toService(CrossModelToolManager);
 
       bindAsService(bind, TYPES.IUIExtension, CrossModelErrorExtension);
       rebind(MetadataPlacer).to(CmMetadataPlacer).inSingletonScope();
    });
-}
-
-@injectable()
-export class CrossModelStatusOverlay extends StatusOverlay {
-   override preInitialize(): void {
-      // initialize the container in pre request model as otherwise the HTML container is on the wrong root that gets replaced
-   }
-
-   preRequestModel(): void {
-      this.show(this.editorContext.modelRoot);
-   }
 }
 
 @injectable()

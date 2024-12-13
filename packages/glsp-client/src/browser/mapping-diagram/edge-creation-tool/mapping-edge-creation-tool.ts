@@ -16,9 +16,9 @@ import {
    findParentByFeature,
    GConnectableElement,
    getAbsolutePosition,
-   GLSPActionDispatcher,
    GModelElement,
    HoverFeedbackAction,
+   IActionDispatcher,
    IFeedbackActionDispatcher,
    isBoundsAware,
    ITypeHintProvider,
@@ -130,7 +130,7 @@ export class MappingEdgeEndMovingListener extends FeedbackEdgeEndMovingMouseList
 export class MappingEdgeCreationToolMouseListener extends EdgeCreationToolMouseListener implements Disposable {
    constructor(
       protected override triggerAction: MappingEdgeCreationAction,
-      actionDispatcher: GLSPActionDispatcher,
+      actionDispatcher: IActionDispatcher,
       typeHintProvider: ITypeHintProvider,
       tool: EdgeCreationTool
    ) {

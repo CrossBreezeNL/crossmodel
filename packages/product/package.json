@@ -31,10 +31,12 @@
   "dependencies": {
     "@theia/core": "1.49.1",
     "@theia/getting-started": "1.49.1",
+    "@theia/monaco": "1.49.1",
     "@theia/workspace": "1.49.1"
   },
   "theiaExtensions": [
     {
+      "frontend": "lib/browser/product-frontend-module",
       "electronMain": "lib/electron-main/product-electron-main-module"
     }
   ]

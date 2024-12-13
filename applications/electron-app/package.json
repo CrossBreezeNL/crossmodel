@@ -64,7 +64,10 @@
     "frontend": {
       "config": {
         "applicationName": "CrossModel Community Edition",
-        "defaultTheme": "crossmodel-light",
+        "defaultTheme": {
+          "light": "crossmodel-light",
+          "dark": "crossmodel-dark"
+        },
         "reloadOnReconnect": true,
         "preferences": {
           "security.workspace.trust.enabled": false,

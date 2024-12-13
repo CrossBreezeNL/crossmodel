@@ -2,27 +2,25 @@ import 'terminals'
 import 'entity'
 import 'relationship'
 
-// Diagram defintion
+// Diagram definition
 SystemDiagram:
     ('systemDiagram' | 'diagram') ':' 
-    (
-        INDENT
-            'id' ':' id=ID
-            ('name' ':'  name=STRING)?
-            ('description' ':' description=STRING)?
-            ('nodes' ':'
-                INDENT 
-                    (LIST_ITEM nodes+=EntityNode)+
-                DEDENT
-            )?
-            ('edges' ':'
-                INDENT 
-                    (LIST_ITEM edges+=RelationshipEdge)+
-                DEDENT
-            )?
-            CustomProperties?
-        DEDENT
-    )*
+    INDENT
+        'id' ':' id=ID
+        ('name' ':'  name=STRING)?
+        ('description' ':' description=STRING)?
+        ('nodes' ':'
+            INDENT 
+                (LIST_ITEM nodes+=EntityNode)+
+            DEDENT
+        )?
+        ('edges' ':'
+            INDENT 
+                (LIST_ITEM edges+=RelationshipEdge)+
+            DEDENT
+        )?
+        CustomProperties?
+    DEDENT
 ;
 
 

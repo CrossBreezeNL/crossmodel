@@ -10,6 +10,7 @@ import {
    Attribute,
    AttributeMapping,
    CrossModelAstType,
+   Entity,
    isEntity,
    isEntityAttribute,
    isMapping,
@@ -52,14 +53,15 @@ export function registerValidationChecks(services: CrossModelServices): void {
 
    const checks: ValidationChecks<CrossModelAstType> = {
       AstNode: validator.checkNode,
-      RelationshipEdge: validator.checkRelationshipEdge,
-      Mapping: validator.checkMapping,
-      SourceObject: validator.checkSourceObject,
-      Relationship: validator.checkRelationship,
       AttributeMapping: validator.checkAttributeMapping,
-      TargetObject: validator.checkTargetObject,
+      Entity: validator.checkEntity,
+      Mapping: validator.checkMapping,
+      Relationship: validator.checkRelationship,
+      RelationshipEdge: validator.checkRelationshipEdge,
+      SourceObject: validator.checkSourceObject,
+      SourceObjectCondition: validator.checkSourceObjectCondition,
       SourceObjectDependency: validator.checkSourceObjectDependency,
-      SourceObjectCondition: validator.checkSourceObjectCondition
+      TargetObject: validator.checkTargetObject
    };
    registry.register(checks, validator);
 }
@@ -140,6 +142,55 @@ export class CrossModelValidator {
             knownIds.push(node.id);
          }
       }
+   }
+
+   checkEntity(entity: Entity, accept: ValidationAcceptor): void {
+      const cycle = this.findInheritanceCycle(entity);
+      if (cycle.length > 0) {
+         accept('error', `Inheritance cycle detected: ${cycle.join(' -> ')}.`, { node: entity, property: 'superEntities' });
+      }
+   }
+
+   protected findInheritanceCycle(entity: Entity): string[] {
+      const visited: Set<string> = new Set();
+      const recursionStack: Set<string> = new Set();
+      const path: string[] = [];
+
+      function depthFirst(current: Entity): string[] {
+         const currentId = current.id;
+
+         // Mark the current node as visited and add to recursion stack
+         visited.add(currentId);
+         recursionStack.add(currentId);
+         path.push(currentId);
+
+         for (const superEntityRef of current.superEntities) {
+            const superEntity = superEntityRef.ref;
+            if (!superEntity) {
+               continue; // Ignore unresolved references
+            }
+            const superId = superEntity.id;
+            if (!visited.has(superId)) {
+               const cycle = depthFirst(superEntity);
+               if (cycle.length > 0) {
+                  return cycle; // Propagate the detected cycle up the recursion
+               }
+            } else if (recursionStack.has(superId)) {
+               // Cycle detected
+               const cycleStartIndex = path.indexOf(superId);
+               const cycle = path.slice(cycleStartIndex);
+               cycle.push(superId);
+               return cycle;
+            }
+         }
+
+         // Backtrack: remove the current node from recursion stack and path
+         recursionStack.delete(currentId);
+         path.pop();
+         return []; // No cycle detected in this path
+      }
+
+      return depthFirst(entity);
    }
 
    checkRelationship(relationship: Relationship, accept: ValidationAcceptor): void {

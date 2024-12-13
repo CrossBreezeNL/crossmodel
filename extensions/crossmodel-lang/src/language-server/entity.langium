@@ -7,6 +7,11 @@ Entity:
             'id' ':' id=ID
             ('name' ':'  name=STRING)?
             ('description' ':' description=STRING)?
+            ('inherits' ':'
+                INDENT
+                    (LIST_ITEM superEntities+=[Entity:IDReference])+
+                DEDENT
+            )?
             ('attributes' ':'
                 INDENT
                     (LIST_ITEM attributes+=EntityAttribute)+

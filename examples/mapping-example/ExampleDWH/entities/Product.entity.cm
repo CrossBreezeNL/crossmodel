@@ -1,0 +1,17 @@
+entity:
+    id: Product
+    name: "Product"
+    attributes:
+      - id: Attribute
+        name: "ProductID"
+        datatype: "Integer"
+        identifier: true
+      - id: Attribute1
+        name: "Name"
+        datatype: "Varchar"
+      - id: Attribute12
+        name: "Description"
+        datatype: "Varchar"
+      - id: Attribute123
+        name: "Price"
+        datatype: "Float"

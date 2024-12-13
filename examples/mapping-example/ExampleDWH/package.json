@@ -3,6 +3,7 @@
     "version": "1.0.0" ,
     "dependencies": {
         "ExampleCRM": "1.0.0",
-        "ExampleMasterdata": "1.0.0"
+        "ExampleMasterdata": "1.0.0",
+        "ExampleOtherModel": "1.0.0"
     }
 }

@@ -51,6 +51,7 @@
     "@theia/preferences": "1.49.1",
     "@theia/process": "1.49.1",
     "@theia/terminal": "1.49.1",
+    "@theia/vsx-registry": "1.49.1",
     "@theia/workspace": "1.49.1"
   },
   "devDependencies": {
@@ -73,7 +74,8 @@
           "security.workspace.trust.enabled": false,
           "files.associations": {
             "*.port": "ignore"
-          }
+          },
+          "git.openRepositoryInParentFolders": "always"
         }
       }
     },
@@ -91,7 +93,8 @@
   "theiaPlugins": {
     "vscode.json-1.88.1": "https://open-vsx.org/api/vscode/json/1.88.1/file/vscode.json-1.88.1.vsix",
     "vscode.json-language-features-1.88.1": "https://open-vsx.org/api/vscode/json-language-features/1.88.1/file/vscode.json-language-features-1.88.1.vsix",
-    "vscode.npm-1.88.1": "https://open-vsx.org/api/vscode/npm/1.88.1/file/vscode.npm-1.88.1.vsix"
+    "vscode.npm-1.88.1": "https://open-vsx.org/api/vscode/npm/1.88.1/file/vscode.npm-1.88.1.vsix",
+    "vscode.git-1.88.1": "https://open-vsx.org/api/vscode/git/1.88.1/file/vscode.git-1.88.1.vsix"
   },
   "theiaPluginsDir": "plugins"
 }

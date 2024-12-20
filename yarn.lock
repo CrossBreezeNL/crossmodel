@@ -3080,6 +3080,24 @@
     "@theia/core" "1.49.1"
     tslib "^2.6.2"
 
+"@theia/vsx-registry@1.49.1":
+  version "1.49.1"
+  resolved "https://registry.yarnpkg.com/@theia/vsx-registry/-/vsx-registry-1.49.1.tgz#759faed3678013fe169e3755a5d6c600cd8f4d70"
+  integrity sha512-wKycl4HFWGogCwJ0T+0JcjJdxlhJxt7BBjgSsYBz//udOhJM/MefVO8B0BFHh73W/+gG/JfL1WYCTDWNkSAukw==
+  dependencies:
+    "@theia/core" "1.49.1"
+    "@theia/filesystem" "1.49.1"
+    "@theia/navigator" "1.49.1"
+    "@theia/ovsx-client" "1.49.1"
+    "@theia/plugin-ext" "1.49.1"
+    "@theia/plugin-ext-vscode" "1.49.1"
+    "@theia/preferences" "1.49.1"
+    "@theia/workspace" "1.49.1"
+    luxon "^2.4.0"
+    p-debounce "^2.1.0"
+    semver "^7.5.4"
+    tslib "^2.6.2"
+
 "@theia/workspace@1.49.1":
   version "1.49.1"
   resolved "https://registry.yarnpkg.com/@theia/workspace/-/workspace-1.49.1.tgz#ba63b3d70a178fa913395784eaeb100e7e927a55"
@@ -10977,6 +10995,11 @@ lru-cache@^6.0.0:
   version "10.0.1"
   resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-10.0.1.tgz#0a3be479df549cca0e5d693ac402ff19537a6b7a"
   integrity sha512-IJ4uwUTi2qCccrioU6g9g/5rvvVl13bsdczUUcqbciD9iLr095yj8DQKdObriEvuNSx325N1rV1O0sJFszx75g==
+
+luxon@^2.4.0:
+  version "2.5.2"
+  resolved "https://registry.yarnpkg.com/luxon/-/luxon-2.5.2.tgz#17ed497f0277e72d58a4756d6a9abee4681457b6"
+  integrity sha512-Yg7/RDp4nedqmLgyH0LwgGRvMEKVzKbUdkBYyCosbHgJ+kaOUx0qzSiSatVc3DFygnirTPYnMM2P5dg2uH1WvA==
 
 lz-string@^1.4.4:
   version "1.5.0"

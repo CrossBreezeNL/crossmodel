@@ -64,6 +64,10 @@
     "frontend": {
       "config": {
         "applicationName": "CrossModel Community Edition",
+        "defaultTheme": {
+          "light": "crossmodel-light",
+          "dark": "crossmodel-dark"
+        },
         "reloadOnReconnect": true,
         "preferences": {
           "security.workspace.trust.enabled": false,
@@ -85,9 +89,9 @@
     }
   },
   "theiaPlugins": {
-    "vscode.json-1.66.2": "https://open-vsx.org/api/vscode/json/1.66.2/file/vscode.json-1.66.2.vsix",
-    "vscode.json-language-features-1.66.2": "https://open-vsx.org/api/vscode/json-language-features/1.66.2/file/vscode.json-language-features-1.66.2.vsix",
-    "vscode.npm-1.66.2": "https://open-vsx.org/api/vscode/npm/1.66.2/file/vscode.npm-1.66.2.vsix"
+    "vscode.json-1.88.1": "https://open-vsx.org/api/vscode/json/1.88.1/file/vscode.json-1.88.1.vsix",
+    "vscode.json-language-features-1.88.1": "https://open-vsx.org/api/vscode/json-language-features/1.88.1/file/vscode.json-language-features-1.88.1.vsix",
+    "vscode.npm-1.88.1": "https://open-vsx.org/api/vscode/npm/1.88.1/file/vscode.npm-1.88.1.vsix"
   },
   "theiaPluginsDir": "plugins"
 }

@@ -19,3 +19,4 @@ dist
 **/playwright-report
 **/playwright/.cache
 **/allure-results
+*.vsix

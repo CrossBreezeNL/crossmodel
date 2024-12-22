@@ -17,6 +17,7 @@
     "name": "CrossBreeze",
     "email": "devops@crossbreeze.nl"
   },
+  "publisher": "CrossBreeze",
   "scripts": {
     "build": "echo \"Nothing to build\"",
     "clean": "rimraf out *.vsix",

@@ -8,6 +8,10 @@ on:
     branches:
       - feature/*
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 jobs:
   build-and-test:
     uses: ./.github/workflows/build-and-test.yml

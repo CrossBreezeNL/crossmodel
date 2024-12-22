@@ -19,10 +19,13 @@ WORKDIR /home/crossmodel
 # Copy the current directory contents to the container
 COPY . .
 
+# Increase memory limit during build.
+ENV NODE_OPTIONS=--max_old_space_size=4096
+
 # Run the build commands.
 # - Download plugins and build application
 # - Use yarn autoclean to remove unnecessary files from package dependencies
-# - Remove unnecesarry files for the browser application
+# - Remove unnecessary files for the browser application
 RUN yarn --pure-lockfile --skip-integrity-check --network-timeout 100000 && \
     yarn build:packages && \
     yarn build:extensions && \

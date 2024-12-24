@@ -17,16 +17,12 @@
     "name": "CrossBreeze",
     "email": "devops@crossbreeze.nl"
   },
+  "publisher": "CrossBreeze",
   "type": "module",
   "main": "./out/extension.cjs",
   "bin": {
     "cross-model-cli": "./bin/cli"
   },
-  "files": [
-    "bin",
-    "out",
-    "src"
-  ],
   "scripts": {
     "build": "yarn langium:generate && yarn build:esbuild",
     "build:esbuild": "node esbuild.mjs",

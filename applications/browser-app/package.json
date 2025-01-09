@@ -81,10 +81,10 @@
     }
   },
   "theiaPlugins": {
-    "vscode.json-1.88.1": "https://open-vsx.org/api/vscode/json/1.88.1/file/vscode.json-1.88.1.vsix",
-    "vscode.json-language-features-1.88.1": "https://open-vsx.org/api/vscode/json-language-features/1.88.1/file/vscode.json-language-features-1.88.1.vsix",
-    "vscode.npm-1.88.1": "https://open-vsx.org/api/vscode/npm/1.88.1/file/vscode.npm-1.88.1.vsix",
-    "vscode.git-1.88.1": "https://open-vsx.org/api/vscode/git/1.88.1/file/vscode.git-1.88.1.vsix"
+    "vscode.json-1.95.3": "https://open-vsx.org/api/vscode/json/1.95.3/file/vscode.json-1.95.3.vsix",
+    "vscode.json-language-features-1.95.3": "https://open-vsx.org/api/vscode/json-language-features/1.95.3/file/vscode.json-language-features-1.95.3.vsix",
+    "vscode.npm-1.95.3": "https://open-vsx.org/api/vscode/npm/1.95.3/file/vscode.npm-1.95.3.vsix",
+    "vscode.git-1.95.3": "https://open-vsx.org/api/vscode/git/1.95.3/file/vscode.git-1.95.3.vsix"
   },
   "theiaPluginsDir": "plugins"
 }

@@ -31,23 +31,23 @@
     "@crossbreeze/model-service": "0.0.0",
     "@crossbreeze/product": "0.0.0",
     "@crossbreeze/property-view": "0.0.0",
-    "@theia/core": "1.49.1",
-    "@theia/editor": "1.49.1",
-    "@theia/filesystem": "1.49.1",
-    "@theia/markers": "1.49.1",
-    "@theia/messages": "1.49.1",
-    "@theia/monaco": "1.49.1",
-    "@theia/navigator": "1.49.1",
-    "@theia/plugin-ext": "1.49.1",
-    "@theia/plugin-ext-vscode": "1.49.1",
-    "@theia/preferences": "1.49.1",
-    "@theia/process": "1.49.1",
-    "@theia/terminal": "1.49.1",
-    "@theia/vsx-registry": "1.49.1",
-    "@theia/workspace": "1.49.1"
+    "@theia/core": "1.57.1",
+    "@theia/editor": "1.57.1",
+    "@theia/filesystem": "1.57.1",
+    "@theia/markers": "1.57.1",
+    "@theia/messages": "1.57.1",
+    "@theia/monaco": "1.57.1",
+    "@theia/navigator": "1.57.1",
+    "@theia/plugin-ext": "1.57.1",
+    "@theia/plugin-ext-vscode": "1.57.1",
+    "@theia/preferences": "1.57.1",
+    "@theia/process": "1.57.1",
+    "@theia/terminal": "1.57.1",
+    "@theia/vsx-registry": "1.57.1",
+    "@theia/workspace": "1.57.1"
   },
   "devDependencies": {
-    "@theia/cli": "1.49.1"
+    "@theia/cli": "1.57.1"
   },
   "productName": "CrossModel Community Edition",
   "theia": {
@@ -81,10 +81,10 @@
     }
   },
   "theiaPlugins": {
-    "vscode.json-1.88.1": "https://open-vsx.org/api/vscode/json/1.88.1/file/vscode.json-1.88.1.vsix",
-    "vscode.json-language-features-1.88.1": "https://open-vsx.org/api/vscode/json-language-features/1.88.1/file/vscode.json-language-features-1.88.1.vsix",
-    "vscode.npm-1.88.1": "https://open-vsx.org/api/vscode/npm/1.88.1/file/vscode.npm-1.88.1.vsix",
-    "vscode.git-1.88.1": "https://open-vsx.org/api/vscode/git/1.88.1/file/vscode.git-1.88.1.vsix"
+    "vscode.json-1.95.3": "https://open-vsx.org/api/vscode/json/1.95.3/file/vscode.json-1.95.3.vsix",
+    "vscode.json-language-features-1.95.3": "https://open-vsx.org/api/vscode/json-language-features/1.95.3/file/vscode.json-language-features-1.95.3.vsix",
+    "vscode.npm-1.95.3": "https://open-vsx.org/api/vscode/npm/1.95.3/file/vscode.npm-1.95.3.vsix",
+    "vscode.git-1.95.3": "https://open-vsx.org/api/vscode/git/1.95.3/file/vscode.git-1.95.3.vsix"
   },
   "theiaPluginsDir": "plugins"
 }

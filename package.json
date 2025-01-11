@@ -34,6 +34,9 @@
     "watch:browser": "lerna run --parallel --ignore=\"crossmodel-app\" watch",
     "watch:electron": "lerna run --parallel --ignore=\"crossmodel-browser-app\" watch"
   },
+  "resolutions": {
+    "node-abi": "^3.71.0"
+  },
   "devDependencies": {
     "@testing-library/react": "^11.2.7",
     "@typescript-eslint/eslint-plugin": "^5.48.0",

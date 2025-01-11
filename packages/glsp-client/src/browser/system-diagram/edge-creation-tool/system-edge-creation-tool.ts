@@ -12,9 +12,9 @@ import {
    EdgeCreationTool,
    FeedbackEmitter,
    GEdge,
-   GLSPActionDispatcher,
    GModelElement,
    HoverFeedbackAction,
+   IActionDispatcher,
    ITypeHintProvider,
    ModifyCSSFeedbackAction,
    Point,
@@ -66,7 +66,7 @@ export class SystemEdgeCreationToolMouseListener extends DragAwareMouseListener 
 
    constructor(
       protected triggerAction: TriggerEdgeCreationAction,
-      protected actionDispatcher: GLSPActionDispatcher,
+      protected actionDispatcher: IActionDispatcher,
       protected typeHintProvider: ITypeHintProvider,
       protected tool: EdgeCreationTool
    ) {

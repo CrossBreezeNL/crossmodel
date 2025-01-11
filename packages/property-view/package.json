@@ -34,10 +34,10 @@
     "@crossbreeze/model-service": "0.0.0",
     "@crossbreeze/protocol": "0.0.0",
     "@crossbreeze/react-model-ui": "0.0.0",
-    "@eclipse-glsp/theia-integration": "2.2.1",
-    "@theia/core": "1.49.1",
-    "@theia/filesystem": "1.49.1",
-    "@theia/property-view": "1.49.1"
+    "@eclipse-glsp/theia-integration": "2.3.0",
+    "@theia/core": "1.57.1",
+    "@theia/filesystem": "1.57.1",
+    "@theia/property-view": "1.57.1"
   },
   "theiaExtensions": [
     {

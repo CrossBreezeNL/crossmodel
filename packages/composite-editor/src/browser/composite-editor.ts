@@ -10,16 +10,17 @@ import { codiconCSSString, ModelFileType } from '@crossbreeze/protocol';
 import { FocusStateChangedAction, toTypeGuard } from '@eclipse-glsp/client';
 import { GLSPDiagramWidget, GLSPDiagramWidgetContainer, GLSPDiagramWidgetOptions } from '@eclipse-glsp/theia-integration';
 import { GLSPDiagramLanguage } from '@eclipse-glsp/theia-integration/lib/common';
-import { Emitter, Event, URI } from '@theia/core';
+import { URI } from '@theia/core';
 import {
    BaseWidget,
    BoxLayout,
+   CompositeSaveable,
    LabelProvider,
    Message,
    Navigatable,
    NavigatableWidgetOptions,
    Saveable,
-   SaveOptions,
+   SaveableSource,
    TabPanel,
    Widget,
    WidgetManager
@@ -30,29 +31,22 @@ import { EditorOpenerOptions, EditorWidget } from '@theia/editor/lib/browser';
 import { CompositeEditorOptions } from './composite-editor-open-handler';
 import { CrossModelEditorManager } from './cross-model-editor-manager';
 
+export class ReverseCompositeSaveable extends CompositeSaveable {
+   override get saveables(): readonly Saveable[] {
+      // reverse order so we save the text editor first as otherwise we'll get a message that something changed on the file system
+      return Array.from(this.saveablesMap.keys()).reverse();
+   }
+}
+
 @injectable()
-export class CompositeEditor extends BaseWidget implements Saveable, Navigatable, Partial<GLSPDiagramWidgetContainer> {
+export class CompositeEditor extends BaseWidget implements SaveableSource, Navigatable, Partial<GLSPDiagramWidgetContainer> {
    @inject(CrossModelWidgetOptions) protected options: CompositeEditorOptions;
    @inject(LabelProvider) protected labelProvider: LabelProvider;
    @inject(WidgetManager) protected widgetManager: WidgetManager;
    @inject(CrossModelEditorManager) protected editorManager: CrossModelEditorManager;
 
-   // We can ignore the autosave property. Child widgets will handle auto saving.
-   autoSave: 'off' | 'afterDelay' | 'onFocusChange' | 'onWindowChange' = 'off';
    protected tabPanel: TabPanel;
-
-   protected onDirtyChangedEmitter = new Emitter<void>();
-   get onDirtyChanged(): Event<void> {
-      return this.onDirtyChangedEmitter.event;
-   }
-
-   protected _dirty = false;
-   get dirty(): boolean {
-      return this._dirty;
-   }
-   protected set dirty(value: boolean) {
-      this._dirty = value;
-   }
+   saveable: CompositeSaveable = new ReverseCompositeSaveable();
 
    protected _resourceUri?: URI;
    protected get resourceUri(): URI {
@@ -77,10 +71,6 @@ export class CompositeEditor extends BaseWidget implements Saveable, Navigatable
       return undefined;
    }
 
-   protected get saveables(): Saveable[] {
-      return this.tabPanel.widgets.map(widget => Saveable.get(widget)).filter((saveable): saveable is Saveable => !!saveable);
-   }
-
    @postConstruct()
    protected init(): void {
       this.id = this.options.widgetId;
@@ -100,20 +90,20 @@ export class CompositeEditor extends BaseWidget implements Saveable, Navigatable
       layout.addWidget(this.tabPanel);
 
       const primateWidget = await this.createPrimaryWidget();
-      this.tabPanel.addWidget(primateWidget);
-      const codeWidget = await this.createCodeWidget();
-      this.tabPanel.addWidget(codeWidget);
+      this.addWidget(primateWidget);
 
-      // Hook up dirty state change listeners
-      this.saveables.forEach(saveable => {
-         this.toDispose.push(
-            saveable.onDirtyChanged(() => {
-               this.handleWidgetDirtyStateChanged();
-            })
-         );
-      });
+      const codeWidget = await this.createCodeWidget();
+      this.addWidget(codeWidget);
 
       this.update();
+   }
+
+   protected addWidget(widget: Widget): void {
+      this.tabPanel.addWidget(widget);
+      const saveable = Saveable.get(widget);
+      if (saveable) {
+         this.saveable.add(saveable);
+      }
    }
 
    getResourceUri(): URI {
@@ -135,21 +125,6 @@ export class CompositeEditor extends BaseWidget implements Saveable, Navigatable
          event.previousWidget.actionDispatcher.dispatch(FocusStateChangedAction.create(false));
       } else if (event.currentWidget instanceof GLSPDiagramWidget && !event.currentWidget.hasFocus) {
          event.currentWidget.actionDispatcher.dispatch(FocusStateChangedAction.create(true));
-      }
-   }
-
-   protected handleWidgetDirtyStateChanged(): void {
-      const dirty = this.saveables.some(saveable => saveable.dirty);
-      if (this.dirty !== dirty) {
-         this.dirty = dirty;
-         this.onDirtyChangedEmitter.fire(undefined);
-      }
-   }
-
-   async save(options?: SaveOptions): Promise<void> {
-      // reverse order so we save the text editor first as otherwise we'll get a message that something changed on the file system
-      for (const saveable of this.saveables.reverse()) {
-         await saveable.save(options);
       }
    }
 

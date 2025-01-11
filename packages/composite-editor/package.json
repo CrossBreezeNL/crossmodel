@@ -31,10 +31,10 @@
     "@crossbreeze/core": "0.0.0",
     "@crossbreeze/form-client": "0.0.0",
     "@crossbreeze/glsp-client": "0.0.0",
-    "@eclipse-glsp/theia-integration": "2.2.1",
-    "@theia/core": "1.49.1",
-    "@theia/editor": "1.49.1",
-    "@theia/editor-preview": "1.49.1"
+    "@eclipse-glsp/theia-integration": "2.3.0",
+    "@theia/core": "1.57.1",
+    "@theia/editor": "1.57.1",
+    "@theia/editor-preview": "1.57.1"
   },
   "theiaExtensions": [
     {

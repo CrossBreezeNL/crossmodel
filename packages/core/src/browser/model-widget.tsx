@@ -45,6 +45,8 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
 
    protected readonly onDirtyChangedEmitter = new Emitter<void>();
    onDirtyChanged: Event<void> = this.onDirtyChangedEmitter.event;
+   protected readonly onContentChangedEmitter = new Emitter<void>();
+   onContentChanged: Event<void> = this.onContentChangedEmitter.event;
    dirty = false;
    autoSave: 'off' | 'afterDelay' | 'onFocusChange' | 'onWindowChange';
    autoSaveDelay: number;
@@ -131,6 +133,7 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
       if (this.document && !deepEqual(this.document.root, root)) {
          this.document.root = root;
          this.setDirty(true);
+         this.onContentChangedEmitter.fire();
          console.debug(`[${this.options.clientId}] Send update to server`);
          await this.modelService.update({ uri: this.document.uri, model: root, clientId: this.options.clientId });
          if (this.autoSave !== 'off' && this.dirty) {

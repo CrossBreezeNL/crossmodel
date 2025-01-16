@@ -1,0 +1,21 @@
+document:
+    id: order
+    name: "order"
+    description: "Order placed by a customer in the Customer table."
+    fields:
+      - id: id
+        name: "id"
+        datatype: "int"
+      - id: order_date
+        name: "order_date"
+        datatype: "date"
+        precision: 2
+      - id: order_number
+        name: "order_number"
+        datatype: "string"
+      - id: customer_id
+        name: "customer_id"
+        datatype: "int"
+      - id: total_amount
+        name: "total_amount"
+        datatype: "double"

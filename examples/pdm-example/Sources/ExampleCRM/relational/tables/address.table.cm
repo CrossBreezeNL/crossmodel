@@ -1,0 +1,18 @@
+table:
+    id: address
+    name: "address"
+    description: "The address of a customer."
+    columns:
+      - id: customer_id
+        name: "customer_id"
+        datatype: "int"
+        primarykey: true
+      - id: street
+        name: "street"
+        datatype: "varchar(200)"
+      - id: country_code
+        name: "country_code"
+        datatype: "varchar(3)"
+    customProperties:
+      - name: distribution_key
+        value: "country_code"

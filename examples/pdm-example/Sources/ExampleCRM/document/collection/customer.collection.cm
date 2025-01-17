@@ -1,0 +1,25 @@
+collection:
+    id: customer
+    name: "customer"
+    fields:
+      - id: id
+        name: "id"
+        datatype: "int"
+      - id: first_name
+        name: "first_name"
+        datatype: "string"
+      - id: last_name
+        name: "last_name"
+        datatype: "string"
+      - id: city
+        name: "city"
+        datatype: "string"
+      - id: country
+        name: "country"
+        datatype: "string"
+      - id: phone
+        name: "phone"
+        datatype: "string"
+      - id: birth_date
+        name: "birth_date"
+        datatype: "date"

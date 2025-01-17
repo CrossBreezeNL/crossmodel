@@ -29,6 +29,7 @@ table:
           - id
     foreignKeys:
       - id: fk_order_customer
+        name: "fk_order_customer"
         referencedTable: customer
         referencedColumns:
           - child: customer_id

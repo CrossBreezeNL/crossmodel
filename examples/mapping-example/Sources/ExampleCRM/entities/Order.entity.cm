@@ -24,4 +24,4 @@ entity:
         scale: 6
     identifier:
       - attributes:
-        - id
+        - Id

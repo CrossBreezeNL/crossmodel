@@ -1,4 +1,4 @@
-document:
+collection:
     id: order
     name: "order"
     description: "Order placed by a customer in the Customer table."

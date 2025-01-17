@@ -5,14 +5,27 @@ table:
     columns:
       - id: customer_id
         name: "customer_id"
-        datatype: "int"
-        primarykey: true
+        datatype: "integer"
       - id: street
         name: "street"
-        datatype: "varchar(200)"
+        datatype: "varchar"
+        length: 200
       - id: country_code
         name: "country_code"
-        datatype: "varchar(3)"
+        datatype: "varchar"
+        length: 3
+    primaryKey:
+      - id: pk_address
+        name: "pk_address"
+        columns:
+          - customer_id
+    foreignKeys:
+      - id: fk_address_customer
+        name: "fk_address_customer"
+        referencedTable: customer
+        referencedColumns:
+          - child: customer_id
+            parent: id
     customProperties:
       - name: distribution_key
         value: "country_code"

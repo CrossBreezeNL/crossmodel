@@ -1,0 +1,35 @@
+table:
+    id: customer
+    name: "customer"
+    columns:
+      - id: id
+        name: "id"
+        datatype: "integer"
+      - id: first_name
+        name: "first_name"
+        datatype: "varchar"
+        length: 100
+      - id: last_name
+        name: "last_name"
+        datatype: "varchar"
+        length: 100
+      - id: city
+        name: "city"
+        datatype: "varchar"
+        length: 100
+      - id: country
+        name: "country"
+        datatype: "varchar"
+        length: 3
+      - id: phone
+        name: "phone"
+        datatype: "varchar"
+        length: 15
+      - id: birth_date
+        name: "birth_date"
+        datatype: "date"
+    primaryKey:
+      - id: pk_customer
+        name: "pk_customer"
+        columns:
+          - id

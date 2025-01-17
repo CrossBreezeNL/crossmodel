@@ -1,0 +1,14 @@
+collection:
+    id: address
+    name: "address"
+    description: "The address of a customer."
+    fields:
+      - id: customer_id
+        name: "customer_id"
+        datatype: "int"
+      - id: street
+        name: "street"
+        datatype: "string"
+      - id: country_code
+        name: "country_code"
+        datatype: "string"

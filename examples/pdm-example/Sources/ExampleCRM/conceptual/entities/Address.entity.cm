@@ -1,0 +1,14 @@
+entity:
+    id: Address
+    name: "Address"
+    description: "The address of a customer."
+    attributes:
+      - id: CustomerID
+        name: "Customer ID"
+      - id: Street
+        name: "Street"
+      - id: CountryCode
+        name: "Country Code"
+    identifier:
+      - attributes:
+        - CustomerID

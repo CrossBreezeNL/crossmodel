@@ -5,6 +5,8 @@ entity:
       - id: Id
         name: "Id"
         datatype: "Integer"
+        relatedConceptualAttributes:
+          - id: ExampleCRM_CDM.Customer.Id
       - id: First_Name
         name: "First Name"
         datatype: "Text"

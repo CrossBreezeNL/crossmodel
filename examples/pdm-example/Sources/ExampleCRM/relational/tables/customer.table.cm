@@ -5,6 +5,8 @@ table:
       - id: id
         name: "id"
         datatype: "integer"
+        relatedLogicalAttributes:
+          - id: ExampleCRM_LDM.Customer.Id
       - id: first_name
         name: "first_name"
         datatype: "varchar"

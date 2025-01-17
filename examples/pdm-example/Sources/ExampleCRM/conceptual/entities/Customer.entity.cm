@@ -4,30 +4,18 @@ entity:
     attributes:
       - id: Id
         name: "Id"
-        datatype: "Integer"
       - id: First_Name
         name: "First Name"
-        datatype: "Text"
-        length: 100
       - id: Last_Name
         name: "Last Name"
-        datatype: "Text"
-        length: 100
       - id: City
         name: "City"
-        datatype: "Text"
-        length: 100
       - id: Country
         name: "Country"
-        datatype: "Text"
-        length: 3
       - id: Phone
         name: "Phone"
-        datatype: "Text"
-        length: 15
       - id: Birth_Date
         name: "Birth Date"
-        datatype: "Date"
     identifier:
       - attributes:
         - Id

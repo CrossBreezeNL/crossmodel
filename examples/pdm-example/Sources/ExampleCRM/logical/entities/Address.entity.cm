@@ -1,0 +1,27 @@
+entity:
+    id: Address
+    name: "Address"
+    description: "The address of a customer."
+    attributes:
+      - id: CustomerID
+        name: "Customer ID"
+        datatype: "Integer"
+      - id: Street
+        name: "Street"
+        datatype: "Text"
+        length: 200
+      - id: CountryCode
+        name: "Country Code"
+        datatype: "Text"
+        length: 3
+        customProperties:
+          - name: Author
+            value: "CrossBreeze"
+          - name: ExampleEntityAttribute
+    customProperties:
+      - name: Author
+        value: "CrossBreeze"
+      - name: ExampleEntity
+    identifier:
+      - attributes:
+        - CustomerID

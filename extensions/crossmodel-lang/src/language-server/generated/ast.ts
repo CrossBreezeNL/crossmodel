@@ -101,20 +101,6 @@ export function isSourceObjectCondition(item: unknown): item is SourceObjectCond
     return reflection.isInstance(item, SourceObjectCondition);
 }
 
-export interface Attribute extends AstNode {
-    readonly $type: 'Attribute' | 'EntityAttribute' | 'EntityNodeAttribute' | 'SourceObjectAttribute' | 'TargetObjectAttribute';
-    datatype: string;
-    description?: string;
-    id: string;
-    name: string;
-}
-
-export const Attribute = 'Attribute';
-
-export function isAttribute(item: unknown): item is Attribute {
-    return reflection.isInstance(item, Attribute);
-}
-
 export interface AttributeMapping extends AstNode {
     readonly $container: TargetObject;
     readonly $type: 'AttributeMapping';
@@ -183,7 +169,7 @@ export function isCrossModelRoot(item: unknown): item is CrossModelRoot {
 }
 
 export interface CustomProperty extends AstNode {
-    readonly $container: AttributeMapping | Entity | EntityNode | Mapping | Relationship | RelationshipAttribute | RelationshipEdge | SourceObject | SystemDiagram | TargetObject | WithCustomProperties;
+    readonly $container: AttributeMapping | EntityNode | Mapping | Relationship | RelationshipAttribute | RelationshipEdge | SourceObject | SystemDiagram | TargetObject | WithCustomProperties;
     readonly $type: 'CustomProperty';
     name: string;
     value?: string;
@@ -193,23 +179,6 @@ export const CustomProperty = 'CustomProperty';
 
 export function isCustomProperty(item: unknown): item is CustomProperty {
     return reflection.isInstance(item, CustomProperty);
-}
-
-export interface Entity extends AstNode {
-    readonly $container: CrossModelRoot;
-    readonly $type: 'Entity';
-    attributes: Array<EntityAttribute>;
-    customProperties: Array<CustomProperty>;
-    description?: string;
-    id: string;
-    name?: string;
-    superEntities: Array<Reference<Entity>>;
-}
-
-export const Entity = 'Entity';
-
-export function isEntity(item: unknown): item is Entity {
-    return reflection.isInstance(item, Entity);
 }
 
 export interface EntityNode extends AstNode {
@@ -230,6 +199,18 @@ export const EntityNode = 'EntityNode';
 
 export function isEntityNode(item: unknown): item is EntityNode {
     return reflection.isInstance(item, EntityNode);
+}
+
+export interface IdentifiedObject extends AstNode {
+    readonly $container: CrossModelRoot;
+    readonly $type: 'Attribute' | 'DataContainer' | 'DataElement' | 'Entity' | 'EntityAttribute' | 'EntityNodeAttribute' | 'IdentifiedObject' | 'NamedObject' | 'SourceObjectAttribute' | 'TargetObjectAttribute';
+    id: string;
+}
+
+export const IdentifiedObject = 'IdentifiedObject';
+
+export function isIdentifiedObject(item: unknown): item is IdentifiedObject {
+    return reflection.isInstance(item, IdentifiedObject);
 }
 
 export interface JoinCondition extends AstNode {
@@ -405,7 +386,7 @@ export function isTargetObject(item: unknown): item is TargetObject {
 }
 
 export interface WithCustomProperties extends AstNode {
-    readonly $type: 'EntityAttribute' | 'EntityNodeAttribute' | 'SourceObjectAttribute' | 'TargetObjectAttribute' | 'WithCustomProperties';
+    readonly $type: 'Entity' | 'EntityAttribute' | 'EntityNodeAttribute' | 'SourceObjectAttribute' | 'TargetObjectAttribute' | 'WithCustomProperties';
     customProperties: Array<CustomProperty>;
 }
 
@@ -413,6 +394,31 @@ export const WithCustomProperties = 'WithCustomProperties';
 
 export function isWithCustomProperties(item: unknown): item is WithCustomProperties {
     return reflection.isInstance(item, WithCustomProperties);
+}
+
+export interface NamedObject extends IdentifiedObject {
+    readonly $type: 'Attribute' | 'DataContainer' | 'DataElement' | 'Entity' | 'EntityAttribute' | 'EntityNodeAttribute' | 'NamedObject' | 'SourceObjectAttribute' | 'TargetObjectAttribute';
+    description: string;
+    name: string;
+}
+
+export const NamedObject = 'NamedObject';
+
+export function isNamedObject(item: unknown): item is NamedObject {
+    return reflection.isInstance(item, NamedObject);
+}
+
+export interface Entity extends DataContainer, WithCustomProperties {
+    readonly $container: CrossModelRoot;
+    readonly $type: 'Entity';
+    attributes: Array<EntityAttribute>;
+    superEntities: Array<Reference<Entity>>;
+}
+
+export const Entity = 'Entity';
+
+export function isEntity(item: unknown): item is Entity {
+    return reflection.isInstance(item, Entity);
 }
 
 export interface EntityAttribute extends Attribute, WithCustomProperties {
@@ -424,6 +430,16 @@ export const EntityAttribute = 'EntityAttribute';
 
 export function isEntityAttribute(item: unknown): item is EntityAttribute {
     return reflection.isInstance(item, EntityAttribute);
+}
+
+export interface EntityNodeAttribute extends EntityAttribute, WithCustomProperties {
+    readonly $type: 'EntityNodeAttribute';
+}
+
+export const EntityNodeAttribute = 'EntityNodeAttribute';
+
+export function isEntityNodeAttribute(item: unknown): item is EntityNodeAttribute {
+    return reflection.isInstance(item, EntityNodeAttribute);
 }
 
 export interface SourceObjectAttribute extends Attribute, WithCustomProperties {
@@ -446,14 +462,36 @@ export function isTargetObjectAttribute(item: unknown): item is TargetObjectAttr
     return reflection.isInstance(item, TargetObjectAttribute);
 }
 
-export interface EntityNodeAttribute extends EntityAttribute, WithCustomProperties {
-    readonly $type: 'EntityNodeAttribute';
+export interface DataContainer extends NamedObject {
+    readonly $container: CrossModelRoot;
+    readonly $type: 'DataContainer' | 'Entity';
 }
 
-export const EntityNodeAttribute = 'EntityNodeAttribute';
+export const DataContainer = 'DataContainer';
 
-export function isEntityNodeAttribute(item: unknown): item is EntityNodeAttribute {
-    return reflection.isInstance(item, EntityNodeAttribute);
+export function isDataContainer(item: unknown): item is DataContainer {
+    return reflection.isInstance(item, DataContainer);
+}
+
+export interface DataElement extends NamedObject {
+    readonly $type: 'Attribute' | 'DataElement' | 'EntityAttribute' | 'EntityNodeAttribute' | 'SourceObjectAttribute' | 'TargetObjectAttribute';
+    datatype: string;
+}
+
+export const DataElement = 'DataElement';
+
+export function isDataElement(item: unknown): item is DataElement {
+    return reflection.isInstance(item, DataElement);
+}
+
+export interface Attribute extends DataElement {
+    readonly $type: 'Attribute' | 'EntityAttribute' | 'EntityNodeAttribute' | 'SourceObjectAttribute' | 'TargetObjectAttribute';
+}
+
+export const Attribute = 'Attribute';
+
+export function isAttribute(item: unknown): item is Attribute {
+    return reflection.isInstance(item, Attribute);
 }
 
 export type CrossModelAstType = {
@@ -465,12 +503,16 @@ export type CrossModelAstType = {
     BooleanExpression: BooleanExpression
     CrossModelRoot: CrossModelRoot
     CustomProperty: CustomProperty
+    DataContainer: DataContainer
+    DataElement: DataElement
     Entity: Entity
     EntityAttribute: EntityAttribute
     EntityNode: EntityNode
     EntityNodeAttribute: EntityNodeAttribute
+    IdentifiedObject: IdentifiedObject
     JoinCondition: JoinCondition
     Mapping: Mapping
+    NamedObject: NamedObject
     NumberLiteral: NumberLiteral
     Relationship: Relationship
     RelationshipAttribute: RelationshipAttribute
@@ -490,11 +532,21 @@ export type CrossModelAstType = {
 export class CrossModelAstReflection extends AbstractAstReflection {
 
     getAllTypes(): string[] {
-        return [Attribute, AttributeMapping, AttributeMappingSource, AttributeMappingTarget, BinaryExpression, BooleanExpression, CrossModelRoot, CustomProperty, Entity, EntityAttribute, EntityNode, EntityNodeAttribute, JoinCondition, Mapping, NumberLiteral, Relationship, RelationshipAttribute, RelationshipEdge, SourceObject, SourceObjectAttribute, SourceObjectAttributeReference, SourceObjectCondition, SourceObjectDependency, StringLiteral, SystemDiagram, TargetObject, TargetObjectAttribute, WithCustomProperties];
+        return [Attribute, AttributeMapping, AttributeMappingSource, AttributeMappingTarget, BinaryExpression, BooleanExpression, CrossModelRoot, CustomProperty, DataContainer, DataElement, Entity, EntityAttribute, EntityNode, EntityNodeAttribute, IdentifiedObject, JoinCondition, Mapping, NamedObject, NumberLiteral, Relationship, RelationshipAttribute, RelationshipEdge, SourceObject, SourceObjectAttribute, SourceObjectAttributeReference, SourceObjectCondition, SourceObjectDependency, StringLiteral, SystemDiagram, TargetObject, TargetObjectAttribute, WithCustomProperties];
     }
 
     protected override computeIsSubtype(subtype: string, supertype: string): boolean {
         switch (subtype) {
+            case Attribute: {
+                return this.isSubtype(DataElement, supertype);
+            }
+            case DataContainer:
+            case DataElement: {
+                return this.isSubtype(NamedObject, supertype);
+            }
+            case Entity: {
+                return this.isSubtype(DataContainer, supertype) || this.isSubtype(WithCustomProperties, supertype);
+            }
             case EntityAttribute:
             case SourceObjectAttribute:
             case TargetObjectAttribute: {
@@ -505,6 +557,9 @@ export class CrossModelAstReflection extends AbstractAstReflection {
             }
             case JoinCondition: {
                 return this.isSubtype(SourceObjectCondition, supertype);
+            }
+            case NamedObject: {
+                return this.isSubtype(IdentifiedObject, supertype);
             }
             case NumberLiteral:
             case SourceObjectAttributeReference:
@@ -557,17 +612,6 @@ export class CrossModelAstReflection extends AbstractAstReflection {
 
     getTypeMetaData(type: string): TypeMetaData {
         switch (type) {
-            case Attribute: {
-                return {
-                    name: Attribute,
-                    properties: [
-                        { name: 'datatype' },
-                        { name: 'description' },
-                        { name: 'id' },
-                        { name: 'name' }
-                    ]
-                };
-            }
             case AttributeMapping: {
                 return {
                     name: AttributeMapping,
@@ -625,19 +669,6 @@ export class CrossModelAstReflection extends AbstractAstReflection {
                     ]
                 };
             }
-            case Entity: {
-                return {
-                    name: Entity,
-                    properties: [
-                        { name: 'attributes', defaultValue: [] },
-                        { name: 'customProperties', defaultValue: [] },
-                        { name: 'description' },
-                        { name: 'id' },
-                        { name: 'name' },
-                        { name: 'superEntities', defaultValue: [] }
-                    ]
-                };
-            }
             case EntityNode: {
                 return {
                     name: EntityNode,
@@ -651,6 +682,14 @@ export class CrossModelAstReflection extends AbstractAstReflection {
                         { name: 'width' },
                         { name: 'x' },
                         { name: 'y' }
+                    ]
+                };
+            }
+            case IdentifiedObject: {
+                return {
+                    name: IdentifiedObject,
+                    properties: [
+                        { name: 'id' }
                     ]
                 };
             }
@@ -786,9 +825,45 @@ export class CrossModelAstReflection extends AbstractAstReflection {
                     ]
                 };
             }
+            case NamedObject: {
+                return {
+                    name: NamedObject,
+                    properties: [
+                        { name: 'description' },
+                        { name: 'id' },
+                        { name: 'name' }
+                    ]
+                };
+            }
+            case Entity: {
+                return {
+                    name: Entity,
+                    properties: [
+                        { name: 'attributes', defaultValue: [] },
+                        { name: 'customProperties', defaultValue: [] },
+                        { name: 'description' },
+                        { name: 'id' },
+                        { name: 'name' },
+                        { name: 'superEntities', defaultValue: [] }
+                    ]
+                };
+            }
             case EntityAttribute: {
                 return {
                     name: EntityAttribute,
+                    properties: [
+                        { name: 'customProperties', defaultValue: [] },
+                        { name: 'datatype' },
+                        { name: 'description' },
+                        { name: 'id' },
+                        { name: 'identifier', defaultValue: false },
+                        { name: 'name' }
+                    ]
+                };
+            }
+            case EntityNodeAttribute: {
+                return {
+                    name: EntityNodeAttribute,
                     properties: [
                         { name: 'customProperties', defaultValue: [] },
                         { name: 'datatype' },
@@ -823,15 +898,34 @@ export class CrossModelAstReflection extends AbstractAstReflection {
                     ]
                 };
             }
-            case EntityNodeAttribute: {
+            case DataContainer: {
                 return {
-                    name: EntityNodeAttribute,
+                    name: DataContainer,
                     properties: [
-                        { name: 'customProperties', defaultValue: [] },
+                        { name: 'description' },
+                        { name: 'id' },
+                        { name: 'name' }
+                    ]
+                };
+            }
+            case DataElement: {
+                return {
+                    name: DataElement,
+                    properties: [
                         { name: 'datatype' },
                         { name: 'description' },
                         { name: 'id' },
-                        { name: 'identifier', defaultValue: false },
+                        { name: 'name' }
+                    ]
+                };
+            }
+            case Attribute: {
+                return {
+                    name: Attribute,
+                    properties: [
+                        { name: 'datatype' },
+                        { name: 'description' },
+                        { name: 'id' },
                         { name: 'name' }
                     ]
                 };

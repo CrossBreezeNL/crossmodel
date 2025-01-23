@@ -17,6 +17,7 @@ import {
    isRelationship,
    isSystemDiagram,
    Mapping,
+   NamedObject,
    Relationship,
    RelationshipEdge,
    SourceObject,
@@ -61,7 +62,8 @@ export function registerValidationChecks(services: CrossModelServices): void {
       SourceObject: validator.checkSourceObject,
       SourceObjectCondition: validator.checkSourceObjectCondition,
       SourceObjectDependency: validator.checkSourceObjectDependency,
-      TargetObject: validator.checkTargetObject
+      TargetObject: validator.checkTargetObject,
+      NamedObject: validator.checkNamedObject
    };
    registry.register(checks, validator);
 }
@@ -71,6 +73,12 @@ export function registerValidationChecks(services: CrossModelServices): void {
  */
 export class CrossModelValidator {
    constructor(protected services: CrossModelServices) {}
+
+   checkNamedObject(namedObject: NamedObject, accept: ValidationAcceptor): void {
+      if (namedObject.name === undefined || namedObject.name.length === 0) {
+         accept('error', 'The name of this object cannot be empty', { node: namedObject, property: 'name' });
+      }
+   }
 
    checkNode(node: AstNode, accept: ValidationAcceptor): void {
       this.checkUniqueGlobalId(node, accept);

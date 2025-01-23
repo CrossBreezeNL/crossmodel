@@ -1,12 +1,14 @@
 {
-    "projectName": "CrossModel",
-    "languages": [{
-        "id": "cross-model",
-        "grammar": "src/language-server/cross-model.langium",
-        "fileExtensions": [".cm"],
-        "textMate": {
-            "out": "syntaxes/cross-model.tmLanguage.json"
-        }
-    }],
-    "out": "src/language-server/generated"
+  "projectName": "CrossModel",
+  "languages": [
+    {
+      "id": "cross-model",
+      "grammar": "src/language-server/grammar/cross-model.langium",
+      "fileExtensions": [".cm"],
+      "textMate": {
+        "out": "syntaxes/cross-model.tmLanguage.json"
+      }
+    }
+  ],
+  "out": "src/language-server/generated"
 }

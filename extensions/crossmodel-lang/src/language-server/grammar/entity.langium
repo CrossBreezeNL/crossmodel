@@ -1,7 +1,7 @@
 import 'terminals'
 import 'common'
 
-interface Entity extends DataContainer, WithCustomProperties {
+interface Entity extends DataElementContainer {
     superEntities: @Entity[]
     attributes: EntityAttribute[]
 }
@@ -11,7 +11,7 @@ Entity returns Entity:
     'entity' ':'
         INDENT
             'id' ':' id=ID
-            ('name' ':'  name=STRING)?
+            'name' ':'  name=STRING
             ('description' ':' description=STRING)?
             ('inherits' ':'
                 INDENT
@@ -27,23 +27,20 @@ Entity returns Entity:
         DEDENT
 ;
 
-interface Attribute extends DataElement {
-}
-
-interface EntityAttribute extends Attribute, WithCustomProperties {
-    length: number;
-    precision: number;
-    scale: number;
+interface EntityAttribute extends DataElement {
+    length?: number;
+    precision?: number;
+    scale?: number;
     identifier?: boolean;
 }
 
 EntityAttribute returns EntityAttribute:
     'id' ':' id=ID
     'name' ':'  name=STRING
-    'datatype' ':' datatype=STRING
-    'length' ':' length=NUMBER
-    'precision' ':' precision=NUMBER
-    'scale' ':' scale=NUMBER
+    ('datatype' ':' datatype=STRING)?
+    ('length' ':' length=NUMBER)?
+    ('precision' ':' precision=NUMBER)?
+    ('scale' ':' scale=NUMBER)?
     (identifier?='identifier' ':' ('TRUE' | 'true'))?
     ('description' ':' description=STRING)?
     CustomProperties?;

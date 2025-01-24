@@ -7,7 +7,6 @@ import { AstNode, AstNodeDescription, AstUtils, LangiumDocument, Reference, isAs
 import { ID_PROPERTY, IdProvider } from '../cross-model-naming.js';
 import { getLocalName } from '../cross-model-scope.js';
 import {
-   Attribute,
    AttributeMapping,
    AttributeMappingSource,
    AttributeMappingTarget,
@@ -47,7 +46,7 @@ export function getAttributes<T>(node: any): T[] {
 export function setAttributes(node: EntityNode, attributes: EntityNodeAttribute[]): void;
 export function setAttributes(node: SourceObject, attributes: SourceObjectAttribute[]): void;
 export function setAttributes(node: TargetObject, attributes: TargetObjectAttribute[]): void;
-export function setAttributes(node: object, attributes: Attribute[]): void {
+export function setAttributes(node: object, attributes: EntityAttribute[]): void {
    (node as any)[IMPLICIT_ATTRIBUTES_PROPERTY] = attributes;
 }
 
@@ -107,11 +106,11 @@ export function createEntityAttribute(
    id: string,
    name: string,
    datatype: string,
-   opts?: Partial<Omit<EntityAttribute, '$container' | '$type' | 'id' | 'name' | 'attribute'>>
+   opts?: Partial<Omit<EntityAttribute, '$container' | '$type' | 'id' | 'name'>>
 ): EntityAttribute {
    return {
-      $container: container,
       $type: 'EntityAttribute',
+      $container: container,
       id,
       name,
       datatype,

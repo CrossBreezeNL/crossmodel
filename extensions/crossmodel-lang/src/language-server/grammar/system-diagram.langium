@@ -1,13 +1,19 @@
 import 'terminals'
+import 'common'
 import 'entity'
 import 'relationship'
 
 // Diagram definition
-SystemDiagram:
+interface SystemDiagram extends NamedObject {
+    nodes: EntityNode[];
+    edges: RelationshipEdge[];
+}
+
+SystemDiagram returns SystemDiagram:
     ('systemDiagram' | 'diagram') ':' 
     INDENT
         'id' ':' id=ID
-        ('name' ':'  name=STRING)?
+        'name' ':'  name=STRING
         ('description' ':' description=STRING)?
         ('nodes' ':'
             INDENT 
@@ -23,23 +29,37 @@ SystemDiagram:
     DEDENT
 ;
 
+interface EntityNode extends NamedObject {
+    entity: @Entity;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+}
 
-EntityNode:
+EntityNode returns EntityNode:
     'id' ':' id=ID
-    ('name' ':'  name=STRING)?
-    ('description' ':' description=STRING)?
+    'name' ':'  name=STRING
     'entity' ':' entity=[Entity:IDReference]
     'x' ':' x=NUMBER
     'y' ':' y=NUMBER
     'width' ':' width=NUMBER
     'height' ':' height=NUMBER
+    ('description' ':' description=STRING)?
     CustomProperties?
 ;
 
-interface EntityNodeAttribute extends EntityAttribute, WithCustomProperties {
+// TODO: Why does this exist? In the system diagram we don't have attribute nodes right (in the grammar)? Or is this pure the generate an AST class to be used in the diagram for rendering?
+interface EntityNodeAttribute extends EntityAttribute {
 }
 
-RelationshipEdge:
+interface RelationshipEdge extends IdentifiedObject, WithCustomProperties {
+    relationship: @Relationship;
+    sourceNode: @EntityNode;
+    targetNode: @EntityNode;
+}
+
+RelationshipEdge returns RelationshipEdge:
     'id' ':' id=ID
     'relationship' ':' relationship=[Relationship:IDReference]
     'sourceNode' ':' sourceNode=[EntityNode:IDReference]

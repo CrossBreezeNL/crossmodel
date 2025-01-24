@@ -1,17 +1,25 @@
 import 'terminals'
+import 'common'
 import 'entity'
 import 'relationship'
 
-interface SourceObjectAttribute extends Attribute, WithCustomProperties {
+interface SourceObjectAttribute extends EntityAttribute {
 }
 
-interface TargetObjectAttribute extends Attribute, WithCustomProperties {
+interface TargetObjectAttribute extends EntityAttribute {
 }
 
-Mapping:
+interface Mapping extends DataElementContainerMapping {
+    sources: SourceObject[];
+    target: TargetObject;
+}
+
+Mapping returns Mapping:
     'mapping' ':'
         INDENT
             'id' ':' id=ID
+            'name' ':' name=STRING
+            ('description' ':' description=STRING)?
             ('sources' ':'
                 INDENT 
                     (LIST_ITEM sources+=SourceObject)+
@@ -22,10 +30,19 @@ Mapping:
         DEDENT
 ;
 
-SourceObject:
+interface SourceObject extends SourceDataElementContainer {
+    entity: @Entity;
+    join: string;
+    dependencies: SourceObjectDependency[]
+    conditions: SourceObjectCondition[]
+}
+
+SourceObject returns SourceObject:
     'id' ':' id=ID
+    'name' ':' name=STRING
     'entity' ':' entity=[Entity:IDReference] // implies attributes through entity
     'join' ':' join=JoinType
+    ('description' ':' description=STRING)?
     ('dependencies' ':'
         INDENT
             (LIST_ITEM dependencies+=SourceObjectDependency)*
@@ -66,7 +83,12 @@ PrimaryExpression infers BooleanExpression:
     {infer SourceObjectAttributeReference} value=[SourceObjectAttribute:IDReference]
 ;
 
-TargetObject:
+interface TargetObject extends WithCustomProperties {
+    entity: @Entity;
+    mappings: AttributeMapping[];
+}
+
+TargetObject returns TargetObject:
     INDENT
         'entity' ':' entity=[Entity:IDReference] // implies attributes through entity
         ('mappings' ':'
@@ -83,7 +105,13 @@ TargetObject:
     DEDENT
 ;
 
-AttributeMapping:
+interface AttributeMapping extends WithCustomProperties {
+    attribute: AttributeMappingTarget;
+    sources: AttributeMappingSource[];
+    expression: string;
+}
+
+AttributeMapping returns AttributeMapping:
     'attribute' ':' attribute=AttributeMappingTarget
     ('sources' ':' 
         INDENT 

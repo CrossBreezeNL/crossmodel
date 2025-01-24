@@ -1,16 +1,32 @@
 import 'terminals'
+import 'common'
 import 'entity'
 
 // Relationship definition
-Relationship:
+interface Relationship extends DataElementContainerLink {
+    parent: @Entity
+    parentRole?: string
+    parentCardinality?: string
+    child: @Entity
+    childRole?: string
+    childCardinality?: string
+    attributes: RelationshipAttribute[]
+}
+
+Cardinality returns string: '0' | '1' | 'n';
+
+Relationship returns Relationship:
     'relationship' ':' 
         INDENT
             'id' ':' id=ID
-            ('name' ':'  name=STRING)?
-            ('description' ':' description=STRING)?
+            'name' ':'  name=STRING
             'parent' ':' parent=[Entity:IDReference]
+            ('parentRole' ':' parentRole=STRING)?
+            ('parentCardinality' ':' parentCardinality=Cardinality)?
             'child' ':' child=[Entity:IDReference]
-            'type' ':' type=STRING
+            ('childRole' ':' childRole=STRING)?
+            ('childCardinality' ':' childCardinality=Cardinality)?
+            ('description' ':' description=STRING)?
             ('attributes' ':'
                 INDENT 
                     (LIST_ITEM attributes+=RelationshipAttribute)+
@@ -19,9 +35,14 @@ Relationship:
             CustomProperties?
         DEDENT
 ;
- 
-RelationshipAttribute:
-    'parent' ':' parent=[Attribute:IDReference]
-    'child' ':' child=[Attribute:IDReference]
+
+interface RelationshipAttribute extends WithCustomProperties {
+    parent: @EntityAttribute
+    child: @EntityAttribute
+}
+
+RelationshipAttribute returns RelationshipAttribute:
+    'parent' ':' parent=[EntityAttribute:IDReference]
+    'child' ':' child=[EntityAttribute:IDReference]
     CustomProperties?
 ;

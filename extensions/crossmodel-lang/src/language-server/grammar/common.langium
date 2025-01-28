@@ -6,13 +6,22 @@ interface IdentifiedObject {
     id: string;
 }
 
-fragment IdentifiedObject returns IdentifiedObject:
+fragment IdentifiedObjectFragment returns IdentifiedObject:
     'id' ':' id=ID;
 
-interface NamedObject extends IdentifiedObject, WithCustomProperties {
+// For some reason we can't extend IdentifiedObject here, it results in compile errors because of incompatible $container variable.
+// Hence we repeated the id property here and in the fragment.
+interface NamedObject extends WithCustomProperties {
+    id: string;
     name: string;
     description?: string;
 }
+
+fragment NamedObjectFragment returns NamedObject:
+    'id' ':' id=ID
+    'name' ':' name=STRING
+    ('description' ':' description=STRING)?
+;
 
 interface DataElementContainer extends NamedObject {
 }
@@ -40,7 +49,7 @@ interface WithCustomProperties {
     customProperties: CustomProperty[];
 }
 
-fragment CustomProperties returns WithCustomProperties:
+fragment CustomPropertiesFragment returns WithCustomProperties:
     'customProperties' ':'
         INDENT
             (LIST_ITEM customProperties+=CustomProperty)*

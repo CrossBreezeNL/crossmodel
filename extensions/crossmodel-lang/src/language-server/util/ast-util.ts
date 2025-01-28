@@ -89,11 +89,17 @@ export function isImplicitProperty(prop: string, obj: any): boolean {
    );
 }
 
-export function createEntity(container: CrossModelRoot, id: string, opts?: Partial<Omit<Entity, '$container' | '$type' | 'id'>>): Entity {
+export function createEntity(
+   container: CrossModelRoot,
+   id: string,
+   name: string,
+   opts?: Partial<Omit<Entity, '$container' | '$type' | 'id' | 'name'>>
+): Entity {
    return {
       $container: container,
       $type: 'Entity',
       id,
+      name,
       attributes: [],
       customProperties: [],
       superEntities: [],
@@ -105,7 +111,6 @@ export function createEntityAttribute(
    container: Entity,
    id: string,
    name: string,
-   datatype: string,
    opts?: Partial<Omit<EntityAttribute, '$container' | '$type' | 'id' | 'name'>>
 ): EntityAttribute {
    return {
@@ -113,7 +118,6 @@ export function createEntityAttribute(
       $container: container,
       id,
       name,
-      datatype,
       identifier: false,
       customProperties: [],
       ...opts
@@ -123,16 +127,16 @@ export function createEntityAttribute(
 export function createRelationship(
    container: CrossModelRoot,
    id: string,
-   type: string,
+   name: string,
    parent: Reference<Entity>,
    child: Reference<Entity>,
-   opts?: Partial<Omit<Relationship, '$container' | '$type' | 'id' | 'type' | 'parent' | 'child'>>
+   opts?: Partial<Omit<Relationship, '$container' | '$type' | 'id' | 'name' | 'parent' | 'child'>>
 ): Relationship {
    return {
       $container: container,
       $type: 'Relationship',
       id,
-      type,
+      name,
       parent,
       child,
       attributes: [],
@@ -144,12 +148,14 @@ export function createRelationship(
 export function createSystemDiagram(
    container: CrossModelRoot,
    id: string,
-   opts?: Partial<Omit<SystemDiagram, '$container' | '$type' | 'id'>>
+   name: string,
+   opts?: Partial<Omit<SystemDiagram, '$container' | '$type' | 'id' | 'name'>>
 ): SystemDiagram {
    return {
       $container: container,
       $type: 'SystemDiagram',
       id,
+      name,
       nodes: [],
       edges: [],
       customProperties: [],
@@ -160,6 +166,7 @@ export function createSystemDiagram(
 export function createEntityNode(
    container: SystemDiagram,
    id: string,
+   name: string,
    entity: Reference<Entity>,
    position: Point,
    dimension: Dimension,
@@ -169,6 +176,7 @@ export function createEntityNode(
       $container: container,
       $type: 'EntityNode',
       id,
+      name,
       entity,
       ...position,
       ...dimension,
@@ -203,10 +211,12 @@ export function createSourceObject(entity: Entity | AstNodeDescription, containe
       : entity.id ?? idProvider.getLocalId(entity) ?? entity.name ?? 'unknown';
    const ref = isAstNodeDescription(entity) ? undefined : entity;
    const $refText = isAstNodeDescription(entity) ? entity.name : idProvider.getGlobalId(entity) || entity.id || '';
+   const sourceObjectId = idProvider.findNextId(SourceObject, entityId + 'SourceObject', container);
    return {
       $type: SourceObject,
       $container: container,
-      id: idProvider.findNextId(SourceObject, entityId + 'SourceObject', container),
+      id: sourceObjectId,
+      name: sourceObjectId,
       entity: { $refText, ref },
       join: 'from',
       dependencies: [],

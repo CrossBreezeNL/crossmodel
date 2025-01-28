@@ -7,10 +7,10 @@ import { Diagnostic } from 'vscode-languageserver-protocol';
 import type { CrossModelServices } from './cross-model-module.js';
 import { ID_PROPERTY, IdentifiableAstNode } from './cross-model-naming.js';
 import {
-   Attribute,
    AttributeMapping,
    CrossModelAstType,
    Entity,
+   EntityAttribute,
    isEntity,
    isEntityAttribute,
    isMapping,
@@ -204,8 +204,8 @@ export class CrossModelValidator {
    checkRelationship(relationship: Relationship, accept: ValidationAcceptor): void {
       // we check that each attribute actually belongs to their respective entity (parent, child)
       // and that each attribute is only used once
-      const usedParentAttributes: Attribute[] = [];
-      const usedChildAttributes: Attribute[] = [];
+      const usedParentAttributes: EntityAttribute[] = [];
+      const usedChildAttributes: EntityAttribute[] = [];
       for (const attribute of relationship.attributes) {
          if (attribute.parent.ref) {
             if (attribute.parent?.ref?.$container !== relationship.parent?.ref) {

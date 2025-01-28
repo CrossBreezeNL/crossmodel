@@ -10,9 +10,7 @@ interface Entity extends DataElementContainer {
 Entity returns Entity:
     'entity' ':'
         INDENT
-            'id' ':' id=ID
-            'name' ':'  name=STRING
-            ('description' ':' description=STRING)?
+            NamedObjectFragment
             ('inherits' ':'
                 INDENT
                     (LIST_ITEM superEntities+=[Entity:IDReference])+
@@ -23,7 +21,7 @@ Entity returns Entity:
                     (LIST_ITEM attributes+=EntityAttribute)+
                 DEDENT
             )?
-            CustomProperties?
+            CustomPropertiesFragment?
         DEDENT
 ;
 
@@ -35,12 +33,11 @@ interface EntityAttribute extends DataElement {
 }
 
 EntityAttribute returns EntityAttribute:
-    'id' ':' id=ID
-    'name' ':'  name=STRING
+    NamedObjectFragment
     ('datatype' ':' datatype=STRING)?
     ('length' ':' length=NUMBER)?
     ('precision' ':' precision=NUMBER)?
     ('scale' ':' scale=NUMBER)?
     (identifier?='identifier' ':' ('TRUE' | 'true'))?
-    ('description' ':' description=STRING)?
-    CustomProperties?;
+    CustomPropertiesFragment?
+;

@@ -18,21 +18,19 @@ Cardinality returns string: '0' | '1' | 'n';
 Relationship returns Relationship:
     'relationship' ':' 
         INDENT
-            'id' ':' id=ID
-            'name' ':'  name=STRING
+            NamedObjectFragment
             'parent' ':' parent=[Entity:IDReference]
             ('parentRole' ':' parentRole=STRING)?
             ('parentCardinality' ':' parentCardinality=Cardinality)?
             'child' ':' child=[Entity:IDReference]
             ('childRole' ':' childRole=STRING)?
             ('childCardinality' ':' childCardinality=Cardinality)?
-            ('description' ':' description=STRING)?
             ('attributes' ':'
                 INDENT 
                     (LIST_ITEM attributes+=RelationshipAttribute)+
                 DEDENT
             )?
-            CustomProperties?
+            CustomPropertiesFragment?
         DEDENT
 ;
 
@@ -44,5 +42,5 @@ interface RelationshipAttribute extends WithCustomProperties {
 RelationshipAttribute returns RelationshipAttribute:
     'parent' ':' parent=[EntityAttribute:IDReference]
     'child' ':' child=[EntityAttribute:IDReference]
-    CustomProperties?
+    CustomPropertiesFragment?
 ;

@@ -17,16 +17,14 @@ interface Mapping extends DataElementContainerMapping {
 Mapping returns Mapping:
     'mapping' ':'
         INDENT
-            'id' ':' id=ID
-            'name' ':' name=STRING
-            ('description' ':' description=STRING)?
+            NamedObjectFragment
             ('sources' ':'
                 INDENT 
                     (LIST_ITEM sources+=SourceObject)+
                 DEDENT
             )?
             'target' ':' target=TargetObject
-            CustomProperties?
+            CustomPropertiesFragment?
         DEDENT
 ;
 
@@ -38,11 +36,9 @@ interface SourceObject extends SourceDataElementContainer {
 }
 
 SourceObject returns SourceObject:
-    'id' ':' id=ID
-    'name' ':' name=STRING
+    NamedObjectFragment
     'entity' ':' entity=[Entity:IDReference] // implies attributes through entity
     'join' ':' join=JoinType
-    ('description' ':' description=STRING)?
     ('dependencies' ':'
         INDENT
             (LIST_ITEM dependencies+=SourceObjectDependency)*
@@ -53,12 +49,7 @@ SourceObject returns SourceObject:
             (LIST_ITEM conditions+=SourceObjectCondition)*
         DEDENT
     )?
-    // for some reason using the CustomProperties fragment here causes parsing issues in the language server
-    ('customProperties' ':'
-        INDENT
-            (LIST_ITEM customProperties+=CustomProperty)*
-        DEDENT
-    )?
+    CustomPropertiesFragment?
 ;
 
 JoinType returns string: 'from' | 'inner-join' | 'cross-join' | 'left-join' | 'apply';
@@ -96,12 +87,7 @@ TargetObject returns TargetObject:
                 (LIST_ITEM mappings+=AttributeMapping)+     
             DEDENT
         )?
-        // for some reason using the CustomProperties fragment here causes parsing issues in the language server
-        ('customProperties' ':'
-            INDENT
-                (LIST_ITEM customProperties+=CustomProperty)*
-            DEDENT
-        )?
+        CustomPropertiesFragment?
     DEDENT
 ;
 
@@ -119,7 +105,7 @@ AttributeMapping returns AttributeMapping:
         DEDENT
     )?
     ('expression' ':' expression=STRING)?
-    CustomProperties?
+    CustomPropertiesFragment?
 ;
 
 AttributeMappingTarget:

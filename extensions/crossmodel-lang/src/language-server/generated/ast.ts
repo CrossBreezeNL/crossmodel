@@ -182,7 +182,7 @@ export function isCustomProperty(item: unknown): item is CustomProperty {
 }
 
 export interface IdentifiedObject extends AstNode {
-    readonly $type: 'DataElement' | 'DataElementContainer' | 'DataElementContainerLink' | 'DataElementContainerMapping' | 'DataElementMapping' | 'Entity' | 'EntityAttribute' | 'EntityNode' | 'EntityNodeAttribute' | 'IdentifiedObject' | 'Mapping' | 'NamedObject' | 'Relationship' | 'RelationshipEdge' | 'SourceDataElementContainer' | 'SourceObject' | 'SourceObjectAttribute' | 'SystemDiagram' | 'TargetObjectAttribute';
+    readonly $type: 'DataElementMapping' | 'IdentifiedObject' | 'RelationshipEdge';
     id: string;
 }
 
@@ -274,18 +274,6 @@ export function isDataElementMapping(item: unknown): item is DataElementMapping 
     return reflection.isInstance(item, DataElementMapping);
 }
 
-export interface NamedObject extends IdentifiedObject, WithCustomProperties {
-    readonly $type: 'DataElement' | 'DataElementContainer' | 'DataElementContainerLink' | 'DataElementContainerMapping' | 'Entity' | 'EntityAttribute' | 'EntityNode' | 'EntityNodeAttribute' | 'Mapping' | 'NamedObject' | 'Relationship' | 'SourceDataElementContainer' | 'SourceObject' | 'SourceObjectAttribute' | 'SystemDiagram' | 'TargetObjectAttribute';
-    description?: string;
-    name: string;
-}
-
-export const NamedObject = 'NamedObject';
-
-export function isNamedObject(item: unknown): item is NamedObject {
-    return reflection.isInstance(item, NamedObject);
-}
-
 export interface RelationshipEdge extends IdentifiedObject, WithCustomProperties {
     readonly $container: SystemDiagram;
     readonly $type: 'RelationshipEdge';
@@ -312,6 +300,19 @@ export const AttributeMapping = 'AttributeMapping';
 
 export function isAttributeMapping(item: unknown): item is AttributeMapping {
     return reflection.isInstance(item, AttributeMapping);
+}
+
+export interface NamedObject extends WithCustomProperties {
+    readonly $type: 'DataElement' | 'DataElementContainer' | 'DataElementContainerLink' | 'DataElementContainerMapping' | 'Entity' | 'EntityAttribute' | 'EntityNode' | 'EntityNodeAttribute' | 'Mapping' | 'NamedObject' | 'Relationship' | 'SourceDataElementContainer' | 'SourceObject' | 'SourceObjectAttribute' | 'SystemDiagram' | 'TargetObjectAttribute';
+    description?: string;
+    id: string;
+    name: string;
+}
+
+export const NamedObject = 'NamedObject';
+
+export function isNamedObject(item: unknown): item is NamedObject {
+    return reflection.isInstance(item, NamedObject);
 }
 
 export interface RelationshipAttribute extends WithCustomProperties {
@@ -574,6 +575,7 @@ export class CrossModelAstReflection extends AbstractAstReflection {
     protected override computeIsSubtype(subtype: string, supertype: string): boolean {
         switch (subtype) {
             case AttributeMapping:
+            case NamedObject:
             case RelationshipAttribute:
             case TargetObject: {
                 return this.isSubtype(WithCustomProperties, supertype);
@@ -607,10 +609,6 @@ export class CrossModelAstReflection extends AbstractAstReflection {
             case Mapping: {
                 return this.isSubtype(DataElementContainerMapping, supertype);
             }
-            case NamedObject:
-            case RelationshipEdge: {
-                return this.isSubtype(IdentifiedObject, supertype) || this.isSubtype(WithCustomProperties, supertype);
-            }
             case NumberLiteral:
             case SourceObjectAttributeReference:
             case StringLiteral: {
@@ -618,6 +616,9 @@ export class CrossModelAstReflection extends AbstractAstReflection {
             }
             case Relationship: {
                 return this.isSubtype(DataElementContainerLink, supertype);
+            }
+            case RelationshipEdge: {
+                return this.isSubtype(IdentifiedObject, supertype) || this.isSubtype(WithCustomProperties, supertype);
             }
             case SourceObject: {
                 return this.isSubtype(SourceDataElementContainer, supertype);
@@ -778,17 +779,6 @@ export class CrossModelAstReflection extends AbstractAstReflection {
                     ]
                 };
             }
-            case NamedObject: {
-                return {
-                    name: NamedObject,
-                    properties: [
-                        { name: 'customProperties', defaultValue: [] },
-                        { name: 'description' },
-                        { name: 'id' },
-                        { name: 'name' }
-                    ]
-                };
-            }
             case RelationshipEdge: {
                 return {
                     name: RelationshipEdge,
@@ -809,6 +799,17 @@ export class CrossModelAstReflection extends AbstractAstReflection {
                         { name: 'customProperties', defaultValue: [] },
                         { name: 'expression' },
                         { name: 'sources', defaultValue: [] }
+                    ]
+                };
+            }
+            case NamedObject: {
+                return {
+                    name: NamedObject,
+                    properties: [
+                        { name: 'customProperties', defaultValue: [] },
+                        { name: 'description' },
+                        { name: 'id' },
+                        { name: 'name' }
                     ]
                 };
             }

@@ -12,9 +12,7 @@ interface SystemDiagram extends NamedObject {
 SystemDiagram returns SystemDiagram:
     ('systemDiagram' | 'diagram') ':' 
     INDENT
-        'id' ':' id=ID
-        'name' ':'  name=STRING
-        ('description' ':' description=STRING)?
+        NamedObjectFragment
         ('nodes' ':'
             INDENT 
                 (LIST_ITEM nodes+=EntityNode)+
@@ -25,7 +23,7 @@ SystemDiagram returns SystemDiagram:
                 (LIST_ITEM edges+=RelationshipEdge)+
             DEDENT
         )?
-        CustomProperties?
+        CustomPropertiesFragment?
     DEDENT
 ;
 
@@ -38,15 +36,13 @@ interface EntityNode extends NamedObject {
 }
 
 EntityNode returns EntityNode:
-    'id' ':' id=ID
-    'name' ':'  name=STRING
+    NamedObjectFragment
     'entity' ':' entity=[Entity:IDReference]
     'x' ':' x=NUMBER
     'y' ':' y=NUMBER
     'width' ':' width=NUMBER
     'height' ':' height=NUMBER
-    ('description' ':' description=STRING)?
-    CustomProperties?
+    CustomPropertiesFragment?
 ;
 
 // TODO: Why does this exist? In the system diagram we don't have attribute nodes right (in the grammar)? Or is this pure the generate an AST class to be used in the diagram for rendering?
@@ -60,9 +56,9 @@ interface RelationshipEdge extends IdentifiedObject, WithCustomProperties {
 }
 
 RelationshipEdge returns RelationshipEdge:
-    'id' ':' id=ID
+    IdentifiedObjectFragment
     'relationship' ':' relationship=[Relationship:IDReference]
     'sourceNode' ':' sourceNode=[EntityNode:IDReference]
     'targetNode' ':' targetNode=[EntityNode:IDReference]
-    CustomProperties?
+    CustomPropertiesFragment?
 ;

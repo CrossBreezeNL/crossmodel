@@ -6,10 +6,12 @@ import { AstNode } from 'langium';
 import {
    Entity,
    EntityNode,
+   InheritanceEdge,
    Relationship,
    RelationshipEdge,
    isEntity,
    isEntityNode,
+   isInheritanceEdge,
    isRelationship,
    isRelationshipEdge
 } from '../../../language-server/generated/ast.js';
@@ -31,6 +33,10 @@ export class SystemModelIndex extends CrossModelIndex {
 
    findRelationshipEdge(id: string): RelationshipEdge | undefined {
       return this.findSemanticElement(id, isRelationshipEdge);
+   }
+
+   findInheritanceEdge(id: string): InheritanceEdge | undefined {
+      return this.findSemanticElement(id, isInheritanceEdge);
    }
 
    protected override indexAstNode(node: AstNode): void {

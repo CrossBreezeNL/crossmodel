@@ -11,6 +11,7 @@ import {
    AttributeMapping,
    CrossModelAstType,
    Entity,
+   InheritanceEdge,
    isEntity,
    isEntityAttribute,
    isMapping,
@@ -58,6 +59,7 @@ export function registerValidationChecks(services: CrossModelServices): void {
       Mapping: validator.checkMapping,
       Relationship: validator.checkRelationship,
       RelationshipEdge: validator.checkRelationshipEdge,
+      InheritanceEdge: validator.checkInheritanceEdge,
       SourceObject: validator.checkSourceObject,
       SourceObjectCondition: validator.checkSourceObjectCondition,
       SourceObjectDependency: validator.checkSourceObjectDependency,
@@ -226,6 +228,13 @@ export class CrossModelValidator {
       }
       if (edge.targetNode?.ref?.entity?.ref?.$type !== edge.relationship?.ref?.child?.ref?.$type) {
          accept('error', 'Target must match type of child.', { node: edge, property: 'targetNode' });
+      }
+   }
+
+   checkInheritanceEdge(edge: InheritanceEdge, accept: ValidationAcceptor): void {
+      const superEntities = edge.baseNode.ref?.entity.ref?.superEntities ?? [];
+      if (!superEntities.some(entity => entity.ref === edge.superNode.ref?.entity.ref)) {
+         accept('error', 'Base entity must inherit from super entity', { node: edge, property: 'superNode' });
       }
    }
 

@@ -16,11 +16,15 @@ SystemDiagram:
         )?
         ('edges' ':'
             INDENT 
-                (LIST_ITEM edges+=RelationshipEdge)+
+                (LIST_ITEM edges+=Edge)+
             DEDENT
         )?
         CustomProperties?
     DEDENT
+;
+
+Edge:
+    RelationshipEdge | InheritanceEdge
 ;
 
 
@@ -44,5 +48,12 @@ RelationshipEdge:
     'relationship' ':' relationship=[Relationship:IDReference]
     'sourceNode' ':' sourceNode=[EntityNode:IDReference]
     'targetNode' ':' targetNode=[EntityNode:IDReference]
+    CustomProperties?
+;
+
+InheritanceEdge:
+    'id' ':' id=ID
+    'baseNode' ':' baseNode=[EntityNode:IDReference]
+    'superNode' ':' superNode=[EntityNode:IDReference]
     CustomProperties?
 ;

@@ -6,6 +6,8 @@
     "sourceMap": true,
     "outDir": "out",
     "strict": true,
+    "strictPropertyInitialization": false,
+    "useDefineForClassFields": false,
     "noUnusedLocals": true,
     "noImplicitReturns": true,
     "noImplicitOverride": true,

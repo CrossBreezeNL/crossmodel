@@ -7,6 +7,7 @@ import { Args, DefaultTypes } from '@eclipse-glsp/protocol';
 // System Diagram
 export const ENTITY_NODE_TYPE = DefaultTypes.NODE + ':entity';
 export const RELATIONSHIP_EDGE_TYPE = DefaultTypes.EDGE + ':relationship';
+export const INHERITANCE_EDGE_TYPE = DefaultTypes.EDGE + ':inheritance';
 export const LABEL_ENTITY = DefaultTypes.LABEL + ':entity';
 
 // Mapping Diagram

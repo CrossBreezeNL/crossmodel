@@ -1,15 +1,24 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { ATTRIBUTE_COMPARTMENT_TYPE, ENTITY_NODE_TYPE, LABEL_ENTITY, RELATIONSHIP_EDGE_TYPE } from '@crossbreeze/protocol';
+import {
+   ATTRIBUTE_COMPARTMENT_TYPE,
+   ENTITY_NODE_TYPE,
+   INHERITANCE_EDGE_TYPE,
+   LABEL_ENTITY,
+   RELATIONSHIP_EDGE_TYPE
+} from '@crossbreeze/protocol';
 import {
    ContainerConfiguration,
+   DefaultTypes,
+   GGraph,
    GLabelView,
    configureDefaultModelElements,
    configureModelElement,
    editLabelFeature,
    gridModule,
    initializeDiagramContainer,
+   overrideModelElement,
    withEditLabelFeature
 } from '@eclipse-glsp/client';
 import { GLSPDiagramConfiguration } from '@eclipse-glsp/theia-integration';
@@ -19,10 +28,10 @@ import { createCrossModelDiagramModule } from '../crossmodel-diagram-module';
 import { AttributeCompartment } from '../model';
 import { AttributeCompartmentView } from '../views';
 import { systemEdgeCreationToolModule } from './edge-creation-tool/edge-creation-tool-module';
-import { EntityNode, GEditableLabel, RelationshipEdge } from './model';
+import { EntityNode, GEditableLabel, InheritanceEdge, RelationshipEdge } from './model';
 import { systemNodeCreationModule } from './node-creation-tool/node-creation-tool-module';
 import { systemSelectModule } from './select-tool/select-tool-module';
-import { EntityNodeView, RelationshipEdgeView } from './views';
+import { EntityNodeView, InheritanceEdgeView, RelationshipEdgeView, SystemGraphView } from './views';
 
 export class SystemDiagramConfiguration extends GLSPDiagramConfiguration {
    diagramType: string = SystemDiagramLanguage.diagramType;
@@ -53,8 +62,10 @@ const systemDiagramModule = createCrossModelDiagramModule((bind, unbind, isBound
    // The glsp-server can send a request to render a specific view given a type, e.g. node:entity
    // The model class holds the client-side model and properties
    // The view class shows how to draw the svg element given the properties of the model class
+   overrideModelElement(context, DefaultTypes.GRAPH, GGraph, SystemGraphView);
    configureModelElement(context, ENTITY_NODE_TYPE, EntityNode, EntityNodeView, { enable: [withEditLabelFeature] });
    configureModelElement(context, RELATIONSHIP_EDGE_TYPE, RelationshipEdge, RelationshipEdgeView);
    configureModelElement(context, ATTRIBUTE_COMPARTMENT_TYPE, AttributeCompartment, AttributeCompartmentView);
    configureModelElement(context, LABEL_ENTITY, GEditableLabel, GLabelView, { enable: [editLabelFeature] });
+   configureModelElement(context, INHERITANCE_EDGE_TYPE, InheritanceEdge, InheritanceEdgeView);
 });

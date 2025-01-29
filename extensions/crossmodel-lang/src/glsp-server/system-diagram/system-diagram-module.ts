@@ -27,6 +27,7 @@ import { SystemDiagramAddEntityOperationHandler } from './handler/add-entity-ope
 import { SystemDiagramApplyLabelEditOperationHandler } from './handler/apply-edit-operation-handler.js';
 import { SystemDiagramChangeBoundsOperationHandler } from './handler/change-bounds-operation-handler.js';
 import { SystemDiagramCreateEntityOperationHandler } from './handler/create-entity-operation-handler.js';
+import { SystemDiagramCreateInheritanceOperationHandler } from './handler/create-inheritance-operation-handler.js';
 import { SystemDiagramCreateRelationshipOperationHandler } from './handler/create-relationship-operation-handler.js';
 import { SystemDiagramDeleteOperationHandler } from './handler/delete-operation-handler.js';
 import { SystemDiagramDropEntityOperationHandler } from './handler/drop-entity-operation-handler.js';
@@ -64,6 +65,7 @@ export class SystemDiagramModule extends DiagramModule {
       binding.add(SystemDiagramAddEntityOperationHandler);
       binding.add(SystemDiagramCreateEntityOperationHandler);
       binding.add(SystemDiagramApplyLabelEditOperationHandler);
+      binding.add(SystemDiagramCreateInheritanceOperationHandler);
    }
 
    protected override configureContextActionProviders(binding: MultiBinding<ContextActionsProvider>): void {

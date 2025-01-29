@@ -3,8 +3,9 @@
  ********************************************************************************/
 
 :root {
-   --sprotty-background: var(--theia-layout-color3);
-   --sprotty-edge: var(--theia-editor-foreground);
+   --sprotty-background: var(--theia-editor-background);
+   --sprotty-edge: #6d6d6d;
+   --sprotty-edge-selected: var(--theia-focusBorder);
    --sprotty-border: var(--theia-editor-foreground);
 }
 
@@ -21,6 +22,7 @@
    font-size: 15pt;
    height: 100%;
    background-size: 11px;
+   background: var(--sprotty-background);
 }
 
 .sprotty
@@ -42,8 +44,12 @@
 }
 
 .sprotty-edge {
-   stroke: #6d6d6d;
+   stroke: var(--sprotty-edge);
    stroke-width: 2px;
+}
+
+.sprotty-edge.selected {
+   stroke: var(--sprotty-edge-selected);
 }
 
 /* Nodes */
@@ -184,4 +190,13 @@
 .error-extension {
    position: absolute;
    width: 100%;
+}
+
+.diagram-edge.inheritance {
+   marker-end: var(--svg-def-marker-inheritance);
+}
+
+.diagram-edge.inheritance.selected,
+.diagram-edge.inheritance.mouseover {
+   marker-end: var(--svg-def-marker-inheritance-selected);
 }

@@ -3,8 +3,8 @@
  ********************************************************************************/
 import { GEdge, GGraph, GModelFactory, GNode, ModelState } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
-import { EntityNode, RelationshipEdge } from '../../../language-server/generated/ast.js';
-import { GRelationshipEdge } from './edges.js';
+import { EntityNode, InheritanceEdge, RelationshipEdge, isRelationshipEdge } from '../../../language-server/generated/ast.js';
+import { GInheritanceEdge, GRelationshipEdge } from './edges.js';
 import { GEntityNode } from './nodes.js';
 import { SystemModelState } from './system-model-state.js';
 
@@ -33,7 +33,14 @@ export class SystemDiagramGModelFactory implements GModelFactory {
       const graphBuilder = GGraph.builder().id(this.modelState.semanticUri);
 
       diagramRoot.nodes.map(node => this.createEntityNode(node)).forEach(node => graphBuilder.add(node));
-      diagramRoot.edges.map(edge => this.createRelationshipEdge(edge)).forEach(edge => graphBuilder.add(edge));
+      diagramRoot.edges
+         .map(edge => {
+            if (isRelationshipEdge(edge)) {
+               return this.createRelationshipEdge(edge);
+            }
+            return this.createInheritanceEdge(edge);
+         })
+         .forEach(edge => graphBuilder.add(edge));
 
       return graphBuilder.build();
    }
@@ -44,5 +51,9 @@ export class SystemDiagramGModelFactory implements GModelFactory {
 
    protected createRelationshipEdge(edge: RelationshipEdge): GEdge {
       return GRelationshipEdge.builder().set(edge, this.modelState.index).build();
+   }
+
+   protected createInheritanceEdge(edge: InheritanceEdge): GEdge {
+      return GInheritanceEdge.builder().set(edge, this.modelState.index).build();
    }
 }

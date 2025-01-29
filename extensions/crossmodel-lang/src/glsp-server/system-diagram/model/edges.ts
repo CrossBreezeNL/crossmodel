@@ -2,9 +2,15 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 
-import { REFERENCE_CONTAINER_TYPE, REFERENCE_PROPERTY, REFERENCE_VALUE, RELATIONSHIP_EDGE_TYPE } from '@crossbreeze/protocol';
+import {
+   INHERITANCE_EDGE_TYPE,
+   REFERENCE_CONTAINER_TYPE,
+   REFERENCE_PROPERTY,
+   REFERENCE_VALUE,
+   RELATIONSHIP_EDGE_TYPE
+} from '@crossbreeze/protocol';
 import { GEdge, GEdgeBuilder } from '@eclipse-glsp/server';
-import { RelationshipEdge } from '../../../language-server/generated/ast.js';
+import { InheritanceEdge, RelationshipEdge } from '../../../language-server/generated/ast.js';
 import { SystemModelIndex } from './system-model-index.js';
 
 export class GRelationshipEdge extends GEdge {
@@ -30,6 +36,28 @@ export class GRelationshipEdgeBuilder extends GEdgeBuilder<GRelationshipEdge> {
       this.sourceId(sourceId || '');
       this.targetId(targetId || '');
 
+      return this;
+   }
+}
+
+export class GInheritanceEdge extends GEdge {
+   override type = INHERITANCE_EDGE_TYPE;
+
+   static override builder(): GInheritanceEdgeBuilder {
+      return new GInheritanceEdgeBuilder(GInheritanceEdge).type(INHERITANCE_EDGE_TYPE);
+   }
+}
+
+export class GInheritanceEdgeBuilder extends GEdgeBuilder<GInheritanceEdge> {
+   set(edge: InheritanceEdge, index: SystemModelIndex): this {
+      this.id(index.createId(edge));
+      this.addCssClasses('diagram-edge', 'inheritance');
+      this.addArg('edgePadding', 5);
+      const sourceId = index.createId(edge.baseNode?.ref);
+      const targetId = index.createId(edge.superNode?.ref);
+
+      this.sourceId(sourceId || '');
+      this.targetId(targetId || '');
       return this;
    }
 }

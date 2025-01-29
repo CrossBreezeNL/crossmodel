@@ -9,16 +9,13 @@ interface IdentifiedObject {
 fragment IdentifiedObjectFragment returns IdentifiedObject:
     'id' ':' id=ID;
 
-// For some reason we can't extend IdentifiedObject here, it results in compile errors because of incompatible $container variable.
-// Hence we repeated the id property here and in the fragment.
-interface NamedObject extends WithCustomProperties {
-    id: string;
+interface NamedObject extends IdentifiedObject {
     name: string;
     description?: string;
 }
 
 fragment NamedObjectFragment returns NamedObject:
-    'id' ':' id=ID
+    IdentifiedObjectFragment
     'name' ':' name=STRING
     ('description' ':' description=STRING)?
 ;

@@ -3,7 +3,7 @@ import 'common'
 import 'entity'
 
 // Relationship definition
-interface Relationship extends DataElementContainerLink {
+interface Relationship extends DataElementContainerLink, WithCustomProperties {
     parent: @Entity
     parentRole?: string
     parentCardinality?: string

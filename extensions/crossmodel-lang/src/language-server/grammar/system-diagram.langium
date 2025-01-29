@@ -23,7 +23,6 @@ SystemDiagram returns SystemDiagram:
                 (LIST_ITEM edges+=RelationshipEdge)+
             DEDENT
         )?
-        CustomPropertiesFragment?
     DEDENT
 ;
 
@@ -42,7 +41,6 @@ EntityNode returns EntityNode:
     'y' ':' y=NUMBER
     'width' ':' width=NUMBER
     'height' ':' height=NUMBER
-    CustomPropertiesFragment?
 ;
 
 // TODO: Why does this exist? In the system diagram we don't have attribute nodes right (in the grammar)? Or is this pure the generate an AST class to be used in the diagram for rendering?
@@ -60,5 +58,4 @@ RelationshipEdge returns RelationshipEdge:
     'relationship' ':' relationship=[Relationship:IDReference]
     'sourceNode' ':' sourceNode=[EntityNode:IDReference]
     'targetNode' ':' targetNode=[EntityNode:IDReference]
-    CustomPropertiesFragment?
 ;

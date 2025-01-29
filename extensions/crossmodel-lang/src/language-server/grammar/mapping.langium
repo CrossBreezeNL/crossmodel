@@ -9,7 +9,7 @@ interface SourceObjectAttribute extends EntityAttribute {
 interface TargetObjectAttribute extends EntityAttribute {
 }
 
-interface Mapping extends DataElementContainerMapping {
+interface Mapping extends DataElementContainerMapping, WithCustomProperties {
     sources: SourceObject[];
     target: TargetObject;
 }
@@ -28,7 +28,7 @@ Mapping returns Mapping:
         DEDENT
 ;
 
-interface SourceObject extends SourceDataElementContainer {
+interface SourceObject extends SourceDataElementContainer, WithCustomProperties {
     entity: @Entity;
     join: string;
     dependencies: SourceObjectDependency[]

@@ -606,24 +606,11 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
         "$type": "Group",
         "elements": [
           {
-            "$type": "Keyword",
-            "value": "id"
-          },
-          {
-            "$type": "Keyword",
-            "value": ":"
-          },
-          {
-            "$type": "Assignment",
-            "feature": "id",
-            "operator": "=",
-            "terminal": {
-              "$type": "RuleCall",
-              "rule": {
-                "$ref": "#/rules@5"
-              },
-              "arguments": []
-            }
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@13"
+            },
+            "arguments": []
           },
           {
             "$type": "Keyword",
@@ -1328,14 +1315,6 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@15"
-            },
-            "arguments": [],
-            "cardinality": "?"
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
               "$ref": "#/rules@9"
             },
             "arguments": []
@@ -1471,14 +1450,6 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
               },
               "arguments": []
             }
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@15"
-            },
-            "arguments": [],
-            "cardinality": "?"
           }
         ]
       },
@@ -1585,14 +1556,6 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
               },
               "deprecatedSyntax": false
             }
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@15"
-            },
-            "arguments": [],
-            "cardinality": "?"
           }
         ]
       },
@@ -2505,6 +2468,9 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
       "superTypes": [
         {
           "$ref": "#/interfaces@4"
+        },
+        {
+          "$ref": "#/interfaces@10"
         }
       ],
       "attributes": [
@@ -2547,6 +2513,9 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
       "superTypes": [
         {
           "$ref": "#/interfaces@9"
+        },
+        {
+          "$ref": "#/interfaces@10"
         }
       ],
       "attributes": [
@@ -2609,19 +2578,10 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
       "name": "NamedObject",
       "superTypes": [
         {
-          "$ref": "#/interfaces@10"
+          "$ref": "#/interfaces@2"
         }
       ],
       "attributes": [
-        {
-          "$type": "TypeAttribute",
-          "name": "id",
-          "type": {
-            "$type": "SimpleType",
-            "primitiveType": "string"
-          },
-          "isOptional": false
-        },
         {
           "$type": "TypeAttribute",
           "name": "name",
@@ -2739,6 +2699,9 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
       "superTypes": [
         {
           "$ref": "#/interfaces@5"
+        },
+        {
+          "$ref": "#/interfaces@10"
         }
       ],
       "attributes": [
@@ -3053,6 +3016,9 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
       "superTypes": [
         {
           "$ref": "#/interfaces@6"
+        },
+        {
+          "$ref": "#/interfaces@10"
         }
       ],
       "attributes": [
@@ -3089,6 +3055,9 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
       "superTypes": [
         {
           "$ref": "#/interfaces@7"
+        },
+        {
+          "$ref": "#/interfaces@10"
         }
       ],
       "attributes": [

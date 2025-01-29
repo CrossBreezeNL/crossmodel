@@ -158,7 +158,6 @@ export function createSystemDiagram(
       name,
       nodes: [],
       edges: [],
-      customProperties: [],
       ...opts
    };
 }
@@ -180,7 +179,6 @@ export function createEntityNode(
       entity,
       ...position,
       ...dimension,
-      customProperties: [],
       ...opts
    };
 }

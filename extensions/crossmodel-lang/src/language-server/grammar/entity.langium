@@ -1,7 +1,7 @@
 import 'terminals'
 import 'common'
 
-interface Entity extends DataElementContainer {
+interface Entity extends DataElementContainer, WithCustomProperties {
     superEntities: @Entity[]
     attributes: EntityAttribute[]
 }
@@ -25,7 +25,7 @@ Entity returns Entity:
         DEDENT
 ;
 
-interface EntityAttribute extends DataElement {
+interface EntityAttribute extends DataElement, WithCustomProperties {
     length?: number;
     precision?: number;
     scale?: number;

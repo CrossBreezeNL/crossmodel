@@ -22,6 +22,5 @@ export const entity4 = `entity:
         - id: Phone
           name: 'Phone'
           datatype: 'varchar'
-    
     name: 'Customer'
     description: 'A customer with whom a transaction has been made.'`;

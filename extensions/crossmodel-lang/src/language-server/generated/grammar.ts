@@ -1593,7 +1593,7 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@14"
+              "$ref": "#/rules@13"
             },
             "arguments": []
           },
@@ -1706,7 +1706,7 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@14"
+              "$ref": "#/rules@13"
             },
             "arguments": []
           },
@@ -2627,7 +2627,7 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
       "name": "DataElementContainerMapping",
       "superTypes": [
         {
-          "$ref": "#/interfaces@3"
+          "$ref": "#/interfaces@2"
         }
       ],
       "attributes": []
@@ -2637,7 +2637,7 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
       "name": "SourceDataElementContainer",
       "superTypes": [
         {
-          "$ref": "#/interfaces@3"
+          "$ref": "#/interfaces@2"
         }
       ],
       "attributes": []

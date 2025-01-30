@@ -26,12 +26,12 @@ interface DataElementContainer extends NamedObject {
 interface DataElementContainerLink extends NamedObject {
 }
 
-interface DataElementContainerMapping extends NamedObject {
+interface DataElementContainerMapping extends IdentifiedObject {
 }
 
 // The DataElementContainer acting as a source object in a mapping.
 // The name is the alias.
-interface SourceDataElementContainer extends NamedObject {
+interface SourceDataElementContainer extends IdentifiedObject {
 }
 
 interface DataElementMapping extends IdentifiedObject {

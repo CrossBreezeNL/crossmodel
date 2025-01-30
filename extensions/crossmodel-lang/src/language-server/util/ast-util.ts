@@ -204,12 +204,10 @@ export function createSourceObject(entity: Entity | AstNodeDescription, containe
       : entity.id ?? idProvider.getLocalId(entity) ?? entity.name ?? 'unknown';
    const ref = isAstNodeDescription(entity) ? undefined : entity;
    const $refText = isAstNodeDescription(entity) ? entity.name : idProvider.getGlobalId(entity) || entity.id || '';
-   const sourceObjectId = idProvider.findNextId(SourceObject, entityId + 'SourceObject', container);
    return {
       $type: SourceObject,
       $container: container,
-      id: sourceObjectId,
-      name: sourceObjectId,
+      id: idProvider.findNextId(SourceObject, entityId + 'SourceObject', container),
       entity: { $refText, ref },
       join: 'from',
       dependencies: [],

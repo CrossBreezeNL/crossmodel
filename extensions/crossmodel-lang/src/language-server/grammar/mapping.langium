@@ -17,7 +17,7 @@ interface Mapping extends DataElementContainerMapping, WithCustomProperties {
 Mapping returns Mapping:
     'mapping' ':'
         INDENT
-            NamedObjectFragment
+            IdentifiedObjectFragment
             ('sources' ':'
                 INDENT 
                     (LIST_ITEM sources+=SourceObject)+
@@ -36,7 +36,7 @@ interface SourceObject extends SourceDataElementContainer, WithCustomProperties 
 }
 
 SourceObject returns SourceObject:
-    NamedObjectFragment
+    IdentifiedObjectFragment
     'entity' ':' entity=[Entity:IDReference] // implies attributes through entity
     'join' ':' join=JoinType
     ('dependencies' ':'

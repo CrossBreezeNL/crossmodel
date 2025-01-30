@@ -263,6 +263,17 @@ export function isWithCustomProperties(item: unknown): item is WithCustomPropert
     return reflection.isInstance(item, WithCustomProperties);
 }
 
+export interface DataElementContainerMapping extends IdentifiedObject {
+    readonly $container: CrossModelRoot;
+    readonly $type: 'DataElementContainerMapping' | 'Mapping';
+}
+
+export const DataElementContainerMapping = 'DataElementContainerMapping';
+
+export function isDataElementContainerMapping(item: unknown): item is DataElementContainerMapping {
+    return reflection.isInstance(item, DataElementContainerMapping);
+}
+
 export interface DataElementMapping extends IdentifiedObject {
     readonly $type: 'DataElementMapping';
 }
@@ -290,7 +301,7 @@ export function isEntityNode(item: unknown): item is EntityNode {
 }
 
 export interface NamedObject extends IdentifiedObject {
-    readonly $type: 'DataElement' | 'DataElementContainer' | 'DataElementContainerLink' | 'DataElementContainerMapping' | 'Entity' | 'EntityAttribute' | 'EntityNodeAttribute' | 'Mapping' | 'NamedObject' | 'Relationship' | 'SourceDataElementContainer' | 'SourceObject' | 'SourceObjectAttribute' | 'TargetObjectAttribute';
+    readonly $type: 'DataElement' | 'DataElementContainer' | 'DataElementContainerLink' | 'Entity' | 'EntityAttribute' | 'EntityNodeAttribute' | 'NamedObject' | 'Relationship' | 'SourceObjectAttribute' | 'TargetObjectAttribute';
     description?: string;
     name: string;
 }
@@ -313,6 +324,17 @@ export const RelationshipEdge = 'RelationshipEdge';
 
 export function isRelationshipEdge(item: unknown): item is RelationshipEdge {
     return reflection.isInstance(item, RelationshipEdge);
+}
+
+export interface SourceDataElementContainer extends IdentifiedObject {
+    readonly $container: Mapping;
+    readonly $type: 'SourceDataElementContainer' | 'SourceObject';
+}
+
+export const SourceDataElementContainer = 'SourceDataElementContainer';
+
+export function isSourceDataElementContainer(item: unknown): item is SourceDataElementContainer {
+    return reflection.isInstance(item, SourceDataElementContainer);
 }
 
 export interface SystemDiagram extends IdentifiedObject {
@@ -474,28 +496,6 @@ export function isDataElementContainerLink(item: unknown): item is DataElementCo
     return reflection.isInstance(item, DataElementContainerLink);
 }
 
-export interface DataElementContainerMapping extends NamedObject {
-    readonly $container: CrossModelRoot;
-    readonly $type: 'DataElementContainerMapping' | 'Mapping';
-}
-
-export const DataElementContainerMapping = 'DataElementContainerMapping';
-
-export function isDataElementContainerMapping(item: unknown): item is DataElementContainerMapping {
-    return reflection.isInstance(item, DataElementContainerMapping);
-}
-
-export interface SourceDataElementContainer extends NamedObject {
-    readonly $container: Mapping;
-    readonly $type: 'SourceDataElementContainer' | 'SourceObject';
-}
-
-export const SourceDataElementContainer = 'SourceDataElementContainer';
-
-export function isSourceDataElementContainer(item: unknown): item is SourceDataElementContainer {
-    return reflection.isInstance(item, SourceDataElementContainer);
-}
-
 export interface EntityNodeAttribute extends EntityAttribute {
     readonly $type: 'EntityNodeAttribute';
 }
@@ -579,15 +579,15 @@ export class CrossModelAstReflection extends AbstractAstReflection {
             }
             case DataElement:
             case DataElementContainer:
-            case DataElementContainerLink:
-            case DataElementContainerMapping:
-            case SourceDataElementContainer: {
+            case DataElementContainerLink: {
                 return this.isSubtype(NamedObject, supertype);
             }
+            case DataElementContainerMapping:
             case DataElementMapping:
             case EntityNode:
             case NamedObject:
             case RelationshipEdge:
+            case SourceDataElementContainer:
             case SystemDiagram: {
                 return this.isSubtype(IdentifiedObject, supertype);
             }
@@ -767,6 +767,14 @@ export class CrossModelAstReflection extends AbstractAstReflection {
                     ]
                 };
             }
+            case DataElementContainerMapping: {
+                return {
+                    name: DataElementContainerMapping,
+                    properties: [
+                        { name: 'id' }
+                    ]
+                };
+            }
             case DataElementMapping: {
                 return {
                     name: DataElementMapping,
@@ -806,6 +814,14 @@ export class CrossModelAstReflection extends AbstractAstReflection {
                         { name: 'relationship' },
                         { name: 'sourceNode' },
                         { name: 'targetNode' }
+                    ]
+                };
+            }
+            case SourceDataElementContainer: {
+                return {
+                    name: SourceDataElementContainer,
+                    properties: [
+                        { name: 'id' }
                     ]
                 };
             }
@@ -864,9 +880,7 @@ export class CrossModelAstReflection extends AbstractAstReflection {
                     name: Mapping,
                     properties: [
                         { name: 'customProperties', defaultValue: [] },
-                        { name: 'description' },
                         { name: 'id' },
-                        { name: 'name' },
                         { name: 'sources', defaultValue: [] },
                         { name: 'target' }
                     ]
@@ -907,11 +921,9 @@ export class CrossModelAstReflection extends AbstractAstReflection {
                         { name: 'conditions', defaultValue: [] },
                         { name: 'customProperties', defaultValue: [] },
                         { name: 'dependencies', defaultValue: [] },
-                        { name: 'description' },
                         { name: 'entity' },
                         { name: 'id' },
-                        { name: 'join' },
-                        { name: 'name' }
+                        { name: 'join' }
                     ]
                 };
             }
@@ -949,26 +961,6 @@ export class CrossModelAstReflection extends AbstractAstReflection {
             case DataElementContainerLink: {
                 return {
                     name: DataElementContainerLink,
-                    properties: [
-                        { name: 'description' },
-                        { name: 'id' },
-                        { name: 'name' }
-                    ]
-                };
-            }
-            case DataElementContainerMapping: {
-                return {
-                    name: DataElementContainerMapping,
-                    properties: [
-                        { name: 'description' },
-                        { name: 'id' },
-                        { name: 'name' }
-                    ]
-                };
-            }
-            case SourceDataElementContainer: {
-                return {
-                    name: SourceDataElementContainer,
                     properties: [
                         { name: 'description' },
                         { name: 'id' },

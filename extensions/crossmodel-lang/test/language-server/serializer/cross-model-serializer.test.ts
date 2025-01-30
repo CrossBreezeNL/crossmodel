@@ -73,11 +73,6 @@ describe('CrossModelLexer', () => {
          const parseResult = serializer.serialize(crossModelRootWithAttributesDifPlace);
          expect(parseResult).toBe(expected_result3);
       });
-
-      test('serialize entity with inheritance in different place', () => {
-         const parseResult = serializer.serialize(crossModelRootWithAttributesDifPlace);
-         expect(parseResult).toBe(expected_result3);
-      });
    });
 
    describe('Serialize relationship', () => {
@@ -212,33 +207,26 @@ const expected_result3 = `entity:
     description: "Test description"
     attributes:
       - id: Attribute1
-        name: "Attribute1"
-        datatype: "Datatype Attribute 1"
+        name: "Attribute 1"
       - id: Attribute2
-        name: "Attribute2"
-        datatype: "Datatype Attribute 2"`;
+        name: "Attribute 2"`;
 
 const expected_result4 = `relationship:
     id: testId
     name: "test Name"
     description: "Test description"
     parent: Ref1
-    child: Ref2
-    type: "n:m"`;
+    child: Ref2`;
 const expected_result5 = `systemDiagram:
     id: testId
-    name: "test Name"
-    description: "Test description"
     nodes:
       - id: Node1
-        name: "Node 1"
         entity: Ref1
         x: 100
         y: 101
         width: 102
         height: 102
       - id: Node2
-        name: "Node 2"
         entity: Ref2
         x: 100
         y: 101

@@ -13,7 +13,7 @@ interface Relationship extends DataElementContainerLink, WithCustomProperties {
     attributes: RelationshipAttribute[]
 }
 
-Cardinality returns string: '0' | '1' | 'n';
+Cardinality returns string: 'zero' | 'one' | 'multiple';
 
 Relationship returns Relationship:
     'relationship' ':' 

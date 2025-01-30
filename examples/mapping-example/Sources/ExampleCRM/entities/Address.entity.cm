@@ -22,6 +22,3 @@ entity:
       - name: Author
         value: "CrossBreeze"
       - name: ExampleEntity
-    identifier:
-      - attributes:
-        - CustomerID

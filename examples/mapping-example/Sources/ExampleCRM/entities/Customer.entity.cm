@@ -28,6 +28,3 @@ entity:
       - id: Birth_Date
         name: "Birth Date"
         datatype: "Date"
-    identifier:
-      - attributes:
-        - Id

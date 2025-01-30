@@ -1,6 +1,5 @@
 systemDiagram:
     id: ExampleDWH
-    name: "ExampleDWH"
     nodes:
       - id: CalcAgeNode
         entity: ExampleDWH.CalcAge

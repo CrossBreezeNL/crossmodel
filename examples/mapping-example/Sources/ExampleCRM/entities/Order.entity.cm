@@ -22,6 +22,3 @@ entity:
         datatype: "Decimal"
         precision: 38
         scale: 6
-    identifier:
-      - attributes:
-        - Id

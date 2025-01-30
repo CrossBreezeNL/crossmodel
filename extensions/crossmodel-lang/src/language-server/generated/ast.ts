@@ -9,7 +9,7 @@ import { AbstractAstReflection } from 'langium';
 
 export const CrossModelTerminals = {
     STRING: /"[^"]*"|'[^']*'/,
-    NUMBER: /(-)?[0-9]+(\.[0-9]*)?/,
+    NUMBER: /(-)?[0-9]+(\.[0-9]+)?/,
     ID: /[_a-zA-Z][\w_\-~$#@/\d]*/,
     SL_COMMENT: /#[^\n\r]*/,
     INDENT: /:synthetic-indent:/,
@@ -253,7 +253,7 @@ export function isStringLiteral(item: unknown): item is StringLiteral {
 }
 
 export interface WithCustomProperties extends AstNode {
-    readonly $type: 'AttributeMapping' | 'Entity' | 'EntityAttribute' | 'EntityNodeAttribute' | 'Mapping' | 'Relationship' | 'RelationshipAttribute' | 'RelationshipEdge' | 'SourceObject' | 'SourceObjectAttribute' | 'TargetObject' | 'TargetObjectAttribute' | 'WithCustomProperties';
+    readonly $type: 'AttributeMapping' | 'Entity' | 'EntityAttribute' | 'EntityNodeAttribute' | 'Mapping' | 'Relationship' | 'RelationshipAttribute' | 'SourceObject' | 'SourceObjectAttribute' | 'TargetObject' | 'TargetObjectAttribute' | 'WithCustomProperties';
     customProperties: Array<CustomProperty>;
 }
 
@@ -273,8 +273,24 @@ export function isDataElementMapping(item: unknown): item is DataElementMapping 
     return reflection.isInstance(item, DataElementMapping);
 }
 
+export interface EntityNode extends IdentifiedObject {
+    readonly $container: SystemDiagram;
+    readonly $type: 'EntityNode';
+    entity: Reference<Entity>;
+    height: number;
+    width: number;
+    x: number;
+    y: number;
+}
+
+export const EntityNode = 'EntityNode';
+
+export function isEntityNode(item: unknown): item is EntityNode {
+    return reflection.isInstance(item, EntityNode);
+}
+
 export interface NamedObject extends IdentifiedObject {
-    readonly $type: 'DataElement' | 'DataElementContainer' | 'DataElementContainerLink' | 'DataElementContainerMapping' | 'Entity' | 'EntityAttribute' | 'EntityNode' | 'EntityNodeAttribute' | 'Mapping' | 'NamedObject' | 'Relationship' | 'SourceDataElementContainer' | 'SourceObject' | 'SourceObjectAttribute' | 'SystemDiagram' | 'TargetObjectAttribute';
+    readonly $type: 'DataElement' | 'DataElementContainer' | 'DataElementContainerLink' | 'DataElementContainerMapping' | 'Entity' | 'EntityAttribute' | 'EntityNodeAttribute' | 'Mapping' | 'NamedObject' | 'Relationship' | 'SourceDataElementContainer' | 'SourceObject' | 'SourceObjectAttribute' | 'TargetObjectAttribute';
     description?: string;
     name: string;
 }
@@ -285,7 +301,7 @@ export function isNamedObject(item: unknown): item is NamedObject {
     return reflection.isInstance(item, NamedObject);
 }
 
-export interface RelationshipEdge extends IdentifiedObject, WithCustomProperties {
+export interface RelationshipEdge extends IdentifiedObject {
     readonly $container: SystemDiagram;
     readonly $type: 'RelationshipEdge';
     relationship: Reference<Relationship>;
@@ -297,6 +313,19 @@ export const RelationshipEdge = 'RelationshipEdge';
 
 export function isRelationshipEdge(item: unknown): item is RelationshipEdge {
     return reflection.isInstance(item, RelationshipEdge);
+}
+
+export interface SystemDiagram extends IdentifiedObject {
+    readonly $container: CrossModelRoot;
+    readonly $type: 'SystemDiagram';
+    edges: Array<RelationshipEdge>;
+    nodes: Array<EntityNode>;
+}
+
+export const SystemDiagram = 'SystemDiagram';
+
+export function isSystemDiagram(item: unknown): item is SystemDiagram {
+    return reflection.isInstance(item, SystemDiagram);
 }
 
 export interface AttributeMapping extends WithCustomProperties {
@@ -456,22 +485,6 @@ export function isDataElementContainerMapping(item: unknown): item is DataElemen
     return reflection.isInstance(item, DataElementContainerMapping);
 }
 
-export interface EntityNode extends NamedObject {
-    readonly $container: SystemDiagram;
-    readonly $type: 'EntityNode';
-    entity: Reference<Entity>;
-    height: number;
-    width: number;
-    x: number;
-    y: number;
-}
-
-export const EntityNode = 'EntityNode';
-
-export function isEntityNode(item: unknown): item is EntityNode {
-    return reflection.isInstance(item, EntityNode);
-}
-
 export interface SourceDataElementContainer extends NamedObject {
     readonly $container: Mapping;
     readonly $type: 'SourceDataElementContainer' | 'SourceObject';
@@ -481,19 +494,6 @@ export const SourceDataElementContainer = 'SourceDataElementContainer';
 
 export function isSourceDataElementContainer(item: unknown): item is SourceDataElementContainer {
     return reflection.isInstance(item, SourceDataElementContainer);
-}
-
-export interface SystemDiagram extends NamedObject {
-    readonly $container: CrossModelRoot;
-    readonly $type: 'SystemDiagram';
-    edges: Array<RelationshipEdge>;
-    nodes: Array<EntityNode>;
-}
-
-export const SystemDiagram = 'SystemDiagram';
-
-export function isSystemDiagram(item: unknown): item is SystemDiagram {
-    return reflection.isInstance(item, SystemDiagram);
 }
 
 export interface EntityNodeAttribute extends EntityAttribute {
@@ -581,13 +581,14 @@ export class CrossModelAstReflection extends AbstractAstReflection {
             case DataElementContainer:
             case DataElementContainerLink:
             case DataElementContainerMapping:
-            case EntityNode:
-            case SourceDataElementContainer:
-            case SystemDiagram: {
+            case SourceDataElementContainer: {
                 return this.isSubtype(NamedObject, supertype);
             }
             case DataElementMapping:
-            case NamedObject: {
+            case EntityNode:
+            case NamedObject:
+            case RelationshipEdge:
+            case SystemDiagram: {
                 return this.isSubtype(IdentifiedObject, supertype);
             }
             case Entity: {
@@ -614,9 +615,6 @@ export class CrossModelAstReflection extends AbstractAstReflection {
             }
             case Relationship: {
                 return this.isSubtype(DataElementContainerLink, supertype) || this.isSubtype(WithCustomProperties, supertype);
-            }
-            case RelationshipEdge: {
-                return this.isSubtype(IdentifiedObject, supertype) || this.isSubtype(WithCustomProperties, supertype);
             }
             case SourceObject: {
                 return this.isSubtype(SourceDataElementContainer, supertype) || this.isSubtype(WithCustomProperties, supertype);
@@ -777,6 +775,19 @@ export class CrossModelAstReflection extends AbstractAstReflection {
                     ]
                 };
             }
+            case EntityNode: {
+                return {
+                    name: EntityNode,
+                    properties: [
+                        { name: 'entity' },
+                        { name: 'height' },
+                        { name: 'id' },
+                        { name: 'width' },
+                        { name: 'x' },
+                        { name: 'y' }
+                    ]
+                };
+            }
             case NamedObject: {
                 return {
                     name: NamedObject,
@@ -791,11 +802,20 @@ export class CrossModelAstReflection extends AbstractAstReflection {
                 return {
                     name: RelationshipEdge,
                     properties: [
-                        { name: 'customProperties', defaultValue: [] },
                         { name: 'id' },
                         { name: 'relationship' },
                         { name: 'sourceNode' },
                         { name: 'targetNode' }
+                    ]
+                };
+            }
+            case SystemDiagram: {
+                return {
+                    name: SystemDiagram,
+                    properties: [
+                        { name: 'edges', defaultValue: [] },
+                        { name: 'id' },
+                        { name: 'nodes', defaultValue: [] }
                     ]
                 };
             }
@@ -946,21 +966,6 @@ export class CrossModelAstReflection extends AbstractAstReflection {
                     ]
                 };
             }
-            case EntityNode: {
-                return {
-                    name: EntityNode,
-                    properties: [
-                        { name: 'description' },
-                        { name: 'entity' },
-                        { name: 'height' },
-                        { name: 'id' },
-                        { name: 'name' },
-                        { name: 'width' },
-                        { name: 'x' },
-                        { name: 'y' }
-                    ]
-                };
-            }
             case SourceDataElementContainer: {
                 return {
                     name: SourceDataElementContainer,
@@ -968,18 +973,6 @@ export class CrossModelAstReflection extends AbstractAstReflection {
                         { name: 'description' },
                         { name: 'id' },
                         { name: 'name' }
-                    ]
-                };
-            }
-            case SystemDiagram: {
-                return {
-                    name: SystemDiagram,
-                    properties: [
-                        { name: 'description' },
-                        { name: 'edges', defaultValue: [] },
-                        { name: 'id' },
-                        { name: 'name' },
-                        { name: 'nodes', defaultValue: [] }
                     ]
                 };
             }

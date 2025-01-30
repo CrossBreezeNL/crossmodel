@@ -38,26 +38,24 @@ describe('CrossModelLexer', () => {
 
       beforeAll(() => {
          crossModelRoot = { $type: 'CrossModelRoot' };
-         crossModelRoot.entity = createEntity(crossModelRoot, 'testId', {
-            description: 'Test description',
-            name: 'test Name'
+         crossModelRoot.entity = createEntity(crossModelRoot, 'testId', 'test Name', {
+            description: 'Test description'
          });
 
          crossModelRootWithoutAttributes = _.cloneDeep(crossModelRoot);
 
          crossModelRoot.entity.attributes = [
-            createEntityAttribute(crossModelRoot.entity, 'Attribute1', 'Attribute1', 'Datatype Attribute 1'),
-            createEntityAttribute(crossModelRoot.entity, 'Attribute2', 'Attribute2', 'Datatype Attribute 2')
+            createEntityAttribute(crossModelRoot.entity, 'Attribute1', 'Attribute 1'),
+            createEntityAttribute(crossModelRoot.entity, 'Attribute2', 'Attribute 2')
          ];
 
          crossModelRootWithAttributesDifPlace = { $type: 'CrossModelRoot' };
-         crossModelRootWithAttributesDifPlace.entity = createEntity(crossModelRoot, 'testId', {
-            name: 'test Name',
+         crossModelRootWithAttributesDifPlace.entity = createEntity(crossModelRoot, 'testId', 'test Name', {
             description: 'Test description'
          });
          crossModelRootWithAttributesDifPlace.entity.attributes = [
-            createEntityAttribute(crossModelRoot.entity, 'Attribute1', 'Attribute1', 'Datatype Attribute 1'),
-            createEntityAttribute(crossModelRoot.entity, 'Attribute2', 'Attribute2', 'Datatype Attribute 2')
+            createEntityAttribute(crossModelRoot.entity, 'Attribute1', 'Attribute 1'),
+            createEntityAttribute(crossModelRoot.entity, 'Attribute2', 'Attribute 2')
          ];
       });
 
@@ -92,23 +90,20 @@ describe('CrossModelLexer', () => {
 
          const ref1: Reference<Entity> = {
             $refText: 'Ref1',
-            ref: createEntity(crossModelRoot, 'Ref1', {
-               name: 'test Name',
+            ref: createEntity(crossModelRoot, 'Ref1', 'test Name', {
                description: 'Test description'
             })
          };
 
          const ref2: Reference<Entity> = {
             $refText: 'Ref2',
-            ref: createEntity(crossModelRoot, 'Ref2', {
-               name: 'test Name',
+            ref: createEntity(crossModelRoot, 'Ref2', 'test Name', {
                description: 'Test description'
             })
          };
 
-         crossModelRoot.relationship = createRelationship(crossModelRoot, 'testId', 'n:m', ref1, ref2, {
-            description: 'Test description',
-            name: 'test Name'
+         crossModelRoot.relationship = createRelationship(crossModelRoot, 'testId', 'test Name', ref1, ref2, {
+            description: 'Test description'
          });
       });
 
@@ -128,54 +123,30 @@ describe('CrossModelLexer', () => {
 
          const ref1: Reference<Entity> = {
             $refText: 'Ref1',
-            ref: createEntity(crossModelRoot, 'Ref1', {
-               name: 'test Name',
+            ref: createEntity(crossModelRoot, 'Ref1', 'test Name', {
                description: 'Test description'
             })
          };
 
          const ref2: Reference<Entity> = {
             $refText: 'Ref2',
-            ref: createEntity(crossModelRoot, 'Ref2', {
-               name: 'test Name',
+            ref: createEntity(crossModelRoot, 'Ref2', 'test Name', {
                description: 'Test description'
             })
          };
 
          const ref3: Reference<Relationship> = {
             $refText: 'Ref3',
-            ref: createRelationship(crossModelRoot, 'testId', 'n:m', ref1, ref2, {
-               description: 'Test description',
-               name: 'test Name'
+            ref: createRelationship(crossModelRoot, 'testId', 'test Name', ref1, ref2, {
+               description: 'Test description'
             })
          };
 
-         crossModelRoot.systemDiagram = createSystemDiagram(crossModelRoot, 'testId', {
-            description: 'Test description',
-            name: 'test Name'
-         });
+         crossModelRoot.systemDiagram = createSystemDiagram(crossModelRoot, 'testId');
 
          crossModelRoot.systemDiagram.nodes = [
-            createEntityNode(
-               crossModelRoot.systemDiagram,
-               'Node1',
-               ref1,
-               { x: 100, y: 101 },
-               { width: 102, height: 102 },
-               {
-                  name: 'Node 1'
-               }
-            ),
-            createEntityNode(
-               crossModelRoot.systemDiagram,
-               'Node2',
-               ref2,
-               { x: 100, y: 101 },
-               { width: 102, height: 102 },
-               {
-                  name: 'Node 2'
-               }
-            )
+            createEntityNode(crossModelRoot.systemDiagram, 'Node1', ref1, { x: 100, y: 101 }, { width: 102, height: 102 }),
+            createEntityNode(crossModelRoot.systemDiagram, 'Node2', ref2, { x: 100, y: 101 }, { width: 102, height: 102 })
          ];
 
          crossModelRoot.systemDiagram.edges = [
@@ -228,11 +199,9 @@ const expected_result = `entity:
     description: "Test description"
     attributes:
       - id: Attribute1
-        name: "Attribute1"
-        datatype: "Datatype Attribute 1"
+        name: "Attribute 1"
       - id: Attribute2
-        name: "Attribute2"
-        datatype: "Datatype Attribute 2"`;
+        name: "Attribute 2"`;
 const expected_result2 = `entity:
     id: testId
     name: "test Name"

@@ -6,5 +6,4 @@ export const relationship1 = `relationship:
     name: "Customer Order relationship"
     description: "A relationship between a customer and an order."
     parent: Customer
-    child: Order
-    type: "1:1"`;
+    child: Order`;

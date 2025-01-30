@@ -19,7 +19,7 @@ import { MappingModelState } from '../model/mapping-model-state.js';
 
 @injectable()
 export class MappingEdgeCreationOperationHandler extends JsonCreateEdgeOperationHandler {
-   @inject(ModelState) protected override modelState!: MappingModelState;
+   @inject(ModelState) protected declare modelState: MappingModelState;
 
    override elementTypeIds = [TARGET_ATTRIBUTE_MAPPING_EDGE_TYPE];
    override label: string = 'Mapping Edge';

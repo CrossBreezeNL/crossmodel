@@ -15,7 +15,7 @@ import { SystemModelState } from '../model/system-model-state.js';
 @injectable()
 export class SystemDiagramAddEntityOperationHandler extends JsonOperationHandler {
    override operationType = AddEntityOperation.KIND;
-   @inject(ModelState) protected override modelState!: SystemModelState;
+   @inject(ModelState) protected declare modelState: SystemModelState;
 
    createCommand(operation: AddEntityOperation): Command {
       return new CrossModelCommand(this.modelState, () => this.createEntityNode(operation));
@@ -43,8 +43,7 @@ export class SystemDiagramAddEntityOperationHandler extends JsonOperationHandler
             x: operation.position.x,
             y: operation.position.y,
             width: 10,
-            height: 10,
-            customProperties: []
+            height: 10
          };
          container.nodes.push(node);
       }

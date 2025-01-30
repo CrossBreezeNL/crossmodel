@@ -114,8 +114,8 @@ export function createEntityAttribute(
    opts?: Partial<Omit<EntityAttribute, '$container' | '$type' | 'id' | 'name'>>
 ): EntityAttribute {
    return {
-      $type: 'EntityAttribute',
       $container: container,
+      $type: 'EntityAttribute',
       id,
       name,
       identifier: false,
@@ -148,14 +148,12 @@ export function createRelationship(
 export function createSystemDiagram(
    container: CrossModelRoot,
    id: string,
-   name: string,
-   opts?: Partial<Omit<SystemDiagram, '$container' | '$type' | 'id' | 'name'>>
+   opts?: Partial<Omit<SystemDiagram, '$container' | '$type' | 'id'>>
 ): SystemDiagram {
    return {
       $container: container,
       $type: 'SystemDiagram',
       id,
-      name,
       nodes: [],
       edges: [],
       ...opts
@@ -165,7 +163,6 @@ export function createSystemDiagram(
 export function createEntityNode(
    container: SystemDiagram,
    id: string,
-   name: string,
    entity: Reference<Entity>,
    position: Point,
    dimension: Dimension,
@@ -175,7 +172,6 @@ export function createEntityNode(
       $container: container,
       $type: 'EntityNode',
       id,
-      name,
       entity,
       ...position,
       ...dimension,
@@ -198,7 +194,6 @@ export function createRelationshipEdge(
       relationship,
       sourceNode,
       targetNode,
-      customProperties: [],
       ...opts
    };
 }

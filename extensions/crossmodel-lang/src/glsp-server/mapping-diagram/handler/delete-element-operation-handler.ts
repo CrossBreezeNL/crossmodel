@@ -18,7 +18,7 @@ import { MappingModelState } from '../model/mapping-model-state.js';
 export class MappingDiagramDeleteElementOperationHandler extends JsonOperationHandler {
    override operationType = DeleteElementOperation.KIND;
 
-   @inject(ModelState) protected override modelState!: MappingModelState;
+   @inject(ModelState) protected declare modelState: MappingModelState;
 
    override createCommand(operation: DeleteElementOperation): Command | undefined {
       const deleteInfo = this.findElementsToDelete(operation);

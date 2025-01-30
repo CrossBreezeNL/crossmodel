@@ -82,7 +82,9 @@ export class AttributeCompartmentBuilder extends GCompartmentBuilder<AttributeCo
             .build()
       );
       this.add(GLabel.builder().text(':').id(`${attributeId}_attribute_del`).build());
-      this.add(GLabel.builder().id(`${attributeId}_attribute_datatype`).text(attribute.datatype).addCssClass('datatype').build());
+      if (attribute.datatype) {
+         this.add(GLabel.builder().id(`${attributeId}_attribute_datatype`).text(attribute.datatype).addCssClass('datatype').build());
+      }
       const marker = markerFn?.(attribute, attributeId);
       if (marker) {
          this.add(marker);

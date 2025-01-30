@@ -433,7 +433,7 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
       },
       "definition": {
         "$type": "RegexToken",
-        "regex": "/(-)?[0-9]+(\\\\.[0-9]*)?/"
+        "regex": "/(-)?[0-9]+(\\\\.[0-9]+)?/"
       },
       "fragment": false,
       "hidden": false
@@ -1202,7 +1202,7 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@14"
+              "$ref": "#/rules@13"
             },
             "arguments": []
           },
@@ -1340,7 +1340,7 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@14"
+              "$ref": "#/rules@13"
             },
             "arguments": []
           },
@@ -2829,7 +2829,7 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
       "name": "SystemDiagram",
       "superTypes": [
         {
-          "$ref": "#/interfaces@3"
+          "$ref": "#/interfaces@2"
         }
       ],
       "attributes": [
@@ -2868,7 +2868,7 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
       "name": "EntityNode",
       "superTypes": [
         {
-          "$ref": "#/interfaces@3"
+          "$ref": "#/interfaces@2"
         }
       ],
       "attributes": [
@@ -2940,9 +2940,6 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
       "superTypes": [
         {
           "$ref": "#/interfaces@2"
-        },
-        {
-          "$ref": "#/interfaces@10"
         }
       ],
       "attributes": [

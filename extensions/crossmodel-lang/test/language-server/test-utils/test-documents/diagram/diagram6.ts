@@ -12,6 +12,4 @@ export const diagram6 = `systemDiagram:
           height: 100
     edges:  
         - id: OrderCustomerEdge
-          relationship: Order_Customer
-    name: "System diagram 1"
-    description: "This is a basic diagram with nodes and edges"`;
+          relationship: Order_Customer`;

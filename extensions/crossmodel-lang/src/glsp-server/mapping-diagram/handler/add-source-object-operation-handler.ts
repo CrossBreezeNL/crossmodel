@@ -16,7 +16,7 @@ import { MappingModelState } from '../model/mapping-model-state.js';
 @injectable()
 export class MappingDiagramAddSourceObjectOperationHandler extends JsonOperationHandler {
    override operationType = AddSourceObjectOperation.KIND;
-   @inject(ModelState) protected override modelState!: MappingModelState;
+   @inject(ModelState) protected declare modelState: MappingModelState;
 
    createCommand(operation: AddSourceObjectOperation): Command {
       return new CrossModelCommand(this.modelState, () => this.addSourceObject(operation));

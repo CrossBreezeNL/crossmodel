@@ -4,7 +4,7 @@ import 'entity'
 import 'relationship'
 
 // Diagram definition
-interface SystemDiagram extends NamedObject {
+interface SystemDiagram extends IdentifiedObject {
     nodes: EntityNode[];
     edges: RelationshipEdge[];
 }
@@ -12,7 +12,7 @@ interface SystemDiagram extends NamedObject {
 SystemDiagram returns SystemDiagram:
     ('systemDiagram' | 'diagram') ':' 
     INDENT
-        NamedObjectFragment
+        IdentifiedObjectFragment
         ('nodes' ':'
             INDENT 
                 (LIST_ITEM nodes+=EntityNode)+
@@ -26,7 +26,7 @@ SystemDiagram returns SystemDiagram:
     DEDENT
 ;
 
-interface EntityNode extends NamedObject {
+interface EntityNode extends IdentifiedObject {
     entity: @Entity;
     x: number;
     y: number;
@@ -35,7 +35,7 @@ interface EntityNode extends NamedObject {
 }
 
 EntityNode returns EntityNode:
-    NamedObjectFragment
+    IdentifiedObjectFragment
     'entity' ':' entity=[Entity:IDReference]
     'x' ':' x=NUMBER
     'y' ':' y=NUMBER
@@ -47,7 +47,7 @@ EntityNode returns EntityNode:
 interface EntityNodeAttribute extends EntityAttribute {
 }
 
-interface RelationshipEdge extends IdentifiedObject, WithCustomProperties {
+interface RelationshipEdge extends IdentifiedObject {
     relationship: @Relationship;
     sourceNode: @EntityNode;
     targetNode: @EntityNode;

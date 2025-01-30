@@ -49,8 +49,7 @@ export class SystemDiagramCreateEntityOperationHandler extends JsonCreateNodeOpe
          x: location.x,
          y: location.y,
          width: 10,
-         height: 10,
-         customProperties: []
+         height: 10
       };
       container.nodes.push(node);
       this.actionDispatcher.dispatchAfterNextUpdate({
@@ -72,6 +71,7 @@ export class SystemDiagramCreateEntityOperationHandler extends JsonCreateNodeOpe
          id,
          name: id,
          attributes: [],
+         superEntities: [],
          customProperties: []
       };
 

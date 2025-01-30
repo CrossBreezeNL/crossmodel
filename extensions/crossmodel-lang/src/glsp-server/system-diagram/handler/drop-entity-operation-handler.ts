@@ -19,7 +19,7 @@ import { SystemModelState } from '../model/system-model-state.js';
 export class SystemDiagramDropEntityOperationHandler extends JsonOperationHandler {
    override operationType = DropEntityOperation.KIND;
 
-   @inject(ModelState) protected override modelState!: SystemModelState;
+   @inject(ModelState) protected declare modelState: SystemModelState;
 
    createCommand(operation: DropEntityOperation): Command {
       return new CrossModelCommand(this.modelState, () => this.createEntityNode(operation));
@@ -45,8 +45,7 @@ export class SystemDiagramDropEntityOperationHandler extends JsonOperationHandle
                x: (x += 10),
                y: (y += 10),
                width: 10,
-               height: 10,
-               customProperties: []
+               height: 10
             };
             container.nodes.push(node);
          }

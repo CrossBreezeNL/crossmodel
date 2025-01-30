@@ -1,5 +1,5 @@
 relationship:
     id: TestRelationship
+    name: "Test Relationship"
     parent: Customer
     child: Order
-    type: "1:1"

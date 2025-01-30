@@ -1,6 +1,5 @@
 diagram:
     id: Example-diagram
-    name: "Example-diagram"
     nodes:
       - id: ExampleEntityNode
         entity: ExampleEntity

@@ -1,5 +1,5 @@
 relationship:
     id: ExampleEntityToExampleEntity
+    name: "ExampleEntityToExampleEntity"
     parent: ExampleEntity
     child: ExampleEntity
-    type: "1:1"

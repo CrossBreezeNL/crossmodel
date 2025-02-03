@@ -28,6 +28,7 @@ import { createCrossModelDiagramModule } from '../crossmodel-diagram-module';
 import { AttributeCompartment } from '../model';
 import { AttributeCompartmentView } from '../views';
 import { systemEdgeCreationToolModule } from './edge-creation-tool/edge-creation-tool-module';
+import { systemHoverModule } from './hover/hover-module';
 import { EntityNode, GEditableLabel, InheritanceEdge, RelationshipEdge } from './model';
 import { systemNodeCreationModule } from './node-creation-tool/node-creation-tool-module';
 import { systemSelectModule } from './select-tool/select-tool-module';
@@ -43,6 +44,7 @@ export class SystemDiagramConfiguration extends GLSPDiagramConfiguration {
             replace: systemSelectModule
          },
          ...containerConfiguration,
+         systemHoverModule,
          gridModule,
          systemDiagramModule,
          systemNodeCreationModule,

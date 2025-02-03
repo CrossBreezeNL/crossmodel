@@ -4,6 +4,8 @@
 
 import {
    Action,
+   AnchorComputerRegistry,
+   Bounds,
    Connectable,
    CreateEdgeOperation,
    CursorCSS,
@@ -11,37 +13,63 @@ import {
    DragAwareMouseListener,
    DrawFeedbackEdgeAction,
    EdgeCreationTool,
+   FeedbackEdgeEnd,
+   FeedbackEdgeEndMovingMouseListener,
    FeedbackEmitter,
+   GConnectableElement,
    GEdge,
    GEdgeSchema,
+   GGraph,
    GModelElement,
    HoverFeedbackAction,
    IActionDispatcher,
+   IFeedbackActionDispatcher,
    ITypeHintProvider,
    ModifyCSSFeedbackAction,
+   MoveAction,
    Point,
    RemoveFeedbackEdgeAction,
+   RequestCheckEdgeAction,
    TriggerEdgeCreationAction,
    cursorFeedbackAction,
    defaultFeedbackEdgeSchema,
+   feedbackEdgeEndId,
    findParentByFeature,
-   isConnectable
+   getAbsolutePosition,
+   isBoundsAware,
+   isConnectable,
+   toAbsoluteBounds
 } from '@eclipse-glsp/client';
 
 import { injectable } from '@theia/core/shared/inversify';
 
 const CSS_EDGE_CREATION = 'edge-creation';
+const CSS_SOURCE_HIGHLIGHT = 'source-highlight';
 
 @injectable()
 export class SystemEdgeCreationTool extends EdgeCreationTool {
+   protected creationMouseListener: SystemEdgeCreationToolMouseListener;
+
    protected override creationListener(): void {
-      const creationListener = new SystemEdgeCreationToolMouseListener(
+      this.creationMouseListener = new SystemEdgeCreationToolMouseListener(
          this.triggerAction,
          this.actionDispatcher,
          this.typeHintProvider,
          this
       );
-      this.toDisposeOnDisable.push(creationListener, this.mouseTool.registerListener(creationListener));
+      this.toDisposeOnDisable.push(this.creationMouseListener, this.mouseTool.registerListener(this.creationMouseListener));
+   }
+
+   override trackFeedbackEdge(): void {
+      const mouseMovingFeedback = new SystemFeedbackEndMover(this.anchorRegistry, this.feedbackDispatcher, this.creationMouseListener);
+      this.toDisposeOnDisable.push(mouseMovingFeedback, this.mouseTool.registerListener(mouseMovingFeedback));
+   }
+
+   protected override toolFeedback(): void {
+      const toolFeedback = this.createFeedbackEmitter()
+         .add(ModifyCSSFeedbackAction.create({ add: [CSS_EDGE_CREATION] }), ModifyCSSFeedbackAction.create({ remove: [CSS_EDGE_CREATION] }))
+         .submit();
+      this.toDisposeOnDisable.push(toolFeedback);
    }
 }
 
@@ -55,6 +83,39 @@ export interface DragConnectionContext {
    dragStart: Point;
 }
 
+export class SystemFeedbackEndMover extends FeedbackEdgeEndMovingMouseListener {
+   constructor(
+      anchorRegistry: AnchorComputerRegistry,
+      feedbackDispatcher: IFeedbackActionDispatcher,
+      protected creationListener: SystemEdgeCreationToolMouseListener
+   ) {
+      super(anchorRegistry, feedbackDispatcher);
+   }
+
+   // Override and use the connection context of the creation mouse listener to only snap to valid targets
+   override mouseMove(target: GModelElement, event: MouseEvent): Action[] {
+      const root = target.root;
+      const edgeEnd = root.index.getById(feedbackEdgeEndId(root));
+      if (!(edgeEnd instanceof FeedbackEdgeEnd) || !edgeEnd.feedbackEdge) {
+         return [];
+      }
+
+      const edge = edgeEnd.feedbackEdge;
+      const position = getAbsolutePosition(edgeEnd, event);
+      const context = this.creationListener.currentConnectionContext;
+      if (context && context.element instanceof GConnectableElement && context.canConnect && edge.source && isBoundsAware(edge.source)) {
+         const anchor = this.computeAbsoluteAnchor(context.element, Bounds.center(toAbsoluteBounds(edge.source)));
+         if (Point.euclideanDistance(anchor, edgeEnd.position) > 1) {
+            this.feedback.add(MoveAction.create([{ elementId: edgeEnd.id, toPosition: anchor }], { animate: false })).submit();
+         }
+      } else {
+         this.feedback.add(MoveAction.create([{ elementId: edgeEnd.id, toPosition: position }], { animate: false })).submit();
+      }
+
+      return [];
+   }
+}
+
 export class SystemEdgeCreationToolMouseListener extends DragAwareMouseListener implements Disposable {
    protected source?: string;
    protected target?: string;
@@ -64,6 +125,8 @@ export class SystemEdgeCreationToolMouseListener extends DragAwareMouseListener 
    protected mouseMoveFeedback: FeedbackEmitter;
    protected sourceFeedback: FeedbackEmitter;
    protected feedbackEdgeFeedback: FeedbackEmitter;
+   protected connectionContext?: ConnectionContext;
+   protected pendingDynamicCheck = false;
 
    constructor(
       protected triggerAction: TriggerEdgeCreationAction,
@@ -79,6 +142,10 @@ export class SystemEdgeCreationToolMouseListener extends DragAwareMouseListener 
       this.sourceFeedback = tool.createFeedbackEmitter();
    }
 
+   get currentConnectionContext(): ConnectionContext | undefined {
+      return this.connectionContext;
+   }
+
    protected isSourceSelected(): boolean {
       return this.source !== undefined;
    }
@@ -91,7 +158,7 @@ export class SystemEdgeCreationToolMouseListener extends DragAwareMouseListener 
       const result = super.mouseDown(target, event);
       if (event.button === 0 && !this.isSourceSelected()) {
          // update the current target
-         const context = this.calculateContext(target, event);
+         const context = this.calculateNewContext(target, true);
          if (context.element && context.canConnect) {
             this.dragContext = { element: context.element, dragStart: { x: event.clientX, y: event.clientY } };
          }
@@ -121,17 +188,26 @@ export class SystemEdgeCreationToolMouseListener extends DragAwareMouseListener 
                )
                .submit();
 
+            // source element feedback
+            if (this.isSourceSelected()) {
+               this.sourceFeedback
+                  .add(
+                     ModifyCSSFeedbackAction.create({ elements: [this.source], add: [CSS_SOURCE_HIGHLIGHT] }),
+                     ModifyCSSFeedbackAction.create({ elements: [this.source], remove: [CSS_SOURCE_HIGHLIGHT] })
+                  )
+                  .submit();
+            }
             this.dragContext = undefined;
          }
       }
-      this.updateFeedback(target, event);
+      this.updateFeedback(target);
       return result;
    }
 
    override draggingMouseUp(target: GModelElement, event: MouseEvent): Action[] {
       const result = super.draggingMouseUp(target, event);
       if (this.isSourceSelected()) {
-         const context = this.calculateContext(target, event);
+         const context = this.calculateNewContext(target, true);
          if (context.element && context.canConnect) {
             this.target = context.element.id;
             result.push(
@@ -145,49 +221,70 @@ export class SystemEdgeCreationToolMouseListener extends DragAwareMouseListener 
          }
       }
       this.dispose();
-      this.updateFeedback(target, event);
+      this.updateFeedback(target);
       return result;
    }
 
    override nonDraggingMouseUp(element: GModelElement, event: MouseEvent): Action[] {
       this.dispose();
-      this.updateFeedback(element, event);
+      this.updateFeedback(element);
       return [];
    }
 
    protected canConnect(element: GModelElement | undefined, role: 'source' | 'target'): boolean {
-      return (
-         !!element &&
-         !!isConnectable(element) &&
-         element.canConnect(this.proxyEdge, role) &&
-         (role !== 'target' || this.source !== element?.id)
-      );
+      if (
+         !element ||
+         !isConnectable(element) ||
+         !element.canConnect(this.proxyEdge, role) ||
+         (role === 'target' && this.source === element.id)
+      ) {
+         return false;
+      }
+      if (!this.isDynamic(this.proxyEdge.type)) {
+         return true;
+      }
+      const sourceElement = this.source ?? element;
+      const targetElement = this.source ? element : undefined;
+
+      this.pendingDynamicCheck = true;
+      // Request server edge check
+      this.actionDispatcher
+         .request(RequestCheckEdgeAction.create({ sourceElement, targetElement, edgeType: this.proxyEdge.type }))
+         .then(result => {
+            if (this.pendingDynamicCheck) {
+               this.connectionContext = { canConnect: result.isValid, element };
+               this.pendingDynamicCheck = false;
+               this.updateFeedback(element, true);
+            }
+         })
+         .catch(err => console.error('Dynamic edge check failed with: ', err));
+      // Temporarily mark the target as invalid while we wait for the server response,
+      return false;
    }
 
-   protected updateFeedback(target: GModelElement, event: MouseEvent): void {
-      const context = this.calculateContext(target, event);
+   protected isDynamic(edgeTypeId: string): boolean {
+      const typeHint = this.typeHintProvider.getEdgeTypeHint(edgeTypeId);
+      return typeHint?.dynamic ?? false;
+   }
 
-      // source element feedback
-      if (this.isSourceSelected()) {
-         this.sourceFeedback
-            .add(
-               HoverFeedbackAction.create({ mouseoverElement: this.source!, mouseIsOver: true }),
-               HoverFeedbackAction.create({ mouseoverElement: this.source!, mouseIsOver: false })
-            )
-            .submit();
-      }
-
-      // cursor feedback
-      if (!context.element || context.element?.id === this.source) {
-         // by default we want to use the edge creation CSS when the tool is active
-         this.registerFeedback(
-            [ModifyCSSFeedbackAction.create({ add: [CSS_EDGE_CREATION] })],
-            [ModifyCSSFeedbackAction.create({ remove: [CSS_EDGE_CREATION] })]
-         );
+   protected updateFeedback(target: GModelElement, forceUpdate?: boolean): void {
+      const context = this.calculateNewContext(target, forceUpdate ? true : undefined);
+      if (!context) {
          return;
       }
 
-      if (!context.canConnect) {
+      if (this.pendingDynamicCheck) {
+         return;
+      }
+
+      // cursor feedback
+      // if the context is invalid or the target is the root graph we show the default cursor
+      if (!context.element || target instanceof GGraph) {
+         this.registerFeedback([cursorFeedbackAction()]);
+         return;
+      }
+
+      if (this.isSourceSelected() && !context.canConnect) {
          this.registerFeedback([cursorFeedbackAction(CursorCSS.OPERATION_NOT_ALLOWED)], [cursorFeedbackAction()]);
          return;
       }
@@ -208,12 +305,23 @@ export class SystemEdgeCreationToolMouseListener extends DragAwareMouseListener 
       this.mouseMoveFeedback.submit();
    }
 
-   protected calculateContext(target: GModelElement, event: MouseEvent, previousContext?: ConnectionContext): ConnectionContext {
+   /**
+    * Recalculates the connection context based on the current target element and the event.
+    * @returns the new connection context or the current context if the context did not change
+    */
+   protected calculateNewContext(target: GModelElement, returnCurrent: true): ConnectionContext;
+   /**
+    * Recalculates the connection context based on the current target element and the event.
+    * @returns the new connection context or undefined if the context did not change
+    */
+   protected calculateNewContext(target: GModelElement, returnCurrent?: boolean): ConnectionContext | undefined;
+   protected calculateNewContext(target: GModelElement, returnCurrent?: boolean): ConnectionContext | undefined {
       const context: ConnectionContext = {};
       context.element = findParentByFeature(target, isConnectable);
-      if (previousContext && previousContext.element === context.element) {
-         return previousContext;
+      if (this.connectionContext && this.connectionContext.element === context.element) {
+         return returnCurrent ? this.connectionContext : undefined;
       }
+      this.pendingDynamicCheck = false;
       if (!this.isSourceSelected()) {
          context.canConnect = this.canConnect(context.element, 'source');
       } else if (!this.isTargetSelected()) {
@@ -221,6 +329,7 @@ export class SystemEdgeCreationToolMouseListener extends DragAwareMouseListener 
       } else {
          context.canConnect = false;
       }
+      this.connectionContext = context;
       return context;
    }
 

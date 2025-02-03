@@ -9,13 +9,12 @@ import {
    CreateEdgeOperation,
    JsonCreateEdgeOperationHandler,
    MaybePromise,
-   MessageAction,
    ModelState,
    SelectAction,
    getOrThrow
 } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
-import { CrossModelRoot, Entity, EntityNode, InheritanceEdge, isInheritanceEdge } from '../../../language-server/generated/ast.js';
+import { CrossModelRoot, Entity, EntityNode, InheritanceEdge } from '../../../language-server/generated/ast.js';
 import { findDocument } from '../../../language-server/util/ast-util.js';
 import { CrossModelCommand } from '../../common/cross-model-command.js';
 import { SystemModelState } from '../model/system-model-state.js';
@@ -32,18 +31,6 @@ export class SystemDiagramCreateInheritanceOperationHandler extends JsonCreateEd
       const baseEntityNode = getOrThrow(this.modelState.index.findEntityNode(operation.sourceElementId), 'Base entity node not found');
       const superEntityNode = getOrThrow(this.modelState.index.findEntityNode(operation.targetElementId), 'Super entity node not found');
       if (!baseEntityNode.entity.ref || !superEntityNode.entity.ref) {
-         return undefined;
-      }
-
-      // If a matching inheritance edge already exists, we don't need to create a new one
-      if (this.hasExistingInheritanceEdge(baseEntityNode, superEntityNode)) {
-         return undefined;
-      }
-
-      if (hasSuperEntity(superEntityNode.entity.ref, baseEntityNode.entity.ref)) {
-         this.actionDispatcher.dispatch(
-            MessageAction.create('Could not create inheritance. Circular inheritance is not allowed.', { severity: 'WARNING' })
-         );
          return undefined;
       }
 
@@ -67,19 +54,6 @@ export class SystemDiagramCreateInheritanceOperationHandler extends JsonCreateEd
       }
 
       return new CompoundCommand(new AddInheritanceCommand(this.modelState, operation), diagramCommand);
-   }
-
-   protected hasExistingInheritanceEdge(baseEntityNode: EntityNode, superEntityNode: EntityNode): boolean {
-      const existingInheritanceEdge = this.modelState.systemDiagram.edges.find(edge => {
-         if (!isInheritanceEdge(edge)) {
-            return false;
-         }
-         if (edge.baseNode.ref?.entity.ref === baseEntityNode.entity.ref && edge.superNode.ref?.entity.ref === superEntityNode.entity.ref) {
-            return true;
-         }
-         return false;
-      });
-      return !!existingInheritanceEdge;
    }
 
    protected async createEdge(baseEntityNode: EntityNode, superEntityNode: EntityNode): Promise<void> {

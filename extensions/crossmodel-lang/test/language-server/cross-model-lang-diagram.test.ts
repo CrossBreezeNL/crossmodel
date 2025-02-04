@@ -92,7 +92,7 @@ describe('CrossModel language Diagram', () => {
          expect(edge1?.relationship?.$refText).toBe('Order_Customer');
       });
 
-      describe('Diagram with with nodes and inheritance edges', () => {
+      describe('Diagram with nodes and inheritance edges', () => {
          test('Simple file for diagram and inheritance edges', async () => {
             const systemDiagram = await parseSystemDiagram({ services, text: diagram7 });
 

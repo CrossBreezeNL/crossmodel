@@ -26,6 +26,8 @@ export class EntityNode extends RectangularNode implements WithEditableLabel {
 
 export class RelationshipEdge extends GEdge {}
 
+export class InheritanceEdge extends GEdge {}
+
 export class GEditableLabel extends GLabel implements EditableLabel {
    editControlPositionCorrection = {
       x: -9,

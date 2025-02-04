@@ -72,7 +72,8 @@ export class SystemDiagramCreateEntityOperationHandler extends JsonCreateNodeOpe
          id,
          name: id,
          attributes: [],
-         customProperties: []
+         customProperties: [],
+         superEntities: []
       };
 
       const dirName = UriUtils.joinPath(UriUtils.dirname(URI.parse(this.modelState.semanticUri)), '..', 'entities');

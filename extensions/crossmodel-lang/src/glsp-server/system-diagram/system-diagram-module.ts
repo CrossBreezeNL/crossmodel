@@ -6,6 +6,7 @@ import {
    ContextActionsProvider,
    DiagramConfiguration,
    DiagramModule,
+   EdgeCreationChecker,
    GModelFactory,
    GModelIndex,
    InstanceMultiBinding,
@@ -23,10 +24,12 @@ import { CrossModelState } from '../common/cross-model-state.js';
 import { CrossModelStorage } from '../common/cross-model-storage.js';
 import { CrossModelSubmissionHandler } from '../common/cross-model-submission-handler.js';
 import { SystemDiagramAddEntityActionProvider } from './command-palette/add-entity-action-provider.js';
+import { SystemEdgeCreationChecker } from './edge-checker/edge-checker.js';
 import { SystemDiagramAddEntityOperationHandler } from './handler/add-entity-operation-handler.js';
 import { SystemDiagramApplyLabelEditOperationHandler } from './handler/apply-edit-operation-handler.js';
 import { SystemDiagramChangeBoundsOperationHandler } from './handler/change-bounds-operation-handler.js';
 import { SystemDiagramCreateEntityOperationHandler } from './handler/create-entity-operation-handler.js';
+import { SystemDiagramCreateInheritanceOperationHandler } from './handler/create-inheritance-operation-handler.js';
 import { SystemDiagramCreateRelationshipOperationHandler } from './handler/create-relationship-operation-handler.js';
 import { SystemDiagramDeleteOperationHandler } from './handler/delete-operation-handler.js';
 import { SystemDiagramDropEntityOperationHandler } from './handler/drop-entity-operation-handler.js';
@@ -64,6 +67,7 @@ export class SystemDiagramModule extends DiagramModule {
       binding.add(SystemDiagramAddEntityOperationHandler);
       binding.add(SystemDiagramCreateEntityOperationHandler);
       binding.add(SystemDiagramApplyLabelEditOperationHandler);
+      binding.add(SystemDiagramCreateInheritanceOperationHandler);
    }
 
    protected override configureContextActionProviders(binding: MultiBinding<ContextActionsProvider>): void {
@@ -87,5 +91,9 @@ export class SystemDiagramModule extends DiagramModule {
 
    protected override bindToolPaletteItemProvider(): BindingTarget<ToolPaletteItemProvider> | undefined {
       return SystemToolPaletteProvider;
+   }
+
+   protected override bindEdgeCreationChecker(): BindingTarget<EdgeCreationChecker> | undefined {
+      return SystemEdgeCreationChecker;
    }
 }

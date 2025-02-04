@@ -3,6 +3,7 @@
  ********************************************************************************/
 import {
    ENTITY_NODE_TYPE,
+   INHERITANCE_EDGE_TYPE,
    ModelStructure,
    RELATIONSHIP_EDGE_TYPE,
    activateDefaultToolsAction,
@@ -62,6 +63,13 @@ export class SystemToolPaletteProvider extends ToolPaletteItemProvider {
                   label: 'Create 1:1 Relationship',
                   icon: ModelStructure.Relationship.ICON,
                   actions: [TriggerEdgeCreationAction.create(RELATIONSHIP_EDGE_TYPE)]
+               },
+               {
+                  id: 'inheritance-create-tool',
+                  sortString: '6',
+                  label: 'Create Inheritance',
+                  icon: 'type-hierarchy-super',
+                  actions: [TriggerEdgeCreationAction.create(INHERITANCE_EDGE_TYPE, { args: { cssClasses: 'diagram-edge inheritance' } })]
                }
             ]
          }

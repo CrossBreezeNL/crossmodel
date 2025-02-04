@@ -7,6 +7,7 @@ import { TheiaEditor, TheiaNotificationIndicator, TheiaNotificationOverlay, Thei
 import { CMCompositeEditor, IntegratedEditorType } from './cm-composite-editor';
 import { CMExplorerView } from './cm-explorer-view';
 import { CMTheiaIntegration } from './cm-theia-integration';
+import path = require('path');
 
 export interface CMAppArgs extends Omit<IntegrationArgs, 'page'> {
    workspaceUrl?: string;
@@ -18,7 +19,7 @@ export class CMApp extends TheiaGLSPApp {
          { browser: args.browser, page: {} as any, playwright: args.playwright },
          {
             type: 'Theia',
-            workspace: args.workspaceUrl ?? 'src/resources/sample-workspace',
+            workspace: args.workspaceUrl ?? path.join(__dirname, '../resources/sample-workspace'),
             widgetId: '',
             url: args.baseUrl ?? 'http://localhost:3000'
          }

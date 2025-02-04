@@ -6,13 +6,13 @@ systemDiagram:
         x: 242
         y: 33
         width: 154.649658203125
-        height: 116
-      - id: ExampleDWH_NewEntityNode
+        height: 116.11013984680176
+      - id: ExampleDWH_DigitalProductNode
         entity: ExampleDWH.DigitalProduct
-        x: 187
+        x: 132
         y: 275
-        width: 154.22557544708252
-        height: 73.93824672698975
+        width: 154.3004560470581
+        height: 96.0881118774414
       - id: PhysicalProductNode
         entity: PhysicalProduct
         x: 429
@@ -21,13 +21,26 @@ systemDiagram:
         height: 136
       - id: PerishableProductNode
         entity: PerishableProduct
-        x: 429
+        x: 583
         y: 495
-        width: 155.22567415237427
-        height: 73.93824672698975
+        width: 183.74362182617188
+        height: 76
       - id: SomeProductNode
         entity: ExampleOtherModel.SomeProduct
-        x: 671
+        x: 682
         y: 352
         width: 207.14583730697632
-        height: 55.33333396911621
+        height: 56.0440559387207
+    edges:
+      - id: ExampleDWH_DigitalProductNodeInheritanceEdge
+        baseNode: ExampleDWH_DigitalProductNode
+        superNode: ExampleDWH_ProductNode
+      - id: PhysicalProductNodeInheritanceEdge
+        baseNode: PhysicalProductNode
+        superNode: ExampleDWH_ProductNode
+      - id: PerishableProductNodeInheritanceEdge
+        baseNode: PerishableProductNode
+        superNode: PhysicalProductNode
+      - id: PerishableProductNodeInheritanceEdge1
+        baseNode: PerishableProductNode
+        superNode: SomeProductNode

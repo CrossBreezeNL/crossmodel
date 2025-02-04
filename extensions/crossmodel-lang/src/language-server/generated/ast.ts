@@ -34,6 +34,7 @@ export type CrossModelKeywordNames =
     | "apply"
     | "attribute"
     | "attributes"
+    | "baseNode"
     | "child"
     | "childCardinality"
     | "childRole"
@@ -70,6 +71,7 @@ export type CrossModelKeywordNames =
     | "scale"
     | "sourceNode"
     | "sources"
+    | "superNode"
     | "systemDiagram"
     | "target"
     | "targetNode"
@@ -182,7 +184,7 @@ export function isCustomProperty(item: unknown): item is CustomProperty {
 }
 
 export interface IdentifiedObject extends AstNode {
-    readonly $type: 'DataElement' | 'DataElementContainer' | 'DataElementContainerLink' | 'DataElementContainerMapping' | 'DataElementMapping' | 'Entity' | 'EntityAttribute' | 'EntityNode' | 'EntityNodeAttribute' | 'IdentifiedObject' | 'Mapping' | 'NamedObject' | 'Relationship' | 'RelationshipEdge' | 'SourceDataElementContainer' | 'SourceObject' | 'SourceObjectAttribute' | 'SystemDiagram' | 'TargetObjectAttribute';
+    readonly $type: 'DataElement' | 'DataElementContainer' | 'DataElementContainerLink' | 'DataElementContainerMapping' | 'DataElementMapping' | 'Entity' | 'EntityAttribute' | 'EntityNode' | 'EntityNodeAttribute' | 'IdentifiedObject' | 'InheritanceEdge' | 'Mapping' | 'NamedObject' | 'Relationship' | 'RelationshipEdge' | 'SourceDataElementContainer' | 'SourceObject' | 'SourceObjectAttribute' | 'SystemDiagram' | 'SystemDiagramEdge' | 'TargetObjectAttribute';
     id: string;
 }
 
@@ -312,20 +314,6 @@ export function isNamedObject(item: unknown): item is NamedObject {
     return reflection.isInstance(item, NamedObject);
 }
 
-export interface RelationshipEdge extends IdentifiedObject {
-    readonly $container: SystemDiagram;
-    readonly $type: 'RelationshipEdge';
-    relationship: Reference<Relationship>;
-    sourceNode: Reference<EntityNode>;
-    targetNode: Reference<EntityNode>;
-}
-
-export const RelationshipEdge = 'RelationshipEdge';
-
-export function isRelationshipEdge(item: unknown): item is RelationshipEdge {
-    return reflection.isInstance(item, RelationshipEdge);
-}
-
 export interface SourceDataElementContainer extends IdentifiedObject {
     readonly $container: Mapping;
     readonly $type: 'SourceDataElementContainer' | 'SourceObject';
@@ -340,7 +328,7 @@ export function isSourceDataElementContainer(item: unknown): item is SourceDataE
 export interface SystemDiagram extends IdentifiedObject {
     readonly $container: CrossModelRoot;
     readonly $type: 'SystemDiagram';
-    edges: Array<RelationshipEdge>;
+    edges: Array<SystemDiagramEdge>;
     nodes: Array<EntityNode>;
 }
 
@@ -348,6 +336,16 @@ export const SystemDiagram = 'SystemDiagram';
 
 export function isSystemDiagram(item: unknown): item is SystemDiagram {
     return reflection.isInstance(item, SystemDiagram);
+}
+
+export interface SystemDiagramEdge extends IdentifiedObject {
+    readonly $type: 'InheritanceEdge' | 'RelationshipEdge' | 'SystemDiagramEdge';
+}
+
+export const SystemDiagramEdge = 'SystemDiagramEdge';
+
+export function isSystemDiagramEdge(item: unknown): item is SystemDiagramEdge {
+    return reflection.isInstance(item, SystemDiagramEdge);
 }
 
 export interface AttributeMapping extends WithCustomProperties {
@@ -496,6 +494,31 @@ export function isDataElementContainerLink(item: unknown): item is DataElementCo
     return reflection.isInstance(item, DataElementContainerLink);
 }
 
+export interface InheritanceEdge extends SystemDiagramEdge {
+    readonly $type: 'InheritanceEdge';
+    baseNode: Reference<EntityNode>;
+    superNode: Reference<EntityNode>;
+}
+
+export const InheritanceEdge = 'InheritanceEdge';
+
+export function isInheritanceEdge(item: unknown): item is InheritanceEdge {
+    return reflection.isInstance(item, InheritanceEdge);
+}
+
+export interface RelationshipEdge extends SystemDiagramEdge {
+    readonly $type: 'RelationshipEdge';
+    relationship: Reference<Relationship>;
+    sourceNode: Reference<EntityNode>;
+    targetNode: Reference<EntityNode>;
+}
+
+export const RelationshipEdge = 'RelationshipEdge';
+
+export function isRelationshipEdge(item: unknown): item is RelationshipEdge {
+    return reflection.isInstance(item, RelationshipEdge);
+}
+
 export interface EntityNodeAttribute extends EntityAttribute {
     readonly $type: 'EntityNodeAttribute';
 }
@@ -544,6 +567,7 @@ export type CrossModelAstType = {
     EntityNode: EntityNode
     EntityNodeAttribute: EntityNodeAttribute
     IdentifiedObject: IdentifiedObject
+    InheritanceEdge: InheritanceEdge
     JoinCondition: JoinCondition
     Mapping: Mapping
     NamedObject: NamedObject
@@ -559,6 +583,7 @@ export type CrossModelAstType = {
     SourceObjectDependency: SourceObjectDependency
     StringLiteral: StringLiteral
     SystemDiagram: SystemDiagram
+    SystemDiagramEdge: SystemDiagramEdge
     TargetObject: TargetObject
     TargetObjectAttribute: TargetObjectAttribute
     WithCustomProperties: WithCustomProperties
@@ -567,7 +592,7 @@ export type CrossModelAstType = {
 export class CrossModelAstReflection extends AbstractAstReflection {
 
     getAllTypes(): string[] {
-        return [AttributeMapping, AttributeMappingSource, AttributeMappingTarget, BinaryExpression, BooleanExpression, CrossModelRoot, CustomProperty, DataElement, DataElementContainer, DataElementContainerLink, DataElementContainerMapping, DataElementMapping, Entity, EntityAttribute, EntityNode, EntityNodeAttribute, IdentifiedObject, JoinCondition, Mapping, NamedObject, NumberLiteral, Relationship, RelationshipAttribute, RelationshipEdge, SourceDataElementContainer, SourceObject, SourceObjectAttribute, SourceObjectAttributeReference, SourceObjectCondition, SourceObjectDependency, StringLiteral, SystemDiagram, TargetObject, TargetObjectAttribute, WithCustomProperties];
+        return [AttributeMapping, AttributeMappingSource, AttributeMappingTarget, BinaryExpression, BooleanExpression, CrossModelRoot, CustomProperty, DataElement, DataElementContainer, DataElementContainerLink, DataElementContainerMapping, DataElementMapping, Entity, EntityAttribute, EntityNode, EntityNodeAttribute, IdentifiedObject, InheritanceEdge, JoinCondition, Mapping, NamedObject, NumberLiteral, Relationship, RelationshipAttribute, RelationshipEdge, SourceDataElementContainer, SourceObject, SourceObjectAttribute, SourceObjectAttributeReference, SourceObjectCondition, SourceObjectDependency, StringLiteral, SystemDiagram, SystemDiagramEdge, TargetObject, TargetObjectAttribute, WithCustomProperties];
     }
 
     protected override computeIsSubtype(subtype: string, supertype: string): boolean {
@@ -586,9 +611,9 @@ export class CrossModelAstReflection extends AbstractAstReflection {
             case DataElementMapping:
             case EntityNode:
             case NamedObject:
-            case RelationshipEdge:
             case SourceDataElementContainer:
-            case SystemDiagram: {
+            case SystemDiagram:
+            case SystemDiagramEdge: {
                 return this.isSubtype(IdentifiedObject, supertype);
             }
             case Entity: {
@@ -601,6 +626,10 @@ export class CrossModelAstReflection extends AbstractAstReflection {
             case SourceObjectAttribute:
             case TargetObjectAttribute: {
                 return this.isSubtype(EntityAttribute, supertype);
+            }
+            case InheritanceEdge:
+            case RelationshipEdge: {
+                return this.isSubtype(SystemDiagramEdge, supertype);
             }
             case JoinCondition: {
                 return this.isSubtype(SourceObjectCondition, supertype);
@@ -643,16 +672,18 @@ export class CrossModelAstReflection extends AbstractAstReflection {
             case 'TargetObject:entity': {
                 return Entity;
             }
+            case 'InheritanceEdge:baseNode':
+            case 'InheritanceEdge:superNode':
+            case 'RelationshipEdge:sourceNode':
+            case 'RelationshipEdge:targetNode': {
+                return EntityNode;
+            }
             case 'RelationshipAttribute:child':
             case 'RelationshipAttribute:parent': {
                 return EntityAttribute;
             }
             case 'RelationshipEdge:relationship': {
                 return Relationship;
-            }
-            case 'RelationshipEdge:sourceNode':
-            case 'RelationshipEdge:targetNode': {
-                return EntityNode;
             }
             case 'SourceObjectDependency:source': {
                 return SourceObject;
@@ -806,17 +837,6 @@ export class CrossModelAstReflection extends AbstractAstReflection {
                     ]
                 };
             }
-            case RelationshipEdge: {
-                return {
-                    name: RelationshipEdge,
-                    properties: [
-                        { name: 'id' },
-                        { name: 'relationship' },
-                        { name: 'sourceNode' },
-                        { name: 'targetNode' }
-                    ]
-                };
-            }
             case SourceDataElementContainer: {
                 return {
                     name: SourceDataElementContainer,
@@ -832,6 +852,14 @@ export class CrossModelAstReflection extends AbstractAstReflection {
                         { name: 'edges', defaultValue: [] },
                         { name: 'id' },
                         { name: 'nodes', defaultValue: [] }
+                    ]
+                };
+            }
+            case SystemDiagramEdge: {
+                return {
+                    name: SystemDiagramEdge,
+                    properties: [
+                        { name: 'id' }
                     ]
                 };
             }
@@ -965,6 +993,27 @@ export class CrossModelAstReflection extends AbstractAstReflection {
                         { name: 'description' },
                         { name: 'id' },
                         { name: 'name' }
+                    ]
+                };
+            }
+            case InheritanceEdge: {
+                return {
+                    name: InheritanceEdge,
+                    properties: [
+                        { name: 'baseNode' },
+                        { name: 'id' },
+                        { name: 'superNode' }
+                    ]
+                };
+            }
+            case RelationshipEdge: {
+                return {
+                    name: RelationshipEdge,
+                    properties: [
+                        { name: 'id' },
+                        { name: 'relationship' },
+                        { name: 'sourceNode' },
+                        { name: 'targetNode' }
                     ]
                 };
             }

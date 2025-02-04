@@ -6,7 +6,7 @@ import 'relationship'
 // Diagram definition
 interface SystemDiagram extends IdentifiedObject {
     nodes: EntityNode[];
-    edges: RelationshipEdge[];
+    edges: SystemDiagramEdge[];
 }
 
 SystemDiagram returns SystemDiagram:
@@ -20,7 +20,7 @@ SystemDiagram returns SystemDiagram:
         )?
         ('edges' ':'
             INDENT 
-                (LIST_ITEM edges+=RelationshipEdge)+
+                (LIST_ITEM edges+=SystemDiagramEdge)+
             DEDENT
         )?
     DEDENT
@@ -43,11 +43,16 @@ EntityNode returns EntityNode:
     'height' ':' height=NUMBER
 ;
 
-// TODO: Why does this exist? In the system diagram we don't have attribute nodes right (in the grammar)? Or is this pure the generate an AST class to be used in the diagram for rendering?
 interface EntityNodeAttribute extends EntityAttribute {
 }
 
-interface RelationshipEdge extends IdentifiedObject {
+interface SystemDiagramEdge extends IdentifiedObject {}
+
+SystemDiagramEdge returns SystemDiagramEdge:
+    RelationshipEdge | InheritanceEdge
+;
+
+interface RelationshipEdge extends SystemDiagramEdge {
     relationship: @Relationship;
     sourceNode: @EntityNode;
     targetNode: @EntityNode;
@@ -58,4 +63,15 @@ RelationshipEdge returns RelationshipEdge:
     'relationship' ':' relationship=[Relationship:IDReference]
     'sourceNode' ':' sourceNode=[EntityNode:IDReference]
     'targetNode' ':' targetNode=[EntityNode:IDReference]
+;
+
+interface InheritanceEdge extends SystemDiagramEdge {
+    baseNode: @EntityNode;
+    superNode: @EntityNode;
+}
+
+InheritanceEdge returns InheritanceEdge:
+    'id' ':' id=ID
+    'baseNode' ':' baseNode=[EntityNode:IDReference]
+    'superNode' ':' superNode=[EntityNode:IDReference]
 ;

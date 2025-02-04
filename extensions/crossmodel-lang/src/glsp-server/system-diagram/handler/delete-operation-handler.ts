@@ -3,7 +3,7 @@
  ********************************************************************************/
 import { Command, DeleteElementOperation, JsonOperationHandler, ModelState, remove } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
-import { EntityNode, RelationshipEdge, isEntityNode, isRelationshipEdge } from '../../../language-server/generated/ast.js';
+import { Edge, EntityNode, isEdge, isEntityNode, isRelationshipEdge } from '../../../language-server/generated/ast.js';
 import { CrossModelCommand } from '../../common/cross-model-command.js';
 import { SystemModelState } from '../model/system-model-state.js';
 
@@ -37,10 +37,8 @@ export class SystemDiagramDeleteOperationHandler extends JsonOperationHandler {
          // simply remove any diagram nodes or edges from the diagram
          if (isEntityNode(element)) {
             deleteInfo.nodes.push(element);
-            deleteInfo.edges.push(
-               ...this.modelState.systemDiagram.edges.filter(edge => edge.sourceNode?.ref === element || edge.targetNode?.ref === element)
-            );
-         } else if (isRelationshipEdge(element)) {
+            deleteInfo.edges.push(...this.modelState.systemDiagram.edges.filter(edge => isRelatedEdge(edge, element)));
+         } else if (isEdge(element)) {
             deleteInfo.edges.push(element);
          }
       }
@@ -48,11 +46,19 @@ export class SystemDiagramDeleteOperationHandler extends JsonOperationHandler {
    }
 }
 
-function isDiagramElement(item: unknown): item is RelationshipEdge | EntityNode {
-   return isRelationshipEdge(item) || isEntityNode(item);
+function isRelatedEdge(edge: Edge, node: EntityNode): boolean {
+   if (isRelationshipEdge(edge)) {
+      return edge.sourceNode?.ref === node || edge.targetNode?.ref === node;
+   } else {
+      return edge.baseNode?.ref === node || edge.superNode?.ref === node;
+   }
+}
+
+function isDiagramElement(item: unknown): item is Edge | EntityNode {
+   return isEdge(item) || isEntityNode(item);
 }
 
 interface DeleteInfo {
    nodes: EntityNode[];
-   edges: RelationshipEdge[];
+   edges: Edge[];
 }

@@ -3,7 +3,14 @@
  ********************************************************************************/
 import { Command, DeleteElementOperation, JsonOperationHandler, ModelState, remove } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
-import { Edge, EntityNode, isEdge, isEntityNode, isRelationshipEdge } from '../../../language-server/generated/ast.js';
+import {
+   EntityNode,
+   InheritanceEdge,
+   isEntityNode,
+   isRelationshipEdge,
+   isSystemDiagramEdge,
+   SystemDiagramEdge
+} from '../../../language-server/generated/ast.js';
 import { CrossModelCommand } from '../../common/cross-model-command.js';
 import { SystemModelState } from '../model/system-model-state.js';
 
@@ -38,7 +45,7 @@ export class SystemDiagramDeleteOperationHandler extends JsonOperationHandler {
          if (isEntityNode(element)) {
             deleteInfo.nodes.push(element);
             deleteInfo.edges.push(...this.modelState.systemDiagram.edges.filter(edge => isRelatedEdge(edge, element)));
-         } else if (isEdge(element)) {
+         } else if (isSystemDiagramEdge(element)) {
             deleteInfo.edges.push(element);
          }
       }
@@ -46,19 +53,19 @@ export class SystemDiagramDeleteOperationHandler extends JsonOperationHandler {
    }
 }
 
-function isRelatedEdge(edge: Edge, node: EntityNode): boolean {
+function isRelatedEdge(edge: SystemDiagramEdge, node: EntityNode): boolean {
    if (isRelationshipEdge(edge)) {
       return edge.sourceNode?.ref === node || edge.targetNode?.ref === node;
    } else {
-      return edge.baseNode?.ref === node || edge.superNode?.ref === node;
+      return (<InheritanceEdge>edge).baseNode?.ref === node || (<InheritanceEdge>edge).superNode?.ref === node;
    }
 }
 
-function isDiagramElement(item: unknown): item is Edge | EntityNode {
-   return isEdge(item) || isEntityNode(item);
+function isDiagramElement(item: unknown): item is SystemDiagramEdge | EntityNode {
+   return isSystemDiagramEdge(item) || isEntityNode(item);
 }
 
 interface DeleteInfo {
    nodes: EntityNode[];
-   edges: Edge[];
+   edges: SystemDiagramEdge[];
 }

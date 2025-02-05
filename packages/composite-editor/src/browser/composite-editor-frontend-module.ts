@@ -8,6 +8,8 @@ import { EditorPreviewManager } from '@theia/editor-preview/lib/browser/editor-p
 import { CompositeEditor } from './composite-editor';
 import { CompositeEditorOpenHandler, CompositeEditorOptions } from './composite-editor-open-handler';
 import { CrossModelEditorManager } from './cross-model-editor-manager';
+import { CrossModelFileResourceResolver } from './cross-model-file-resource-resolver';
+import { FileResourceResolver } from '@theia/filesystem/lib/browser';
 
 export default new ContainerModule((bind, _unbind, _isBound, rebind) => {
    bind(CrossModelEditorManager).toSelf().inSingletonScope();
@@ -24,4 +26,7 @@ export default new ContainerModule((bind, _unbind, _isBound, rebind) => {
          return container.resolve(CompositeEditor);
       }
    }));
+
+   bind(CrossModelFileResourceResolver).toSelf().inSingletonScope();
+   rebind(FileResourceResolver).toService(CrossModelFileResourceResolver);
 });

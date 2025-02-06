@@ -21,20 +21,56 @@ import {
    NavigatableWidgetOptions,
    Saveable,
    SaveableSource,
+   SaveOptions,
    TabPanel,
    Widget,
    WidgetManager
 } from '@theia/core/lib/browser';
 import { inject, injectable, postConstruct } from '@theia/core/shared/inversify';
+import { EditorPreviewWidget } from '@theia/editor-preview/lib/browser/editor-preview-widget';
 import { EditorPreviewWidgetFactory } from '@theia/editor-preview/lib/browser/editor-preview-widget-factory';
 import { EditorOpenerOptions, EditorWidget } from '@theia/editor/lib/browser';
+import { MonacoEditor } from '@theia/monaco/lib/browser/monaco-editor';
+import { MonacoEditorModel } from '@theia/monaco/lib/browser/monaco-editor-model';
 import { CompositeEditorOptions } from './composite-editor-open-handler';
 import { CrossModelEditorManager } from './cross-model-editor-manager';
+import { CrossModelFileResourceResolver } from './cross-model-file-resource-resolver';
 
 export class ReverseCompositeSaveable extends CompositeSaveable {
+   constructor(
+      protected editor: CompositeEditor,
+      protected fileResourceResolver: CrossModelFileResourceResolver
+   ) {
+      super();
+   }
+
    override get saveables(): readonly Saveable[] {
       // reverse order so we save the text editor first as otherwise we'll get a message that something changed on the file system
       return Array.from(this.saveablesMap.keys()).reverse();
+   }
+
+   override async save(options?: SaveOptions): Promise<void> {
+      // we do not want the overwrite dialog to appear since we are syncing manually
+      const autoOverwrite = this.fileResourceResolver.autoOverwrite;
+      try {
+         this.fileResourceResolver.autoOverwrite = true;
+         const activeEditor = this.editor.activeWidget();
+         const activeSaveable = Saveable.get(activeEditor);
+         if (activeSaveable) {
+            await activeSaveable.save(options);
+            if (this.editor.getCodeWidget() !== activeEditor) {
+               // we saved a non-Monaco editor so we need to manually reset the dirty flag on the monaco editor
+               this.editor.getMonacoEditorModel()?.['setDirty'](false);
+            }
+         } else {
+            // could not determine active editor, so execute save sequentially on all editors
+            for (const saveable of this.saveables) {
+               await saveable.save(options);
+            }
+         }
+      } finally {
+         this.fileResourceResolver.autoOverwrite = autoOverwrite;
+      }
    }
 }
 
@@ -44,9 +80,10 @@ export class CompositeEditor extends BaseWidget implements SaveableSource, Navig
    @inject(LabelProvider) protected labelProvider: LabelProvider;
    @inject(WidgetManager) protected widgetManager: WidgetManager;
    @inject(CrossModelEditorManager) protected editorManager: CrossModelEditorManager;
+   @inject(CrossModelFileResourceResolver) protected fileResourceResolver: CrossModelFileResourceResolver;
 
    protected tabPanel: TabPanel;
-   saveable: CompositeSaveable = new ReverseCompositeSaveable();
+   saveable: CompositeSaveable;
 
    protected _resourceUri?: URI;
    protected get resourceUri(): URI {
@@ -78,6 +115,7 @@ export class CompositeEditor extends BaseWidget implements SaveableSource, Navig
       this.title.closable = true;
       this.title.label = this.labelProvider.getName(this.resourceUri);
       this.title.iconClass = ModelFileType.getIconClass(this.fileType) ?? '';
+      this.saveable = new ReverseCompositeSaveable(this, this.fileResourceResolver);
       this.initializeContent();
    }
 
@@ -161,7 +199,7 @@ export class CompositeEditor extends BaseWidget implements SaveableSource, Navig
    protected async createCodeWidget(): Promise<Widget> {
       const { kind, uri, counter } = this.options;
       const options: NavigatableWidgetOptions = { kind, uri, counter };
-      const codeWidget = await this.widgetManager.getOrCreateWidget(EditorPreviewWidgetFactory.ID, options);
+      const codeWidget = await this.widgetManager.getOrCreateWidget<EditorPreviewWidget>(EditorPreviewWidgetFactory.ID, options);
       codeWidget.title.label = 'Code Editor';
       codeWidget.title.iconClass = codiconCSSString('code');
       codeWidget.title.closable = false;
@@ -192,8 +230,16 @@ export class CompositeEditor extends BaseWidget implements SaveableSource, Navig
       return widget;
    }
 
-   protected getCodeWidget(): EditorWidget | undefined {
+   getCodeWidget(): EditorWidget | undefined {
       return this.tabPanel.widgets.find<EditorWidget>(toTypeGuard(EditorWidget));
+   }
+
+   getMonacoEditor(): MonacoEditor | undefined {
+      return this.getCodeWidget()?.editor as MonacoEditor | undefined;
+   }
+
+   getMonacoEditorModel(): MonacoEditorModel | undefined {
+      return this.getMonacoEditor()?.document as MonacoEditorModel | undefined;
    }
 
    createMoveToUri(resourceUri: URI): URI | undefined {
@@ -206,5 +252,9 @@ export class CompositeEditor extends BaseWidget implements SaveableSource, Navig
          this.tabPanel.currentWidget = codeWidget;
          this.editorManager.revealSelection(codeWidget, options, this.resourceUri);
       }
+   }
+
+   activeWidget(): Widget | undefined {
+      return this.tabPanel.currentWidget ?? undefined;
    }
 }

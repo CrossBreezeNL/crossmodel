@@ -34,12 +34,12 @@ test.describe.serial('Add existing entity to a diagram', () => {
 
       // Open the diagram code editor and check the Customer entity node was added.
       const diagramCodeEditor = await diagramEditor.parent.switchToCodeEditor();
-      expect(await diagramCodeEditor.textContentOfLineByLineNumber(12)).toMatch(`- id: ${CUSTOMER_ENTITY_ID}Node`);
-      expect(await diagramCodeEditor.textContentOfLineByLineNumber(13)).toMatch(`entity: ${CUSTOMER_ENTITY_ID}`);
-      expect(await diagramCodeEditor.textContentOfLineByLineNumber(14)).toMatch(/x:\s*\d+/);
-      expect(await diagramCodeEditor.textContentOfLineByLineNumber(15)).toMatch(/y:\s*\d+/);
-      expect(await diagramCodeEditor.textContentOfLineByLineNumber(16)).toMatch(/width:\s*\d+/);
-      expect(await diagramCodeEditor.textContentOfLineByLineNumber(17)).toMatch(/height:\s*\d+/);
+      expect(await diagramCodeEditor.textContentOfLineByLineNumber(10)).toMatch(`- id: ${CUSTOMER_ENTITY_ID}Node`);
+      expect(await diagramCodeEditor.textContentOfLineByLineNumber(11)).toMatch(`entity: ${CUSTOMER_ENTITY_ID}`);
+      expect(await diagramCodeEditor.textContentOfLineByLineNumber(12)).toMatch(/x:\s*\d+/);
+      expect(await diagramCodeEditor.textContentOfLineByLineNumber(13)).toMatch(/y:\s*\d+/);
+      expect(await diagramCodeEditor.textContentOfLineByLineNumber(14)).toMatch(/width:\s*\d+/);
+      expect(await diagramCodeEditor.textContentOfLineByLineNumber(15)).toMatch(/height:\s*\d+/);
       await diagramCodeEditor.saveAndClose();
    });
 
@@ -58,12 +58,12 @@ test.describe.serial('Add existing entity to a diagram', () => {
 
       // Open the diagram code editor and check the second Customer entity node is added.
       const diagramCodeEditor = await diagramEditor.parent.switchToCodeEditor();
-      expect(await diagramCodeEditor.textContentOfLineByLineNumber(18)).toMatch(`- id: ${CUSTOMER_ENTITY_ID}Node1`);
-      expect(await diagramCodeEditor.textContentOfLineByLineNumber(19)).toMatch(`entity: ${CUSTOMER_ENTITY_ID}`);
-      expect(await diagramCodeEditor.textContentOfLineByLineNumber(20)).toMatch(/x:\s*\d+/);
-      expect(await diagramCodeEditor.textContentOfLineByLineNumber(21)).toMatch(/y:\s*\d+/);
-      expect(await diagramCodeEditor.textContentOfLineByLineNumber(22)).toMatch(/width:\s*\d+/);
-      expect(await diagramCodeEditor.textContentOfLineByLineNumber(23)).toMatch(/height:\s*\d+/);
+      expect(await diagramCodeEditor.textContentOfLineByLineNumber(16)).toMatch(`- id: ${CUSTOMER_ENTITY_ID}Node1`);
+      expect(await diagramCodeEditor.textContentOfLineByLineNumber(17)).toMatch(`entity: ${CUSTOMER_ENTITY_ID}`);
+      expect(await diagramCodeEditor.textContentOfLineByLineNumber(18)).toMatch(/x:\s*\d+/);
+      expect(await diagramCodeEditor.textContentOfLineByLineNumber(19)).toMatch(/y:\s*\d+/);
+      expect(await diagramCodeEditor.textContentOfLineByLineNumber(20)).toMatch(/width:\s*\d+/);
+      expect(await diagramCodeEditor.textContentOfLineByLineNumber(21)).toMatch(/height:\s*\d+/);
       await diagramCodeEditor.saveAndClose();
    });
 });

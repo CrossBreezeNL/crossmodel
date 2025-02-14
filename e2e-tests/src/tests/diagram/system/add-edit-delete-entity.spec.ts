@@ -37,12 +37,12 @@ test.describe.serial('Add/Edit/Delete entity in a diagram ', () => {
 
       // Switch to diagram code editor and check the file contains the new entity node
       const diagramCodeEditor = await diagramEditor.parent.switchToCodeEditor();
-      expect(await diagramCodeEditor.textContentOfLineByLineNumber(12)).toMatch(`- id: ${NEW_ENTITY_LABEL}Node`);
-      expect(await diagramCodeEditor.textContentOfLineByLineNumber(13)).toMatch(`entity: ${NEW_ENTITY_LABEL}`);
-      expect(await diagramCodeEditor.textContentOfLineByLineNumber(14)).toMatch(/x:\s*\d+/);
-      expect(await diagramCodeEditor.textContentOfLineByLineNumber(15)).toMatch(/y:\s*\d+/);
-      expect(await diagramCodeEditor.textContentOfLineByLineNumber(16)).toMatch(/width:\s*\d+/);
-      expect(await diagramCodeEditor.textContentOfLineByLineNumber(17)).toMatch(/height:\s*\d+/);
+      expect(await diagramCodeEditor.textContentOfLineByLineNumber(10)).toMatch(`- id: ${NEW_ENTITY_LABEL}Node`);
+      expect(await diagramCodeEditor.textContentOfLineByLineNumber(11)).toMatch(`entity: ${NEW_ENTITY_LABEL}`);
+      expect(await diagramCodeEditor.textContentOfLineByLineNumber(12)).toMatch(/x:\s*\d+/);
+      expect(await diagramCodeEditor.textContentOfLineByLineNumber(13)).toMatch(/y:\s*\d+/);
+      expect(await diagramCodeEditor.textContentOfLineByLineNumber(14)).toMatch(/width:\s*\d+/);
+      expect(await diagramCodeEditor.textContentOfLineByLineNumber(15)).toMatch(/height:\s*\d+/);
       await diagramCodeEditor.saveAndClose();
 
       // Verify that the entity file is listed in the explorer view

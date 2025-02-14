@@ -42,11 +42,11 @@ test.describe.serial('Add/Edit/Delete relationship in a diagram ', () => {
 
       // Verify that the relationship edge is created in the diagram
       const diagramCodeEditor = await diagramEditor.parent.switchToCodeEditor();
-      expect(await diagramCodeEditor.textContentOfLineByLineNumber(17)).toMatch('edges:');
-      expect(await diagramCodeEditor.textContentOfLineByLineNumber(18)).toMatch('- id: CustomerToOrderEdge');
-      expect(await diagramCodeEditor.textContentOfLineByLineNumber(19)).toMatch('relationship: ExampleCRM.CustomerToOrder');
-      expect(await diagramCodeEditor.textContentOfLineByLineNumber(20)).toMatch('sourceNode: CustomerNode');
-      expect(await diagramCodeEditor.textContentOfLineByLineNumber(21)).toMatch('targetNode: OrderNode');
+      expect(await diagramCodeEditor.textContentOfLineByLineNumber(16)).toMatch('edges:');
+      expect(await diagramCodeEditor.textContentOfLineByLineNumber(17)).toMatch('- id: CustomerToOrderEdge');
+      expect(await diagramCodeEditor.textContentOfLineByLineNumber(18)).toMatch('relationship: ExampleCRM.CustomerToOrder');
+      expect(await diagramCodeEditor.textContentOfLineByLineNumber(19)).toMatch('sourceNode: CustomerNode');
+      expect(await diagramCodeEditor.textContentOfLineByLineNumber(20)).toMatch('targetNode: OrderNode');
       await diagramCodeEditor.saveAndClose();
 
       // Verify that the relationship file is created
@@ -57,9 +57,9 @@ test.describe.serial('Add/Edit/Delete relationship in a diagram ', () => {
       const entityCodeEditor = await app.openCompositeEditor(NEW_RELATIONSHIP_PATH, 'Code Editor');
       expect(await entityCodeEditor.textContentOfLineByLineNumber(1)).toBe('relationship:');
       expect(await entityCodeEditor.textContentOfLineByLineNumber(2)).toMatch('id: CustomerToOrder');
-      expect(await entityCodeEditor.textContentOfLineByLineNumber(3)).toMatch('parent: Customer');
-      expect(await entityCodeEditor.textContentOfLineByLineNumber(4)).toMatch('child: Order');
-      expect(await entityCodeEditor.textContentOfLineByLineNumber(5)).toMatch('type: "1:1"');
+      expect(await entityCodeEditor.textContentOfLineByLineNumber(3)).toMatch('name: "CustomerToOrder"');
+      expect(await entityCodeEditor.textContentOfLineByLineNumber(4)).toMatch('parent: Customer');
+      expect(await entityCodeEditor.textContentOfLineByLineNumber(5)).toMatch('child: Order');
       await entityCodeEditor.saveAndClose();
    });
 
@@ -95,7 +95,7 @@ test.describe.serial('Add/Edit/Delete relationship in a diagram ', () => {
       const relationship = await getNewRelationship(diagramEditor);
       await relationship.delete();
       const diagramCodeEditor = await diagramEditor.parent.switchToCodeEditor();
-      expect(await diagramCodeEditor.numberOfLines()).toBe(16);
+      expect(await diagramCodeEditor.numberOfLines()).toBe(15);
       await diagramCodeEditor.saveAndClose();
 
       // TODO: See comment at top of test, we should have separate hide and delete tools.

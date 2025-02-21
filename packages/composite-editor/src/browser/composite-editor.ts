@@ -2,13 +2,13 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 
-import { CrossModelWidgetOptions } from '@crossbreeze/core/lib/browser';
+import { CrossModelWidget, CrossModelWidgetOptions } from '@crossbreeze/core/lib/browser';
 import { FormEditorOpenHandler, FormEditorWidget } from '@crossbreeze/form-client/lib/browser';
 import { MappingDiagramManager, SystemDiagramManager } from '@crossbreeze/glsp-client/lib/browser/';
 import { MappingDiagramLanguage, SystemDiagramLanguage } from '@crossbreeze/glsp-client/lib/common';
-import { codiconCSSString, ModelFileType } from '@crossbreeze/protocol';
-import { FocusStateChangedAction, toTypeGuard } from '@eclipse-glsp/client';
-import { GLSPDiagramWidget, GLSPDiagramWidgetContainer, GLSPDiagramWidgetOptions } from '@eclipse-glsp/theia-integration';
+import { ModelFileType, codiconCSSString } from '@crossbreeze/protocol';
+import { FocusStateChangedAction, SetDirtyStateAction, toTypeGuard } from '@eclipse-glsp/client';
+import { GLSPDiagramWidget, GLSPDiagramWidgetContainer, GLSPDiagramWidgetOptions, GLSPSaveable } from '@eclipse-glsp/theia-integration';
 import { GLSPDiagramLanguage } from '@eclipse-glsp/theia-integration/lib/common';
 import { URI } from '@theia/core';
 import {
@@ -19,6 +19,7 @@ import {
    Message,
    Navigatable,
    NavigatableWidgetOptions,
+   SaveOptions,
    Saveable,
    SaveableSource,
    TabPanel,
@@ -26,15 +27,65 @@ import {
    WidgetManager
 } from '@theia/core/lib/browser';
 import { inject, injectable, postConstruct } from '@theia/core/shared/inversify';
+import { EditorPreviewWidget } from '@theia/editor-preview/lib/browser/editor-preview-widget';
 import { EditorPreviewWidgetFactory } from '@theia/editor-preview/lib/browser/editor-preview-widget-factory';
 import { EditorOpenerOptions, EditorWidget } from '@theia/editor/lib/browser';
+import { MonacoEditorModel } from '@theia/monaco/lib/browser/monaco-editor-model';
 import { CompositeEditorOptions } from './composite-editor-open-handler';
 import { CrossModelEditorManager } from './cross-model-editor-manager';
+import { CrossModelFileResourceResolver } from './cross-model-file-resource-resolver';
 
 export class ReverseCompositeSaveable extends CompositeSaveable {
+   constructor(
+      protected editor: CompositeEditor,
+      protected fileResourceResolver: CrossModelFileResourceResolver
+   ) {
+      super();
+   }
+
    override get saveables(): readonly Saveable[] {
       // reverse order so we save the text editor first as otherwise we'll get a message that something changed on the file system
       return Array.from(this.saveablesMap.keys()).reverse();
+   }
+
+   override async save(options?: SaveOptions): Promise<void> {
+      // we do not want the overwrite dialog to appear since we are syncing manually
+      const autoOverwrite = this.fileResourceResolver.autoOverwrite;
+      try {
+         this.fileResourceResolver.autoOverwrite = true;
+         const activeEditor = this.editor.activeWidget();
+         const activeSaveable = Saveable.get(activeEditor);
+         activeSaveable?.dirty;
+         if (activeSaveable) {
+            await activeSaveable.save(options);
+            // manually reset the dirty flag on the other editors (saveables) without triggering an actual save
+            this.resetDirtyState(activeSaveable);
+         } else {
+            // could not determine active editor, so execute save sequentially on all editors
+            for (const saveable of this.saveables) {
+               await saveable.save(options);
+            }
+         }
+      } finally {
+         this.fileResourceResolver.autoOverwrite = autoOverwrite;
+      }
+   }
+
+   /**
+    * Reset the dirty state (without triggering an additional save) of the non-active saveables after a save operation.
+    */
+   protected resetDirtyState(activeSaveable: Saveable): void {
+      this.saveables
+         .filter(saveable => saveable !== activeSaveable)
+         .forEach(saveable => {
+            if (saveable instanceof MonacoEditorModel) {
+               saveable['setDirty'](false);
+            } else if (saveable instanceof GLSPSaveable) {
+               saveable['actionDispatcher'].dispatch(SetDirtyStateAction.create(false));
+            } else if (saveable instanceof CrossModelWidget) {
+               saveable.setDirty(false);
+            }
+         });
    }
 }
 
@@ -44,9 +95,10 @@ export class CompositeEditor extends BaseWidget implements SaveableSource, Navig
    @inject(LabelProvider) protected labelProvider: LabelProvider;
    @inject(WidgetManager) protected widgetManager: WidgetManager;
    @inject(CrossModelEditorManager) protected editorManager: CrossModelEditorManager;
+   @inject(CrossModelFileResourceResolver) protected fileResourceResolver: CrossModelFileResourceResolver;
 
    protected tabPanel: TabPanel;
-   saveable: CompositeSaveable = new ReverseCompositeSaveable();
+   saveable: CompositeSaveable;
 
    protected _resourceUri?: URI;
    protected get resourceUri(): URI {
@@ -78,6 +130,7 @@ export class CompositeEditor extends BaseWidget implements SaveableSource, Navig
       this.title.closable = true;
       this.title.label = this.labelProvider.getName(this.resourceUri);
       this.title.iconClass = ModelFileType.getIconClass(this.fileType) ?? '';
+      this.saveable = new ReverseCompositeSaveable(this, this.fileResourceResolver);
       this.initializeContent();
    }
 
@@ -161,7 +214,7 @@ export class CompositeEditor extends BaseWidget implements SaveableSource, Navig
    protected async createCodeWidget(): Promise<Widget> {
       const { kind, uri, counter } = this.options;
       const options: NavigatableWidgetOptions = { kind, uri, counter };
-      const codeWidget = await this.widgetManager.getOrCreateWidget(EditorPreviewWidgetFactory.ID, options);
+      const codeWidget = await this.widgetManager.getOrCreateWidget<EditorPreviewWidget>(EditorPreviewWidgetFactory.ID, options);
       codeWidget.title.label = 'Code Editor';
       codeWidget.title.iconClass = codiconCSSString('code');
       codeWidget.title.closable = false;
@@ -192,7 +245,7 @@ export class CompositeEditor extends BaseWidget implements SaveableSource, Navig
       return widget;
    }
 
-   protected getCodeWidget(): EditorWidget | undefined {
+   getCodeWidget(): EditorWidget | undefined {
       return this.tabPanel.widgets.find<EditorWidget>(toTypeGuard(EditorWidget));
    }
 
@@ -206,5 +259,9 @@ export class CompositeEditor extends BaseWidget implements SaveableSource, Navig
          this.tabPanel.currentWidget = codeWidget;
          this.editorManager.revealSelection(codeWidget, options, this.resourceUri);
       }
+   }
+
+   activeWidget(): Widget | undefined {
+      return this.tabPanel.currentWidget ?? undefined;
    }
 }

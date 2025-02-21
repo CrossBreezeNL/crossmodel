@@ -2,13 +2,13 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 
-import { CrossModelWidgetOptions } from '@crossbreeze/core/lib/browser';
+import { CrossModelWidget, CrossModelWidgetOptions } from '@crossbreeze/core/lib/browser';
 import { FormEditorOpenHandler, FormEditorWidget } from '@crossbreeze/form-client/lib/browser';
 import { MappingDiagramManager, SystemDiagramManager } from '@crossbreeze/glsp-client/lib/browser/';
 import { MappingDiagramLanguage, SystemDiagramLanguage } from '@crossbreeze/glsp-client/lib/common';
-import { codiconCSSString, ModelFileType } from '@crossbreeze/protocol';
-import { FocusStateChangedAction, toTypeGuard } from '@eclipse-glsp/client';
-import { GLSPDiagramWidget, GLSPDiagramWidgetContainer, GLSPDiagramWidgetOptions } from '@eclipse-glsp/theia-integration';
+import { ModelFileType, codiconCSSString } from '@crossbreeze/protocol';
+import { FocusStateChangedAction, SetDirtyStateAction, toTypeGuard } from '@eclipse-glsp/client';
+import { GLSPDiagramWidget, GLSPDiagramWidgetContainer, GLSPDiagramWidgetOptions, GLSPSaveable } from '@eclipse-glsp/theia-integration';
 import { GLSPDiagramLanguage } from '@eclipse-glsp/theia-integration/lib/common';
 import { URI } from '@theia/core';
 import {
@@ -19,9 +19,9 @@ import {
    Message,
    Navigatable,
    NavigatableWidgetOptions,
+   SaveOptions,
    Saveable,
    SaveableSource,
-   SaveOptions,
    TabPanel,
    Widget,
    WidgetManager
@@ -30,7 +30,6 @@ import { inject, injectable, postConstruct } from '@theia/core/shared/inversify'
 import { EditorPreviewWidget } from '@theia/editor-preview/lib/browser/editor-preview-widget';
 import { EditorPreviewWidgetFactory } from '@theia/editor-preview/lib/browser/editor-preview-widget-factory';
 import { EditorOpenerOptions, EditorWidget } from '@theia/editor/lib/browser';
-import { MonacoEditor } from '@theia/monaco/lib/browser/monaco-editor';
 import { MonacoEditorModel } from '@theia/monaco/lib/browser/monaco-editor-model';
 import { CompositeEditorOptions } from './composite-editor-open-handler';
 import { CrossModelEditorManager } from './cross-model-editor-manager';
@@ -56,12 +55,11 @@ export class ReverseCompositeSaveable extends CompositeSaveable {
          this.fileResourceResolver.autoOverwrite = true;
          const activeEditor = this.editor.activeWidget();
          const activeSaveable = Saveable.get(activeEditor);
+         activeSaveable?.dirty;
          if (activeSaveable) {
             await activeSaveable.save(options);
-            if (this.editor.getCodeWidget() !== activeEditor) {
-               // we saved a non-Monaco editor so we need to manually reset the dirty flag on the monaco editor
-               this.editor.getMonacoEditorModel()?.['setDirty'](false);
-            }
+            // manually reset the dirty flag on the other editors (saveables) without triggering an actual save
+            this.resetDirtyState(activeSaveable);
          } else {
             // could not determine active editor, so execute save sequentially on all editors
             for (const saveable of this.saveables) {
@@ -71,6 +69,23 @@ export class ReverseCompositeSaveable extends CompositeSaveable {
       } finally {
          this.fileResourceResolver.autoOverwrite = autoOverwrite;
       }
+   }
+
+   /**
+    * Reset the dirty state (without triggering an additional save) of the non-active saveables after a save operation.
+    */
+   protected resetDirtyState(activeSaveable: Saveable): void {
+      this.saveables
+         .filter(saveable => saveable !== activeSaveable)
+         .forEach(saveable => {
+            if (saveable instanceof MonacoEditorModel) {
+               saveable['setDirty'](false);
+            } else if (saveable instanceof GLSPSaveable) {
+               saveable['actionDispatcher'].dispatch(SetDirtyStateAction.create(false));
+            } else if (saveable instanceof CrossModelWidget) {
+               saveable.setDirty(false);
+            }
+         });
    }
 }
 
@@ -232,14 +247,6 @@ export class CompositeEditor extends BaseWidget implements SaveableSource, Navig
 
    getCodeWidget(): EditorWidget | undefined {
       return this.tabPanel.widgets.find<EditorWidget>(toTypeGuard(EditorWidget));
-   }
-
-   getMonacoEditor(): MonacoEditor | undefined {
-      return this.getCodeWidget()?.editor as MonacoEditor | undefined;
-   }
-
-   getMonacoEditorModel(): MonacoEditorModel | undefined {
-      return this.getMonacoEditor()?.document as MonacoEditorModel | undefined;
    }
 
    createMoveToUri(resourceUri: URI): URI | undefined {

@@ -10,7 +10,7 @@ mapping:
         dependencies:
           - CustomerSourceObject
         conditions:
-          - CalcAgeSourceObject.BirthDate = CustomerSourceObject.BirthDate
+          - CalcAgeSourceObject.BirthDate = CustomerSourceObject.Birth_Date
     target:
         entity: ExampleDWH.CompleteCustomer
         mappings:
@@ -23,12 +23,12 @@ mapping:
             expression: "Hoppa"
           - attribute: Name
             sources:
-              - CustomerSourceObject.FirstName
-              - CustomerSourceObject.LastName
-            expression: "CONCAT_WS({{CustomerSourceObject.FirstName}}, {{CustomerSourceObject.LastName}}, ' ')"
+              - CustomerSourceObject.First_Name
+              - CustomerSourceObject.Last_Name
+            expression: "CONCAT_WS({{CustomerSourceObject.First_Name}}, {{CustomerSourceObject.Last_Name}}, ' ')"
           - attribute: Age
             sources:
-              - CustomerSourceObject.BirthDate
-            expression: "DATEDIFF(YEAR, NOW(), {{CustomerSourceObject.BirthDate}})"
+              - CustomerSourceObject.Birth_Date
+            expression: "DATEDIFF(YEAR, NOW(), {{CustomerSourceObject.Birth_Date}})"
           - attribute: Today
             expression: "GETDATE()"

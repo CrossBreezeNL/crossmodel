@@ -33,7 +33,7 @@ mapping:
         dependencies:
           - Customer
         conditions:
-          - CalcAgeSourceObject.BirthDate = Customer.BirthDate
+          - CalcAgeSourceObject.BirthDate = Customer.Birth_Date
         customProperties:
           - name: Author
             value: "CrossBreeze"
@@ -43,9 +43,9 @@ mapping:
         mappings:
           - attribute: Name
             sources:
-              - Customer.FirstName
-              - Customer.LastName
-            expression: "CONCAT_WS({{Customer.FirstName}}, {{Customer.LastName}}, ' ')"
+              - Customer.First_Name
+              - Customer.Last_Name
+            expression: "CONCAT_WS({{Customer.First_Name}}, {{Customer.Last_Name}}, ' ')"
           - attribute: Country
             sources:
               - Country.Name

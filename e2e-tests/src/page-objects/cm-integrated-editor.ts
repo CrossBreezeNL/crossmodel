@@ -3,7 +3,9 @@
  ********************************************************************************/
 
 import { waitForFunction } from '@eclipse-glsp/glsp-playwright';
+import { ElementHandle } from '@playwright/test';
 import { TheiaEditor, TheiaTextEditor, TheiaViewData } from '@theia/playwright';
+import { TheiaMonacoEditor } from '@theia/playwright/lib/theia-monaco-editor';
 import { CMApp } from './cm-app';
 import { CMCompositeEditor } from './cm-composite-editor';
 
@@ -81,6 +83,7 @@ export abstract class IntegratedTextEditor extends TheiaTextEditor {
    ) {
       super(filePath, parent.app);
       this.app = parent.app;
+      this.monacoEditor = new PatchedMonacoEditor(this.viewSelector, parent.app);
    }
 
    override async activate(): Promise<void> {
@@ -136,5 +139,18 @@ export abstract class IntegratedTextEditor extends TheiaTextEditor {
 
    async waitForDirty(): Promise<void> {
       await waitForFunction(async () => this.isDirty());
+   }
+}
+
+export class PatchedMonacoEditor extends TheiaMonacoEditor {
+   override async lineByLineNumber(lineNumber: number): Promise<ElementHandle<SVGElement | HTMLElement> | undefined> {
+      try {
+         const element = await super.lineByLineNumber(lineNumber);
+         return element;
+      } catch (error) {
+         // the super implementation may try to access a property of an undefined element, we catch it and simply return undefined
+         console.error(error);
+         return undefined;
+      }
    }
 }

@@ -44,7 +44,7 @@ export class MappingEdgeCreationOperationHandler extends JsonCreateEdgeOperation
             return;
          }
          const sourceAttributeReference = combineIds(getOwner(sourceElement).id, sourceElement.id);
-         const existingMapping = container.mappings.find(mapping => mapping.attribute.value.ref === targetElement);
+         const existingMapping = container.mappings.find(mapping => mapping.attribute.value.ref?.id === targetElement.id);
          if (existingMapping) {
             existingMapping.sources.push(createAttributeMappingSource(existingMapping, sourceAttributeReference));
          } else {

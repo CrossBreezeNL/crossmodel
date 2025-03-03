@@ -10,6 +10,7 @@ import {
    PEdge,
    PLabel,
    PModelElement,
+   PModelElementSnapshot,
    PNode,
    SVGMetadataUtils,
    defined,
@@ -69,6 +70,14 @@ export class EntityChildren extends ChildrenAccessor {
    type: 'comp:attribute'
 })
 export class Attribute extends PModelElement {
+   override async snapshot(): Promise<PModelElementSnapshot & { name: string; datatype: string }> {
+      return {
+         ...(await super.snapshot()),
+         name: await this.name(),
+         datatype: await this.datatype()
+      };
+   }
+
    async name(): Promise<string> {
       return defined(await this.locate().locator('.attribute').textContent());
    }

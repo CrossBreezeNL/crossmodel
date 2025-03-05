@@ -31,6 +31,7 @@ export interface CrossModelWidgetOptions {
    clientId: string;
    widgetId: string;
    uri?: string;
+   version?: number;
 }
 
 @injectable()
@@ -99,7 +100,7 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
 
    protected async openModel(uri: string): Promise<CrossModelDocument | undefined> {
       try {
-         const document = await this.modelService.open({ clientId: this.options.clientId, uri });
+         const document = await this.modelService.open({ clientId: this.options.clientId, uri, version: this.options.version });
          return document;
       } catch (error: any) {
          this.error = error;

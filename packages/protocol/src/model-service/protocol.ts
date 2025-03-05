@@ -193,6 +193,7 @@ export interface ClientModelArgs {
 
 export interface OpenModelArgs extends ClientModelArgs {
    languageId?: string;
+   version?: number;
 }
 
 export interface CloseModelArgs extends ClientModelArgs {}

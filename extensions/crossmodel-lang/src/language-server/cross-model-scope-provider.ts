@@ -17,8 +17,11 @@ import {
    DefaultScopeProvider,
    EMPTY_SCOPE,
    LangiumDocument,
+   MapScope,
    ReferenceInfo,
    Scope,
+   stream,
+   Stream,
    StreamScope,
    URI
 } from 'langium';
@@ -66,7 +69,7 @@ export class PackageScopeProvider extends DefaultScopeProvider {
       }
 
       // the global scope contains all elements known to the language server
-      const globalScope = super.getGlobalScope(referenceType, context);
+      const globalScope = this.getDefaultGlobalScope(referenceType, context);
 
       // see from which package this request is coming from based on the given context
       const source = AstUtils.getDocument(context.container);
@@ -91,6 +94,24 @@ export class PackageScopeProvider extends DefaultScopeProvider {
       );
 
       return packageScope;
+   }
+
+   protected getDefaultGlobalScope(referenceType: string, _context: ReferenceInfo): Scope {
+      return this.globalScopeCache.get(referenceType, () => new GlobalScope(this.indexManager.allElements(referenceType).toArray()));
+   }
+}
+
+export class GlobalScope extends MapScope {
+   readonly allElements: Stream<AstNodeDescription>;
+
+   constructor(elements: AstNodeDescription[]) {
+      super(elements);
+      this.allElements = stream(elements);
+   }
+
+   override getAllElements(): Stream<AstNodeDescription> {
+      // ensure we return all elements even if they share the same name in different packages
+      return this.allElements;
    }
 }
 

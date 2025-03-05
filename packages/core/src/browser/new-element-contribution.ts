@@ -23,7 +23,7 @@ import { FileNavigatorContribution, NavigatorContextMenu } from '@theia/navigato
 import { WorkspaceCommandContribution } from '@theia/workspace/lib/browser/workspace-commands';
 import { WorkspaceInputDialog, WorkspaceInputDialogProps } from '@theia/workspace/lib/browser/workspace-input-dialog';
 import * as yaml from 'yaml';
-import { getNewSystemOptions } from './new-system-dialog';
+import { getNewDataModelOptions } from './new-data-model-dialog';
 
 const NEW_ELEMENT_NAV_MENU = [...NavigatorContextMenu.NAVIGATION, '0_new'];
 const NEW_ELEMENT_MAIN_MENU = [...CommonMenus.FILE, '0_new'];
@@ -82,7 +82,7 @@ const NEW_ELEMENT_TEMPLATES: NewElementTemplate[] = [
    },
    {
       id: 'crossbreeze.new.system-diagram',
-      label: 'SystemDiagram',
+      label: 'System Diagram',
       memberType: 'SystemDiagram',
       toUri: joinWithExt(ModelFileExtensions.SystemDiagram, join),
       category: TEMPLATE_CATEGORY,
@@ -101,9 +101,9 @@ const NEW_ELEMENT_TEMPLATES: NewElementTemplate[] = [
          INITIAL_MAPPING_CONTENT.replace(/\$\{name\}/gi, quote(toPascal(name))).replace(/\$\{id\}/gi, toId(toPascal(name)))
    },
    {
-      id: 'crossbreeze.new.system',
-      label: 'System',
-      memberType: 'System',
+      id: 'crossbreeze.new.data-model',
+      label: 'Data Model',
+      memberType: 'DataModel',
       category: TEMPLATE_CATEGORY,
       iconClass: ModelStructure.System.ICON_CLASS,
       toUri: (selectedDirectory, name) => selectedDirectory.resolve(toPascal(name)).resolve('package.json'),
@@ -239,11 +239,11 @@ export class CrossModelWorkspaceContribution extends WorkspaceCommandContributio
          const baseProps = {
             title: 'New ' + template.label + '...',
             parentUri: parentUri,
-            initialValue: 'New' + template.label,
-            placeholder: 'New ' + template.label
+            initialValue: 'New' + template.memberType,
+            placeholder: 'New ' + template.memberType
          };
-         const options = await (template.memberType === 'System'
-            ? this.getSystemOptions(baseProps, template, parent)
+         const options = await (template.memberType === 'DataModel'
+            ? this.getDataModelOptions(baseProps, template, parent)
             : this.getMemberOptions(baseProps, template, parent));
          if (!options) {
             return;
@@ -256,15 +256,15 @@ export class CrossModelWorkspaceContribution extends WorkspaceCommandContributio
       }
    }
 
-   protected getSystemOptions(
+   protected getDataModelOptions(
       props: WorkspaceInputDialogProps,
       template: NewElementTemplate,
       parent: FileStat
    ): Promise<{ name: string } | undefined> {
-      return getNewSystemOptions(
+      return getNewDataModelOptions(
          {
             ...props,
-            systemTypes: Object.keys(PackageMemberPermissions),
+            dataModelTypes: Object.keys(PackageMemberPermissions),
             validate: value => {
                const name = JSON.parse(value).name ?? '';
                return name && this.validateElementFileName(template.toUri(parent.resource, name), name);
@@ -354,14 +354,11 @@ function doesTemplateFitsPackage(modelService: ModelService, template: NewElemen
    if (!parent) {
       return false;
    }
-   if (template.memberType === 'System') {
-      return true;
+   const model = modelService.systems.find(candidate => URI.fromFilePath(candidate.directory).isEqualOrParent(parent));
+   if (!model) {
+      return template.memberType === 'DataModel';
    }
-   const system = modelService.systems.find(candidate => URI.fromFilePath(candidate.directory).isEqualOrParent(parent));
-   if (!system) {
-      return false;
-   }
-   return isMemberPermittedInPackage(system.type, template.memberType);
+   return isMemberPermittedInPackage(model.type, template.memberType);
 }
 
 function applyFileExtension(name: string, fileExtension: string): string {

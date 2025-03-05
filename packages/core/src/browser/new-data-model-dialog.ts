@@ -7,18 +7,18 @@ import { LabelProvider } from '@theia/core/lib/browser';
 import { WorkspaceInputDialog, WorkspaceInputDialogProps } from '@theia/workspace/lib/browser/workspace-input-dialog';
 import { toPascal } from '@crossbreeze/protocol';
 
-const SystemInputDialogProps = Symbol('SystemInputDialogProps');
-interface SystemInputDialogProps extends WorkspaceInputDialogProps {
-   systemTypes: string[];
+const DataModelInputDialogProps = Symbol('DataModelInputDialogProps');
+interface DataModelInputDialogProps extends WorkspaceInputDialogProps {
+   dataModelTypes: string[];
 }
 
-export class SystemInputDialog extends WorkspaceInputDialog {
+export class DataModelInputDialog extends WorkspaceInputDialog {
    protected readonly versionInput: HTMLInputElement;
    protected readonly typeSelector: HTMLSelectElement;
    protected readonly grid: HTMLDivElement;
 
    constructor(
-      @inject(SystemInputDialogProps) protected override readonly props: SystemInputDialogProps,
+      @inject(DataModelInputDialogProps) protected override readonly props: DataModelInputDialogProps,
       @inject(LabelProvider) protected override readonly labelProvider: LabelProvider
    ) {
       super(props, labelProvider);
@@ -26,7 +26,7 @@ export class SystemInputDialog extends WorkspaceInputDialog {
       this.contentNode.appendChild(this.grid);
       const idBase = Date.now().toString(26);
       const nameInputId = idBase + '-name';
-      this.grid.appendChild(createLabel({ text: 'System Name', for: nameInputId }));
+      this.grid.appendChild(createLabel({ text: 'Model Name', for: nameInputId }));
       this.inputField.id = nameInputId;
       this.grid.appendChild(this.inputField);
       const versionInputId = idBase + '-version';
@@ -38,7 +38,7 @@ export class SystemInputDialog extends WorkspaceInputDialog {
       this.typeSelector = createInput({
          value: 'logical',
          id: typeInputId,
-         options: Object.fromEntries(props.systemTypes.map(key => [key, toPascal(key)]))
+         options: Object.fromEntries(props.dataModelTypes.map(key => [key, toPascal(key)]))
       });
       this.grid.appendChild(this.typeSelector);
    }
@@ -47,7 +47,7 @@ export class SystemInputDialog extends WorkspaceInputDialog {
       const grid = document.createElement('div');
       grid.setAttribute(
          'style',
-         'display: grid; width: 100%; grid-template-columns: max-content auto; gap: var(--theia-ui-padding); align-items; center;'
+         'display: grid; width: 100%; grid-template-columns: max-content auto; gap: var(--theia-ui-padding); align-items: center;'
       );
       return grid;
    }
@@ -60,11 +60,11 @@ export class SystemInputDialog extends WorkspaceInputDialog {
    }
 }
 
-export async function getNewSystemOptions(
-   props: SystemInputDialogProps,
+export async function getNewDataModelOptions(
+   props: DataModelInputDialogProps,
    labelProvider: LabelProvider
 ): Promise<{ name: string; version: string; type: string } | undefined> {
-   const userSelection = await new SystemInputDialog(props, labelProvider).open();
+   const userSelection = await new DataModelInputDialog(props, labelProvider).open();
    if (!userSelection) {
       return undefined;
    }

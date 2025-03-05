@@ -177,7 +177,7 @@ export class CrossModelValidator {
       }
       if (!isMemberPermittedInPackage(packageType, semanticRoot.$type)) {
          this.services.shared.logger.ClientLogger.info('Issuing a warning: ' + Object.entries(node).join('\n\t'));
-         accept('error', `Member of type '${semanticRoot?.$type}' is not permitted in a package of type '${packageType}'.`, { node });
+         accept('error', `Member of type '${semanticRoot?.$type}' is not permitted in a model of type '${packageType}'.`, { node });
       }
    }
 

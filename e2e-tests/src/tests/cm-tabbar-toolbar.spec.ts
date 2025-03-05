@@ -5,6 +5,7 @@ import { expect, test } from '@playwright/test';
 import { CMApp } from '../page-objects/cm-app';
 import { CMExplorerView } from '../page-objects/cm-explorer-view';
 import { TheiaSingleInputDialog } from '../page-objects/theia-single-input-dialog';
+import { OSUtil } from '@theia/playwright';
 
 test.describe('CrossModel TabBar Toolbar', () => {
    let app: CMApp;
@@ -20,6 +21,8 @@ test.describe('CrossModel TabBar Toolbar', () => {
    });
 
    test('create new entity from tabbar toolbar', async () => {
+      // A data model of the appropriate type must be selected for the commands to be visible.
+      await explorer.selectTreeNode('ExampleCRM');
       // Get the new-entity toolbar item.
       const tabBarToolbarNewEntity = await explorer.tabBarToolbar.toolBarItem('crossbreeze.new.entity.toolbar');
       expect(tabBarToolbarNewEntity).toBeDefined();
@@ -43,13 +46,15 @@ test.describe('CrossModel TabBar Toolbar', () => {
          await newEntityDialog.waitForClosed();
 
          explorer = await app.openView(CMExplorerView);
-         const file = await explorer.getFileStatNodeByLabel('entity-created-from-tabbar-toolbar.entity.cm');
+         const file = await explorer.fileStatNode('ExampleCRM' + OSUtil.fileSeparator + 'entity-created-from-tabbar-toolbar.entity.cm');
          expect(file).toBeDefined();
-         expect(await file.label()).toBe('entity-created-from-tabbar-toolbar.entity.cm');
+         expect(await file!.label()).toBe('entity-created-from-tabbar-toolbar.entity.cm');
       }
    });
 
    test('create new relationship from tabbar toolbar', async () => {
+      // A data model of the appropriate type must be selected for the commands to be visible.
+      await explorer.selectTreeNode('ExampleCRM');
       // Get the new-entity toolbar item.
       const tabBarToolbarNewEntity = await explorer.tabBarToolbar.toolBarItem('crossbreeze.new.relationship.toolbar');
       expect(tabBarToolbarNewEntity).toBeDefined();
@@ -73,13 +78,17 @@ test.describe('CrossModel TabBar Toolbar', () => {
          await newRelationshipDialog.waitForClosed();
 
          explorer = await app.openView(CMExplorerView);
-         const file = await explorer.getFileStatNodeByLabel('relationship-created-from-tabbar-toolbar.relationship.cm');
+         const file = await explorer.fileStatNode(
+            'ExampleCRM' + OSUtil.fileSeparator + 'relationship-created-from-tabbar-toolbar.relationship.cm'
+         );
          expect(file).toBeDefined();
-         expect(await file.label()).toBe('relationship-created-from-tabbar-toolbar.relationship.cm');
+         expect(await file!.label()).toBe('relationship-created-from-tabbar-toolbar.relationship.cm');
       }
    });
 
    test('create new diagram from tabbar toolbar', async () => {
+      // A data model of the appropriate type must be selected for the commands to be visible.
+      await explorer.selectTreeNode('ExampleCRM');
       // Get the new-entity toolbar item.
       const tabBarToolbarNewEntity = await explorer.tabBarToolbar.toolBarItem('crossbreeze.new.system-diagram.toolbar');
       expect(tabBarToolbarNewEntity).toBeDefined();
@@ -92,7 +101,7 @@ test.describe('CrossModel TabBar Toolbar', () => {
          // Wait for the New Entity dialog to popup.
          newDiagramDialog.waitForVisible();
          // Check the title of the dialog.
-         expect(await newDiagramDialog.title()).toBe('New SystemDiagram...');
+         expect(await newDiagramDialog.title()).toBe('New System Diagram...');
          // Set the name for the new entity.
          await newDiagramDialog.enterSingleInput('diagram-created-from-tabbar-toolbar');
          // Wait until we can click the main button.
@@ -103,9 +112,11 @@ test.describe('CrossModel TabBar Toolbar', () => {
          await newDiagramDialog.waitForClosed();
 
          explorer = await app.openView(CMExplorerView);
-         const file = await explorer.getFileStatNodeByLabel('diagram-created-from-tabbar-toolbar.system-diagram.cm');
+         const file = await explorer.fileStatNode(
+            'ExampleCRM' + OSUtil.fileSeparator + 'diagram-created-from-tabbar-toolbar.system-diagram.cm'
+         );
          expect(file).toBeDefined();
-         expect(await file.label()).toBe('diagram-created-from-tabbar-toolbar.system-diagram.cm');
+         expect(await file!.label()).toBe('diagram-created-from-tabbar-toolbar.system-diagram.cm');
       }
    });
 });

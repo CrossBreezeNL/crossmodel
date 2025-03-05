@@ -30,6 +30,7 @@ import { inject, injectable, postConstruct } from '@theia/core/shared/inversify'
 import { EditorPreviewWidget } from '@theia/editor-preview/lib/browser/editor-preview-widget';
 import { EditorPreviewWidgetFactory } from '@theia/editor-preview/lib/browser/editor-preview-widget-factory';
 import { EditorOpenerOptions, EditorWidget } from '@theia/editor/lib/browser';
+import * as monaco from '@theia/monaco-editor-core';
 import { MonacoEditorModel } from '@theia/monaco/lib/browser/monaco-editor-model';
 import { CompositeEditorOptions } from './composite-editor-open-handler';
 import { CrossModelEditorManager } from './cross-model-editor-manager';
@@ -89,6 +90,10 @@ export class ReverseCompositeSaveable extends CompositeSaveable {
    }
 }
 
+export interface CompositeWidgetOptions extends NavigatableWidgetOptions {
+   version?: number;
+}
+
 @injectable()
 export class CompositeEditor extends BaseWidget implements SaveableSource, Navigatable, Partial<GLSPDiagramWidgetContainer> {
    @inject(CrossModelWidgetOptions) protected options: CompositeEditorOptions;
@@ -142,10 +147,13 @@ export class CompositeEditor extends BaseWidget implements SaveableSource, Navig
       this.tabPanel.currentChanged.connect((_, event) => this.handleCurrentWidgetChanged(event));
       layout.addWidget(this.tabPanel);
 
-      const primateWidget = await this.createPrimaryWidget();
-      this.addWidget(primateWidget);
+      // create code editor first as Monaco has it's own version number management
+      const codeWidget = await this.createCodeWidget(this.options);
+      const version = monaco.editor.getModel(monaco.Uri.parse(this.options.uri))?.getVersionId() ?? 0;
+      const options: CompositeWidgetOptions = { ...this.options, version };
+      const primateWidget = await this.createPrimaryWidget(options);
 
-      const codeWidget = await this.createCodeWidget();
+      this.addWidget(primateWidget);
       this.addWidget(codeWidget);
 
       this.update();
@@ -198,12 +206,12 @@ export class CompositeEditor extends BaseWidget implements SaveableSource, Navig
       };
    }
 
-   protected async createPrimaryWidget(): Promise<Widget> {
+   protected async createPrimaryWidget(options: CompositeWidgetOptions): Promise<Widget> {
       switch (this.fileType) {
          case 'Entity':
-            return this.getFormWidget();
+            return this.createFormWidget(options);
          case 'Relationship':
-            return this.getFormWidget();
+            return this.createFormWidget(options);
          case 'SystemDiagram':
             return this.createSystemDiagramWidget();
          case 'Mapping':
@@ -211,20 +219,16 @@ export class CompositeEditor extends BaseWidget implements SaveableSource, Navig
       }
    }
 
-   protected async createCodeWidget(): Promise<Widget> {
-      const { kind, uri, counter } = this.options;
-      const options: NavigatableWidgetOptions = { kind, uri, counter };
-      const codeWidget = await this.widgetManager.getOrCreateWidget<EditorPreviewWidget>(EditorPreviewWidgetFactory.ID, options);
+   protected async createCodeWidget(options: CompositeWidgetOptions): Promise<Widget> {
+      const codeWidget = await this.widgetManager.getOrCreateWidget<EditorPreviewWidget>(EditorPreviewWidgetFactory.ID, { ...options });
       codeWidget.title.label = 'Code Editor';
       codeWidget.title.iconClass = codiconCSSString('code');
       codeWidget.title.closable = false;
       return codeWidget;
    }
 
-   protected async getFormWidget(): Promise<Widget> {
-      const { kind, uri, counter } = this.options;
-      const options: NavigatableWidgetOptions = { kind, uri, counter };
-      const formEditor = await this.widgetManager.getOrCreateWidget<FormEditorWidget>(FormEditorOpenHandler.ID, options);
+   protected async createFormWidget(options: CompositeWidgetOptions): Promise<Widget> {
+      const formEditor = await this.widgetManager.getOrCreateWidget<FormEditorWidget>(FormEditorOpenHandler.ID, { ...options });
       formEditor.title.label = 'Form Editor';
       formEditor.title.iconClass = codiconCSSString('symbol-keyword');
       formEditor.title.closable = false;

@@ -1,7 +1,15 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { findAllExpressions, getExpression, getExpressionPosition, getExpressionText, ModelFileExtensions } from '@crossbreeze/protocol';
+import {
+   findAllExpressions,
+   getExpression,
+   getExpressionPosition,
+   getExpressionText,
+   isMemberPermittedInPackage,
+   ModelFileExtensions,
+   PackageMemberPermissions
+} from '@crossbreeze/protocol';
 import { AstNode, GrammarUtils, Reference, UriUtils, ValidationAcceptor, ValidationChecks } from 'langium';
 import { Diagnostic } from 'vscode-languageserver-protocol';
 import type { CrossModelServices } from './cross-model-module.js';
@@ -12,6 +20,7 @@ import {
    Entity,
    EntityAttribute,
    InheritanceEdge,
+   isCrossModelRoot,
    isEntity,
    isEntityAttribute,
    isMapping,
@@ -28,7 +37,7 @@ import {
    TargetObject,
    TargetObjectAttribute
 } from './generated/ast.js';
-import { findDocument, getOwner, isSemanticRoot } from './util/ast-util.js';
+import { findDocument, getOwner, getSemanticRootFromAstRoot, isSemanticRoot } from './util/ast-util.js';
 
 export namespace CrossModelIssueCodes {
    export const FilenameNotMatching = 'filename-not-matching';
@@ -86,6 +95,7 @@ export class CrossModelValidator {
       this.checkUniqueGlobalId(node, accept);
       this.checkUniqueNodeId(node, accept);
       this.checkMatchingFilename(node, accept);
+      this.checkFitsPackage(node, accept);
    }
 
    protected checkMatchingFilename(node: AstNode, accept: ValidationAcceptor): void {
@@ -151,6 +161,23 @@ export class CrossModelValidator {
          } else if (node.id) {
             knownIds.push(node.id);
          }
+      }
+   }
+
+   protected checkFitsPackage(node: AstNode, accept: ValidationAcceptor): void {
+      if (!isCrossModelRoot(node)) {
+         return;
+      }
+      const semanticRoot = getSemanticRootFromAstRoot(node);
+      const info = this.services.shared.workspace.PackageManager.getPackageInfoByDocument(node.$document);
+      const packageType = info?.type;
+      // The problem is with the system type, not necessarily anything under it.
+      if (!packageType || !(packageType in PackageMemberPermissions) || !semanticRoot) {
+         return;
+      }
+      if (!isMemberPermittedInPackage(packageType, semanticRoot.$type)) {
+         this.services.shared.logger.ClientLogger.info('Issuing a warning: ' + Object.entries(node).join('\n\t'));
+         accept('error', `Member of type '${semanticRoot?.$type}' is not permitted in a package of type '${packageType}'.`, { node });
       }
    }
 

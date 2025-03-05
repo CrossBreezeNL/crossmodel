@@ -332,6 +332,7 @@ export interface SystemInfoArgs {
 export interface SystemInfo {
    id: string;
    name: string;
+   type: string;
    directory: string;
    packageFilePath: string;
    modelFilePaths: string[];
@@ -359,3 +360,13 @@ export const OnModelUpdated = new rpc.NotificationType1<ModelUpdatedEvent>('serv
 export const RequestSystemInfos = new rpc.RequestType1<void, SystemInfo[], void>('server/systems');
 export const RequestSystemInfo = new rpc.RequestType1<SystemInfoArgs, SystemInfo | undefined, void>('server/system');
 export const OnSystemsUpdated = new rpc.NotificationType1<SystemUpdatedEvent>('server/onSystemsUpdated');
+
+export const PackageMemberPermissions = {
+   logical: ['Entity', 'Mapping', 'Relationship', 'SystemDiagram'],
+   empty: []
+} as const;
+
+export function isMemberPermittedInPackage(packageType: string, memberType: string): boolean {
+   const permittedTypes = PackageMemberPermissions[packageType as keyof typeof PackageMemberPermissions] as readonly string[] | undefined;
+   return !!permittedTypes?.includes(memberType);
+}

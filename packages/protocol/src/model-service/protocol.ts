@@ -46,7 +46,11 @@ export interface CrossModelRoot extends CrossModelElement {
    entity?: Entity;
    relationship?: Relationship;
    mapping?: Mapping;
+   systemDiagram?: SystemDiagram;
 }
+
+export type RootObjectType = Exclude<CrossModelRoot[keyof CrossModelRoot], string | undefined>;
+export type RootObjectTypeName = RootObjectType['$type'];
 
 export function isCrossModelRoot(model?: any): model is CrossModelRoot {
    return !!model && model.$type === 'CrossModelRoot';
@@ -184,6 +188,53 @@ export interface AttributeMappingSource extends CrossModelElement {
 export const SourceObjectAttributeType = 'SourceObjectAttribute';
 export interface SourceObjectAttribute extends Attribute, WithCustomProperties {
    readonly $type: typeof SourceObjectAttributeType;
+}
+
+export const SystemDiagramType = 'SystemDiagram';
+export interface SystemDiagram extends CrossModelElement, Identifiable, WithCustomProperties {
+   readonly $container: CrossModelRoot;
+   readonly $type: typeof SystemDiagramType;
+   customProperties: Array<CustomProperty>;
+   description?: string;
+   edges: Array<Edge>;
+   name?: string;
+   nodes: Array<EntityNode>;
+}
+
+export type Edge = InheritanceEdge | RelationshipEdge;
+export const EdgeType = 'Edge';
+
+export const InheritanceEdgeType = 'InheritanceEdge';
+export interface InheritanceEdge extends CrossModelElement, Identifiable, WithCustomProperties {
+   readonly $container: SystemDiagram;
+   readonly $type: typeof InheritanceEdgeType;
+   baseNode: Reference<EntityNode>;
+   customProperties: Array<CustomProperty>;
+   superNode: Reference<EntityNode>;
+}
+
+export const RelationshipEdgeType = 'RelationshipEdge';
+export interface RelationshipEdge extends CrossModelElement, Identifiable, WithCustomProperties {
+   readonly $container: SystemDiagram;
+   readonly $type: typeof RelationshipEdgeType;
+   customProperties: Array<CustomProperty>;
+   relationship: Reference<Relationship>;
+   sourceNode: Reference<EntityNode>;
+   targetNode: Reference<EntityNode>;
+}
+
+export const EntityNodeType = 'EntityNode';
+export interface EntityNode extends CrossModelElement, Identifiable, WithCustomProperties {
+   readonly $container: SystemDiagram;
+   readonly $type: typeof EntityNodeType;
+   customProperties: Array<CustomProperty>;
+   description?: string;
+   entity: Reference<Entity>;
+   height: number;
+   name?: string;
+   width: number;
+   x: number;
+   y: number;
 }
 
 export interface ClientModelArgs {
@@ -361,12 +412,12 @@ export const RequestSystemInfos = new rpc.RequestType1<void, SystemInfo[], void>
 export const RequestSystemInfo = new rpc.RequestType1<SystemInfoArgs, SystemInfo | undefined, void>('server/system');
 export const OnSystemsUpdated = new rpc.NotificationType1<SystemUpdatedEvent>('server/onSystemsUpdated');
 
-export const PackageMemberPermissions = {
+export const ModelMemberPermissions = {
    logical: ['Entity', 'Mapping', 'Relationship', 'SystemDiagram'],
    empty: []
-} as const;
+} as const satisfies Record<string, readonly RootObjectTypeName[]>;
 
-export function isMemberPermittedInPackage(packageType: string, memberType: string): boolean {
-   const permittedTypes = PackageMemberPermissions[packageType as keyof typeof PackageMemberPermissions] as readonly string[] | undefined;
+export function isMemberPermittedInModel(packageType: string, memberType: string): boolean {
+   const permittedTypes = ModelMemberPermissions[packageType as keyof typeof ModelMemberPermissions] as readonly string[] | undefined;
    return !!permittedTypes?.includes(memberType);
 }

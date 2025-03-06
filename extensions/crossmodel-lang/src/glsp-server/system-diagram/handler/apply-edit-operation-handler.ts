@@ -13,7 +13,7 @@ import { SystemModelState } from '../model/system-model-state.js';
 @injectable()
 export class SystemDiagramApplyLabelEditOperationHandler extends JsonOperationHandler {
    readonly operationType = ApplyLabelEditOperation.KIND;
-   @inject(ModelState) declare modelState: SystemModelState;
+   @inject(ModelState) override modelState: SystemModelState;
 
    createCommand(operation: ApplyLabelEditOperation): Command {
       const entityNode = getOrThrow(this.modelState.index.findEntityNode(operation.labelId), 'Entity node not found');

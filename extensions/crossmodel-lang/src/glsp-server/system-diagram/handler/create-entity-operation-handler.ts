@@ -24,8 +24,8 @@ export class SystemDiagramCreateEntityOperationHandler extends JsonCreateNodeOpe
    override label = 'Create Entity';
    elementTypeIds = [ENTITY_NODE_TYPE];
 
-   @inject(ModelState) protected declare modelState: SystemModelState;
-   @inject(ActionDispatcher) protected actionDispatcher!: ActionDispatcher;
+   @inject(ModelState) protected override modelState: SystemModelState;
+   @inject(ActionDispatcher) protected actionDispatcher: ActionDispatcher;
 
    override createCommand(operation: CreateNodeOperation): MaybePromise<Command | undefined> {
       return new CrossModelCommand(this.modelState, () => this.createNode(operation));

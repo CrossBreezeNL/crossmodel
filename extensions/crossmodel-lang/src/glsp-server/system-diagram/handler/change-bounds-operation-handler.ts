@@ -9,7 +9,7 @@ import { SystemModelState } from '../model/system-model-state.js';
 @injectable()
 export class SystemDiagramChangeBoundsOperationHandler extends JsonOperationHandler {
    operationType = ChangeBoundsOperation.KIND;
-   @inject(ModelState) protected declare modelState: SystemModelState;
+   @inject(ModelState) protected override modelState: SystemModelState;
 
    createCommand(operation: ChangeBoundsOperation): Command {
       return new CrossModelCommand(this.modelState, () => this.changeBounds(operation));

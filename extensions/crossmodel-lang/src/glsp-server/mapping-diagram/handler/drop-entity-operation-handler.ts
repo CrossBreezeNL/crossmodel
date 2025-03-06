@@ -18,7 +18,7 @@ import { MappingModelState } from '../model/mapping-model-state.js';
 export class MappingDiagramDropEntityOperationHandler extends JsonOperationHandler {
    override operationType = DropEntityOperation.KIND;
 
-   @inject(ModelState) protected declare modelState: MappingModelState;
+   @inject(ModelState) protected override modelState: MappingModelState;
 
    createCommand(operation: DropEntityOperation): Command {
       return new CrossModelCommand(this.modelState, () => this.createSourceObject(operation));

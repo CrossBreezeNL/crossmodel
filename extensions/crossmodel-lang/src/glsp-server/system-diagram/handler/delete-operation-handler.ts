@@ -18,7 +18,7 @@ import { SystemModelState } from '../model/system-model-state.js';
 export class SystemDiagramDeleteOperationHandler extends JsonOperationHandler {
    operationType = DeleteElementOperation.KIND;
 
-   @inject(ModelState) protected declare modelState: SystemModelState;
+   @inject(ModelState) protected override modelState: SystemModelState;
 
    override createCommand(operation: DeleteElementOperation): Command | undefined {
       const deleteInfo = this.findElementsToDelete(operation);

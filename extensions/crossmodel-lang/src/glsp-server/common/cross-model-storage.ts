@@ -40,7 +40,7 @@ export class CrossModelStorage implements SourceModelStorage, ClientSessionListe
    @inject(CrossModelState) protected state!: CrossModelState;
    @inject(ClientSessionManager) protected sessionManager!: ClientSessionManager;
    @inject(ModelSubmissionHandler) protected submissionHandler!: ModelSubmissionHandler;
-   @inject(ActionDispatcher) protected actionDispatcher!: ActionDispatcher;
+   @inject(ActionDispatcher) protected actionDispatcher: ActionDispatcher;
 
    protected toDispose = new DisposableCollection();
 

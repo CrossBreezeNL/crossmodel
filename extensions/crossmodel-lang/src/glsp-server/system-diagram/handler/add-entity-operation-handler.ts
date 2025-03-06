@@ -15,7 +15,7 @@ import { SystemModelState } from '../model/system-model-state.js';
 @injectable()
 export class SystemDiagramAddEntityOperationHandler extends JsonOperationHandler {
    override operationType = AddEntityOperation.KIND;
-   @inject(ModelState) protected declare modelState: SystemModelState;
+   @inject(ModelState) protected override modelState: SystemModelState;
 
    createCommand(operation: AddEntityOperation): Command {
       return new CrossModelCommand(this.modelState, () => this.createEntityNode(operation));

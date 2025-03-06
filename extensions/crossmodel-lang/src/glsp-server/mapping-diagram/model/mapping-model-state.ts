@@ -9,7 +9,7 @@ import { MappingModelIndex } from './mapping-model-index.js';
 
 @injectable()
 export class MappingModelState extends CrossModelState {
-   @inject(MappingModelIndex) declare readonly index: MappingModelIndex;
+   @inject(MappingModelIndex) override readonly index: MappingModelIndex;
 
    override setSemanticRoot(uri: string, semanticRoot: CrossModelRoot): void {
       this.ensureAttributeMappings(semanticRoot);

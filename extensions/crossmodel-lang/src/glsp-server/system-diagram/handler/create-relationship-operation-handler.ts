@@ -23,8 +23,8 @@ export class SystemDiagramCreateRelationshipOperationHandler extends JsonCreateE
    override label = '1:1 Relationship';
    elementTypeIds = [RELATIONSHIP_EDGE_TYPE];
 
-   @inject(ModelState) protected declare modelState: SystemModelState;
-   @inject(ActionDispatcher) protected actionDispatcher!: ActionDispatcher;
+   @inject(ModelState) protected override modelState: SystemModelState;
+   @inject(ActionDispatcher) protected actionDispatcher: ActionDispatcher;
 
    createCommand(operation: CreateEdgeOperation): Command {
       return new CrossModelCommand(this.modelState, () => this.createEdge(operation));

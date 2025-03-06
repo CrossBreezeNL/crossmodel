@@ -6,9 +6,9 @@ import {
    MappingType,
    ModelFileExtensions,
    ModelStructure,
-   PackageMemberPermissions,
+   ModelMemberPermissions,
    TargetObjectType,
-   isMemberPermittedInPackage,
+   isMemberPermittedInModel,
    quote,
    toId,
    toPascal
@@ -128,8 +128,8 @@ export class CrossModelWorkspaceContribution extends WorkspaceCommandContributio
          commands.registerCommand(
             { ...template, label: template.label + '...' },
             this.newWorkspaceRootUriAwareCommandHandler({
-               isVisible: uri => doesTemplateFitsPackage(this.modelService, template, uri),
-               isEnabled: uri => doesTemplateFitsPackage(this.modelService, template, uri),
+               isVisible: uri => doesTemplateFitsPackage(uri, this.modelService, template),
+               isEnabled: uri => doesTemplateFitsPackage(uri, this.modelService, template),
                execute: uri => this.createNewElementFile(uri, template)
             })
          );
@@ -264,7 +264,7 @@ export class CrossModelWorkspaceContribution extends WorkspaceCommandContributio
       return getNewDataModelOptions(
          {
             ...props,
-            dataModelTypes: Object.keys(PackageMemberPermissions),
+            dataModelTypes: Object.keys(ModelMemberPermissions),
             validate: value => {
                const name = JSON.parse(value).name ?? '';
                return name && this.validateElementFileName(template.toUri(parent.resource, name), name);
@@ -320,14 +320,14 @@ export class CrossModelFileNavigatorContribution extends FileNavigatorContributi
                      widget,
                      navigator =>
                         this.workspaceService.opened &&
-                        doesTemplateFitsPackage(this.modelService, template, UriSelection.getUri(navigator.model.selectedNodes))
+                        doesTemplateFitsPackage(UriSelection.getUri(navigator.model.selectedNodes), this.modelService, template)
                   ),
                isVisible: widget =>
                   this.withWidget(
                      widget,
                      navigator =>
                         this.workspaceService.opened &&
-                        doesTemplateFitsPackage(this.modelService, template, UriSelection.getUri(navigator.model.selectedNodes))
+                        doesTemplateFitsPackage(UriSelection.getUri(navigator.model.selectedNodes), this.modelService, template)
                   )
             }
          );
@@ -350,15 +350,15 @@ export class CrossModelFileNavigatorContribution extends FileNavigatorContributi
    }
 }
 
-function doesTemplateFitsPackage(modelService: ModelService, template: NewElementTemplate, parent?: URI): boolean {
-   if (!parent) {
+function doesTemplateFitsPackage(target: URI | undefined, modelService: ModelService, template: NewElementTemplate): boolean {
+   if (!target) {
       return false;
    }
-   const model = modelService.systems.find(candidate => URI.fromFilePath(candidate.directory).isEqualOrParent(parent));
+   const model = modelService.systems.find(candidate => URI.fromFilePath(candidate.directory).isEqualOrParent(target));
    if (!model) {
       return template.memberType === 'DataModel';
    }
-   return isMemberPermittedInPackage(model.type, template.memberType);
+   return isMemberPermittedInModel(model.type, template.memberType);
 }
 
 function applyFileExtension(name: string, fileExtension: string): string {

@@ -114,7 +114,7 @@ interface LabelOptions {
 
 function createLabel(options: LabelOptions): HTMLLabelElement {
    const label = document.createElement('label');
-   label.setAttribute('htmlFor', options.for);
+   label.setAttribute('for', options.for);
    label.innerText = options.text;
    label.classList.add('theia-header', 'no-select');
    return label;

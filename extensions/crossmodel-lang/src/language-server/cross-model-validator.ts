@@ -6,9 +6,9 @@ import {
    getExpression,
    getExpressionPosition,
    getExpressionText,
-   isMemberPermittedInPackage,
+   isMemberPermittedInModel,
    ModelFileExtensions,
-   PackageMemberPermissions
+   ModelMemberPermissions
 } from '@crossbreeze/protocol';
 import { AstNode, GrammarUtils, Reference, UriUtils, ValidationAcceptor, ValidationChecks } from 'langium';
 import { Diagnostic } from 'vscode-languageserver-protocol';
@@ -172,10 +172,10 @@ export class CrossModelValidator {
       const info = this.services.shared.workspace.PackageManager.getPackageInfoByDocument(node.$document);
       const packageType = info?.type;
       // The problem is with the system type, not necessarily anything under it.
-      if (!packageType || !(packageType in PackageMemberPermissions) || !semanticRoot) {
+      if (!packageType || !(packageType in ModelMemberPermissions) || !semanticRoot) {
          return;
       }
-      if (!isMemberPermittedInPackage(packageType, semanticRoot.$type)) {
+      if (!isMemberPermittedInModel(packageType, semanticRoot.$type)) {
          this.services.shared.logger.ClientLogger.info('Issuing a warning: ' + Object.entries(node).join('\n\t'));
          accept('error', `Member of type '${semanticRoot?.$type}' is not permitted in a model of type '${packageType}'.`, { node });
       }

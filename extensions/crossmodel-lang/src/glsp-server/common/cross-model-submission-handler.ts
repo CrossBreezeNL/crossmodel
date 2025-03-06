@@ -8,7 +8,7 @@ import { CrossModelState } from './cross-model-state.js';
 
 @injectable()
 export class CrossModelSubmissionHandler extends ModelSubmissionHandler {
-   @inject(ModelState) protected declare modelState: CrossModelState;
+   @inject(ModelState) protected override modelState: CrossModelState;
 
    override async submitModel(reason?: DirtyStateChangeReason): Promise<Action[]> {
       await this.modelState.ready();

@@ -38,7 +38,7 @@ export class SystemDiagramGModelFactory implements GModelFactory {
             if (isRelationshipEdge(edge)) {
                return this.createRelationshipEdge(edge);
             }
-            return this.createInheritanceEdge(edge);
+            return this.createInheritanceEdge(<InheritanceEdge>edge);
          })
          .forEach(edge => graphBuilder.add(edge));
 

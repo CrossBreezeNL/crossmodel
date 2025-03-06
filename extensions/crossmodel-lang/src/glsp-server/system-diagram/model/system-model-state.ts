@@ -8,7 +8,7 @@ import { SystemModelIndex } from './system-model-index.js';
 
 @injectable()
 export class SystemModelState extends CrossModelState {
-   @inject(SystemModelIndex) declare readonly index: SystemModelIndex;
+   @inject(SystemModelIndex) override readonly index: SystemModelIndex;
 
    get systemDiagram(): SystemDiagram {
       return this.semanticRoot.systemDiagram!;

@@ -4,7 +4,7 @@
 
 import { ATTRIBUTE_COMPARTMENT_TYPE, createLeftPortId, createRightPortId } from '@crossbreeze/protocol';
 import { DefaultTypes, GCompartment, GCompartmentBuilder, GLabel, GPort } from '@eclipse-glsp/server';
-import { Attribute } from '../../language-server/generated/ast.js';
+import { EntityAttribute } from '../../language-server/generated/ast.js';
 import { CrossModelIndex } from './cross-model-index.js';
 
 export function createHeader(text: string, containerId: string, labelType = DefaultTypes.LABEL): GCompartment {
@@ -19,9 +19,9 @@ export function createHeader(text: string, containerId: string, labelType = Defa
       .build();
 }
 
-export type MarkerFunction<T extends Attribute> = (attribute: T, id: string) => GLabel | undefined;
+export type MarkerFunction<T extends EntityAttribute> = (attribute: T, id: string) => GLabel | undefined;
 
-export function createAttributesCompartment<T extends Attribute>(
+export function createAttributesCompartment<T extends EntityAttribute>(
    attributes: T[],
    containerId: string,
    index: CrossModelIndex,
@@ -58,7 +58,7 @@ export class AttributeCompartment extends GCompartment {
 }
 
 export class AttributeCompartmentBuilder extends GCompartmentBuilder<AttributeCompartment> {
-   set<T extends Attribute>(attribute: T, index: CrossModelIndex, markerFn?: MarkerFunction<T>): this {
+   set<T extends EntityAttribute>(attribute: T, index: CrossModelIndex, markerFn?: MarkerFunction<T>): this {
       const attributeId = index.createId(attribute);
       this.id(attributeId)
          .type(ATTRIBUTE_COMPARTMENT_TYPE)
@@ -82,7 +82,9 @@ export class AttributeCompartmentBuilder extends GCompartmentBuilder<AttributeCo
             .build()
       );
       this.add(GLabel.builder().text(':').id(`${attributeId}_attribute_del`).build());
-      this.add(GLabel.builder().id(`${attributeId}_attribute_datatype`).text(attribute.datatype).addCssClass('datatype').build());
+      if (attribute.datatype) {
+         this.add(GLabel.builder().id(`${attributeId}_attribute_datatype`).text(attribute.datatype).addCssClass('datatype').build());
+      }
       const marker = markerFn?.(attribute, attributeId);
       if (marker) {
          this.add(marker);

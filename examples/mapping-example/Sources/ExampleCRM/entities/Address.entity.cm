@@ -4,15 +4,16 @@ entity:
     description: "The address of a customer."
     attributes:
       - id: CustomerID
-        name: "CustomerID"
+        name: "Customer ID"
         datatype: "Integer"
-        identifier: true
       - id: Street
         name: "Street"
         datatype: "Text"
+        length: 200
       - id: CountryCode
-        name: "CountryCode"
+        name: "Country Code"
         datatype: "Text"
+        length: 3
         customProperties:
           - name: Author
             value: "CrossBreeze"

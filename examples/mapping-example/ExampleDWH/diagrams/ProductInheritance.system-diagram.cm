@@ -1,6 +1,5 @@
 systemDiagram:
     id: ProductInheritance
-    name: "ProductInheritance"
     nodes:
       - id: ExampleDWH_ProductNode
         entity: ExampleDWH.Product

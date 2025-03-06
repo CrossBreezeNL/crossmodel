@@ -1,0 +1,17 @@
+relationship:
+    id: Address_Customer
+    name: "Address - Customer"
+    parent: Customer
+    child: ExampleCRM.Address
+    type: "1:1"
+    attributes:
+      - parent: Customer.Id
+        child: ExampleCRM.Address.CustomerID
+        customProperties:
+          - name: Author
+            value: "CrossBreeze"
+          - name: ExampleRelationshipAttribute
+    customProperties:
+      - name: Author
+        value: "CrossBreeze"
+      - name: ExampleRelationship

@@ -3,8 +3,6 @@
  ********************************************************************************/
 export const diagram5 = `systemDiagram:
     id: Systemdiagram1
-    name: "System diagram 1"
-    description: "This is a basic diagram with nodes and edges"
     nodes:
         - id: CustomerNode
           entity: Customer

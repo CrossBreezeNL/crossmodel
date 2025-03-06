@@ -7,20 +7,71 @@ import { AstNode, GenericAstNode, Grammar, isAstNode, isReference } from 'langiu
 import { collectAst } from 'langium/grammar';
 import { Serializer } from '../model-server/serializer.js';
 import {
+   AttributeMapping,
    CrossModelRoot,
+   Entity,
    EntityAttribute,
+   EntityNode,
    isAttributeMappingSource,
    isAttributeMappingTarget,
    isCustomProperty,
    isEntityAttribute,
    isJoinCondition,
+   isRelationship,
    isSourceObject,
    isSourceObjectDependency,
    JoinCondition,
+   Mapping,
    reflection,
-   StringLiteral
+   Relationship,
+   RelationshipAttribute,
+   RelationshipEdge,
+   SourceObject,
+   SourceObjectAttribute,
+   StringLiteral,
+   SystemDiagram,
+   TargetObject,
+   TargetObjectAttribute
 } from './generated/ast.js';
 import { isImplicitProperty } from './util/ast-util.js';
+
+const IDENTIFIED_PROPERTIES = ['id'];
+const NAMED_OBJECT_PROPERTIES = [...IDENTIFIED_PROPERTIES, 'name', 'description'];
+const CUSTOM_PROPERTIES = ['customProperties'];
+
+/**
+ * Hand-written map of the order of properties for serialization.
+ * This must match the order in which the properties appear in the grammar.
+ * It cannot be derived for interfaces as the interface order does not reflect property order in grammar due to inheritance.
+ */
+const PROPERTY_ORDER = new Map<string, string[]>([
+   [Entity, [...NAMED_OBJECT_PROPERTIES, 'superEntities', 'attributes', ...CUSTOM_PROPERTIES]],
+   [EntityAttribute, [...NAMED_OBJECT_PROPERTIES, 'datatype', 'length', 'precision', 'scale', 'identifier', ...CUSTOM_PROPERTIES]],
+   [
+      Relationship,
+      [
+         ...NAMED_OBJECT_PROPERTIES,
+         'parent',
+         'parentRole',
+         'parentCardinality',
+         'child',
+         'childRole',
+         'childCardinality',
+         'attributes',
+         ...CUSTOM_PROPERTIES
+      ]
+   ],
+   [RelationshipAttribute, ['parent', 'child', ...CUSTOM_PROPERTIES]],
+   [SystemDiagram, [...IDENTIFIED_PROPERTIES, 'nodes', 'edges']],
+   [EntityNode, [...IDENTIFIED_PROPERTIES, 'entity', 'x', 'y', 'width', 'height']],
+   [RelationshipEdge, [...IDENTIFIED_PROPERTIES, 'relationship', 'sourceNode', 'targetNode']],
+   [Mapping, [...IDENTIFIED_PROPERTIES, 'sources', 'target', ...CUSTOM_PROPERTIES]],
+   [SourceObject, [...IDENTIFIED_PROPERTIES, 'entity', 'join', 'dependencies', 'conditions', ...CUSTOM_PROPERTIES]],
+   [TargetObject, ['entity', 'mappings', ...CUSTOM_PROPERTIES]],
+   [AttributeMapping, ['attribute', 'sources', 'expression', ...CUSTOM_PROPERTIES]]
+]);
+PROPERTY_ORDER.set(SourceObjectAttribute, PROPERTY_ORDER.get(EntityAttribute) ?? []);
+PROPERTY_ORDER.set(TargetObjectAttribute, PROPERTY_ORDER.get(EntityAttribute) ?? []);
 
 /**
  * Hand-written AST serializer as there is currently no out-of-the box serializer from Langium, but it is on the roadmap.
@@ -58,6 +109,8 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot> {
       if (
          key === 'id' ||
          (key === 'superEntities' && Array.isArray(parent)) ||
+         propertyOf(parent, key, isRelationship, 'parentCardinality') ||
+         propertyOf(parent, key, isRelationship, 'childCardinality') ||
          propertyOf(parent, key, isCustomProperty, 'name') ||
          propertyOf(parent, key, isSourceObject, 'join') ||
          (!Array.isArray(value) && this.isValidReference(parent, key, value))
@@ -161,9 +214,8 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot> {
    protected calcProperties(elementType: string, kind: 'all' | 'mandatory' | 'optional'): string[] {
       const interfaceType = this.astTypes.interfaces.find(type => type.name === elementType);
       const allProperties = interfaceType?.allProperties;
-      if (elementType === EntityAttribute) {
-         // special handling cause the interface order does not reflect property order in grammar due to inheritance
-         const order = ['id', 'name', 'datatype', 'identifier', 'description', 'customProperties'];
+      const order = PROPERTY_ORDER.get(elementType);
+      if (order) {
          allProperties?.sort((left, right) => order.indexOf(left.name) - order.indexOf(right.name));
       }
       return !allProperties

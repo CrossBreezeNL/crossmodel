@@ -1,6 +1,5 @@
 systemDiagram:
     id: CRM
-    name: "CRM"
     nodes:
       - id: OrderNode
         entity: Order

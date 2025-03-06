@@ -5,22 +5,26 @@ entity:
       - id: Id
         name: "Id"
         datatype: "Integer"
-        identifier: true
-      - id: FirstName
-        name: "FirstName"
+      - id: First_Name
+        name: "First Name"
         datatype: "Text"
-      - id: LastName
-        name: "LastName"
+        length: 100
+      - id: Last_Name
+        name: "Last Name"
         datatype: "Text"
+        length: 100
       - id: City
         name: "City"
         datatype: "Text"
+        length: 100
       - id: Country
         name: "Country"
         datatype: "Text"
+        length: 3
       - id: Phone
         name: "Phone"
         datatype: "Text"
-      - id: BirthDate
-        name: "BirthDate"
-        datatype: "DateTime"
+        length: 15
+      - id: Birth_Date
+        name: "Birth Date"
+        datatype: "Date"

@@ -23,8 +23,8 @@ export class SystemDiagramCreateRelationshipOperationHandler extends JsonCreateE
    override label = '1:1 Relationship';
    elementTypeIds = [RELATIONSHIP_EDGE_TYPE];
 
-   @inject(ModelState) protected override modelState!: SystemModelState;
-   @inject(ActionDispatcher) protected actionDispatcher!: ActionDispatcher;
+   @inject(ModelState) protected override modelState: SystemModelState;
+   @inject(ActionDispatcher) protected actionDispatcher: ActionDispatcher;
 
    createCommand(operation: CreateEdgeOperation): Command {
       return new CrossModelCommand(this.modelState, () => this.createEdge(operation));
@@ -53,8 +53,7 @@ export class SystemDiagramCreateRelationshipOperationHandler extends JsonCreateE
                targetNode: {
                   ref: targetNode,
                   $refText: this.modelState.idProvider.getNodeId(targetNode) || targetNode.id || ''
-               },
-               customProperties: []
+               }
             };
             this.modelState.systemDiagram.edges.push(edge);
             this.actionDispatcher.dispatchAfterNextUpdate(
@@ -73,11 +72,12 @@ export class SystemDiagramCreateRelationshipOperationHandler extends JsonCreateE
 
       // create relationship, serialize and re-read to ensure everything is up to date and linked properly
       const relationshipRoot: CrossModelRoot = { $type: 'CrossModelRoot' };
+      const relationshipId = this.modelState.idProvider.findNextId(Relationship, source + 'To' + target);
       const relationship: Relationship = {
          $type: Relationship,
          $container: relationshipRoot,
-         id: this.modelState.idProvider.findNextId(Relationship, source + 'To' + target),
-         type: '1:1',
+         id: relationshipId,
+         name: relationshipId,
          attributes: [],
          parent: { $refText: sourceNode.entity?.$refText || '' },
          child: { $refText: targetNode.entity?.$refText || '' },

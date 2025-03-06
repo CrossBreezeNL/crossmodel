@@ -1,0 +1,52 @@
+table:
+    id: order
+    name: "order"
+    description: "Order placed by a customer in the Customer table."
+    columns:
+      - id: id
+        name: "id"
+        datatype: "integer"
+      - id: order_date
+        name: "order_date"
+        datatype: "datetime2"
+        precision: 2
+      - id: order_number
+        name: "order_number"
+        datatype: "varchar"
+        length: 50
+      - id: customer_id
+        name: "customer_id"
+        datatype: "integer"
+      - id: total_amount
+        name: "total_amount"
+        datatype: "decimal"
+        precision: 38
+        scale: 6
+    primaryKey:
+      - id: pk_oder
+        name: "pk_order"
+        columns:
+          - id
+    foreignKeys:
+      - id: fk_order_customer
+        name: "fk_order_customer"
+        referencedTable: customer
+        referencedColumns:
+          - child: customer_id
+            parent: id
+    indexes:
+      - id: idx_order_orderdate
+        name: "idx_order_orderdate"
+        clustered: true
+        unique: false
+        columns:
+          - order_date
+      - id: idx_order_ordernumber
+        name: "idx_order_ordernumber"
+        clustered: false
+        unique: false
+        columns:
+          - order_number
+    customProperties:
+      - name: distribution_key
+        value: "customer_id"

@@ -1,0 +1,18 @@
+entity:
+    id: Order
+    name: "Order"
+    description: "Order placed by a customer in the Customer table."
+    attributes:
+      - id: Id
+        name: "Id"
+      - id: OrderDate
+        name: "OrderDate"
+      - id: OrderNumber
+        name: "OrderNumber"
+      - id: CustomerId
+        name: "CustomerId"
+      - id: TotalAmount
+        name: "TotalAmount"
+    identifier:
+      - attributes:
+        - Id

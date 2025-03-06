@@ -1,0 +1,6 @@
+relationship: 
+    id: Order_Customer
+    name: "Order - Customer"
+    parent: Customer
+    child: Order
+    type: "1:n"

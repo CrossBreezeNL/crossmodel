@@ -6,16 +6,19 @@ entity:
       - id: Id
         name: "Id"
         datatype: "Integer"
-        identifier: true
       - id: OrderDate
         name: "OrderDate"
-        datatype: "Integer"
+        datatype: "DateTime"
+        precision: 2
       - id: OrderNumber
         name: "OrderNumber"
         datatype: "Text"
+        length: 50
       - id: CustomerId
         name: "CustomerId"
         datatype: "Integer"
       - id: TotalAmount
         name: "TotalAmount"
         datatype: "Decimal"
+        precision: 38
+        scale: 6

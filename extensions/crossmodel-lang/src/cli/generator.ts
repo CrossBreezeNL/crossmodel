@@ -2,7 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 import fs from 'fs';
-import { CompositeGeneratorNode, NL, toString } from 'langium';
+import { CompositeGeneratorNode, NL, toString } from 'langium/generate';
 import path from 'path';
 import { CrossModelRoot } from '../language-server/generated/ast.js';
 import { extractDestinationAndName } from './cli-util.js';

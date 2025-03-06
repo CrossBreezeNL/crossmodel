@@ -7,10 +7,10 @@ import { Diagnostic } from 'vscode-languageserver-protocol';
 import type { CrossModelServices } from './cross-model-module.js';
 import { ID_PROPERTY, IdentifiableAstNode } from './cross-model-naming.js';
 import {
-   Attribute,
    AttributeMapping,
    CrossModelAstType,
    Entity,
+   EntityAttribute,
    InheritanceEdge,
    isEntity,
    isEntityAttribute,
@@ -18,6 +18,7 @@ import {
    isRelationship,
    isSystemDiagram,
    Mapping,
+   NamedObject,
    Relationship,
    RelationshipEdge,
    SourceObject,
@@ -63,7 +64,8 @@ export function registerValidationChecks(services: CrossModelServices): void {
       SourceObject: validator.checkSourceObject,
       SourceObjectCondition: validator.checkSourceObjectCondition,
       SourceObjectDependency: validator.checkSourceObjectDependency,
-      TargetObject: validator.checkTargetObject
+      TargetObject: validator.checkTargetObject,
+      NamedObject: validator.checkNamedObject
    };
    registry.register(checks, validator);
 }
@@ -73,6 +75,12 @@ export function registerValidationChecks(services: CrossModelServices): void {
  */
 export class CrossModelValidator {
    constructor(protected services: CrossModelServices) {}
+
+   checkNamedObject(namedObject: NamedObject, accept: ValidationAcceptor): void {
+      if (namedObject.name === undefined || namedObject.name.length === 0) {
+         accept('error', 'The name of this object cannot be empty', { node: namedObject, property: 'name' });
+      }
+   }
 
    checkNode(node: AstNode, accept: ValidationAcceptor): void {
       this.checkUniqueGlobalId(node, accept);
@@ -198,8 +206,8 @@ export class CrossModelValidator {
    checkRelationship(relationship: Relationship, accept: ValidationAcceptor): void {
       // we check that each attribute actually belongs to their respective entity (parent, child)
       // and that each attribute is only used once
-      const usedParentAttributes: Attribute[] = [];
-      const usedChildAttributes: Attribute[] = [];
+      const usedParentAttributes: EntityAttribute[] = [];
+      const usedChildAttributes: EntityAttribute[] = [];
       for (const attribute of relationship.attributes) {
          if (attribute.parent.ref) {
             if (attribute.parent?.ref?.$container !== relationship.parent?.ref) {

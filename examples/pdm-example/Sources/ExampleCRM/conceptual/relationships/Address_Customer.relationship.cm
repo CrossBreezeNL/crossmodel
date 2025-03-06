@@ -1,0 +1,6 @@
+relationship:
+    id: Address_Customer
+    name: "Address - Customer"
+    parent: Customer
+    child: ExampleCRM.Address
+    type: "1:1"

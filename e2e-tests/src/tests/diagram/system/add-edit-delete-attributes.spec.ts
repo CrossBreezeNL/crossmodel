@@ -83,9 +83,9 @@ test.describe.serial('Add/Edit/Delete attributes to/from an entity in a diagram'
       // Verify that the attribute is changed in the entity file
       const entityCodeEditor = await app.openCompositeEditor(ENTITY_PATH, 'Code Editor');
       expect(await entityCodeEditor.textContentOfLineByLineNumber(6)).toMatch(`name: "${RENAMED_ATTRIBUTE_LABEL}"`);
-      expect(await entityCodeEditor.textContentOfLineByLineNumber(7)).toMatch('datatype: "Bool"');
-      expect(await entityCodeEditor.textContentOfLineByLineNumber(8)).toMatch('identifier: true');
-      expect(await entityCodeEditor.textContentOfLineByLineNumber(9)).toMatch('description: "New Description"');
+      expect(await entityCodeEditor.textContentOfLineByLineNumber(7)).toMatch('description: "New Description"');
+      expect(await entityCodeEditor.textContentOfLineByLineNumber(8)).toMatch('datatype: "Bool"');
+      expect(await entityCodeEditor.textContentOfLineByLineNumber(9)).toMatch('identifier: true');
       await entityCodeEditor.saveAndClose();
    });
 

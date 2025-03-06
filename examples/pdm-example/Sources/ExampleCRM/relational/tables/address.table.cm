@@ -1,0 +1,31 @@
+table:
+    id: address
+    name: "address"
+    description: "The address of a customer."
+    columns:
+      - id: customer_id
+        name: "customer_id"
+        datatype: "integer"
+      - id: street
+        name: "street"
+        datatype: "varchar"
+        length: 200
+      - id: country_code
+        name: "country_code"
+        datatype: "varchar"
+        length: 3
+    primaryKey:
+      - id: pk_address
+        name: "pk_address"
+        columns:
+          - customer_id
+    foreignKeys:
+      - id: fk_address_customer
+        name: "fk_address_customer"
+        referencedTable: customer
+        referencedColumns:
+          - child: customer_id
+            parent: id
+    customProperties:
+      - name: distribution_key
+        value: "country_code"

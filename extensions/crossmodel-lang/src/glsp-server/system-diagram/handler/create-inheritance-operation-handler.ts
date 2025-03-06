@@ -61,7 +61,6 @@ export class SystemDiagramCreateInheritanceOperationHandler extends JsonCreateEd
          $type: InheritanceEdge,
          $container: this.modelState.systemDiagram,
          id: this.modelState.idProvider.findNextId(InheritanceEdge, baseEntityNode.id + 'InheritanceEdge', this.modelState.systemDiagram),
-
          baseNode: {
             ref: baseEntityNode,
             $refText: this.modelState.idProvider.getNodeId(baseEntityNode) || baseEntityNode.id || ''
@@ -69,8 +68,7 @@ export class SystemDiagramCreateInheritanceOperationHandler extends JsonCreateEd
          superNode: {
             ref: superEntityNode,
             $refText: this.modelState.idProvider.getNodeId(superEntityNode) || superEntityNode.id || ''
-         },
-         customProperties: []
+         }
       };
       this.modelState.systemDiagram.edges.push(edge);
       this.actionDispatcher.dispatchAfterNextUpdate(

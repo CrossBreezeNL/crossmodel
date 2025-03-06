@@ -35,7 +35,6 @@ describe('CrossModel language Relationship', () => {
 
       expect(relationship.id).toBe('Order_Customer1');
       expect(relationship.name).toBe('Customer Order relationship');
-      expect(relationship.type).toBe('1:1');
       expect(relationship.description).toBe('A relationship between a customer and an order.');
 
       expect(isReference(relationship.parent)).toBe(true);

@@ -1,7 +1,5 @@
 systemDiagram:
     id: EMPTY
-    name: "EMPTY"
-    description: "Diagram with empty entity"
     nodes:
       - id: EmptyEntityNode
         entity: EmptyEntity
@@ -9,7 +7,3 @@ systemDiagram:
         y: 429
         width: 10
         height: 10
-    customProperties:
-      - name: Author
-        value: "CrossBreeze"
-      - name: EmptyDiagram

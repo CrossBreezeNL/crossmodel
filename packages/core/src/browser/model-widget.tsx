@@ -123,7 +123,7 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
    }
 
    protected async handleExternalUpdate({ document, reason, sourceClientId }: ModelUpdatedEvent): Promise<void> {
-      if (this.document && !deepEqual(this.document.root, document.root)) {
+      if (this.document && (!deepEqual(this.document.root, document.root) || !deepEqual(this.document.diagnostics, document.diagnostics))) {
          console.debug(`[${this.options.clientId}] Receive update from ${sourceClientId} due to '${reason}'`);
          this.document = document;
          this.update();

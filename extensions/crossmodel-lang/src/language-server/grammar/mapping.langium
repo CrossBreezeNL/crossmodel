@@ -1,29 +1,42 @@
 import 'terminals'
+import 'common'
 import 'entity'
 import 'relationship'
 
-interface SourceObjectAttribute extends Attribute, WithCustomProperties {
+interface SourceObjectAttribute extends EntityAttribute {
 }
 
-interface TargetObjectAttribute extends Attribute, WithCustomProperties {
+interface TargetObjectAttribute extends EntityAttribute {
 }
 
-Mapping:
+interface Mapping extends DataElementContainerMapping, WithCustomProperties {
+    sources: SourceObject[];
+    target: TargetObject;
+}
+
+Mapping returns Mapping:
     'mapping' ':'
         INDENT
-            'id' ':' id=ID
+            IdentifiedObjectFragment
             ('sources' ':'
                 INDENT 
                     (LIST_ITEM sources+=SourceObject)+
                 DEDENT
             )?
             'target' ':' target=TargetObject
-            CustomProperties?
+            CustomPropertiesFragment?
         DEDENT
 ;
 
-SourceObject:
-    'id' ':' id=ID
+interface SourceObject extends SourceDataElementContainer, WithCustomProperties {
+    entity: @Entity;
+    join: string;
+    dependencies: SourceObjectDependency[]
+    conditions: SourceObjectCondition[]
+}
+
+SourceObject returns SourceObject:
+    IdentifiedObjectFragment
     'entity' ':' entity=[Entity:IDReference] // implies attributes through entity
     'join' ':' join=JoinType
     ('dependencies' ':'
@@ -36,12 +49,7 @@ SourceObject:
             (LIST_ITEM conditions+=SourceObjectCondition)*
         DEDENT
     )?
-    // for some reason using the CustomProperties fragment here causes parsing issues in the language server
-    ('customProperties' ':'
-        INDENT
-            (LIST_ITEM customProperties+=CustomProperty)*
-        DEDENT
-    )?
+    CustomPropertiesFragment?
 ;
 
 JoinType returns string: 'from' | 'inner-join' | 'cross-join' | 'left-join' | 'apply';
@@ -66,7 +74,12 @@ PrimaryExpression infers BooleanExpression:
     {infer SourceObjectAttributeReference} value=[SourceObjectAttribute:IDReference]
 ;
 
-TargetObject:
+interface TargetObject extends WithCustomProperties {
+    entity: @Entity;
+    mappings: AttributeMapping[];
+}
+
+TargetObject returns TargetObject:
     INDENT
         'entity' ':' entity=[Entity:IDReference] // implies attributes through entity
         ('mappings' ':'
@@ -74,16 +87,17 @@ TargetObject:
                 (LIST_ITEM mappings+=AttributeMapping)+     
             DEDENT
         )?
-        // for some reason using the CustomProperties fragment here causes parsing issues in the language server
-        ('customProperties' ':'
-            INDENT
-                (LIST_ITEM customProperties+=CustomProperty)*
-            DEDENT
-        )?
+        CustomPropertiesFragment?
     DEDENT
 ;
 
-AttributeMapping:
+interface AttributeMapping extends WithCustomProperties {
+    attribute: AttributeMappingTarget;
+    sources: AttributeMappingSource[];
+    expression: string;
+}
+
+AttributeMapping returns AttributeMapping:
     'attribute' ':' attribute=AttributeMappingTarget
     ('sources' ':' 
         INDENT 
@@ -91,7 +105,7 @@ AttributeMapping:
         DEDENT
     )?
     ('expression' ':' expression=STRING)?
-    CustomProperties?
+    CustomPropertiesFragment?
 ;
 
 AttributeMappingTarget:

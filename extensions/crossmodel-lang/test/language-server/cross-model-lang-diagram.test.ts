@@ -52,9 +52,6 @@ describe('CrossModel language Diagram', () => {
       test('Simple file for diagram and relationship edges', async () => {
          const systemDiagram = await parseSystemDiagram({ services, text: diagram5 });
 
-         expect(systemDiagram?.name).toBe('System diagram 1');
-         expect(systemDiagram?.description).toBe('This is a basic diagram with nodes and edges');
-
          expect(systemDiagram?.nodes).toHaveLength(1);
          const node1 = systemDiagram?.nodes[0];
          expect(node1?.id).toBe('CustomerNode');
@@ -70,13 +67,10 @@ describe('CrossModel language Diagram', () => {
          expect(edge1?.relationship?.$refText).toBe('Order_Customer');
       });
 
-      test('Simple file for diagram and relationship edges, but description and name coming last', async () => {
-         const systemDiagram = await parseSystemDiagram({ services, text: diagram6 }, { parserErrors: 3 });
+      test('Simple file for diagram and edges, but edge source and target nodes are not specified', async () => {
+         const systemDiagram = await parseSystemDiagram({ services, text: diagram6 }, { parserErrors: 1 });
 
          const node1 = systemDiagram?.nodes[0];
-
-         expect(systemDiagram?.name).toBeUndefined();
-         expect(systemDiagram?.description).toBeUndefined();
 
          expect(systemDiagram?.nodes).toHaveLength(1);
          expect(node1?.id).toBe('CustomerNode');

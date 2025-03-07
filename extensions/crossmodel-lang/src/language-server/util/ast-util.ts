@@ -30,7 +30,22 @@ import {
    isSystemDiagram
 } from '../generated/ast.js';
 
-export type SemanticRoot = Entity | Mapping | Relationship | SystemDiagram;
+export type RootContainer = {
+   [Key in keyof CrossModelRoot as '$container' extends Key
+      ? never
+      : CrossModelRoot[Key] extends AstNode | undefined
+        ? Key
+        : never]-?: CrossModelRoot[Key];
+};
+
+export type SemanticRoot = RootContainer[keyof RootContainer];
+
+/** Enforces that an array contains all variants of a union type */
+type AllKeys<T, ArrayMembers extends any[] = []> = {
+   [Key in keyof T]: Exclude<keyof T, Key> extends never ? readonly [...ArrayMembers, Key] : AllKeys<Omit<T, Key>, [...ArrayMembers, Key]>;
+}[keyof T];
+
+const ROOT_KEYS = ['entity', 'mapping', 'relationship', 'systemDiagram'] as const satisfies AllKeys<RootContainer>;
 
 export const IMPLICIT_ATTRIBUTES_PROPERTY = '$attributes';
 export const IMPLICIT_OWNER_PROPERTY = '$owner';
@@ -291,8 +306,23 @@ export function findSemanticRoot(input: DocumentContent): SemanticRoot | undefin
 export function findSemanticRoot<T extends SemanticRoot>(input: DocumentContent, guard: TypeGuard<T>): T | undefined;
 export function findSemanticRoot<T extends SemanticRoot>(input: DocumentContent, guard?: TypeGuard<T>): SemanticRoot | T | undefined {
    const root = isAstNode(input) ? input.$document?.parseResult?.value ?? AstUtils.findRootNode(input) : input.parseResult?.value;
-   const semanticRoot = isCrossModelRoot(root) ? root.entity ?? root.mapping ?? root.relationship ?? root.systemDiagram : undefined;
-   return !semanticRoot ? undefined : !guard ? semanticRoot : guard(semanticRoot) ? semanticRoot : undefined;
+   if (!isCrossModelRoot(root)) {
+      return undefined;
+   }
+   return getSemanticRootFromAstRoot(root);
+}
+
+export function getSemanticRootFromAstRoot<T extends SemanticRoot>(
+   root: CrossModelRoot,
+   guard?: TypeGuard<T>
+): SemanticRoot | T | undefined {
+   for (const key of ROOT_KEYS) {
+      const candidate = root[key];
+      if (candidate && (!guard || guard(candidate))) {
+         return candidate;
+      }
+   }
+   return undefined;
 }
 
 export function findEntity(input: DocumentContent): Entity | undefined {

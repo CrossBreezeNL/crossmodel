@@ -4,9 +4,13 @@ on:
   push:
     branches:
       - feature/*
+      - issue/*
+      - bugfix/*
   pull_request:
     branches:
       - feature/*
+      - issue/*
+      - bugfix/*
 
 jobs:
   build-and-test:

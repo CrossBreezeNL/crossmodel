@@ -2,9 +2,9 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 import { expect, test } from '@playwright/test';
+import { TheiaTextEditor } from '@theia/playwright';
 import { CMApp } from '../../page-objects/cm-app';
 import { CMNewModelInputDialog } from '../../page-objects/cm-new-model-dialog';
-import { TheiaTextEditor } from '@theia/playwright';
 
 async function confirmCreationDialog(app: CMApp, entityName: string, modelType: string, version: string): Promise<void> {
    const newModelDIalog = new CMNewModelInputDialog(app);
@@ -85,7 +85,7 @@ test.describe.only('Add/Edit/Delete model from explorer', () => {
       const menuItem = await contextMenu.menuItemByNamePath('New Element', 'Data Model...');
       expect(menuItem).toBeDefined();
       await menuItem?.click();
-      await confirmCreationDialog(app, 'NewModel2', 'empty', '0.0.2');
+      await confirmCreationDialog(app, 'NewModel2', 'physical', '0.0.2');
       await explorer.activate();
 
       // Verify that the model was created as expected

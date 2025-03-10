@@ -414,7 +414,7 @@ export const OnSystemsUpdated = new rpc.NotificationType1<SystemUpdatedEvent>('s
 
 export const ModelMemberPermissions = {
    logical: ['Entity', 'Mapping', 'Relationship', 'SystemDiagram'],
-   empty: []
+   physical: []
 } as const satisfies Record<string, readonly RootObjectTypeName[]>;
 
 export function isMemberPermittedInModel(packageType: string, memberType: string): boolean {

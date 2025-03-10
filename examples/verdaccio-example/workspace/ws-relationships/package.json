@@ -1,5 +1,6 @@
 {
     "name": "@crossbreeze/ws-relationships",
+    "type": "logical",
     "version": "1.0.0",
     "private": true,
     "dependencies": { "@crossbreeze/entities": "1.0.0"}

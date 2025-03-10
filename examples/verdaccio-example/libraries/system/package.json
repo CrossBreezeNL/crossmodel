@@ -1,5 +1,6 @@
 {
   "name": "@crossbreeze/system",
+  "type": "logical",
   "version": "1.0.0",
   "dependencies": {
     "@crossbreeze/relationships": "1.0.0"

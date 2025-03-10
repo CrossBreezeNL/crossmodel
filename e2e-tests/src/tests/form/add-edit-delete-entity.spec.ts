@@ -18,7 +18,7 @@ async function confirmCreationDialog(app: CMApp, entityName: string): Promise<vo
 test.describe('Add/Edit/Delete entity from explorer', () => {
    let app: CMApp;
    const NEW_ENTITY_PATH = 'ExampleCRM/entities/NewEntity.entity.cm';
-   const NEW_ENTITY2_PATH = 'testFolder/NewEntity2.entity.cm';
+   const NEW_ENTITY2_PATH = 'ExampleCRM/entities/NewEntity2.entity.cm';
    test.beforeAll(async ({ browser, playwright }) => {
       app = await CMApp.load({ browser, playwright });
    });
@@ -70,7 +70,7 @@ test.describe('Add/Edit/Delete entity from explorer', () => {
    test('Create & delete entity via context menu', async () => {
       const explorer = await app.openExplorerView();
       // Create node
-      const folderNode = await explorer.getFileStatNodeByLabel('testFolder');
+      const folderNode = await explorer.getFileStatNodeByLabel('ExampleCRM/entities');
       const contextMenu = await folderNode.openContextMenu();
       const menuItem = await contextMenu.menuItemByNamePath('New Element', 'Entity...');
       expect(menuItem).toBeDefined();

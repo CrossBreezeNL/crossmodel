@@ -1,3 +1,0 @@
-entity C {
-    description := "hello";
-}

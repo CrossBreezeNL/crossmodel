@@ -1,8 +1,0 @@
-relationship KlantToOrder0 {
-         source := Klant;
-         target := Order;
-         type := 1:1;
-         properties {
-            
-         }
-      }

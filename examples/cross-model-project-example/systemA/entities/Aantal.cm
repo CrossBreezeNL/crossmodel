@@ -1,9 +1,0 @@
-entity Aantal {
-    description := "Test description";
-    attributes {
-		nope := 'Float';
-		test123456 := 'Bool';
-		test3 := 'Float';
-		test4 := 'Char';
-    }
-}

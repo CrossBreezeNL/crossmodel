@@ -4,8 +4,9 @@ entity:
     description: "The address of a customer."
     attributes:
       - id: Customer_ID
-        name: "Customer ID"
-        datatype: "Guid      - id: Street
+        name: "Customer Id"
+        datatype: "Guid"
+      - id: Street
         name: "Street"
         datatype: "Text"
         length: 200

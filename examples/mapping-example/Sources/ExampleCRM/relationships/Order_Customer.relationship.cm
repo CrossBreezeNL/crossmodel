@@ -4,5 +4,5 @@ relationship:
     parent: Customer
     child: Order
     attributes:
-      - parent: Customer.Id
-        child: Order.CustomerId
+      - parent: Customer.Customer_ID
+        child: Order.Customer_ID

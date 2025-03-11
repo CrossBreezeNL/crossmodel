@@ -4,8 +4,8 @@ relationship:
     parent: Customer
     child: ExampleCRM.Address
     attributes:
-      - parent: Customer.Id
-        child: ExampleCRM.Address.CustomerID
+      - parent: Customer.Customer_ID
+        child: ExampleCRM.Address.Customer_ID
         customProperties:
           - name: Author
             value: "CrossBreeze"

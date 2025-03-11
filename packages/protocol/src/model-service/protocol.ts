@@ -79,12 +79,13 @@ export interface LogicalAttribute extends Attribute, WithCustomProperties {
 export const RelationshipType = 'Relationship';
 export interface Relationship extends CrossModelElement, Identifiable, WithCustomProperties {
    readonly $type: typeof RelationshipType;
-   attributes: Array<RelationshipAttribute>;
-   child?: Reference<Entity>;
-   description?: string;
    name?: string;
+   attributes: Array<RelationshipAttribute>;
    parent?: Reference<Entity>;
-   type?: string;
+   parentCardinality?: string;
+   child?: Reference<Entity>;
+   childCardinality?: string;
+   description?: string;
 }
 
 export const RelationshipAttributeType = 'RelationshipAttribute';

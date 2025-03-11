@@ -3,7 +3,7 @@
  ********************************************************************************/
 
 import { EntityType, ModelFileType, ModelStructure, ReferenceableElement } from '@crossbreeze/protocol';
-import { TextField } from '@mui/material';
+import { MenuItem, Select, TextField } from '@mui/material';
 import * as React from 'react';
 import { useModelDispatch, useModelQueryApi, useReadonly, useRelationship } from '../../ModelContext';
 import { modelComponent } from '../../ModelViewer';
@@ -43,13 +43,6 @@ export function RelationshipForm(): React.ReactElement {
                onChange={event => dispatch({ type: 'relationship:change-description', description: event.target.value ?? '' })}
             />
 
-            <TextField
-               label='Type *'
-               value={relationship.type ?? ''}
-               disabled={readonly}
-               onChange={event => dispatch({ type: 'relationship:change-type', newType: event.target.value ?? '' })}
-            />
-
             <AsyncAutoComplete
                label='Parent *'
                optionLoader={referenceableElements}
@@ -59,6 +52,17 @@ export function RelationshipForm(): React.ReactElement {
                disabled={readonly}
                selectOnFocus={true}
             />
+
+            <Select
+               label='Parent Cardinality'
+               value={relationship.parentCardinality ?? ''}
+               disabled={readonly}
+               onChange={event => dispatch({ type: 'relationship:change-parent-cardinality', parentCardinality: event.target.value ?? '' })}
+            >
+               <MenuItem value='zero'>Zero</MenuItem>
+               <MenuItem value='one'>One</MenuItem>
+               <MenuItem value='multiple'>Multiple</MenuItem>
+            </Select>
 
             <AsyncAutoComplete
                label='Child *'
@@ -70,6 +74,17 @@ export function RelationshipForm(): React.ReactElement {
                disabled={readonly}
                selectOnFocus={true}
             />
+
+            <Select
+               label='Child Cardinality'
+               value={relationship.childCardinality ?? ''}
+               disabled={readonly}
+               onChange={event => dispatch({ type: 'relationship:change-child-cardinality', childCardinality: event.target.value ?? '' })}
+            >
+               <MenuItem value='zero'>Zero</MenuItem>
+               <MenuItem value='one'>One</MenuItem>
+               <MenuItem value='multiple'>Multiple</MenuItem>
+            </Select>
          </FormSection>
          <FormSection label='Attributes'>
             <RelationshipAttributesDataGrid />

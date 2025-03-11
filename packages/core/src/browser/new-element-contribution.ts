@@ -5,8 +5,8 @@ import { ModelService } from '@crossbreeze/model-service/lib/common';
 import {
    MappingType,
    ModelFileExtensions,
-   ModelStructure,
    ModelMemberPermissions,
+   ModelStructure,
    TargetObjectType,
    isMemberPermittedInModel,
    quote,
@@ -42,8 +42,7 @@ const INITIAL_ENTITY_CONTENT = `entity:
 const INITIAL_RELATIONSHIP_CONTENT = `relationship:
     id: \${id}
     parent:
-    child:
-    type: "1:1"`;
+    child:`;
 
 const INITIAL_DIAGRAM_CONTENT = `systemDiagram:
     id: \${id}

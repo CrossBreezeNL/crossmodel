@@ -184,7 +184,7 @@ export function isCustomProperty(item: unknown): item is CustomProperty {
 }
 
 export interface IdentifiedObject extends AstNode {
-    readonly $type: 'DataElement' | 'DataElementContainer' | 'DataElementContainerLink' | 'DataElementContainerMapping' | 'DataElementMapping' | 'Entity' | 'EntityAttribute' | 'EntityNode' | 'EntityNodeAttribute' | 'IdentifiedObject' | 'InheritanceEdge' | 'Mapping' | 'NamedObject' | 'Relationship' | 'RelationshipEdge' | 'SourceDataElementContainer' | 'SourceObject' | 'SourceObjectAttribute' | 'SystemDiagram' | 'SystemDiagramEdge' | 'TargetObjectAttribute';
+    readonly $type: 'DataElement' | 'DataElementContainer' | 'DataElementContainerLink' | 'DataElementContainerMapping' | 'DataElementMapping' | 'Entity' | 'EntityNode' | 'EntityNodeAttribute' | 'IdentifiedObject' | 'InheritanceEdge' | 'LogicalAttribute' | 'Mapping' | 'NamedObject' | 'Relationship' | 'RelationshipEdge' | 'SourceDataElementContainer' | 'SourceObject' | 'SourceObjectAttribute' | 'SystemDiagram' | 'SystemDiagramEdge' | 'TargetObjectAttribute';
     id: string;
 }
 
@@ -255,7 +255,7 @@ export function isStringLiteral(item: unknown): item is StringLiteral {
 }
 
 export interface WithCustomProperties extends AstNode {
-    readonly $type: 'AttributeMapping' | 'Entity' | 'EntityAttribute' | 'EntityNodeAttribute' | 'Mapping' | 'Relationship' | 'RelationshipAttribute' | 'SourceObject' | 'SourceObjectAttribute' | 'TargetObject' | 'TargetObjectAttribute' | 'WithCustomProperties';
+    readonly $type: 'AttributeMapping' | 'Entity' | 'EntityNodeAttribute' | 'LogicalAttribute' | 'Mapping' | 'Relationship' | 'RelationshipAttribute' | 'SourceObject' | 'SourceObjectAttribute' | 'TargetObject' | 'TargetObjectAttribute' | 'WithCustomProperties';
     customProperties: Array<CustomProperty>;
 }
 
@@ -303,7 +303,7 @@ export function isEntityNode(item: unknown): item is EntityNode {
 }
 
 export interface NamedObject extends IdentifiedObject {
-    readonly $type: 'DataElement' | 'DataElementContainer' | 'DataElementContainerLink' | 'Entity' | 'EntityAttribute' | 'EntityNodeAttribute' | 'NamedObject' | 'Relationship' | 'SourceObjectAttribute' | 'TargetObjectAttribute';
+    readonly $type: 'DataElement' | 'DataElementContainer' | 'DataElementContainerLink' | 'Entity' | 'EntityNodeAttribute' | 'LogicalAttribute' | 'NamedObject' | 'Relationship' | 'SourceObjectAttribute' | 'TargetObjectAttribute';
     description?: string;
     name: string;
 }
@@ -365,7 +365,7 @@ export function isAttributeMapping(item: unknown): item is AttributeMapping {
 export interface Entity extends DataElementContainer, WithCustomProperties {
     readonly $container: CrossModelRoot;
     readonly $type: 'Entity';
-    attributes: Array<EntityAttribute>;
+    attributes: Array<LogicalAttribute>;
     superEntities: Array<Reference<Entity>>;
 }
 
@@ -375,18 +375,18 @@ export function isEntity(item: unknown): item is Entity {
     return reflection.isInstance(item, Entity);
 }
 
-export interface EntityAttribute extends DataElement, WithCustomProperties {
-    readonly $type: 'EntityAttribute' | 'EntityNodeAttribute' | 'SourceObjectAttribute' | 'TargetObjectAttribute';
+export interface LogicalAttribute extends DataElement, WithCustomProperties {
+    readonly $type: 'EntityNodeAttribute' | 'LogicalAttribute' | 'SourceObjectAttribute' | 'TargetObjectAttribute';
     identifier: boolean;
     length?: number;
     precision?: number;
     scale?: number;
 }
 
-export const EntityAttribute = 'EntityAttribute';
+export const LogicalAttribute = 'LogicalAttribute';
 
-export function isEntityAttribute(item: unknown): item is EntityAttribute {
-    return reflection.isInstance(item, EntityAttribute);
+export function isLogicalAttribute(item: unknown): item is LogicalAttribute {
+    return reflection.isInstance(item, LogicalAttribute);
 }
 
 export interface Mapping extends DataElementContainerMapping, WithCustomProperties {
@@ -423,8 +423,8 @@ export function isRelationship(item: unknown): item is Relationship {
 export interface RelationshipAttribute extends WithCustomProperties {
     readonly $container: Relationship;
     readonly $type: 'RelationshipAttribute';
-    child: Reference<EntityAttribute>;
-    parent: Reference<EntityAttribute>;
+    child: Reference<LogicalAttribute>;
+    parent: Reference<LogicalAttribute>;
 }
 
 export const RelationshipAttribute = 'RelationshipAttribute';
@@ -462,7 +462,7 @@ export function isTargetObject(item: unknown): item is TargetObject {
 }
 
 export interface DataElement extends NamedObject {
-    readonly $type: 'DataElement' | 'EntityAttribute' | 'EntityNodeAttribute' | 'SourceObjectAttribute' | 'TargetObjectAttribute';
+    readonly $type: 'DataElement' | 'EntityNodeAttribute' | 'LogicalAttribute' | 'SourceObjectAttribute' | 'TargetObjectAttribute';
     datatype?: string;
 }
 
@@ -519,7 +519,7 @@ export function isRelationshipEdge(item: unknown): item is RelationshipEdge {
     return reflection.isInstance(item, RelationshipEdge);
 }
 
-export interface EntityNodeAttribute extends EntityAttribute {
+export interface EntityNodeAttribute extends LogicalAttribute {
     readonly $type: 'EntityNodeAttribute';
 }
 
@@ -529,7 +529,7 @@ export function isEntityNodeAttribute(item: unknown): item is EntityNodeAttribut
     return reflection.isInstance(item, EntityNodeAttribute);
 }
 
-export interface SourceObjectAttribute extends EntityAttribute {
+export interface SourceObjectAttribute extends LogicalAttribute {
     readonly $type: 'SourceObjectAttribute';
 }
 
@@ -539,7 +539,7 @@ export function isSourceObjectAttribute(item: unknown): item is SourceObjectAttr
     return reflection.isInstance(item, SourceObjectAttribute);
 }
 
-export interface TargetObjectAttribute extends EntityAttribute {
+export interface TargetObjectAttribute extends LogicalAttribute {
     readonly $type: 'TargetObjectAttribute';
 }
 
@@ -563,12 +563,12 @@ export type CrossModelAstType = {
     DataElementContainerMapping: DataElementContainerMapping
     DataElementMapping: DataElementMapping
     Entity: Entity
-    EntityAttribute: EntityAttribute
     EntityNode: EntityNode
     EntityNodeAttribute: EntityNodeAttribute
     IdentifiedObject: IdentifiedObject
     InheritanceEdge: InheritanceEdge
     JoinCondition: JoinCondition
+    LogicalAttribute: LogicalAttribute
     Mapping: Mapping
     NamedObject: NamedObject
     NumberLiteral: NumberLiteral
@@ -592,7 +592,7 @@ export type CrossModelAstType = {
 export class CrossModelAstReflection extends AbstractAstReflection {
 
     getAllTypes(): string[] {
-        return [AttributeMapping, AttributeMappingSource, AttributeMappingTarget, BinaryExpression, BooleanExpression, CrossModelRoot, CustomProperty, DataElement, DataElementContainer, DataElementContainerLink, DataElementContainerMapping, DataElementMapping, Entity, EntityAttribute, EntityNode, EntityNodeAttribute, IdentifiedObject, InheritanceEdge, JoinCondition, Mapping, NamedObject, NumberLiteral, Relationship, RelationshipAttribute, RelationshipEdge, SourceDataElementContainer, SourceObject, SourceObjectAttribute, SourceObjectAttributeReference, SourceObjectCondition, SourceObjectDependency, StringLiteral, SystemDiagram, SystemDiagramEdge, TargetObject, TargetObjectAttribute, WithCustomProperties];
+        return [AttributeMapping, AttributeMappingSource, AttributeMappingTarget, BinaryExpression, BooleanExpression, CrossModelRoot, CustomProperty, DataElement, DataElementContainer, DataElementContainerLink, DataElementContainerMapping, DataElementMapping, Entity, EntityNode, EntityNodeAttribute, IdentifiedObject, InheritanceEdge, JoinCondition, LogicalAttribute, Mapping, NamedObject, NumberLiteral, Relationship, RelationshipAttribute, RelationshipEdge, SourceDataElementContainer, SourceObject, SourceObjectAttribute, SourceObjectAttributeReference, SourceObjectCondition, SourceObjectDependency, StringLiteral, SystemDiagram, SystemDiagramEdge, TargetObject, TargetObjectAttribute, WithCustomProperties];
     }
 
     protected override computeIsSubtype(subtype: string, supertype: string): boolean {
@@ -619,13 +619,10 @@ export class CrossModelAstReflection extends AbstractAstReflection {
             case Entity: {
                 return this.isSubtype(DataElementContainer, supertype) || this.isSubtype(WithCustomProperties, supertype);
             }
-            case EntityAttribute: {
-                return this.isSubtype(DataElement, supertype) || this.isSubtype(WithCustomProperties, supertype);
-            }
             case EntityNodeAttribute:
             case SourceObjectAttribute:
             case TargetObjectAttribute: {
-                return this.isSubtype(EntityAttribute, supertype);
+                return this.isSubtype(LogicalAttribute, supertype);
             }
             case InheritanceEdge:
             case RelationshipEdge: {
@@ -633,6 +630,9 @@ export class CrossModelAstReflection extends AbstractAstReflection {
             }
             case JoinCondition: {
                 return this.isSubtype(SourceObjectCondition, supertype);
+            }
+            case LogicalAttribute: {
+                return this.isSubtype(DataElement, supertype) || this.isSubtype(WithCustomProperties, supertype);
             }
             case Mapping: {
                 return this.isSubtype(DataElementContainerMapping, supertype) || this.isSubtype(WithCustomProperties, supertype);
@@ -680,7 +680,7 @@ export class CrossModelAstReflection extends AbstractAstReflection {
             }
             case 'RelationshipAttribute:child':
             case 'RelationshipAttribute:parent': {
-                return EntityAttribute;
+                return LogicalAttribute;
             }
             case 'RelationshipEdge:relationship': {
                 return Relationship;
@@ -887,9 +887,9 @@ export class CrossModelAstReflection extends AbstractAstReflection {
                     ]
                 };
             }
-            case EntityAttribute: {
+            case LogicalAttribute: {
                 return {
-                    name: EntityAttribute,
+                    name: LogicalAttribute,
                     properties: [
                         { name: 'customProperties', defaultValue: [] },
                         { name: 'datatype' },

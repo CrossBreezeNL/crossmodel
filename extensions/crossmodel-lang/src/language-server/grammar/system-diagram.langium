@@ -43,7 +43,7 @@ EntityNode returns EntityNode:
     'height' ':' height=NUMBER
 ;
 
-interface EntityNodeAttribute extends EntityAttribute {
+interface EntityNodeAttribute extends LogicalAttribute {
 }
 
 interface SystemDiagramEdge extends IdentifiedObject {}

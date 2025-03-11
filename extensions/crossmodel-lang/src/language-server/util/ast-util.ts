@@ -12,9 +12,9 @@ import {
    AttributeMappingTarget,
    CrossModelRoot,
    Entity,
-   EntityAttribute,
    EntityNode,
    EntityNodeAttribute,
+   LogicalAttribute,
    Mapping,
    Relationship,
    RelationshipEdge,
@@ -61,7 +61,7 @@ export function getAttributes<T>(node: any): T[] {
 export function setAttributes(node: EntityNode, attributes: EntityNodeAttribute[]): void;
 export function setAttributes(node: SourceObject, attributes: SourceObjectAttribute[]): void;
 export function setAttributes(node: TargetObject, attributes: TargetObjectAttribute[]): void;
-export function setAttributes(node: object, attributes: EntityAttribute[]): void {
+export function setAttributes(node: object, attributes: LogicalAttribute[]): void {
    (node as any)[IMPLICIT_ATTRIBUTES_PROPERTY] = attributes;
 }
 
@@ -122,15 +122,15 @@ export function createEntity(
    };
 }
 
-export function createEntityAttribute(
+export function createLogicalAttribute(
    container: Entity,
    id: string,
    name: string,
-   opts?: Partial<Omit<EntityAttribute, '$container' | '$type' | 'id' | 'name'>>
-): EntityAttribute {
+   opts?: Partial<Omit<LogicalAttribute, '$container' | '$type' | 'id' | 'name'>>
+): LogicalAttribute {
    return {
       $container: container,
-      $type: 'EntityAttribute',
+      $type: 'LogicalAttribute',
       id,
       name,
       identifier: false,

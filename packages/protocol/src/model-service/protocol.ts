@@ -59,7 +59,7 @@ export function isCrossModelRoot(model?: any): model is CrossModelRoot {
 export const EntityType = 'Entity';
 export interface Entity extends CrossModelElement, Identifiable, WithCustomProperties {
    readonly $type: typeof EntityType;
-   attributes: Array<EntityAttribute>;
+   attributes: Array<LogicalAttribute>;
    description?: string;
    name?: string;
 }
@@ -70,9 +70,9 @@ export interface Attribute extends CrossModelElement, Identifiable {
    name?: string;
 }
 
-export const EntityAttributeType = 'EntityAttribute';
-export interface EntityAttribute extends Attribute, WithCustomProperties {
-   readonly $type: typeof EntityAttributeType;
+export const LogicalAttributeType = 'LogicalAttribute';
+export interface LogicalAttribute extends Attribute, WithCustomProperties {
+   readonly $type: typeof LogicalAttributeType;
    identifier?: boolean;
 }
 
@@ -90,8 +90,8 @@ export interface Relationship extends CrossModelElement, Identifiable, WithCusto
 export const RelationshipAttributeType = 'RelationshipAttribute';
 export interface RelationshipAttribute extends CrossModelElement, WithCustomProperties {
    readonly $type: typeof RelationshipAttributeType;
-   parent?: Reference<EntityAttribute>;
-   child?: Reference<EntityAttribute>;
+   parent?: Reference<LogicalAttribute>;
+   child?: Reference<LogicalAttribute>;
 }
 
 export const MappingType = 'Mapping';

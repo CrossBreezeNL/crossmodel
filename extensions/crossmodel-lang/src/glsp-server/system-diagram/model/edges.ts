@@ -26,6 +26,7 @@ export class GRelationshipEdgeBuilder extends GEdgeBuilder<GRelationshipEdge> {
       this.id(index.createId(edge));
       this.addCssClasses('diagram-edge', 'relationship');
       this.addArg('edgePadding', 5);
+      this.routerKind('manhattan');
       this.addArg(REFERENCE_CONTAINER_TYPE, RelationshipEdge);
       this.addArg(REFERENCE_PROPERTY, 'relationship');
       this.addArg(REFERENCE_VALUE, edge.relationship.$refText);

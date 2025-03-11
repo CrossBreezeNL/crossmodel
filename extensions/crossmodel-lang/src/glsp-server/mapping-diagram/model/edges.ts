@@ -23,6 +23,7 @@ export class GTargetMappingSourceEdgeBuilder extends GEdgeBuilder<GTargetObjectE
 
       const id = 'edge_' + index.createId(source);
       this.id(id);
+      this.routerKind('manhattan');
       index.indexSemanticElement(id, source);
       this.addCssClasses('diagram-edge', 'mapping-edge', 'attribute-mapping');
       this.addArg('edgePadding', 5);

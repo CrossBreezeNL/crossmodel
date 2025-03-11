@@ -43,12 +43,12 @@ export class GEntityNodeBuilder extends GNodeBuilder<GEntityNode> {
       }
       this.add(attributesCompartment.build());
 
-      // The DiagramNode in the langium file holds the coordinates of node
+      // The DiagramNode in the langium file holds the size and coordinates of node
+      this.size(node.width || 100, node.height || 100).position(node.x || 100, node.y || 100);
       this.layout('vbox')
          .addArgs(ArgsUtil.cornerRadius(3))
          .addLayoutOption('prefWidth', node.width || 100)
-         .addLayoutOption('prefHeight', node.height || 100)
-         .position(node.x || 100, node.y || 100);
+         .addLayoutOption('prefHeight', node.height || 100);
 
       return this;
    }

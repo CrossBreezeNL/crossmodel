@@ -4,7 +4,15 @@
 /** @jsx svg */
 /* eslint-disable react/no-unknown-property */
 /* eslint-disable react/jsx-key */
-import { GEdgeView, GGraph, GGraphView, RenderingContext, TYPES, ViewerOptions, svg } from '@eclipse-glsp/client';
+import {
+   GGraph,
+   GGraphView,
+   PolylineEdgeViewWithGapsOnIntersections,
+   RenderingContext,
+   TYPES,
+   ViewerOptions,
+   svg
+} from '@eclipse-glsp/client';
 import { inject } from '@theia/core/shared/inversify';
 import { injectable } from 'inversify';
 import { ReactNode } from 'react';
@@ -15,13 +23,14 @@ import { DiagramNodeView } from '../views';
 export class EntityNodeView extends DiagramNodeView {}
 
 @injectable()
-export class RelationshipEdgeView extends GEdgeView {}
+export class RelationshipEdgeView extends PolylineEdgeViewWithGapsOnIntersections {}
 
 @injectable()
-export class InheritanceEdgeView extends GEdgeView {}
+export class InheritanceEdgeView extends PolylineEdgeViewWithGapsOnIntersections {}
 
 const MARKER_INHERITANCE_ID = 'marker-inheritance';
 const MARKER_INHERITANCE_SELECTED_ID = 'marker-inheritance-selected';
+
 export class SystemGraphView extends GGraphView {
    @inject(TYPES.ViewerOptions) protected viewerOptions: ViewerOptions;
 

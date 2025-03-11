@@ -98,7 +98,25 @@ export function EntityAttributesDataGrid(): React.ReactElement {
             editable: !readonly,
             flex: 100,
             type: 'singleSelect',
-            valueOptions: ['Integer', 'Float', 'Char', 'Varchar', 'Bool', 'Text']
+            valueOptions: [
+               // Basic data types
+               'Text',
+               'Boolean',
+               'Integer',
+               'Decimal',
+
+               // Date and time data types
+               'Date',
+               'Time',
+               'DateTime',
+
+               // Identifiers & key types
+               'Guid',
+
+               // Specialized data types
+               'Binary',
+               'Location'
+            ]
          },
          {
             field: 'identifier',
@@ -124,7 +142,7 @@ export function EntityAttributesDataGrid(): React.ReactElement {
          id: findNextUnique('Attribute', entity.attributes, attr => attr.id!),
          $globalId: 'toBeAssigned',
          name: findNextUnique('New Attribute', entity.attributes, attr => attr.name!),
-         datatype: 'Varchar'
+         datatype: 'Text'
       }),
       [entity.attributes]
    );

@@ -6,21 +6,21 @@ export const entity4 = `entity:
     attributes:
         - id: Id
           name: 'Id'
-          datatype: 'int'
+          datatype: 'Integer'
         - id: FirstName
           name: 'FirstName'
-          datatype: 'varchar'
+          datatype: 'Text'
         - id: LastName
           name: 'LastName'
-          datatype: 'varchar'
+          datatype: 'Text'
         - id: City
           name: 'City'
-          datatype: 'varchar'
+          datatype: 'Text'
         - id: Country
           name: 'Country'
-          datatype: 'varchar'
+          datatype: 'Text'
         - id: Phone
           name: 'Phone'
-          datatype: 'varchar'
+          datatype: 'Text'
     name: 'Customer'
     description: 'A customer with whom a transaction has been made.'`;

@@ -8,8 +8,8 @@ entity:
     attributes:
       - id: ProductID
         name: "ProductID"
-        datatype: "Integer"
+        datatype: "Guid"
         identifier: true
       - id: ExpirationDate
         name: "ExpirationDate"
-        datatype: "Varchar"
+        datatype: "Text"

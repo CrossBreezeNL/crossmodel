@@ -8,19 +8,19 @@ export const entity2 = `entity:
     attributes:
         - id: Id
           name: 'Id'
-          datatype: 'int'
+          datatype: 'Integer'
         - id: FirstName
           name: 'FirstName'
-          datatype: 'varchar'
+          datatype: 'Text'
         - id: LastName
           name: 'LastName'
-          datatype: 'varchar'
+          datatype: 'Text'
         - id: City
           name: 'City'
-          datatype: 'varchar'
+          datatype: 'Text'
         - id: Country
           name: 'Country'
-          datatype: 'varchar'
+          datatype: 'Text'
         - id: Phone
           name: 'Phone'
-          datatype: 'varchar'`;
+          datatype: 'Text'`;

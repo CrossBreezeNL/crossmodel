@@ -96,12 +96,23 @@ export interface LogicalAttributeProperties {
 }
 
 export const LogicalAttributeDatatype = {
+   // Basic data types
+   Text: 'Text',
+   Boolean: 'Boolean',
    Integer: 'Integer',
-   Float: 'Float',
-   Char: 'Char',
-   Varchar: 'Varchar',
-   Bool: 'Bool',
-   Text: 'Text'
+   Decimal: 'Decimal',
+
+   // Date and time data types
+   Date: 'Date',
+   Time: 'Time',
+   DateTime: 'DateTime',
+
+   // Identifiers & key types
+   Guid: 'Guid',
+
+   // Specialized data types
+   Binary: 'Binary',
+   Location: 'Location'
 } as const;
 
 export type LogicalAttributeDatatype = keyof typeof LogicalAttributeDatatype;

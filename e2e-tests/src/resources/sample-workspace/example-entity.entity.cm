@@ -8,7 +8,7 @@ entity:
         datatype: "Integer"
       - id: FirstAttribute
         name: "First Attribute"
-        datatype: "Varchar"
+        datatype: "Text"
       - id: SecondAttribute
         name: "Second Attribute"
-        datatype: "Varchar"
+        datatype: "Text"

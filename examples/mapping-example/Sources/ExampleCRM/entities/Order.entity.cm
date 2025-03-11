@@ -8,7 +8,7 @@ entity:
         datatype: "Integer"
       - id: OrderDate
         name: "OrderDate"
-        datatype: "DateTime"
+        datatype: "Date & Time"
         precision: 2
       - id: OrderNumber
         name: "OrderNumber"

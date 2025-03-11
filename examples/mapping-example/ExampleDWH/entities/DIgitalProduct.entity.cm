@@ -6,11 +6,11 @@ entity:
     attributes:
       - id: Attribute
         name: "ProductID"
-        datatype: "Integer"
+        datatype: "Guid"
         identifier: true
       - id: SizeInKB
         name: "SizeInKB"
-        datatype: "Float"
+        datatype: "Decimal"
       - id: DownloadURL
         name: "DownloadURL"
-        datatype: "Varchar"
+        datatype: "Text"

@@ -18,7 +18,7 @@ async function confirmCreationDialog(app: CMApp, entityName: string, modelType: 
    await newModelDIalog.waitForClosed();
 }
 
-test.describe.only('Add/Edit/Delete model from explorer', () => {
+test.describe.serial('Add/Edit/Delete model from explorer', () => {
    let app: CMApp;
    const NEW_MODEL_PATH = 'testFolder/NewModel';
    const NEW_MODEL_PACKAGE_PATH = 'testFolder/NewModel/package.json';

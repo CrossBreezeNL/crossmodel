@@ -2,11 +2,12 @@ relationship:
     id: Address_Customer
     name: "Address - Customer"
     parent: Customer
-    child: ExampleCRM.Address
-    type: "1:1"
+    parentCardinality: one
+    child: Address
+    childCardinality: multiple
     attributes:
       - parent: Customer.Id
-        child: ExampleCRM.Address.CustomerID
+        child: Address.CustomerID
         customProperties:
           - name: Author
             value: "CrossBreeze"

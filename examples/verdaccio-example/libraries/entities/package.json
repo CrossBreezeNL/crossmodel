@@ -1,5 +1,6 @@
 {
   "name": "@crossbreeze/entities",
+  "type": "logical",
   "version": "1.0.0",
   "alias": "entities"
 }

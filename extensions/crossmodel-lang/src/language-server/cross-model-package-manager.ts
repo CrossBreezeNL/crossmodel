@@ -74,6 +74,8 @@ export class PackageInfo {
       readonly id = createPackageId(packageJson?.name, packageJson?.version),
       /** Package name used in references and serialization. */
       readonly referenceName = createPackageReferenceName(packageJson),
+      /** Package type used to determine member eligibility. */
+      readonly type = packageJson?.type,
       /** A list of all direct dependencies of this package. */
       readonly dependencies = Object.entries(packageJson?.dependencies || {}).map(dep => createPackageId(dep[0], dep[1])),
       /** True if this is an unknown package, not having a name.  */
@@ -300,6 +302,7 @@ export class CrossModelPackageManager {
       return {
          id: packageInfo.id,
          name: packageInfo.packageJson?.name ?? UriUtils.basename(directory) ?? 'Unknown',
+         type: packageInfo.packageJson?.type ?? 'unknown',
          directory: directory.fsPath,
          packageFilePath: packageInfo.uri.fsPath,
          modelFilePaths: this.shared.workspace.IndexManager.allElements()

@@ -32,6 +32,10 @@ export function unquote(text: string, quoteChar = '"'): string {
    return text.slice(start, end);
 }
 
+export function toPascal(input: string): string {
+   return input.charAt(0).toLocaleUpperCase() + input.slice(1);
+}
+
 export function toId(text: string): string {
    if (CrossModelRegex.ID.test(text)) {
       return text;

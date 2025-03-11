@@ -1,4 +1,5 @@
 { 
     "name": "ExampleMasterdata",
+    "type": "logical",
     "version": "1.0.0" 
 }

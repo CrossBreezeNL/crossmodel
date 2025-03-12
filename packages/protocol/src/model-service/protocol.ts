@@ -2,6 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 import * as rpc from 'vscode-jsonrpc/node';
+export * from './validation-errors';
 
 export const CrossModelRegex = {
    STRING: /^"[^"]*"$|^'[^']*'$/,
@@ -246,6 +247,7 @@ export interface ClientModelArgs {
 export interface OpenModelArgs extends ClientModelArgs {
    languageId?: string;
    version?: number;
+   text?: string;
 }
 
 export interface CloseModelArgs extends ClientModelArgs {}
@@ -262,6 +264,7 @@ export interface ModelDiagnostic {
    type: 'lexing-error' | 'parsing-error' | 'validation-error';
    message: string;
    severity: 'error' | 'warning' | 'info';
+   code?: number | string;
 }
 
 export namespace ModelDiagnostic {

@@ -60,6 +60,7 @@ export default function AsyncAutoComplete<T>({
                label={label}
                InputProps={{
                   ...params.InputProps,
+                  required: textFieldProps?.required,
                   endAdornment: (
                      <React.Fragment>
                         {loading ? <CircularProgress color='inherit' size={20} /> : null}

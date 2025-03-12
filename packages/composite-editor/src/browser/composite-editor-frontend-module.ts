@@ -2,7 +2,7 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 import { CrossModelWidgetOptions } from '@crossbreeze/core/lib/browser';
-import { FrontendApplicationContribution, OpenHandler, WidgetFactory } from '@theia/core/lib/browser';
+import { FrontendApplicationContribution, OpenHandler, SaveableService, WidgetFactory } from '@theia/core/lib/browser';
 import { ContainerModule } from '@theia/core/shared/inversify';
 import { EditorPreviewManager } from '@theia/editor-preview/lib/browser/editor-preview-manager';
 import { CompositeEditor } from './composite-editor';
@@ -10,6 +10,8 @@ import { CompositeEditorOpenHandler, CompositeEditorOptions } from './composite-
 import { CrossModelEditorManager } from './cross-model-editor-manager';
 import { CrossModelFileResourceResolver } from './cross-model-file-resource-resolver';
 import { FileResourceResolver } from '@theia/filesystem/lib/browser';
+import { CrossModelSaveableService } from './cross-model-saveable-service';
+import { FilesystemSaveableService } from '@theia/filesystem/lib/browser/filesystem-saveable-service';
 
 export default new ContainerModule((bind, _unbind, _isBound, rebind) => {
    bind(CrossModelEditorManager).toSelf().inSingletonScope();
@@ -29,4 +31,7 @@ export default new ContainerModule((bind, _unbind, _isBound, rebind) => {
 
    bind(CrossModelFileResourceResolver).toSelf().inSingletonScope();
    rebind(FileResourceResolver).toService(CrossModelFileResourceResolver);
+   bind(CrossModelSaveableService).toSelf().inSingletonScope();
+   rebind(SaveableService).toService(CrossModelSaveableService);
+   rebind(FilesystemSaveableService).toService(CrossModelSaveableService);
 });

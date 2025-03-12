@@ -4,6 +4,7 @@
 
 import { CrossModelRoot } from '@crossbreeze/protocol';
 import * as React from 'react';
+import { URI } from '@theia/core';
 import { useImmerReducer } from 'use-immer';
 import {
    ModelContext,
@@ -12,7 +13,8 @@ import {
    ModelDispatchContext,
    ModelQueryApiContext,
    OpenModelContext,
-   SaveModelContext
+   SaveModelContext,
+   FileContext
 } from './ModelContext';
 import { DispatchAction, ModelReducer, ModelState } from './ModelReducer';
 import { ModelProviderProps } from './ModelViewer';
@@ -62,18 +64,20 @@ export function ModelProvider({
    }, [appState, onModelUpdate]);
 
    return (
-      <ModelContext.Provider value={appState.model}>
-         <OpenModelContext.Provider value={onModelOpen}>
-            <SaveModelContext.Provider value={onModelSave}>
-               <ModelDispatchContext.Provider value={dispatch}>
-                  <ModelDirtyContext.Provider value={dirty}>
-                     <ModelDiagnosticsContext.Provider value={document.diagnostics}>
-                        <ModelQueryApiContext.Provider value={modelQueryApi}>{children}</ModelQueryApiContext.Provider>
-                     </ModelDiagnosticsContext.Provider>
-                  </ModelDirtyContext.Provider>
-               </ModelDispatchContext.Provider>
-            </SaveModelContext.Provider>
-         </OpenModelContext.Provider>
-      </ModelContext.Provider>
+      <FileContext.Provider value={new URI(document.uri)}>
+         <ModelContext.Provider value={appState.model}>
+            <OpenModelContext.Provider value={onModelOpen}>
+               <SaveModelContext.Provider value={onModelSave}>
+                  <ModelDispatchContext.Provider value={dispatch}>
+                     <ModelDirtyContext.Provider value={dirty}>
+                        <ModelDiagnosticsContext.Provider value={document.diagnostics}>
+                           <ModelQueryApiContext.Provider value={modelQueryApi}>{children}</ModelQueryApiContext.Provider>
+                        </ModelDiagnosticsContext.Provider>
+                     </ModelDirtyContext.Provider>
+                  </ModelDispatchContext.Provider>
+               </SaveModelContext.Provider>
+            </OpenModelContext.Provider>
+         </ModelContext.Provider>
+      </FileContext.Provider>
    );
 }

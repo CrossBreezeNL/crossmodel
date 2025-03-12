@@ -21,7 +21,6 @@ import {
    NavigatableWidgetOptions,
    SaveOptions,
    Saveable,
-   SaveableSource,
    TabPanel,
    Widget,
    WidgetManager
@@ -35,8 +34,10 @@ import { MonacoEditorModel } from '@theia/monaco/lib/browser/monaco-editor-model
 import { CompositeEditorOptions } from './composite-editor-open-handler';
 import { CrossModelEditorManager } from './cross-model-editor-manager';
 import { CrossModelFileResourceResolver } from './cross-model-file-resource-resolver';
+import { BinaryBuffer } from '@theia/core/lib/common/buffer';
+import { DefaultSaveAsSaveableSource } from './cross-model-saveable-service';
 
-export class ReverseCompositeSaveable extends CompositeSaveable {
+export class ReverseCompositeSaveable extends CompositeSaveable implements Required<Pick<Saveable, 'serialize'>> {
    constructor(
       protected editor: CompositeEditor,
       protected fileResourceResolver: CrossModelFileResourceResolver
@@ -72,6 +73,23 @@ export class ReverseCompositeSaveable extends CompositeSaveable {
       }
    }
 
+   serialize(): Promise<BinaryBuffer> {
+      for (const saveable of this.saveables) {
+         if (typeof saveable.createSnapshot === 'function') {
+            const snapshot = saveable.createSnapshot();
+            if ('value' in snapshot) {
+               return Promise.resolve(BinaryBuffer.fromString(snapshot.value));
+            } else {
+               return Promise.resolve(BinaryBuffer.fromString(snapshot.read() ?? ''));
+            }
+         }
+         if (typeof saveable.serialize === 'function') {
+            return saveable.serialize();
+         }
+      }
+      throw new Error('Found no serializable saveable!');
+   }
+
    /**
     * Reset the dirty state (without triggering an additional save) of the non-active saveables after a save operation.
     */
@@ -95,7 +113,7 @@ export interface CompositeWidgetOptions extends NavigatableWidgetOptions {
 }
 
 @injectable()
-export class CompositeEditor extends BaseWidget implements SaveableSource, Navigatable, Partial<GLSPDiagramWidgetContainer> {
+export class CompositeEditor extends BaseWidget implements DefaultSaveAsSaveableSource, Navigatable, Partial<GLSPDiagramWidgetContainer> {
    @inject(CrossModelWidgetOptions) protected options: CompositeEditorOptions;
    @inject(LabelProvider) protected labelProvider: LabelProvider;
    @inject(WidgetManager) protected widgetManager: WidgetManager;
@@ -169,6 +187,10 @@ export class CompositeEditor extends BaseWidget implements SaveableSource, Navig
 
    getResourceUri(): URI {
       return new URI(this.options.uri);
+   }
+
+   getSaveAsUri(): URI | undefined {
+      return this.resourceUri.scheme === 'file' ? undefined : this.resourceUri.withScheme('file');
    }
 
    protected override onAfterAttach(msg: Message): void {

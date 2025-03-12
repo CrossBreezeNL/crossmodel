@@ -157,6 +157,9 @@ export class CrossModelPackageManager {
          return;
       }
 
+      // May be untitled - treat it as though it were located according to path.
+      uri = uri.with({scheme: 'file'});
+
       // see if we have a hit directly on a 'package.json' (faster)
       const packageInfo = this.uriToPackage.get(uri.toString());
       if (packageInfo) {

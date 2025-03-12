@@ -20,6 +20,7 @@ import {
    MaybePromise,
    MenuContribution,
    MenuModelRegistry,
+   UNTITLED_SCHEME,
    URI,
    UntitledResourceResolver,
    UriSelection,
@@ -302,9 +303,15 @@ export class CrossModelWorkspaceContribution extends WorkspaceCommandContributio
             return;
          }
          const { fileUri, content } = options;
-         await this.fileService.create(fileUri, content);
-         this.fireCreateNewFile({ parent: parentUri, uri: fileUri });
-         open(this.openerService, fileUri);
+         if (template.memberType === 'Entity' || template.memberType === 'Relationship') {
+            const untitledUri = fileUri.withScheme(UNTITLED_SCHEME);
+            this.untitledResources.createUntitledResource(content, undefined, untitledUri);
+            open(this.openerService, untitledUri);
+         } else {
+            await this.fileService.create(fileUri, content);
+            this.fireCreateNewFile({ parent: parentUri, uri: fileUri });
+            open(this.openerService, fileUri);
+         }
       }
    }
 

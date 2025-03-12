@@ -165,6 +165,7 @@ export class ModelServer implements Disposable {
                : diagnostic.severity === DiagnosticSeverity.Warning
                  ? 'warning'
                  : 'info',
+         code: diagnostic.code,
          type: langiumCode === 'lexing-error' ? 'lexing-error' : langiumCode === 'parsing-error' ? 'parsing-error' : 'validation-error'
       };
    }

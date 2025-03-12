@@ -11,6 +11,7 @@ import {
    Relationship
 } from '@crossbreeze/protocol';
 import * as React from 'react';
+import { URI } from '@theia/core';
 import { DispatchAction, ModelReducer } from './ModelReducer';
 
 export type SaveCallback = () => void;
@@ -19,6 +20,8 @@ export type OpenCallback = () => void;
 export interface ModelQueryApi {
    findReferenceableElements(args: CrossReferenceContext): Promise<ReferenceableElement[]>;
 }
+
+export const FileContext = React.createContext(new URI(''));
 
 const DEFAULT_MODEL_ROOT: CrossModelRoot = { $type: 'CrossModelRoot' };
 export const ModelContext = React.createContext(DEFAULT_MODEL_ROOT);
@@ -39,6 +42,10 @@ export const ModelQueryApiContext = React.createContext<ModelQueryApi>(DEFAULT_Q
 export const ModelDirtyContext = React.createContext<boolean>(false);
 
 export const ModelDiagnosticsContext = React.createContext<ModelDiagnostic[]>([]);
+
+export function useFile(): URI {
+   return React.useContext(FileContext);
+}
 
 export function useModel(): CrossModelRoot {
    return React.useContext(ModelContext);
@@ -69,7 +76,10 @@ export function useDirty(): boolean {
 }
 
 export function useReadonly(): boolean {
-   return ModelDiagnostic.hasErrors(useDiagnostics());
+   const isUndefined = useFile().scheme !== 'undefined';
+   // It's a hook, so we must call both.
+   const hasErrors = ModelDiagnostic.hasErrors(useDiagnostics());
+   return !isUndefined && hasErrors;
 }
 
 export function useEntity(): Entity {

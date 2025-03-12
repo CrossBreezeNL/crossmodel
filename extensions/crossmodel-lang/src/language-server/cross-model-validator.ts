@@ -2,6 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 import {
+   CrossModelValidationErrors,
    findAllExpressions,
    getExpression,
    getExpressionPosition,
@@ -39,19 +40,15 @@ import {
 } from './generated/ast.js';
 import { findDocument, getOwner, getSemanticRootFromAstRoot, isSemanticRoot } from './util/ast-util.js';
 
-export namespace CrossModelIssueCodes {
-   export const FilenameNotMatching = 'filename-not-matching';
-}
-
 export interface FilenameNotMatchingDiagnostic extends Diagnostic {
    data: {
-      code: typeof CrossModelIssueCodes.FilenameNotMatching;
+      code: typeof CrossModelValidationErrors.FilenameNotMatching;
    };
 }
 
 export namespace FilenameNotMatchingDiagnostic {
    export function is(diagnostic: Diagnostic): diagnostic is FilenameNotMatchingDiagnostic {
-      return diagnostic.data?.code === CrossModelIssueCodes.FilenameNotMatching;
+      return diagnostic.data?.code === CrossModelValidationErrors.FilenameNotMatching;
    }
 }
 
@@ -87,7 +84,11 @@ export class CrossModelValidator {
 
    checkNamedObject(namedObject: NamedObject, accept: ValidationAcceptor): void {
       if (namedObject.name === undefined || namedObject.name.length === 0) {
-         accept('error', 'The name of this object cannot be empty', { node: namedObject, property: 'name' });
+         accept('error', 'Missing required name field', {
+            node: namedObject,
+            property: 'name',
+            code: CrossModelValidationErrors.toMissing('name')
+         });
       }
    }
 
@@ -117,7 +118,7 @@ export class CrossModelValidator {
          accept('warning', `Filename should match element id: ${node.id}`, {
             node,
             property: ID_PROPERTY,
-            data: { code: CrossModelIssueCodes.FilenameNotMatching }
+            data: { code: CrossModelValidationErrors.FilenameNotMatching }
          });
       }
    }
@@ -128,13 +129,13 @@ export class CrossModelValidator {
       }
       const globalId = this.services.references.IdProvider.getGlobalId(node);
       if (!globalId) {
-         accept('error', 'Missing required id field', { node, property: ID_PROPERTY });
+         accept('error', 'Missing required id field', { node, property: ID_PROPERTY, code: CrossModelValidationErrors.toMissing('id') });
          return;
       }
       const allElements = Array.from(this.services.shared.workspace.IndexManager.allElements());
       const duplicates = allElements.filter(description => description.name === globalId);
       if (duplicates.length > 1) {
-         accept('error', 'Must provide a unique id.', { node, property: ID_PROPERTY });
+         accept('error', 'Must provide a unique id.', { node, property: ID_PROPERTY, code: CrossModelValidationErrors.toMalformed('id') });
       }
    }
 
@@ -157,7 +158,11 @@ export class CrossModelValidator {
       const knownIds: string[] = [];
       for (const node of nodes) {
          if (node.id && knownIds.includes(node.id)) {
-            accept('error', 'Must provide a unique id.', { node, property: ID_PROPERTY });
+            accept('error', 'Must provide a unique id.', {
+               node,
+               property: ID_PROPERTY,
+               code: CrossModelValidationErrors.toMalformed('id')
+            });
          } else if (node.id) {
             knownIds.push(node.id);
          }

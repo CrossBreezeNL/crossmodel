@@ -110,7 +110,7 @@ export namespace Utils {
     */
    export function toRealURIorUndefined(uri: URI): URI | undefined {
       try {
-         return toRealURI(uri);
+         return uri.scheme === 'file' ? toRealURI(uri) : uri;
       } catch (error) {
          return undefined;
       }

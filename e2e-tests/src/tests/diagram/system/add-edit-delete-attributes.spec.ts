@@ -31,7 +31,7 @@ test.describe.serial('Add/Edit/Delete attributes to/from an entity in a diagram'
 
          // Verify that the attribute is added to the properties view
          const properties = await attribute.getProperties();
-         expect(properties).toMatchObject({ name: 'New Attribute', datatype: 'Varchar', identifier: false, description: '' });
+         expect(properties).toMatchObject({ name: 'New Attribute', datatype: 'Text', identifier: false, description: '' });
          await propertyView.saveAndClose();
       });
 
@@ -40,7 +40,7 @@ test.describe.serial('Add/Edit/Delete attributes to/from an entity in a diagram'
       const attributeNodes = await entity.children.attributes();
       expect(attributeNodes).toHaveLength(1);
       const attributeNode = attributeNodes[0];
-      expect(await attributeNode.datatype()).toEqual('Varchar');
+      expect(await attributeNode.datatype()).toEqual('Text');
       expect(await attributeNode.name()).toEqual('New Attribute');
       await diagramEditor.saveAndClose();
 
@@ -52,7 +52,7 @@ test.describe.serial('Add/Edit/Delete attributes to/from an entity in a diagram'
       expect(await entityCodeEditor.textContentOfLineByLineNumber(4)).toMatch('attributes:');
       expect(await entityCodeEditor.textContentOfLineByLineNumber(5)).toMatch('- id: New_Attribute');
       expect(await entityCodeEditor.textContentOfLineByLineNumber(6)).toMatch('name: "New Attribute"');
-      expect(await entityCodeEditor.textContentOfLineByLineNumber(7)).toMatch('datatype: "Varchar"');
+      expect(await entityCodeEditor.textContentOfLineByLineNumber(7)).toMatch('datatype: "Text"');
 
       await entityCodeEditor.saveAndClose();
    });
@@ -65,7 +65,7 @@ test.describe.serial('Add/Edit/Delete attributes to/from an entity in a diagram'
       const attribute = await form.attributesSection.getAttribute('New Attribute');
 
       await attribute.setName(RENAMED_ATTRIBUTE_LABEL);
-      await attribute.setDatatype('Bool');
+      await attribute.setDatatype('Boolean');
       await attribute.toggleIdentifier();
       await attribute.setDescription('New Description');
       await form.waitForDirty();
@@ -74,7 +74,7 @@ test.describe.serial('Add/Edit/Delete attributes to/from an entity in a diagram'
       const properties = await attribute.getProperties();
       expect(properties).toMatchObject({
          name: RENAMED_ATTRIBUTE_LABEL,
-         datatype: 'Bool',
+         datatype: 'Boolean',
          identifier: true,
          description: 'New Description'
       });
@@ -84,7 +84,7 @@ test.describe.serial('Add/Edit/Delete attributes to/from an entity in a diagram'
       const entityCodeEditor = await app.openCompositeEditor(ENTITY_PATH, 'Code Editor');
       expect(await entityCodeEditor.textContentOfLineByLineNumber(6)).toMatch(`name: "${RENAMED_ATTRIBUTE_LABEL}"`);
       expect(await entityCodeEditor.textContentOfLineByLineNumber(7)).toMatch('description: "New Description"');
-      expect(await entityCodeEditor.textContentOfLineByLineNumber(8)).toMatch('datatype: "Bool"');
+      expect(await entityCodeEditor.textContentOfLineByLineNumber(8)).toMatch('datatype: "Boolean"');
       expect(await entityCodeEditor.textContentOfLineByLineNumber(9)).toMatch('identifier: true');
       await entityCodeEditor.saveAndClose();
    });

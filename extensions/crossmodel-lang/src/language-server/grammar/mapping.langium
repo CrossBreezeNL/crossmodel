@@ -3,10 +3,10 @@ import 'common'
 import 'entity'
 import 'relationship'
 
-interface SourceObjectAttribute extends EntityAttribute {
+interface SourceObjectAttribute extends LogicalAttribute {
 }
 
-interface TargetObjectAttribute extends EntityAttribute {
+interface TargetObjectAttribute extends LogicalAttribute {
 }
 
 interface Mapping extends DataElementContainerMapping, WithCustomProperties {

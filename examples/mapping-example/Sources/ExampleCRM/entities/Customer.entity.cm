@@ -2,9 +2,9 @@ entity:
     id: Customer
     name: "Customer"
     attributes:
-      - id: Id
-        name: "Id"
-        datatype: "Integer"
+      - id: Customer_ID
+        name: "Customer Id"
+        datatype: "Guid"
       - id: First_Name
         name: "First Name"
         datatype: "Text"

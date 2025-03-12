@@ -6,11 +6,11 @@ entity:
     attributes:
       - id: ProductID
         name: "ProductID"
-        datatype: "Integer"
+        datatype: "Guid"
         identifier: true
       - id: WeightInKG
         name: "WeightInKG"
-        datatype: "Float"
+        datatype: "Decimal"
       - id: Width
         name: "Width"
         datatype: "Integer"

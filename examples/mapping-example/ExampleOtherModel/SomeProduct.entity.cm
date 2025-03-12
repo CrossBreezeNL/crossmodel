@@ -4,4 +4,4 @@ entity:
     attributes:
       - id: SomeProductAttribute
         name: "SomeProductAttribute"
-        datatype: "Varchar"
+        datatype: "Text"

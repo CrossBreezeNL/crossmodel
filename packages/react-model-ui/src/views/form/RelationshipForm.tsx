@@ -3,7 +3,7 @@
  ********************************************************************************/
 
 import { EntityType, ModelFileType, ModelStructure, ReferenceableElement } from '@crossbreeze/protocol';
-import { TextField } from '@mui/material';
+import { Autocomplete, TextField } from '@mui/material';
 import * as React from 'react';
 import { useModelDispatch, useModelQueryApi, useReadonly, useRelationship } from '../../ModelContext';
 import { modelComponent } from '../../ModelViewer';
@@ -22,7 +22,9 @@ export function RelationshipForm(): React.ReactElement {
 
    const reference = React.useMemo(() => ({ container: { globalId: relationship!.id! }, property: 'parent' }), [relationship]);
    const referenceableElements = React.useCallback(() => api.findReferenceableElements(reference), [api, reference]);
-   const labelProvider = (element: ReferenceableElement): string => element.label;
+   const referenceLabelProvider = (element: ReferenceableElement): string => element.label;
+
+   const cardinalities = ['zero', 'one', 'multiple'];
 
    return (
       <Form id={relationship.id} name={relationship.name ?? ModelFileType.Relationship} iconClass={ModelStructure.Relationship.ICON_CLASS}>
@@ -43,32 +45,45 @@ export function RelationshipForm(): React.ReactElement {
                onChange={event => dispatch({ type: 'relationship:change-description', description: event.target.value ?? '' })}
             />
 
-            <TextField
-               label='Type *'
-               value={relationship.type ?? ''}
-               disabled={readonly}
-               onChange={event => dispatch({ type: 'relationship:change-type', newType: event.target.value ?? '' })}
-            />
-
             <AsyncAutoComplete
                label='Parent *'
                optionLoader={referenceableElements}
-               getOptionLabel={labelProvider}
+               getOptionLabel={referenceLabelProvider}
                onChange={(_evt, newReference) => dispatch({ type: 'relationship:change-parent', parent: newReference.label })}
                value={{ uri: '', label: relationship.parent ?? '', type: EntityType }}
                disabled={readonly}
                selectOnFocus={true}
             />
 
+            <Autocomplete
+               options={cardinalities}
+               disabled={readonly}
+               handleHomeEndKeys={true}
+               onChange={(_evt, newParentCardinality) =>
+                  dispatch({ type: 'relationship:change-parent-cardinality', parentCardinality: newParentCardinality ?? '' })
+               }
+               renderInput={params => <TextField {...params} label='Parent Cardinality' value={relationship.parentCardinality ?? ''} />}
+            />
+
             <AsyncAutoComplete
                label='Child *'
                optionLoader={referenceableElements}
-               getOptionLabel={labelProvider}
+               getOptionLabel={referenceLabelProvider}
                onChange={(_evt, newReference) => dispatch({ type: 'relationship:change-child', child: newReference.label })}
                value={{ uri: '', label: relationship.child ?? '', type: EntityType }}
                clearOnBlur={true}
                disabled={readonly}
                selectOnFocus={true}
+            />
+
+            <Autocomplete
+               options={cardinalities}
+               disabled={readonly}
+               handleHomeEndKeys={true}
+               onChange={(_evt, newChildCardinality) =>
+                  dispatch({ type: 'relationship:change-child-cardinality', childCardinality: newChildCardinality ?? '' })
+               }
+               renderInput={params => <TextField {...params} label='Child Cardinality' value={relationship.childCardinality ?? ''} />}
             />
          </FormSection>
          <FormSection label='Attributes'>

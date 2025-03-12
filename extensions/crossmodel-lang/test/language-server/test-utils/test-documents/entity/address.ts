@@ -10,7 +10,7 @@ export const address = `entity:
           datatype: "Integer"
         - id: Street
           name: "Street"
-          datatype: "Varchar"
+          datatype: "Text"
         - id: CountryCode
           name: "CountryCode"
-          datatype: "Varchar"`;
+          datatype: "Text"`;

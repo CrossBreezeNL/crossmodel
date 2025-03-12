@@ -4,14 +4,14 @@ entity:
     attributes:
       - id: Attribute
         name: "ProductID"
-        datatype: "Integer"
+        datatype: "Guid"
         identifier: true
       - id: Attribute1
         name: "Name"
-        datatype: "Varchar"
+        datatype: "Text"
       - id: Attribute12
         name: "Description"
-        datatype: "Varchar"
+        datatype: "Text"
       - id: Attribute123
         name: "Price"
-        datatype: "Float"
+        datatype: "Decimal"

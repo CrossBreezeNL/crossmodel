@@ -2,21 +2,21 @@ entity:
     id: CompleteCustomer
     name: "CompleteCustomer"
     attributes:
-        - id: Name
-          name: "Name"
-          datatype: "Varchar"
-        - id: Country
-          name: "Country"
-          datatype: "Varchar"
-        - id: Age
-          name: "Age"
-          datatype: "Integer"
-        - id: FixedNumber
-          name: "FixedNumber"
-          datatype: "Integer"
-        - id: FixedString
-          name: "FixedString"
-          datatype: "Varchar"
-        - id: Today
-          name: "Today"
-          datatype: "Date"
+      - id: Name
+        name: "Name"
+        datatype: "Text"
+      - id: Country
+        name: "Country"
+        datatype: "Text"
+      - id: Age
+        name: "Age"
+        datatype: "Integer"
+      - id: FixedNumber
+        name: "FixedNumber"
+        datatype: "Integer"
+      - id: FixedString
+        name: "FixedString"
+        datatype: "Text"
+      - id: Today
+        name: "Today"
+        datatype: "Date"

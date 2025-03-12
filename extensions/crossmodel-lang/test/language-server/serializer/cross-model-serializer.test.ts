@@ -10,8 +10,8 @@ import { CrossModelSerializer } from '../../../src/language-server/cross-model-s
 import { CrossModelRoot, Entity, Relationship } from '../../../src/language-server/generated/ast.js';
 import {
    createEntity,
-   createEntityAttribute,
    createEntityNode,
+   createLogicalAttribute,
    createRelationship,
    createRelationshipEdge,
    createSystemDiagram
@@ -45,8 +45,8 @@ describe('CrossModelLexer', () => {
          crossModelRootWithoutAttributes = _.cloneDeep(crossModelRoot);
 
          crossModelRoot.entity.attributes = [
-            createEntityAttribute(crossModelRoot.entity, 'Attribute1', 'Attribute 1'),
-            createEntityAttribute(crossModelRoot.entity, 'Attribute2', 'Attribute 2')
+            createLogicalAttribute(crossModelRoot.entity, 'Attribute1', 'Attribute 1'),
+            createLogicalAttribute(crossModelRoot.entity, 'Attribute2', 'Attribute 2')
          ];
 
          crossModelRootWithAttributesDifPlace = { $type: 'CrossModelRoot' };
@@ -54,8 +54,8 @@ describe('CrossModelLexer', () => {
             description: 'Test description'
          });
          crossModelRootWithAttributesDifPlace.entity.attributes = [
-            createEntityAttribute(crossModelRoot.entity, 'Attribute1', 'Attribute 1'),
-            createEntityAttribute(crossModelRoot.entity, 'Attribute2', 'Attribute 2')
+            createLogicalAttribute(crossModelRoot.entity, 'Attribute1', 'Attribute 1'),
+            createLogicalAttribute(crossModelRoot.entity, 'Attribute2', 'Attribute 2')
          ];
       });
 

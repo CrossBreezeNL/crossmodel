@@ -14,10 +14,10 @@ export const order = `entity:
         datatype: "Integer"
       - id: OrderNumber
         name: "OrderNumber"
-        datatype: "Varchar"
+        datatype: "Text"
       - id: CustomerId
         name: "CustomerId"
         datatype: "Integer"
       - id: TotalAmount
         name: "TotalAmount"
-        datatype: "Float"`;
+        datatype: "Decimal"`;

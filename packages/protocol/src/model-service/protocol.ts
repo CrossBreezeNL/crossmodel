@@ -59,7 +59,7 @@ export function isCrossModelRoot(model?: any): model is CrossModelRoot {
 export const EntityType = 'Entity';
 export interface Entity extends CrossModelElement, Identifiable, WithCustomProperties {
    readonly $type: typeof EntityType;
-   attributes: Array<EntityAttribute>;
+   attributes: Array<LogicalAttribute>;
    description?: string;
    name?: string;
 }
@@ -70,28 +70,29 @@ export interface Attribute extends CrossModelElement, Identifiable {
    name?: string;
 }
 
-export const EntityAttributeType = 'EntityAttribute';
-export interface EntityAttribute extends Attribute, WithCustomProperties {
-   readonly $type: typeof EntityAttributeType;
+export const LogicalAttributeType = 'LogicalAttribute';
+export interface LogicalAttribute extends Attribute, WithCustomProperties {
+   readonly $type: typeof LogicalAttributeType;
    identifier?: boolean;
 }
 
 export const RelationshipType = 'Relationship';
 export interface Relationship extends CrossModelElement, Identifiable, WithCustomProperties {
    readonly $type: typeof RelationshipType;
-   attributes: Array<RelationshipAttribute>;
-   child?: Reference<Entity>;
-   description?: string;
    name?: string;
+   attributes: Array<RelationshipAttribute>;
    parent?: Reference<Entity>;
-   type?: string;
+   parentCardinality?: string;
+   child?: Reference<Entity>;
+   childCardinality?: string;
+   description?: string;
 }
 
 export const RelationshipAttributeType = 'RelationshipAttribute';
 export interface RelationshipAttribute extends CrossModelElement, WithCustomProperties {
    readonly $type: typeof RelationshipAttributeType;
-   parent?: Reference<EntityAttribute>;
-   child?: Reference<EntityAttribute>;
+   parent?: Reference<LogicalAttribute>;
+   child?: Reference<LogicalAttribute>;
 }
 
 export const MappingType = 'Mapping';

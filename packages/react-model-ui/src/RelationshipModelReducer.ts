@@ -20,19 +20,24 @@ export interface RelationshipChangeDescriptionAction extends ModelAction {
    description: string;
 }
 
-export interface RelationshipChangeTypeAction extends ModelAction {
-   type: 'relationship:change-type';
-   newType: string;
-}
-
 export interface RelationshipChangeParentAction extends ModelAction {
    type: 'relationship:change-parent';
    parent?: string;
 }
 
+export interface RelationshipChangeParentCardinalityAction extends ModelAction {
+   type: 'relationship:change-parent-cardinality';
+   parentCardinality: string;
+}
+
 export interface RelationshipChangeChildAction extends ModelAction {
    type: 'relationship:change-child';
    child?: string;
+}
+
+export interface RelationshipChangeChildCardinalityAction extends ModelAction {
+   type: 'relationship:change-child-cardinality';
+   childCardinality: string;
 }
 
 export interface RelationshipAttributeUpdateAction extends ModelAction {
@@ -65,9 +70,10 @@ export type RelationshipDispatchAction =
    | RelationshipUpdateAction
    | RelationshipChangeNameAction
    | RelationshipChangeDescriptionAction
-   | RelationshipChangeTypeAction
    | RelationshipChangeParentAction
+   | RelationshipChangeParentCardinalityAction
    | RelationshipChangeChildAction
+   | RelationshipChangeChildCardinalityAction
    | RelationshipAttributeUpdateAction
    | RelationshipAttributeAddEmptyAction
    | RelationshipAttributeMoveUpAction
@@ -93,16 +99,20 @@ export function RelationshipModelReducer(state: ModelState, action: Relationship
          relationship.description = undefinedIfEmpty(action.description);
          break;
 
-      case 'relationship:change-type':
-         relationship.type = action.newType;
-         break;
-
       case 'relationship:change-parent':
          relationship.parent = action.parent;
          break;
 
+      case 'relationship:change-parent-cardinality':
+         relationship.parentCardinality = undefinedIfEmpty(action.parentCardinality);
+         break;
+
       case 'relationship:change-child':
          relationship.child = action.child;
+         break;
+
+      case 'relationship:change-child-cardinality':
+         relationship.childCardinality = undefinedIfEmpty(action.childCardinality);
          break;
 
       case 'relationship:attribute:update':

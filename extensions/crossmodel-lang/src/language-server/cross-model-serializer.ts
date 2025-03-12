@@ -10,17 +10,17 @@ import {
    AttributeMapping,
    CrossModelRoot,
    Entity,
-   EntityAttribute,
    EntityNode,
    isAttributeMappingSource,
    isAttributeMappingTarget,
    isCustomProperty,
-   isEntityAttribute,
    isJoinCondition,
+   isLogicalAttribute,
    isRelationship,
    isSourceObject,
    isSourceObjectDependency,
    JoinCondition,
+   LogicalAttribute,
    Mapping,
    reflection,
    Relationship,
@@ -46,7 +46,7 @@ const CUSTOM_PROPERTIES = ['customProperties'];
  */
 const PROPERTY_ORDER = new Map<string, string[]>([
    [Entity, [...NAMED_OBJECT_PROPERTIES, 'superEntities', 'attributes', ...CUSTOM_PROPERTIES]],
-   [EntityAttribute, [...NAMED_OBJECT_PROPERTIES, 'datatype', 'length', 'precision', 'scale', 'identifier', ...CUSTOM_PROPERTIES]],
+   [LogicalAttribute, [...NAMED_OBJECT_PROPERTIES, 'datatype', 'length', 'precision', 'scale', 'identifier', ...CUSTOM_PROPERTIES]],
    [
       Relationship,
       [
@@ -70,8 +70,8 @@ const PROPERTY_ORDER = new Map<string, string[]>([
    [TargetObject, ['entity', 'mappings', ...CUSTOM_PROPERTIES]],
    [AttributeMapping, ['attribute', 'sources', 'expression', ...CUSTOM_PROPERTIES]]
 ]);
-PROPERTY_ORDER.set(SourceObjectAttribute, PROPERTY_ORDER.get(EntityAttribute) ?? []);
-PROPERTY_ORDER.set(TargetObjectAttribute, PROPERTY_ORDER.get(EntityAttribute) ?? []);
+PROPERTY_ORDER.set(SourceObjectAttribute, PROPERTY_ORDER.get(LogicalAttribute) ?? []);
+PROPERTY_ORDER.set(TargetObjectAttribute, PROPERTY_ORDER.get(LogicalAttribute) ?? []);
 
 /**
  * Hand-written AST serializer as there is currently no out-of-the box serializer from Langium, but it is on the roadmap.
@@ -140,7 +140,7 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot> {
                   // skip empty arrays
                   return undefined;
                }
-               if (isEntityAttribute(value) && prop === 'identifier' && propValue === false) {
+               if (isLogicalAttribute(value) && prop === 'identifier' && propValue === false) {
                   // special: skip identifier property if it is false
                   return undefined;
                }

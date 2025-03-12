@@ -247,7 +247,7 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
     },
     {
       "$type": "ParserRule",
-      "name": "EntityAttribute",
+      "name": "LogicalAttribute",
       "returnType": {
         "$ref": "#/interfaces@1"
       },
@@ -2633,7 +2633,7 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
     },
     {
       "$type": "Interface",
-      "name": "EntityAttribute",
+      "name": "LogicalAttribute",
       "superTypes": [
         {
           "$ref": "#/interfaces@9"

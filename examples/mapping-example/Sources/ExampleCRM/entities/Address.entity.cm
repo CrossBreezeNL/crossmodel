@@ -3,14 +3,14 @@ entity:
     name: "Address"
     description: "The address of a customer."
     attributes:
-      - id: CustomerID
-        name: "Customer ID"
-        datatype: "Integer"
+      - id: Customer_ID
+        name: "Customer Id"
+        datatype: "Guid"
       - id: Street
         name: "Street"
         datatype: "Text"
         length: 200
-      - id: CountryCode
+      - id: Country_Code
         name: "Country Code"
         datatype: "Text"
         length: 3

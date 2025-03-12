@@ -18,14 +18,14 @@ import {
    AttributeMapping,
    CrossModelAstType,
    Entity,
-   EntityAttribute,
    InheritanceEdge,
    isCrossModelRoot,
    isEntity,
-   isEntityAttribute,
+   isLogicalAttribute,
    isMapping,
    isRelationship,
    isSystemDiagram,
+   LogicalAttribute,
    Mapping,
    NamedObject,
    Relationship,
@@ -140,7 +140,7 @@ export class CrossModelValidator {
 
    protected isExportedGlobally(node: AstNode): boolean {
       // we export anything with an id from entities and relationships and all root nodes, see CrossModelScopeComputation
-      return isEntity(node) || isEntityAttribute(node) || isRelationship(node) || isSystemDiagram(node) || isMapping(node);
+      return isEntity(node) || isLogicalAttribute(node) || isRelationship(node) || isSystemDiagram(node) || isMapping(node);
    }
 
    protected checkUniqueNodeId(node: AstNode, accept: ValidationAcceptor): void {
@@ -233,8 +233,8 @@ export class CrossModelValidator {
    checkRelationship(relationship: Relationship, accept: ValidationAcceptor): void {
       // we check that each attribute actually belongs to their respective entity (parent, child)
       // and that each attribute is only used once
-      const usedParentAttributes: EntityAttribute[] = [];
-      const usedChildAttributes: EntityAttribute[] = [];
+      const usedParentAttributes: LogicalAttribute[] = [];
+      const usedChildAttributes: LogicalAttribute[] = [];
       for (const attribute of relationship.attributes) {
          if (attribute.parent.ref) {
             if (attribute.parent?.ref?.$container !== relationship.parent?.ref) {

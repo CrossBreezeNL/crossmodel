@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { EntityAttribute, EntityAttributeType, findNextUnique, toId } from '@crossbreeze/protocol';
+import { LogicalAttribute, LogicalAttributeType, findNextUnique, toId } from '@crossbreeze/protocol';
 import CheckBoxOutlineBlankOutlined from '@mui/icons-material/CheckBoxOutlineBlankOutlined';
 import CheckBoxOutlined from '@mui/icons-material/CheckBoxOutlined';
 import { GridColDef } from '@mui/x-data-grid';
@@ -11,7 +11,7 @@ import { ErrorView } from '../ErrorView';
 import GridComponent, { GridComponentRow, ValidationFunction } from './GridComponent';
 import { KeyIcon } from './Icons';
 
-export type EntityAttributeRow = GridComponentRow<EntityAttribute>;
+export type EntityAttributeRow = GridComponentRow<LogicalAttribute>;
 
 export function EntityAttributesDataGrid(): React.ReactElement {
    const entity = useEntity();
@@ -73,8 +73,8 @@ export function EntityAttributesDataGrid(): React.ReactElement {
       [dispatch]
    );
 
-   const validateAttribute = React.useCallback<ValidationFunction<EntityAttribute>>(
-      <P extends keyof EntityAttribute, V extends EntityAttribute[P]>(field: P, value: V): string | undefined => {
+   const validateAttribute = React.useCallback<ValidationFunction<LogicalAttribute>>(
+      <P extends keyof LogicalAttribute, V extends LogicalAttribute[P]>(field: P, value: V): string | undefined => {
          if (field === 'name' && !value) {
             return 'Invalid Name';
          }
@@ -83,7 +83,7 @@ export function EntityAttributesDataGrid(): React.ReactElement {
       []
    );
 
-   const columns = React.useMemo<GridColDef<EntityAttribute>[]>(
+   const columns = React.useMemo<GridColDef<LogicalAttribute>[]>(
       () => [
          {
             field: 'name',
@@ -98,7 +98,25 @@ export function EntityAttributesDataGrid(): React.ReactElement {
             editable: !readonly,
             flex: 100,
             type: 'singleSelect',
-            valueOptions: ['Integer', 'Float', 'Char', 'Varchar', 'Bool', 'Text']
+            valueOptions: [
+               // Basic data types
+               'Text',
+               'Boolean',
+               'Integer',
+               'Decimal',
+
+               // Date and time data types
+               'Date',
+               'Time',
+               'DateTime',
+
+               // Identifiers & key types
+               'Guid',
+
+               // Specialized data types
+               'Binary',
+               'Location'
+            ]
          },
          {
             field: 'identifier',
@@ -118,13 +136,13 @@ export function EntityAttributesDataGrid(): React.ReactElement {
       [readonly]
    );
 
-   const defaultEntry = React.useMemo<EntityAttribute>(
+   const defaultEntry = React.useMemo<LogicalAttribute>(
       () => ({
-         $type: EntityAttributeType,
+         $type: LogicalAttributeType,
          id: findNextUnique('Attribute', entity.attributes, attr => attr.id!),
          $globalId: 'toBeAssigned',
          name: findNextUnique('New Attribute', entity.attributes, attr => attr.name!),
-         datatype: 'Varchar'
+         datatype: 'Text'
       }),
       [entity.attributes]
    );
@@ -134,7 +152,7 @@ export function EntityAttributesDataGrid(): React.ReactElement {
       return <ErrorView errorMessage='No Entity!' />;
    }
    return (
-      <GridComponent<EntityAttribute>
+      <GridComponent<LogicalAttribute>
          autoHeight
          gridColumns={columns}
          gridData={entity.attributes}

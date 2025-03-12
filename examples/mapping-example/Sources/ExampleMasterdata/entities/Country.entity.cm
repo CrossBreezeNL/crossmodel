@@ -4,8 +4,8 @@ entity:
     attributes:
       - id: Code
         name: "Code"
-        datatype: "Varchar"
+        datatype: "Text"
         identifier: true
       - id: Name
         name: "Name"
-        datatype: "Varchar"
+        datatype: "Text"

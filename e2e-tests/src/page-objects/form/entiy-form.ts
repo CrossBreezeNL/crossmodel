@@ -52,27 +52,27 @@ export class EntityAttributesSection extends FormSection {
       this.addButtonLocator = this.locator.locator('button:has-text("Add Attribute")');
    }
 
-   async addAttribute(): Promise<EntityAttribute> {
+   async addAttribute(): Promise<LogicalAttribute> {
       await this.addButtonLocator.click();
       await this.page.keyboard.press('Enter');
       const lastAttribute = this.locator.locator('div[data-rowindex]').last();
       await this.page.waitForTimeout(150);
-      return new EntityAttribute(lastAttribute, this);
+      return new LogicalAttribute(lastAttribute, this);
    }
 
-   async getAllAttributes(): Promise<EntityAttribute[]> {
+   async getAllAttributes(): Promise<LogicalAttribute[]> {
       const attributeLocators = await this.locator.locator('div[data-rowindex]').all();
-      return attributeLocators.map(locator => new EntityAttribute(locator, this));
+      return attributeLocators.map(locator => new LogicalAttribute(locator, this));
    }
 
-   async getAttribute(name: string): Promise<EntityAttribute> {
+   async getAttribute(name: string): Promise<LogicalAttribute> {
       return defined(await this.findAttribute(name));
    }
 
-   async findAttribute(name: string): Promise<EntityAttribute | undefined> {
+   async findAttribute(name: string): Promise<LogicalAttribute | undefined> {
       const attributeLocators = await this.locator.locator('div[data-rowindex]').all();
       for (const locator of attributeLocators) {
-         const attribute = new EntityAttribute(locator, this);
+         const attribute = new LogicalAttribute(locator, this);
          if ((await attribute.getName()) === name) {
             return attribute;
          }
@@ -88,25 +88,36 @@ export class EntityAttributesSection extends FormSection {
    }
 }
 
-export interface EntityAttributeProperties {
+export interface LogicalAttributeProperties {
    name: string;
    datatype: string;
    identifier: boolean;
    description: string;
 }
 
-export const EntityDatatype = {
+export const LogicalAttributeDatatype = {
+   // Basic data types
+   Text: 'Text',
+   Boolean: 'Boolean',
    Integer: 'Integer',
-   Float: 'Float',
-   Char: 'Char',
-   Varchar: 'Varchar',
-   Bool: 'Bool',
-   Text: 'Text'
+   Decimal: 'Decimal',
+
+   // Date and time data types
+   Date: 'Date',
+   Time: 'Time',
+   DateTime: 'DateTime',
+
+   // Identifiers & key types
+   Guid: 'Guid',
+
+   // Specialized data types
+   Binary: 'Binary',
+   Location: 'Location'
 } as const;
 
-export type EntityDatatype = keyof typeof EntityDatatype;
+export type LogicalAttributeDatatype = keyof typeof LogicalAttributeDatatype;
 
-export class EntityAttribute extends TheiaPageObject {
+export class LogicalAttribute extends TheiaPageObject {
    constructor(
       readonly locator: Locator,
       section: EntityAttributesSection
@@ -134,7 +145,7 @@ export class EntityAttribute extends TheiaPageObject {
       return this.locator.locator('div[data-field="actions"]');
    }
 
-   async getProperties(): Promise<EntityAttributeProperties> {
+   async getProperties(): Promise<LogicalAttributeProperties> {
       return {
          name: await this.getName(),
          datatype: await this.getDatatype(),
@@ -153,11 +164,11 @@ export class EntityAttribute extends TheiaPageObject {
       await this.nameLocator.press('Enter');
    }
 
-   async getDatatype(): Promise<EntityDatatype> {
-      return defined(await this.dataType.textContent()) as EntityDatatype;
+   async getDatatype(): Promise<LogicalAttributeDatatype> {
+      return defined(await this.dataType.textContent()) as LogicalAttributeDatatype;
    }
 
-   async setDatatype(datatype: EntityDatatype): Promise<void> {
+   async setDatatype(datatype: LogicalAttributeDatatype): Promise<void> {
       await this.dataType.press('Enter');
       await this.dataType.getByRole('combobox').click();
       const selectionOverlay = this.page.locator('div[role="presentation"][id="menu-"]');

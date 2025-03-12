@@ -25,7 +25,7 @@ describe('CrossModel language Entity', () => {
          expect(entity.attributes.length).toBe(6);
          expect(entity.attributes[0].id).toBe('Id');
          expect(entity.attributes[0].name).toBe('Id');
-         expect(entity.attributes[0].datatype).toBe('int');
+         expect(entity.attributes[0].datatype).toBe('Integer');
       });
 
       test('entity with attributes coming before the description and name', async () => {
@@ -37,7 +37,7 @@ describe('CrossModel language Entity', () => {
          expect(entity.attributes.length).toBe(6);
          expect(entity.attributes[0].id).toBe('Id');
          expect(entity.attributes[0].name).toBe('Id');
-         expect(entity.attributes[0].datatype).toBe('int');
+         expect(entity.attributes[0].datatype).toBe('Integer');
       });
 
       test('entity with indentation error', async () => {

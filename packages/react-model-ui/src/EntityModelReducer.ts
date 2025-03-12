@@ -2,7 +2,7 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 
-import { EntityAttribute } from '@crossbreeze/protocol';
+import { LogicalAttribute } from '@crossbreeze/protocol';
 import { DispatchAction, ModelAction, ModelState, moveDown, moveUp, undefinedIfEmpty } from './ModelReducer';
 
 export interface EntityChangeNameAction extends ModelAction {
@@ -15,28 +15,28 @@ export interface EntityChangeDescriptionAction extends ModelAction {
    description: string;
 }
 
-export interface EntityAttributeUpdateAction extends ModelAction {
+export interface LogicalAttributeUpdateAction extends ModelAction {
    type: 'entity:attribute:update';
    attributeIdx: number;
-   attribute: EntityAttribute;
+   attribute: LogicalAttribute;
 }
 
-export interface EntityAttributeAddEmptyAction extends ModelAction {
+export interface LogicalAttributeAddEmptyAction extends ModelAction {
    type: 'entity:attribute:add-attribute';
-   attribute: EntityAttribute;
+   attribute: LogicalAttribute;
 }
 
-export interface EntityAttributeMoveUpAction extends ModelAction {
+export interface LogicalAttributeMoveUpAction extends ModelAction {
    type: 'entity:attribute:move-attribute-up';
    attributeIdx: number;
 }
 
-export interface EntityAttributeMoveDownAction extends ModelAction {
+export interface LogicalAttributeMoveDownAction extends ModelAction {
    type: 'entity:attribute:move-attribute-down';
    attributeIdx: number;
 }
 
-export interface EntityAttributeDeleteAction extends ModelAction {
+export interface LogicalAttributeDeleteAction extends ModelAction {
    type: 'entity:attribute:delete-attribute';
    attributeIdx: number;
 }
@@ -44,11 +44,11 @@ export interface EntityAttributeDeleteAction extends ModelAction {
 export type EntityDispatchAction =
    | EntityChangeNameAction
    | EntityChangeDescriptionAction
-   | EntityAttributeUpdateAction
-   | EntityAttributeAddEmptyAction
-   | EntityAttributeMoveUpAction
-   | EntityAttributeMoveDownAction
-   | EntityAttributeDeleteAction;
+   | LogicalAttributeUpdateAction
+   | LogicalAttributeAddEmptyAction
+   | LogicalAttributeMoveUpAction
+   | LogicalAttributeMoveDownAction
+   | LogicalAttributeDeleteAction;
 
 export function isEntityDispatchAction(action: DispatchAction): action is EntityDispatchAction {
    return action.type.startsWith('entity:');

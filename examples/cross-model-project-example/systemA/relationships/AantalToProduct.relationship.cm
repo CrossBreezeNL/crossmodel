@@ -1,8 +1,0 @@
-relationship AantalToProduct {
-         source := Aantal;
-         target := Product ;
-         type := 1:1;
-         properties {
-            
-         }
-      }

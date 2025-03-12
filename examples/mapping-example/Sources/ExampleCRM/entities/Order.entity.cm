@@ -3,9 +3,9 @@ entity:
     name: "Order"
     description: "Order placed by a customer in the Customer table."
     attributes:
-      - id: Id
-        name: "Id"
-        datatype: "Integer"
+      - id: Order_ID
+        name: "Order Id"
+        datatype: "Guid"
       - id: OrderDate
         name: "OrderDate"
         datatype: "DateTime"
@@ -14,8 +14,8 @@ entity:
         name: "OrderNumber"
         datatype: "Text"
         length: 50
-      - id: CustomerId
-        name: "CustomerId"
+      - id: Customer_ID
+        name: "Customer Id"
         datatype: "Integer"
       - id: TotalAmount
         name: "TotalAmount"

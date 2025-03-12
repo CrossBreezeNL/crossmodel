@@ -5,28 +5,28 @@ mapping:
         entity: ExampleCRM.Customer
         join: from
         conditions:
-          - Customer.Id > 0
+          - Customer.Customer_ID > 0
       - id: Address
         entity: ExampleCRM.Address
         join: left-join
         dependencies:
           - Customer
         conditions:
-          - Address.CustomerID = Customer.Id
+          - Address.Customer_ID = Customer.Customer_ID
       - id: Country
         entity: ExampleMasterdata.Country
         join: left-join
         dependencies:
           - Address
         conditions:
-          - Country.Code = Address.CountryCode
+          - Country.Code = Address.Country_Code
       - id: AddressSourceObject
         entity: ExampleCRM.Address
         join: inner-join
         dependencies:
           - Customer
         conditions:
-          - AddressSourceObject.CustomerID = Customer.Id
+          - AddressSourceObject.Customer_ID = Customer.Customer_ID
       - id: CalcAgeSourceObject
         entity: CalcAge
         join: apply

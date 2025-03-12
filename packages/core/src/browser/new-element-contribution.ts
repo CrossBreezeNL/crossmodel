@@ -13,7 +13,18 @@ import {
    toId,
    toPascal
 } from '@crossbreeze/protocol';
-import { Command, CommandContribution, CommandRegistry, MenuContribution, MenuModelRegistry, URI, UriSelection, nls } from '@theia/core';
+import {
+   Command,
+   CommandContribution,
+   CommandRegistry,
+   MaybePromise,
+   MenuContribution,
+   MenuModelRegistry,
+   URI,
+   UntitledResourceResolver,
+   UriSelection,
+   nls
+} from '@theia/core';
 import { CommonMenus, DialogError, open } from '@theia/core/lib/browser';
 import { TabBarToolbarRegistry } from '@theia/core/lib/browser/shell/tab-bar-toolbar';
 import { inject, injectable } from '@theia/core/shared/inversify';
@@ -23,7 +34,7 @@ import { FileNavigatorContribution, NavigatorContextMenu } from '@theia/navigato
 import { WorkspaceCommandContribution } from '@theia/workspace/lib/browser/workspace-commands';
 import { WorkspaceInputDialog, WorkspaceInputDialogProps } from '@theia/workspace/lib/browser/workspace-input-dialog';
 import * as yaml from 'yaml';
-import { getNewDataModelOptions } from './new-data-model-dialog';
+import { FieldValues, InputOptions, getGridInputOptions } from './grid-dialog';
 
 const NEW_ELEMENT_NAV_MENU = [...NavigatorContextMenu.NAVIGATION, '0_new'];
 const NEW_ELEMENT_MAIN_MENU = [...CommonMenus.FILE, '0_new'];
@@ -32,33 +43,35 @@ interface NewElementTemplate extends Command {
    label: string;
    toUri: (parent: URI, name: string) => URI;
    memberType: string;
-   content: string | ((options: { name: string }) => string);
+   content: string | ((name: string) => string);
+}
+
+interface MultiFieldNewTemplateElement<T extends readonly InputOptions[] = readonly InputOptions[]>
+   extends Omit<NewElementTemplate, 'content'> {
+   content: (options: FieldValues<T>) => string;
+   getInputOptions(parent: URI, modelService: ModelService): MaybePromise<T>;
+}
+
+namespace NewElementTemplate {
+   export function isMultiField<T extends readonly InputOptions[]>(
+      candidate: NewElementTemplate | MultiFieldNewTemplateElement<T>
+   ): candidate is MultiFieldNewTemplateElement<T> {
+      return 'getInputOptions' in candidate;
+   }
 }
 
 const INITIAL_ENTITY_CONTENT = `entity:
     id: \${id}
-    name: \${name}`;
-
-const INITIAL_RELATIONSHIP_CONTENT = `relationship:
-    id: \${id}
-    parent:
-    child:`;
+    name: \${name}
+`;
 
 const INITIAL_DIAGRAM_CONTENT = `systemDiagram:
     id: \${id}
-    name: \${name}`;
-
-const INITIAL_MAPPING_CONTENT = `mapping:
-   id: \${id}
-   sources:
-      - id: Source
-   target:
-      entity:
-      mappings: `;
+`;
 
 const TEMPLATE_CATEGORY = 'New Element';
 
-const NEW_ELEMENT_TEMPLATES: NewElementTemplate[] = [
+const NEW_ELEMENT_TEMPLATES: Array<NewElementTemplate | MultiFieldNewTemplateElement> = [
    {
       id: 'crossbreeze.new.entity',
       label: 'Entity',
@@ -66,9 +79,8 @@ const NEW_ELEMENT_TEMPLATES: NewElementTemplate[] = [
       toUri: joinWithExt(ModelFileExtensions.LogicalEntity, join),
       category: TEMPLATE_CATEGORY,
       iconClass: ModelStructure.LogicalEntity.ICON_CLASS,
-      content: ({ name }) =>
-         INITIAL_ENTITY_CONTENT.replace(/\$\{name\}/gi, quote(toPascal(name))).replace(/\$\{id\}/gi, toId(toPascal(name)))
-   },
+      content: name => INITIAL_ENTITY_CONTENT.replace(/\$\{name\}/gi, quote(toPascal(name))).replace(/\$\{id\}/gi, toId(toPascal(name)))
+   } satisfies NewElementTemplate,
    {
       id: 'crossbreeze.new.relationship',
       label: 'Relationship',
@@ -76,9 +88,25 @@ const NEW_ELEMENT_TEMPLATES: NewElementTemplate[] = [
       toUri: joinWithExt(ModelFileExtensions.Relationship, join),
       category: TEMPLATE_CATEGORY,
       iconClass: ModelStructure.Relationship.ICON_CLASS,
-      content: ({ name }) =>
-         INITIAL_RELATIONSHIP_CONTENT.replace(/\$\{name\}/gi, quote(toPascal(name))).replace(/\$\{id\}/gi, toId(toPascal(name)))
-   },
+      content: ({ name, parent, child }) => `relationship:
+    id: ${toId(toPascal(name))}
+    name: ${quote(toPascal(name))}
+    parent: ${parent}
+    child: ${child}
+`,
+      async getInputOptions(parent, modelService) {
+         const elements = await modelService.findReferenceableElements({
+            container: { uri: parent.toString(), type: this.memberType },
+            property: 'parent'
+         });
+         const options = Object.fromEntries(elements.map(element => [element.label, element.label]));
+         return [
+            { id: 'name', label: 'Name' },
+            { id: 'parent', label: 'Parent', options },
+            { id: 'child', label: 'Child', options, value: elements[1]?.label ?? elements[0]?.label }
+         ] as const;
+      }
+   } satisfies MultiFieldNewTemplateElement,
    {
       id: 'crossbreeze.new.system-diagram',
       label: 'System Diagram',
@@ -86,9 +114,8 @@ const NEW_ELEMENT_TEMPLATES: NewElementTemplate[] = [
       toUri: joinWithExt(ModelFileExtensions.SystemDiagram, join),
       category: TEMPLATE_CATEGORY,
       iconClass: ModelStructure.SystemDiagram.ICON_CLASS,
-      content: ({ name }) =>
-         INITIAL_DIAGRAM_CONTENT.replace(/\$\{name\}/gi, quote(toPascal(name))).replace(/\$\{id\}/gi, toId(toPascal(name)))
-   },
+      content: name => INITIAL_DIAGRAM_CONTENT.replace(/\$\{name\}/gi, quote(toPascal(name))).replace(/\$\{id\}/gi, toId(toPascal(name)))
+   } satisfies NewElementTemplate,
    {
       id: 'crossbreeze.new.mapping',
       label: 'Mapping',
@@ -96,9 +123,23 @@ const NEW_ELEMENT_TEMPLATES: NewElementTemplate[] = [
       toUri: joinWithExt(ModelFileExtensions.Mapping, join),
       category: TEMPLATE_CATEGORY,
       iconClass: ModelStructure.Mapping.ICON_CLASS,
-      content: ({ name }) =>
-         INITIAL_MAPPING_CONTENT.replace(/\$\{name\}/gi, quote(toPascal(name))).replace(/\$\{id\}/gi, toId(toPascal(name)))
-   },
+      content: ({ name, target }) => `mapping:
+    id: ${toId(toPascal(name))}
+    target:
+        entity: ${target}
+`,
+      async getInputOptions(parent, modelService) {
+         const elements = await modelService.findReferenceableElements({
+            container: { uri: parent.toString(), type: this.memberType },
+            syntheticElements: [{ property: 'target', type: TargetObjectType }],
+            property: 'entity'
+         });
+         return [
+            { id: 'name', label: 'Name' },
+            { id: 'target', label: 'Target', options: Object.fromEntries(elements.map(element => [element.label, element.label])) }
+         ] as const;
+      }
+   } satisfies MultiFieldNewTemplateElement,
    {
       id: 'crossbreeze.new.data-model',
       label: 'Data Model',
@@ -106,8 +147,20 @@ const NEW_ELEMENT_TEMPLATES: NewElementTemplate[] = [
       category: TEMPLATE_CATEGORY,
       iconClass: ModelStructure.System.ICON_CLASS,
       toUri: (selectedDirectory, name) => selectedDirectory.resolve(toPascal(name)).resolve('package.json'),
-      content: options => JSON.stringify({ ...options, name: toPascal(options.name), dependencies: {} }, undefined, 4)
-   }
+      content: options => JSON.stringify({ ...options, name: toPascal(options.name), dependencies: {} }, undefined, 4),
+      getInputOptions() {
+         return [
+            { id: 'name', label: 'Model Name' },
+            { id: 'version', label: 'Version', placeholder: '1.0.0', value: '1.0.0' },
+            {
+               value: 'logical',
+               id: 'type',
+               label: 'Type',
+               options: Object.fromEntries(Object.keys(ModelMemberPermissions).map(key => [key, toPascal(key)]))
+            }
+         ] as const;
+      }
+   } satisfies MultiFieldNewTemplateElement
 ];
 
 const ID_REGEX = /^[_a-zA-Z@][\w_\-@/#]*$/; /* taken from the langium file, in newer Langium versions constants may be generated. */
@@ -120,6 +173,7 @@ const DERIVE_MAPPING_FROM_ENTITY: Command = {
 @injectable()
 export class CrossModelWorkspaceContribution extends WorkspaceCommandContribution implements MenuContribution, CommandContribution {
    @inject(ModelService) modelService: ModelService;
+   @inject(UntitledResourceResolver) untitledResources: UntitledResourceResolver;
 
    override registerCommands(commands: CommandRegistry): void {
       super.registerCommands(commands);
@@ -127,8 +181,8 @@ export class CrossModelWorkspaceContribution extends WorkspaceCommandContributio
          commands.registerCommand(
             { ...template, label: template.label + '...' },
             this.newWorkspaceRootUriAwareCommandHandler({
-               isVisible: uri => doesTemplateFitsPackage(uri, this.modelService, template),
-               isEnabled: uri => doesTemplateFitsPackage(uri, this.modelService, template),
+               isVisible: uri => doesTemplateFitPackage(uri, this.modelService, template),
+               isEnabled: uri => doesTemplateFitPackage(uri, this.modelService, template),
                execute: uri => this.createNewElementFile(uri, template)
             })
          );
@@ -231,7 +285,7 @@ export class CrossModelWorkspaceContribution extends WorkspaceCommandContributio
       }
    }
 
-   protected async createNewElementFile(uri: URI, template: NewElementTemplate): Promise<void> {
+   protected async createNewElementFile(uri: URI, template: NewElementTemplate | MultiFieldNewTemplateElement): Promise<void> {
       const parent = await this.getDirectory(uri);
       if (parent) {
          const parentUri = parent.resource;
@@ -241,29 +295,28 @@ export class CrossModelWorkspaceContribution extends WorkspaceCommandContributio
             initialValue: 'New' + template.memberType,
             placeholder: 'New ' + template.memberType
          };
-         const options = await (template.memberType === 'DataModel'
-            ? this.getDataModelOptions(baseProps, template, parent)
+         const options = await (NewElementTemplate.isMultiField(template)
+            ? this.getAdvancedOptions(baseProps, template, parent)
             : this.getMemberOptions(baseProps, template, parent));
          if (!options) {
             return;
          }
-         const fileUri = template.toUri(parent.resource, options.name);
-         const content = typeof template.content === 'string' ? template.content : template.content(options);
+         const { fileUri, content } = options;
          await this.fileService.create(fileUri, content);
          this.fireCreateNewFile({ parent: parentUri, uri: fileUri });
          open(this.openerService, fileUri);
       }
    }
 
-   protected getDataModelOptions(
-      props: WorkspaceInputDialogProps,
-      template: NewElementTemplate,
+   protected async getAdvancedOptions(
+      baseProps: WorkspaceInputDialogProps,
+      template: MultiFieldNewTemplateElement,
       parent: FileStat
-   ): Promise<{ name: string } | undefined> {
-      return getNewDataModelOptions(
+   ): Promise<{ fileUri: URI; content: string } | undefined> {
+      const options = await getGridInputOptions(
          {
-            ...props,
-            dataModelTypes: Object.keys(ModelMemberPermissions),
+            ...baseProps,
+            inputs: await template.getInputOptions(parent.resource, this.modelService),
             validate: value => {
                const name = JSON.parse(value).name ?? '';
                return name && this.validateElementFileName(template.toUri(parent.resource, name), name);
@@ -271,13 +324,19 @@ export class CrossModelWorkspaceContribution extends WorkspaceCommandContributio
          },
          this.labelProvider
       );
+      if (!options) {
+         return undefined;
+      }
+      const fileUri = template.toUri(parent.resource, options.name);
+      const content = typeof template.content === 'string' ? template.content : template.content(options);
+      return { fileUri, content };
    }
 
    protected async getMemberOptions(
       props: WorkspaceInputDialogProps,
       template: NewElementTemplate,
       parent: FileStat
-   ): Promise<{ name: string } | undefined> {
+   ): Promise<{ fileUri: URI; content: string } | undefined> {
       const name = await new WorkspaceInputDialog(
          {
             ...props,
@@ -285,7 +344,12 @@ export class CrossModelWorkspaceContribution extends WorkspaceCommandContributio
          },
          this.labelProvider
       ).open();
-      return name ? { name } : undefined;
+      if (!name) {
+         return undefined;
+      }
+      const fileUri = template.toUri(parent.resource, name);
+      const content = typeof template.content === 'string' ? template.content : template.content(name);
+      return { fileUri, content };
    }
 
    protected async validateElementFileName(file: URI, name: string): Promise<DialogError> {
@@ -319,14 +383,14 @@ export class CrossModelFileNavigatorContribution extends FileNavigatorContributi
                      widget,
                      navigator =>
                         this.workspaceService.opened &&
-                        doesTemplateFitsPackage(UriSelection.getUri(navigator.model.selectedNodes), this.modelService, template)
+                        doesTemplateFitPackage(UriSelection.getUri(navigator.model.selectedNodes), this.modelService, template)
                   ),
                isVisible: widget =>
                   this.withWidget(
                      widget,
                      navigator =>
                         this.workspaceService.opened &&
-                        doesTemplateFitsPackage(UriSelection.getUri(navigator.model.selectedNodes), this.modelService, template)
+                        doesTemplateFitPackage(UriSelection.getUri(navigator.model.selectedNodes), this.modelService, template)
                   )
             }
          );
@@ -349,7 +413,7 @@ export class CrossModelFileNavigatorContribution extends FileNavigatorContributi
    }
 }
 
-function doesTemplateFitsPackage(target: URI | undefined, modelService: ModelService, template: NewElementTemplate): boolean {
+function doesTemplateFitPackage(target: URI | undefined, modelService: ModelService, template: { memberType: string }): boolean {
    if (!target) {
       return false;
    }

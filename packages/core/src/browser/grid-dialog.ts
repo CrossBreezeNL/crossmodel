@@ -5,42 +5,56 @@
 import { inject } from '@theia/core/shared/inversify';
 import { LabelProvider } from '@theia/core/lib/browser';
 import { WorkspaceInputDialog, WorkspaceInputDialogProps } from '@theia/workspace/lib/browser/workspace-input-dialog';
-import { toPascal } from '@crossbreeze/protocol';
 
-const DataModelInputDialogProps = Symbol('DataModelInputDialogProps');
-interface DataModelInputDialogProps extends WorkspaceInputDialogProps {
-   dataModelTypes: string[];
+const GridInputDialogProps = Symbol('GridInputDialogProps');
+interface GridInputDialogProps<T extends readonly InputOptions[] = readonly InputOptions[]> extends WorkspaceInputDialogProps {
+   inputs: T;
 }
 
-export class DataModelInputDialog extends WorkspaceInputDialog {
-   protected readonly versionInput: HTMLInputElement;
-   protected readonly typeSelector: HTMLSelectElement;
+export interface InputOptions {
+   placeholder?: string;
+   value?: string;
+   id: string;
+   label: string;
+   options?: Record<string, string>;
+}
+
+export type FieldValues<T extends readonly InputOptions[]> = Record<T[number]['id'], string>;
+
+interface LabelOptions {
+   text: string;
+   for: string;
+}
+
+export class GridInputDialog extends WorkspaceInputDialog {
    protected readonly grid: HTMLDivElement;
 
    constructor(
-      @inject(DataModelInputDialogProps) protected override readonly props: DataModelInputDialogProps,
+      @inject(GridInputDialogProps) protected override readonly props: GridInputDialogProps,
       @inject(LabelProvider) protected override readonly labelProvider: LabelProvider
    ) {
       super(props, labelProvider);
       this.grid = this.getGrid();
-      this.contentNode.appendChild(this.grid);
+      this.contentNode.insertBefore(this.grid, this.inputField);
+      this.addInputs();
+   }
+
+   protected addInputs(): void {
       const idBase = Date.now().toString(26);
-      const nameInputId = idBase + '-name';
-      this.grid.appendChild(createLabel({ text: 'Model Name', for: nameInputId }));
-      this.inputField.id = nameInputId;
-      this.grid.appendChild(this.inputField);
-      const versionInputId = idBase + '-version';
-      this.grid.appendChild(createLabel({ text: 'Version', for: versionInputId }));
-      this.versionInput = createInput({ placeholder: '1.0.0', value: '1.0.0', id: versionInputId });
-      this.grid.appendChild(this.versionInput);
-      const typeInputId = idBase + '-type';
-      this.grid.appendChild(createLabel({ text: 'Type', for: typeInputId }));
-      this.typeSelector = createInput({
-         value: 'logical',
-         id: typeInputId,
-         options: Object.fromEntries(props.dataModelTypes.map(key => [key, toPascal(key)]))
+      let inputFieldSet = false;
+      this.props.inputs.forEach(inputProps => {
+         const computedId = idBase + '-' + inputProps.id;
+         const label = createLabel({ text: inputProps.label, for: computedId });
+         this.grid.appendChild(label);
+         if (!inputFieldSet && !inputProps.options) {
+            inputFieldSet = true;
+            this.inputField.id = computedId;
+            this.grid.appendChild(this.inputField);
+         } else {
+            const input = createInput({ ...inputProps, id: computedId });
+            this.grid.appendChild(input);
+         }
       });
-      this.grid.appendChild(this.typeSelector);
    }
 
    protected getGrid(): HTMLDivElement {
@@ -53,29 +67,29 @@ export class DataModelInputDialog extends WorkspaceInputDialog {
    }
 
    override get value(): string {
-      const name = this.inputField.value;
-      const version = this.versionInput.value;
-      const type = this.typeSelector.value;
-      return JSON.stringify({ name, version, type });
+      const data: Record<string, string> = {};
+      for (let i = 0; i < this.grid.children.length; i++) {
+         const child = this.grid.children[i];
+         if (child instanceof HTMLLabelElement) {
+            continue;
+         }
+         const value = (child as HTMLInputElement | HTMLSelectElement).value;
+         const id = child.id.slice(child.id.indexOf('-') + 1);
+         data[id] = value;
+      }
+      return JSON.stringify(data);
    }
 }
 
-export async function getNewDataModelOptions(
-   props: DataModelInputDialogProps,
+export async function getGridInputOptions<T extends readonly InputOptions[]>(
+   props: GridInputDialogProps<T>,
    labelProvider: LabelProvider
-): Promise<{ name: string; version: string; type: string } | undefined> {
-   const userSelection = await new DataModelInputDialog(props, labelProvider).open();
+): Promise<FieldValues<T> | undefined> {
+   const userSelection = await new GridInputDialog(props, labelProvider).open();
    if (!userSelection) {
       return undefined;
    }
    return JSON.parse(userSelection);
-}
-
-interface InputOptions {
-   placeholder?: string;
-   value?: string;
-   id?: string;
-   options?: Record<string, string>;
 }
 
 function createInput<T extends InputOptions, U = T extends { options: Record<string, string> } ? HTMLSelectElement : HTMLInputElement>(
@@ -90,12 +104,6 @@ function createInput<T extends InputOptions, U = T extends { options: Record<str
       inputField.placeholder = options.placeholder || '';
       inputField.type = 'text';
    }
-   if (options.value) {
-      inputField.value = options.value;
-   }
-   if (options.id) {
-      inputField.id = options.id;
-   }
    if (options.options) {
       Object.entries(options.options).forEach(([key, value]) => {
          const option = document.createElement('option');
@@ -104,12 +112,13 @@ function createInput<T extends InputOptions, U = T extends { options: Record<str
          inputField.appendChild(option);
       });
    }
+   if (options.value) {
+      inputField.value = options.value;
+   }
+   if (options.id) {
+      inputField.id = options.id;
+   }
    return inputField as U;
-}
-
-interface LabelOptions {
-   text: string;
-   for: string;
 }
 
 function createLabel(options: LabelOptions): HTMLLabelElement {

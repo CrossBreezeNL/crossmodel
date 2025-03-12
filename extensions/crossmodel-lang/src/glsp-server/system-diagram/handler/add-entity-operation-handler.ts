@@ -5,7 +5,7 @@
 import { AddEntityOperation } from '@crossbreeze/protocol';
 import { Command, JsonOperationHandler, ModelState } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
-import { Entity, EntityNode } from '../../../language-server/generated/ast.js';
+import { LogicalEntity, LogicalEntityNode } from '../../../language-server/generated/ast.js';
 import { CrossModelCommand } from '../../common/cross-model-command.js';
 import { SystemModelState } from '../model/system-model-state.js';
 
@@ -24,7 +24,7 @@ export class SystemDiagramAddEntityOperationHandler extends JsonOperationHandler
    protected async createEntityNode(operation: AddEntityOperation): Promise<void> {
       const scope = this.modelState.services.language.references.ScopeProvider.getCompletionScope({
          container: { globalId: this.modelState.systemDiagram.id! },
-         syntheticElements: [{ property: 'nodes', type: EntityNode }],
+         syntheticElements: [{ property: 'nodes', type: LogicalEntityNode }],
          property: 'entity'
       });
 
@@ -32,13 +32,13 @@ export class SystemDiagramAddEntityOperationHandler extends JsonOperationHandler
       const entityDescription = scope.elementScope.getElement(operation.entityName);
 
       if (entityDescription) {
-         const node: EntityNode = {
-            $type: EntityNode,
+         const node: LogicalEntityNode = {
+            $type: LogicalEntityNode,
             $container: container,
-            id: this.modelState.idProvider.findNextId(EntityNode, entityDescription.name + 'Node', container),
+            id: this.modelState.idProvider.findNextId(LogicalEntityNode, entityDescription.name + 'Node', container),
             entity: {
                $refText: entityDescription.name,
-               ref: entityDescription.node as Entity | undefined
+               ref: entityDescription.node as LogicalEntity | undefined
             },
             x: operation.position.x,
             y: operation.position.y,

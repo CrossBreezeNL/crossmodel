@@ -79,7 +79,7 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
     },
     {
       "$type": "ParserRule",
-      "name": "Entity",
+      "name": "LogicalEntity",
       "returnType": {
         "$ref": "#/interfaces@0"
       },
@@ -1330,7 +1330,7 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
     },
     {
       "$type": "ParserRule",
-      "name": "EntityNode",
+      "name": "LogicalEntityNode",
       "returnType": {
         "$ref": "#/interfaces@14"
       },
@@ -2588,7 +2588,7 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
   "interfaces": [
     {
       "$type": "Interface",
-      "name": "Entity",
+      "name": "LogicalEntity",
       "superTypes": [
         {
           "$ref": "#/interfaces@4"
@@ -2989,7 +2989,7 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
     },
     {
       "$type": "Interface",
-      "name": "EntityNode",
+      "name": "LogicalEntityNode",
       "superTypes": [
         {
           "$ref": "#/interfaces@2"
@@ -3050,7 +3050,7 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
     },
     {
       "$type": "Interface",
-      "name": "EntityNodeAttribute",
+      "name": "LogicalEntityNodeAttribute",
       "superTypes": [
         {
           "$ref": "#/interfaces@1"

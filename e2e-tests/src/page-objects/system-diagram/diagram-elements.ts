@@ -31,9 +31,9 @@ const LabelHeaderMixin = Mix(PLabel).flow(useClickableFlow).flow(useRenameableFl
 @ModelElementMetadata({
    type: 'label:entity'
 })
-export class LabelEntity extends LabelHeaderMixin {}
+export class LabelLogicalEntity extends LabelHeaderMixin {}
 
-const EntityMixin = Mix(PNode)
+const LogicalEntityMixin = Mix(PNode)
    .flow(useClickableFlow)
    .flow(useHoverableFlow)
    .flow(useDeletableFlow)
@@ -48,28 +48,28 @@ const EntityMixin = Mix(PNode)
 @NodeMetadata({
    type: 'node:entity'
 })
-export class Entity extends EntityMixin {
-   override readonly children = new EntityChildren(this);
+export class LogicalEntity extends LogicalEntityMixin {
+   override readonly children = new LogicalEntityChildren(this);
 
    get label(): Promise<string> {
       return this.children.label().then(label => label.textContent());
    }
 }
 
-export class EntityChildren extends ChildrenAccessor {
-   async label(): Promise<LabelEntity> {
-      return this.ofType(LabelEntity, { selector: SVGMetadataUtils.typeAttrOf(LabelEntity) });
+export class LogicalEntityChildren extends ChildrenAccessor {
+   async label(): Promise<LabelLogicalEntity> {
+      return this.ofType(LabelLogicalEntity, { selector: SVGMetadataUtils.typeAttrOf(LabelLogicalEntity) });
    }
 
-   async attributes(): Promise<Attribute[]> {
-      return this.allOfType(Attribute);
+   async attributes(): Promise<LogicalAttribute[]> {
+      return this.allOfType(LogicalAttribute);
    }
 }
 
 @ModelElementMetadata({
    type: 'comp:attribute'
 })
-export class Attribute extends PModelElement {
+export class LogicalAttribute extends PModelElement {
    override async snapshot(): Promise<PModelElementSnapshot & { name: string; datatype: string }> {
       return {
          ...(await super.snapshot()),

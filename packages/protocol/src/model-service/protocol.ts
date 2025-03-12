@@ -43,7 +43,7 @@ export interface CrossModelDocument<T = CrossModelRoot, D = ModelDiagnostic> {
 
 export interface CrossModelRoot extends CrossModelElement {
    readonly $type: 'CrossModelRoot';
-   entity?: Entity;
+   entity?: LogicalEntity;
    relationship?: Relationship;
    mapping?: Mapping;
    systemDiagram?: SystemDiagram;
@@ -56,9 +56,9 @@ export function isCrossModelRoot(model?: any): model is CrossModelRoot {
    return !!model && model.$type === 'CrossModelRoot';
 }
 
-export const EntityType = 'Entity';
-export interface Entity extends CrossModelElement, Identifiable, WithCustomProperties {
-   readonly $type: typeof EntityType;
+export const LogicalEntityType = 'LogicalEntity';
+export interface LogicalEntity extends CrossModelElement, Identifiable, WithCustomProperties {
+   readonly $type: typeof LogicalEntityType;
    attributes: Array<LogicalAttribute>;
    description?: string;
    name?: string;
@@ -81,9 +81,9 @@ export interface Relationship extends CrossModelElement, Identifiable, WithCusto
    readonly $type: typeof RelationshipType;
    name?: string;
    attributes: Array<RelationshipAttribute>;
-   parent?: Reference<Entity>;
+   parent?: Reference<LogicalEntity>;
    parentCardinality?: string;
-   child?: Reference<Entity>;
+   child?: Reference<LogicalEntity>;
    childCardinality?: string;
    description?: string;
 }
@@ -106,7 +106,7 @@ export const SourceObjectType = 'SourceObject';
 export type SourceObjectJoinType = 'from' | 'inner-join' | 'cross-join' | 'left-join' | 'apply';
 export interface SourceObject extends CrossModelElement, Identifiable, WithCustomProperties {
    readonly $type: typeof SourceObjectType;
-   entity?: Reference<Entity>;
+   entity?: Reference<LogicalEntity>;
    join?: SourceObjectJoinType;
    dependencies: Array<SourceObjectDependency>;
    conditions: Array<SourceObjectCondition>;
@@ -157,7 +157,7 @@ export interface SourceObjectAttributeReference extends CrossModelElement {
 export const TargetObjectType = 'TargetObject';
 export interface TargetObject extends CrossModelElement, WithCustomProperties {
    readonly $type: typeof TargetObjectType;
-   entity?: Reference<Entity>;
+   entity?: Reference<LogicalEntity>;
    mappings: Array<AttributeMapping>;
 }
 
@@ -230,7 +230,7 @@ export interface EntityNode extends CrossModelElement, Identifiable, WithCustomP
    readonly $type: typeof EntityNodeType;
    customProperties: Array<CustomProperty>;
    description?: string;
-   entity: Reference<Entity>;
+   entity: Reference<LogicalEntity>;
    height: number;
    name?: string;
    width: number;
@@ -414,8 +414,8 @@ export const RequestSystemInfo = new rpc.RequestType1<SystemInfoArgs, SystemInfo
 export const OnSystemsUpdated = new rpc.NotificationType1<SystemUpdatedEvent>('server/onSystemsUpdated');
 
 export const ModelMemberPermissions = {
-   logical: ['Entity', 'Mapping', 'Relationship', 'SystemDiagram'],
-   physical: []
+   logical: ['LogicalEntity', 'Mapping', 'Relationship', 'SystemDiagram'],
+   relational: []
 } as const satisfies Record<string, readonly RootObjectTypeName[]>;
 
 export function isMemberPermittedInModel(packageType: string, memberType: string): boolean {

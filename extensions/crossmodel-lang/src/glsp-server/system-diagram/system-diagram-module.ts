@@ -61,7 +61,7 @@ export class SystemDiagramModule extends DiagramModule {
    protected override configureOperationHandlers(binding: InstanceMultiBinding<OperationHandlerConstructor>): void {
       super.configureOperationHandlers(binding);
       binding.add(SystemDiagramChangeBoundsOperationHandler); // move + resize behavior
-      binding.add(SystemDiagramCreateRelationshipOperationHandler); // create 1:1 relationship
+      binding.add(SystemDiagramCreateRelationshipOperationHandler); // create relationship
       binding.add(SystemDiagramDeleteOperationHandler); // delete elements
       binding.add(SystemDiagramDropEntityOperationHandler);
       binding.add(SystemDiagramAddEntityOperationHandler);

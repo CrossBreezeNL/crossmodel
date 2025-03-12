@@ -7,7 +7,7 @@ import { join } from 'path';
 import { CMCompositeEditor, hasViewError } from '../cm-composite-editor';
 import { IntegratedEditor } from '../cm-integrated-editor';
 import { CMForm } from './cm-form';
-import { EntityForm } from './entiy-form';
+import { LogicalEntityForm } from './entiy-form';
 import { RelationshipForm } from './relationship-form';
 export class IntegratedFormEditor extends IntegratedEditor {
    constructor(filePath: string, parent: CMCompositeEditor, tabSelector: string) {
@@ -26,11 +26,11 @@ export class IntegratedFormEditor extends IntegratedEditor {
       return hasViewError(this.page, this.viewSelector, errorMessage);
    }
 
-   async formFor(entity: 'entity'): Promise<EntityForm>;
+   async formFor(logicalEntity: 'entity'): Promise<LogicalEntityForm>;
    async formFor(relationship: 'relationship'): Promise<RelationshipForm>;
    async formFor(string: 'entity' | 'relationship'): Promise<CMForm> {
       if (string === 'entity') {
-         const form = new EntityForm(this, '');
+         const form = new LogicalEntityForm(this, '');
          await form.waitForVisible();
          return form;
       } else {

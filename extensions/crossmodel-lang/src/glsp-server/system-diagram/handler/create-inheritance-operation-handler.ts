@@ -14,7 +14,7 @@ import {
    getOrThrow
 } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
-import { CrossModelRoot, Entity, EntityNode, InheritanceEdge } from '../../../language-server/generated/ast.js';
+import { CrossModelRoot, InheritanceEdge, LogicalEntity, LogicalEntityNode } from '../../../language-server/generated/ast.js';
 import { findDocument } from '../../../language-server/util/ast-util.js';
 import { CrossModelCommand } from '../../common/cross-model-command.js';
 import { SystemModelState } from '../model/system-model-state.js';
@@ -28,8 +28,14 @@ export class SystemDiagramCreateInheritanceOperationHandler extends JsonCreateEd
    @inject(ActionDispatcher) protected actionDispatcher: ActionDispatcher;
 
    createCommand(operation: CreateEdgeOperation): MaybePromise<Command | undefined> {
-      const baseEntityNode = getOrThrow(this.modelState.index.findEntityNode(operation.sourceElementId), 'Base entity node not found');
-      const superEntityNode = getOrThrow(this.modelState.index.findEntityNode(operation.targetElementId), 'Super entity node not found');
+      const baseEntityNode = getOrThrow(
+         this.modelState.index.findLogicalEntityNode(operation.sourceElementId),
+         'Base entity node not found'
+      );
+      const superEntityNode = getOrThrow(
+         this.modelState.index.findLogicalEntityNode(operation.targetElementId),
+         'Super entity node not found'
+      );
       if (!baseEntityNode.entity.ref || !superEntityNode.entity.ref) {
          return undefined;
       }
@@ -56,7 +62,7 @@ export class SystemDiagramCreateInheritanceOperationHandler extends JsonCreateEd
       return new CompoundCommand(new AddInheritanceCommand(this.modelState, operation), diagramCommand);
    }
 
-   protected async createEdge(baseEntityNode: EntityNode, superEntityNode: EntityNode): Promise<void> {
+   protected async createEdge(baseEntityNode: LogicalEntityNode, superEntityNode: LogicalEntityNode): Promise<void> {
       const edge: InheritanceEdge = {
          $type: InheritanceEdge,
          $container: this.modelState.systemDiagram,
@@ -90,8 +96,8 @@ export class AddInheritanceCommand implements Command {
          return;
       }
 
-      const baseEntity = this.modelState.index.findEntityNode(this.operation.sourceElementId)?.entity.ref;
-      const superEntity = this.modelState.index.findEntityNode(this.operation.targetElementId)?.entity.ref;
+      const baseEntity = this.modelState.index.findLogicalEntityNode(this.operation.sourceElementId)?.entity.ref;
+      const superEntity = this.modelState.index.findLogicalEntityNode(this.operation.targetElementId)?.entity.ref;
       if (!baseEntity || !superEntity) {
          return;
       }
@@ -119,8 +125,8 @@ export class AddInheritanceCommand implements Command {
          return;
       }
 
-      const baseEntity = this.modelState.index.findEntityNode(this.operation.sourceElementId)?.entity.ref;
-      const superEntity = this.modelState.index.findEntityNode(this.operation.targetElementId)?.entity.ref;
+      const baseEntity = this.modelState.index.findLogicalEntityNode(this.operation.sourceElementId)?.entity.ref;
+      const superEntity = this.modelState.index.findLogicalEntityNode(this.operation.targetElementId)?.entity.ref;
       if (!baseEntity || !superEntity) {
          return;
       }
@@ -150,6 +156,6 @@ export class AddInheritanceCommand implements Command {
    }
 }
 
-function hasSuperEntity(baseEntity: Entity, superEntity: Entity): boolean {
+function hasSuperEntity(baseEntity: LogicalEntity, superEntity: LogicalEntity): boolean {
    return baseEntity.superEntities.some(entity => entity.ref === superEntity);
 }

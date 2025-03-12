@@ -8,14 +8,14 @@ import { CrossModelServices } from './cross-model-module.js';
 import { DefaultIdProvider, combineIds } from './cross-model-naming.js';
 import { CrossModelPackageManager, UNKNOWN_PROJECT_ID, UNKNOWN_PROJECT_REFERENCE } from './cross-model-package-manager.js';
 import {
-   Entity,
-   EntityNode,
-   EntityNodeAttribute,
+   LogicalEntity,
+   LogicalEntityNode,
+   LogicalEntityNodeAttribute,
    SourceObject,
    SourceObjectAttribute,
    TargetObject,
    TargetObjectAttribute,
-   isEntityNode,
+   isLogicalEntityNode,
    isSourceObject,
    isTargetObject
 } from './generated/ast.js';
@@ -118,14 +118,14 @@ export class CrossModelScopeComputation extends DefaultScopeComputation {
          const id = this.idProvider.getNodeId(node);
          if (id) {
             scopes.add(container, this.descriptions.createDescription(node, id, document));
-            if (isEntityNode(node)) {
+            if (isLogicalEntityNode(node)) {
                this.processEntityNode(node, id, document).forEach(description => scopes.add(container, description));
             } else if (isSourceObject(node)) {
                this.processSourceObject(node, id, document).forEach(description => scopes.add(container, description));
             }
          }
          if (isTargetObject(node)) {
-            const entity = this.getEntity(node, document);
+            const entity = this.getLogicalEntity(node, document);
             if (entity?.id) {
                this.processTargetObject(node, entity.id, document).forEach(description => scopes.add(container, description));
             }
@@ -133,18 +133,20 @@ export class CrossModelScopeComputation extends DefaultScopeComputation {
       }
    }
 
-   protected processEntityNode(node: EntityNode, nodeId: string, document: LangiumDocument): AstNodeDescription[] {
-      const entity = this.getEntity(node, document);
+   protected processEntityNode(node: LogicalEntityNode, nodeId: string, document: LangiumDocument): AstNodeDescription[] {
+      const entity = this.getLogicalEntity(node, document);
       if (!entity) {
          return [];
       }
       const attributes =
-         entity.attributes.map<EntityNodeAttribute>(attribute => setOwner({ ...attribute, $type: EntityNodeAttribute }, node)) ?? [];
+         entity.attributes.map<LogicalEntityNodeAttribute>(attribute =>
+            setOwner({ ...attribute, $type: LogicalEntityNodeAttribute }, node)
+         ) ?? [];
       setAttributes(node, attributes);
       return attributes.map(attribute => this.descriptions.createDescription(attribute, combineIds(nodeId, attribute.id), document));
    }
 
-   protected getEntity(node: AstNode & { entity: Reference<Entity> }, document: LangiumDocument): Entity | undefined {
+   protected getLogicalEntity(node: AstNode & { entity: Reference<LogicalEntity> }, document: LangiumDocument): LogicalEntity | undefined {
       try {
          return fixDocument(node, document).entity?.ref;
       } catch (error) {
@@ -154,7 +156,7 @@ export class CrossModelScopeComputation extends DefaultScopeComputation {
    }
 
    protected processSourceObject(node: SourceObject, nodeId: string, document: LangiumDocument): AstNodeDescription[] {
-      const entity = this.getEntity(node, document);
+      const entity = this.getLogicalEntity(node, document);
       if (!entity) {
          return [];
       }
@@ -165,7 +167,7 @@ export class CrossModelScopeComputation extends DefaultScopeComputation {
    }
 
    protected processTargetObject(node: TargetObject, nodeId: string, document: LangiumDocument): AstNodeDescription[] {
-      const entity = this.getEntity(node, document);
+      const entity = this.getLogicalEntity(node, document);
       if (!entity) {
          return [];
       }

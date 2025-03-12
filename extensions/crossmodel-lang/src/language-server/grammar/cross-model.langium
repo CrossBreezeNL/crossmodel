@@ -6,7 +6,7 @@ import 'system-diagram'
 import 'mapping'
 
 entry CrossModelRoot:
-    (entity=Entity | 
+    (entity=LogicalEntity | 
     relationship=Relationship | 
     systemDiagram=SystemDiagram |
     mapping=Mapping)?;

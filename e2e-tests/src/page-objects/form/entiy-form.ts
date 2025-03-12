@@ -8,21 +8,21 @@ import { TheiaPageObject } from '@theia/playwright';
 import { TheiaView } from '@theia/playwright/lib/theia-view';
 import { CMForm, FormIcons, FormSection } from './cm-form';
 
-export class EntityForm extends CMForm {
-   protected override iconClass = FormIcons.Entity;
+export class LogicalEntityForm extends CMForm {
+   protected override iconClass = FormIcons.LogicalEntity;
 
-   readonly generalSection: EntityGeneralSection;
-   readonly attributesSection: EntityAttributesSection;
+   readonly generalSection: LogicalEntityGeneralSection;
+   readonly attributesSection: LogicalEntityAttributesSection;
 
    constructor(view: TheiaView, relativeSelector: string) {
-      super(view, relativeSelector, 'Entity');
-      this.generalSection = new EntityGeneralSection(this);
-      this.attributesSection = new EntityAttributesSection(this);
+      super(view, relativeSelector, 'LogicalEntity');
+      this.generalSection = new LogicalEntityGeneralSection(this);
+      this.attributesSection = new LogicalEntityAttributesSection(this);
    }
 }
 
-export class EntityGeneralSection extends FormSection {
-   constructor(form: EntityForm) {
+export class LogicalEntityGeneralSection extends FormSection {
+   constructor(form: LogicalEntityForm) {
       super(form, 'General');
    }
 
@@ -45,9 +45,9 @@ export class EntityGeneralSection extends FormSection {
    }
 }
 
-export class EntityAttributesSection extends FormSection {
+export class LogicalEntityAttributesSection extends FormSection {
    readonly addButtonLocator: Locator;
-   constructor(form: EntityForm) {
+   constructor(form: LogicalEntityForm) {
       super(form, 'Attributes');
       this.addButtonLocator = this.locator.locator('button:has-text("Add Attribute")');
    }
@@ -120,7 +120,7 @@ export type LogicalAttributeDatatype = keyof typeof LogicalAttributeDatatype;
 export class LogicalAttribute extends TheiaPageObject {
    constructor(
       readonly locator: Locator,
-      section: EntityAttributesSection
+      section: LogicalEntityAttributesSection
    ) {
       super(section.app);
    }

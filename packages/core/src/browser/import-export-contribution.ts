@@ -355,8 +355,8 @@ export class ImportExportContribution implements CommandContribution, MenuContri
    }
 
    protected subFolder(modelType: ModelFileType): string {
-      if (modelType === 'Entity') {
-         return ModelStructure.Entity.FOLDER + '/';
+      if (modelType === 'LogicalEntity') {
+         return ModelStructure.LogicalEntity.FOLDER + '/';
       }
       if (modelType === 'Relationship') {
          return ModelStructure.Relationship.FOLDER + '/';

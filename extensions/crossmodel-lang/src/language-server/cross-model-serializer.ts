@@ -9,8 +9,6 @@ import { Serializer } from '../model-server/serializer.js';
 import {
    AttributeMapping,
    CrossModelRoot,
-   Entity,
-   EntityNode,
    isAttributeMappingSource,
    isAttributeMappingTarget,
    isCustomProperty,
@@ -21,6 +19,8 @@ import {
    isSourceObjectDependency,
    JoinCondition,
    LogicalAttribute,
+   LogicalEntity,
+   LogicalEntityNode,
    Mapping,
    reflection,
    Relationship,
@@ -45,7 +45,7 @@ const CUSTOM_PROPERTIES = ['customProperties'];
  * It cannot be derived for interfaces as the interface order does not reflect property order in grammar due to inheritance.
  */
 const PROPERTY_ORDER = new Map<string, string[]>([
-   [Entity, [...NAMED_OBJECT_PROPERTIES, 'superEntities', 'attributes', ...CUSTOM_PROPERTIES]],
+   [LogicalEntity, [...NAMED_OBJECT_PROPERTIES, 'superEntities', 'attributes', ...CUSTOM_PROPERTIES]],
    [LogicalAttribute, [...NAMED_OBJECT_PROPERTIES, 'datatype', 'length', 'precision', 'scale', 'identifier', ...CUSTOM_PROPERTIES]],
    [
       Relationship,
@@ -63,7 +63,7 @@ const PROPERTY_ORDER = new Map<string, string[]>([
    ],
    [RelationshipAttribute, ['parent', 'child', ...CUSTOM_PROPERTIES]],
    [SystemDiagram, [...IDENTIFIED_PROPERTIES, 'nodes', 'edges']],
-   [EntityNode, [...IDENTIFIED_PROPERTIES, 'entity', 'x', 'y', 'width', 'height']],
+   [LogicalEntityNode, [...IDENTIFIED_PROPERTIES, 'entity', 'x', 'y', 'width', 'height']],
    [RelationshipEdge, [...IDENTIFIED_PROPERTIES, 'relationship', 'sourceNode', 'targetNode']],
    [Mapping, [...IDENTIFIED_PROPERTIES, 'sources', 'target', ...CUSTOM_PROPERTIES]],
    [SourceObject, [...IDENTIFIED_PROPERTIES, 'entity', 'join', 'dependencies', 'conditions', ...CUSTOM_PROPERTIES]],

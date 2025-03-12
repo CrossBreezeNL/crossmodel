@@ -20,7 +20,7 @@ export class SystemToolBox extends GLSPToolPalette {
 }
 
 export interface SystemTools {
-   default: 'Select & Move' | 'Hide' | 'Show Entity' | 'Create Entity' | 'Create 1:1 Relationship';
+   default: 'Select & Move' | 'Hide' | 'Show Entity' | 'Create Entity' | 'Create Relationship';
 }
 
 export class SystemToolBoxContent extends GLSPToolPaletteContent {

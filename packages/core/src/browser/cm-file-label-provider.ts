@@ -34,8 +34,8 @@ export class CrossModelLabelProvider implements LabelProviderContribution, TreeD
       if (this.isSystemDirectory(node)) {
          return ModelStructure.System.ICON_CLASS + ' default-folder-icon';
       }
-      if (this.isSystemDirectory(node.parent) && node.fileStat.name === ModelStructure.Entity.FOLDER) {
-         return ModelStructure.Entity.ICON_CLASS + ' default-folder-icon';
+      if (this.isSystemDirectory(node.parent) && node.fileStat.name === ModelStructure.LogicalEntity.FOLDER) {
+         return ModelStructure.LogicalEntity.ICON_CLASS + ' default-folder-icon';
       }
       if (this.isSystemDirectory(node.parent) && node.fileStat.name === ModelStructure.Relationship.FOLDER) {
          return ModelStructure.Relationship.ICON_CLASS + ' default-folder-icon';

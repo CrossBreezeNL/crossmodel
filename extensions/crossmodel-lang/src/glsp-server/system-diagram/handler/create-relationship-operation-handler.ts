@@ -13,7 +13,7 @@ import {
 } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
 import { URI, Utils as UriUtils } from 'vscode-uri';
-import { CrossModelRoot, EntityNode, Relationship, RelationshipEdge } from '../../../language-server/generated/ast.js';
+import { CrossModelRoot, LogicalEntityNode, Relationship, RelationshipEdge } from '../../../language-server/generated/ast.js';
 import { Utils } from '../../../language-server/util/uri-util.js';
 import { CrossModelCommand } from '../../common/cross-model-command.js';
 import { SystemModelState } from '../model/system-model-state.js';
@@ -31,8 +31,8 @@ export class SystemDiagramCreateRelationshipOperationHandler extends JsonCreateE
    }
 
    protected async createEdge(operation: CreateEdgeOperation): Promise<void> {
-      const sourceNode = this.modelState.index.findEntityNode(operation.sourceElementId);
-      const targetNode = this.modelState.index.findEntityNode(operation.targetElementId);
+      const sourceNode = this.modelState.index.findLogicalEntityNode(operation.sourceElementId);
+      const targetNode = this.modelState.index.findLogicalEntityNode(operation.targetElementId);
 
       if (sourceNode && targetNode) {
          // before we can create a diagram edge, we need to create the corresponding relationship that it is based on
@@ -66,7 +66,10 @@ export class SystemDiagramCreateRelationshipOperationHandler extends JsonCreateE
    /**
     * Creates a new relationship and stores it on a file on the file system.
     */
-   protected async createAndSaveRelationship(sourceNode: EntityNode, targetNode: EntityNode): Promise<Relationship | undefined> {
+   protected async createAndSaveRelationship(
+      sourceNode: LogicalEntityNode,
+      targetNode: LogicalEntityNode
+   ): Promise<Relationship | undefined> {
       const source = sourceNode.entity?.ref?.id || sourceNode.entity?.$refText;
       const target = targetNode.entity?.ref?.id || targetNode.entity?.$refText;
 

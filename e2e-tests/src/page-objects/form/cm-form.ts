@@ -8,7 +8,7 @@ import { TheiaPageObject, TheiaView } from '@theia/playwright';
 import { TheiaViewObject } from '../theia-view-object';
 
 export const FormIcons = {
-   Entity: 'codicon-git-commit',
+   LogicalEntity: 'codicon-git-commit',
    Relationship: 'codicon-git-compare',
    SystemDiagram: 'codicon-type-hierarchy-sub',
    Mapping: 'codicon-group-by-ref-type'

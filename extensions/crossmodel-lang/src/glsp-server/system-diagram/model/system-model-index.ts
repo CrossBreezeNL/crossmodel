@@ -4,14 +4,14 @@
 import { injectable } from 'inversify';
 import { AstNode } from 'langium';
 import {
-   Entity,
-   EntityNode,
    InheritanceEdge,
+   LogicalEntity,
+   LogicalEntityNode,
    Relationship,
    RelationshipEdge,
-   isEntity,
-   isEntityNode,
    isInheritanceEdge,
+   isLogicalEntity,
+   isLogicalEntityNode,
    isRelationship,
    isRelationshipEdge
 } from '../../../language-server/generated/ast.js';
@@ -19,16 +19,16 @@ import { CrossModelIndex } from '../../common/cross-model-index.js';
 
 @injectable()
 export class SystemModelIndex extends CrossModelIndex {
-   findEntity(id: string): Entity | undefined {
-      return this.findSemanticElement(id, isEntity);
+   findLogicalEntity(id: string): LogicalEntity | undefined {
+      return this.findSemanticElement(id, isLogicalEntity);
    }
 
    findRelationship(id: string): Relationship | undefined {
       return this.findSemanticElement(id, isRelationship);
    }
 
-   findEntityNode(id: string): EntityNode | undefined {
-      return this.findSemanticElement(id, isEntityNode);
+   findLogicalEntityNode(id: string): LogicalEntityNode | undefined {
+      return this.findSemanticElement(id, isLogicalEntityNode);
    }
 
    findRelationshipEdge(id: string): RelationshipEdge | undefined {
@@ -41,7 +41,7 @@ export class SystemModelIndex extends CrossModelIndex {
 
    protected override indexAstNode(node: AstNode): void {
       super.indexAstNode(node);
-      if (isEntityNode(node)) {
+      if (isLogicalEntityNode(node)) {
          this.indexSemanticElement(`${this.createId(node)}_label`, node);
       }
    }

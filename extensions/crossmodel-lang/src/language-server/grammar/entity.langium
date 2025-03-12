@@ -1,19 +1,19 @@
 import 'terminals'
 import 'common'
 
-interface Entity extends DataElementContainer, WithCustomProperties {
-    superEntities: @Entity[]
+interface LogicalEntity extends DataElementContainer, WithCustomProperties {
+    superEntities: @LogicalEntity[]
     attributes: LogicalAttribute[]
 }
 
-// Entity definition 
-Entity returns Entity:
+// LogicalEntity definition 
+LogicalEntity returns LogicalEntity:
     'entity' ':'
         INDENT
             NamedObjectFragment
             ('inherits' ':'
                 INDENT
-                    (LIST_ITEM superEntities+=[Entity:IDReference])+
+                    (LIST_ITEM superEntities+=[LogicalEntity:IDReference])+
                 DEDENT
             )?
             ('attributes' ':'

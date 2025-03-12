@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { CrossReferenceContext, EntityType, RelationshipAttribute, RelationshipAttributeType } from '@crossbreeze/protocol';
+import { CrossReferenceContext, LogicalEntityType, RelationshipAttribute, RelationshipAttributeType } from '@crossbreeze/protocol';
 import { GridColDef, GridRenderEditCellParams, useGridApiContext } from '@mui/x-data-grid';
 import * as React from 'react';
 import { useModelDispatch, useModelQueryApi, useReadonly, useRelationship } from '../../ModelContext';
@@ -48,7 +48,7 @@ export function EditAttributePropertyComponent({
          label=''
          optionLoader={referenceableElements}
          onChange={(_evt, newReference) => handleValueChange(newReference.label)}
-         value={{ uri: '', label: value ?? '', type: EntityType }}
+         value={{ uri: '', label: value ?? '', type: LogicalEntityType }}
          clearOnBlur={true}
          selectOnFocus={true}
          disabled={readonly}

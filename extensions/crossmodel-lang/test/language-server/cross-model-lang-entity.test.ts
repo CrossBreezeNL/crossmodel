@@ -5,14 +5,14 @@
 import { describe, expect, test } from '@jest/globals';
 
 import { entity1, entity2, entity3, entity4 } from './test-utils/test-documents/entity/index.js';
-import { createCrossModelTestServices, parseEntity } from './test-utils/utils.js';
+import { createCrossModelTestServices, parseLogicalEntity } from './test-utils/utils.js';
 
 const services = createCrossModelTestServices();
 
 describe('CrossModel language Entity', () => {
    describe('Without attributes', () => {
       test('Simple file for entity', async () => {
-         const entity = await parseEntity({ services, text: entity1 });
+         const entity = await parseLogicalEntity({ services, text: entity1 });
          expect(entity.id).toBe('Customer');
          expect(entity.name).toBe('Customer');
          expect(entity.description).toBe('A customer with whom a transaction has been made.');
@@ -21,7 +21,7 @@ describe('CrossModel language Entity', () => {
 
    describe('With attributes', () => {
       test('entity with attributes', async () => {
-         const entity = await parseEntity({ services, text: entity2 });
+         const entity = await parseLogicalEntity({ services, text: entity2 });
          expect(entity.attributes.length).toBe(6);
          expect(entity.attributes[0].id).toBe('Id');
          expect(entity.attributes[0].name).toBe('Id');
@@ -29,7 +29,7 @@ describe('CrossModel language Entity', () => {
       });
 
       test('entity with attributes coming before the description and name', async () => {
-         const entity = await parseEntity({ services, text: entity4 }, { parserErrors: 3 });
+         const entity = await parseLogicalEntity({ services, text: entity4 }, { parserErrors: 3 });
          expect(entity.id).toBe('Customer');
          expect(entity.name).toBeUndefined();
          expect(entity.description).toBeUndefined();
@@ -41,7 +41,7 @@ describe('CrossModel language Entity', () => {
       });
 
       test('entity with indentation error', async () => {
-         await parseEntity({ services, text: entity3 }, { parserErrors: 1 });
+         await parseLogicalEntity({ services, text: entity3 }, { parserErrors: 1 });
       });
    });
 });

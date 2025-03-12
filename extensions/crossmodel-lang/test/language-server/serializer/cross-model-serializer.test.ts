@@ -7,11 +7,11 @@ import { Reference, URI } from 'langium';
 
 import _ from 'lodash';
 import { CrossModelSerializer } from '../../../src/language-server/cross-model-serializer.js';
-import { CrossModelRoot, Entity, Relationship } from '../../../src/language-server/generated/ast.js';
+import { CrossModelRoot, LogicalEntity, Relationship } from '../../../src/language-server/generated/ast.js';
 import {
-   createEntity,
    createEntityNode,
    createLogicalAttribute,
+   createLogicalEntity,
    createRelationship,
    createRelationshipEdge,
    createSystemDiagram
@@ -20,7 +20,7 @@ import { customer } from '../test-utils/test-documents/entity/customer.js';
 import { sub_customer } from '../test-utils/test-documents/entity/sub_customer.js';
 import { sub_customer_cycle } from '../test-utils/test-documents/entity/sub_customer_cycle.js';
 import { sub_customer_multi } from '../test-utils/test-documents/entity/sub_customer_multi.js';
-import { createCrossModelTestServices, parseDocuments, parseEntity, testUri } from '../test-utils/utils.js';
+import { createCrossModelTestServices, parseDocuments, parseLogicalEntity, testUri } from '../test-utils/utils.js';
 
 const services = createCrossModelTestServices();
 
@@ -38,7 +38,7 @@ describe('CrossModelLexer', () => {
 
       beforeAll(() => {
          crossModelRoot = { $type: 'CrossModelRoot' };
-         crossModelRoot.entity = createEntity(crossModelRoot, 'testId', 'test Name', {
+         crossModelRoot.entity = createLogicalEntity(crossModelRoot, 'testId', 'test Name', {
             description: 'Test description'
          });
 
@@ -50,7 +50,7 @@ describe('CrossModelLexer', () => {
          ];
 
          crossModelRootWithAttributesDifPlace = { $type: 'CrossModelRoot' };
-         crossModelRootWithAttributesDifPlace.entity = createEntity(crossModelRoot, 'testId', 'test Name', {
+         crossModelRootWithAttributesDifPlace.entity = createLogicalEntity(crossModelRoot, 'testId', 'test Name', {
             description: 'Test description'
          });
          crossModelRootWithAttributesDifPlace.entity.attributes = [
@@ -83,16 +83,16 @@ describe('CrossModelLexer', () => {
             $type: 'CrossModelRoot'
          };
 
-         const ref1: Reference<Entity> = {
+         const ref1: Reference<LogicalEntity> = {
             $refText: 'Ref1',
-            ref: createEntity(crossModelRoot, 'Ref1', 'test Name', {
+            ref: createLogicalEntity(crossModelRoot, 'Ref1', 'test Name', {
                description: 'Test description'
             })
          };
 
-         const ref2: Reference<Entity> = {
+         const ref2: Reference<LogicalEntity> = {
             $refText: 'Ref2',
-            ref: createEntity(crossModelRoot, 'Ref2', 'test Name', {
+            ref: createLogicalEntity(crossModelRoot, 'Ref2', 'test Name', {
                description: 'Test description'
             })
          };
@@ -116,16 +116,16 @@ describe('CrossModelLexer', () => {
             $type: 'CrossModelRoot'
          };
 
-         const ref1: Reference<Entity> = {
+         const ref1: Reference<LogicalEntity> = {
             $refText: 'Ref1',
-            ref: createEntity(crossModelRoot, 'Ref1', 'test Name', {
+            ref: createLogicalEntity(crossModelRoot, 'Ref1', 'test Name', {
                description: 'Test description'
             })
          };
 
-         const ref2: Reference<Entity> = {
+         const ref2: Reference<LogicalEntity> = {
             $refText: 'Ref2',
-            ref: createEntity(crossModelRoot, 'Ref2', 'test Name', {
+            ref: createLogicalEntity(crossModelRoot, 'Ref2', 'test Name', {
                description: 'Test description'
             })
          };
@@ -163,13 +163,13 @@ describe('CrossModelLexer', () => {
       });
 
       test('Single inheritance', async () => {
-         const subCustomer = await parseEntity({ services, text: sub_customer });
+         const subCustomer = await parseLogicalEntity({ services, text: sub_customer });
          expect(subCustomer.superEntities).toHaveLength(1);
          expect(subCustomer.superEntities[0].$refText).toBe('Customer');
       });
 
       test('Multiple inheritance', async () => {
-         const subCustomer = await parseEntity({ services, text: sub_customer_multi });
+         const subCustomer = await parseLogicalEntity({ services, text: sub_customer_multi });
          expect(subCustomer.superEntities).toHaveLength(2);
          expect(subCustomer.superEntities[0].$refText).toBe('Customer');
          expect(subCustomer.superEntities[1].$refText).toBe('SubCustomer');
@@ -177,7 +177,7 @@ describe('CrossModelLexer', () => {
 
       test('Inheritance Cycle', async () => {
          services.shared.workspace.LangiumDocuments.deleteDocument(URI.parse(customerDocumentUri));
-         const newCustomer = await parseEntity({ services, text: sub_customer_cycle, documentUri: 'customer', validation: true });
+         const newCustomer = await parseLogicalEntity({ services, text: sub_customer_cycle, documentUri: 'customer', validation: true });
          expect(newCustomer.$document.diagnostics).toBeDefined();
          expect(newCustomer.$document.diagnostics).toEqual(
             expect.arrayContaining([

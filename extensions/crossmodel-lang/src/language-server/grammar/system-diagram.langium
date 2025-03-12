@@ -5,7 +5,7 @@ import 'relationship'
 
 // Diagram definition
 interface SystemDiagram extends IdentifiedObject {
-    nodes: EntityNode[];
+    nodes: LogicalEntityNode[];
     edges: SystemDiagramEdge[];
 }
 
@@ -15,7 +15,7 @@ SystemDiagram returns SystemDiagram:
         IdentifiedObjectFragment
         ('nodes' ':'
             INDENT 
-                (LIST_ITEM nodes+=EntityNode)+
+                (LIST_ITEM nodes+=LogicalEntityNode)+
             DEDENT
         )?
         ('edges' ':'
@@ -26,24 +26,24 @@ SystemDiagram returns SystemDiagram:
     DEDENT
 ;
 
-interface EntityNode extends IdentifiedObject {
-    entity: @Entity;
+interface LogicalEntityNode extends IdentifiedObject {
+    entity: @LogicalEntity;
     x: number;
     y: number;
     width: number;
     height: number;
 }
 
-EntityNode returns EntityNode:
+LogicalEntityNode returns LogicalEntityNode:
     IdentifiedObjectFragment
-    'entity' ':' entity=[Entity:IDReference]
+    'entity' ':' entity=[LogicalEntity:IDReference]
     'x' ':' x=NUMBER
     'y' ':' y=NUMBER
     'width' ':' width=NUMBER
     'height' ':' height=NUMBER
 ;
 
-interface EntityNodeAttribute extends LogicalAttribute {
+interface LogicalEntityNodeAttribute extends LogicalAttribute {
 }
 
 interface SystemDiagramEdge extends IdentifiedObject {}
@@ -54,24 +54,24 @@ SystemDiagramEdge returns SystemDiagramEdge:
 
 interface RelationshipEdge extends SystemDiagramEdge {
     relationship: @Relationship;
-    sourceNode: @EntityNode;
-    targetNode: @EntityNode;
+    sourceNode: @LogicalEntityNode;
+    targetNode: @LogicalEntityNode;
 }
 
 RelationshipEdge returns RelationshipEdge:
     IdentifiedObjectFragment
     'relationship' ':' relationship=[Relationship:IDReference]
-    'sourceNode' ':' sourceNode=[EntityNode:IDReference]
-    'targetNode' ':' targetNode=[EntityNode:IDReference]
+    'sourceNode' ':' sourceNode=[LogicalEntityNode:IDReference]
+    'targetNode' ':' targetNode=[LogicalEntityNode:IDReference]
 ;
 
 interface InheritanceEdge extends SystemDiagramEdge {
-    baseNode: @EntityNode;
-    superNode: @EntityNode;
+    baseNode: @LogicalEntityNode;
+    superNode: @LogicalEntityNode;
 }
 
 InheritanceEdge returns InheritanceEdge:
     'id' ':' id=ID
-    'baseNode' ':' baseNode=[EntityNode:IDReference]
-    'superNode' ':' superNode=[EntityNode:IDReference]
+    'baseNode' ':' baseNode=[LogicalEntityNode:IDReference]
+    'superNode' ':' superNode=[LogicalEntityNode:IDReference]
 ;

@@ -3,7 +3,7 @@
  ********************************************************************************/
 import { GEdge, GGraph, GModelFactory, GNode, ModelState } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
-import { EntityNode, InheritanceEdge, RelationshipEdge, isRelationshipEdge } from '../../../language-server/generated/ast.js';
+import { InheritanceEdge, LogicalEntityNode, RelationshipEdge, isRelationshipEdge } from '../../../language-server/generated/ast.js';
 import { GInheritanceEdge, GRelationshipEdge } from './edges.js';
 import { GEntityNode } from './nodes.js';
 import { SystemModelState } from './system-model-state.js';
@@ -45,7 +45,7 @@ export class SystemDiagramGModelFactory implements GModelFactory {
       return graphBuilder.build();
    }
 
-   protected createEntityNode(node: EntityNode): GNode {
+   protected createEntityNode(node: LogicalEntityNode): GNode {
       return GEntityNode.builder().set(node, this.modelState.index).build();
    }
 

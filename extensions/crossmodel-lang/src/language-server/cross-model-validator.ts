@@ -17,15 +17,15 @@ import { ID_PROPERTY, IdentifiableAstNode } from './cross-model-naming.js';
 import {
    AttributeMapping,
    CrossModelAstType,
-   Entity,
    InheritanceEdge,
    isCrossModelRoot,
-   isEntity,
    isLogicalAttribute,
+   isLogicalEntity,
    isMapping,
    isRelationship,
    isSystemDiagram,
    LogicalAttribute,
+   LogicalEntity,
    Mapping,
    NamedObject,
    Relationship,
@@ -65,7 +65,7 @@ export function registerValidationChecks(services: CrossModelServices): void {
    const checks: ValidationChecks<CrossModelAstType> = {
       AstNode: validator.checkNode,
       AttributeMapping: validator.checkAttributeMapping,
-      Entity: validator.checkEntity,
+      LogicalEntity: validator.checkLogicalEntity,
       Mapping: validator.checkMapping,
       Relationship: validator.checkRelationship,
       RelationshipEdge: validator.checkRelationshipEdge,
@@ -140,7 +140,7 @@ export class CrossModelValidator {
 
    protected isExportedGlobally(node: AstNode): boolean {
       // we export anything with an id from entities and relationships and all root nodes, see CrossModelScopeComputation
-      return isEntity(node) || isLogicalAttribute(node) || isRelationship(node) || isSystemDiagram(node) || isMapping(node);
+      return isLogicalEntity(node) || isLogicalAttribute(node) || isRelationship(node) || isSystemDiagram(node) || isMapping(node);
    }
 
    protected checkUniqueNodeId(node: AstNode, accept: ValidationAcceptor): void {
@@ -181,19 +181,19 @@ export class CrossModelValidator {
       }
    }
 
-   checkEntity(entity: Entity, accept: ValidationAcceptor): void {
+   checkLogicalEntity(entity: LogicalEntity, accept: ValidationAcceptor): void {
       const cycle = this.findInheritanceCycle(entity);
       if (cycle.length > 0) {
          accept('error', `Inheritance cycle detected: ${cycle.join(' -> ')}.`, { node: entity, property: 'superEntities' });
       }
    }
 
-   protected findInheritanceCycle(entity: Entity): string[] {
+   protected findInheritanceCycle(entity: LogicalEntity): string[] {
       const visited: Set<string> = new Set();
       const recursionStack: Set<string> = new Set();
       const path: string[] = [];
 
-      function depthFirst(current: Entity): string[] {
+      function depthFirst(current: LogicalEntity): string[] {
          const currentId = current.id;
 
          // Mark the current node as visited and add to recursion stack

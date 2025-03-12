@@ -4,10 +4,10 @@ import 'entity'
 
 // Relationship definition
 interface Relationship extends DataElementContainerLink, WithCustomProperties {
-    parent: @Entity
+    parent: @LogicalEntity
     parentRole?: string
     parentCardinality?: string
-    child: @Entity
+    child: @LogicalEntity
     childRole?: string
     childCardinality?: string
     attributes: RelationshipAttribute[]
@@ -19,10 +19,10 @@ Relationship returns Relationship:
     'relationship' ':' 
         INDENT
             NamedObjectFragment
-            'parent' ':' parent=[Entity:IDReference]
+            'parent' ':' parent=[LogicalEntity:IDReference]
             ('parentRole' ':' parentRole=STRING)?
             ('parentCardinality' ':' parentCardinality=Cardinality)?
-            'child' ':' child=[Entity:IDReference]
+            'child' ':' child=[LogicalEntity:IDReference]
             ('childRole' ':' childRole=STRING)?
             ('childCardinality' ':' childCardinality=Cardinality)?
             ('attributes' ':'

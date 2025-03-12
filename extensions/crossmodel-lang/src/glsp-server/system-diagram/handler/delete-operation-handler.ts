@@ -4,11 +4,11 @@
 import { Command, DeleteElementOperation, JsonOperationHandler, ModelState, remove } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
 import {
-   EntityNode,
    InheritanceEdge,
-   isEntityNode,
+   isLogicalEntityNode,
    isRelationshipEdge,
    isSystemDiagramEdge,
+   LogicalEntityNode,
    SystemDiagramEdge
 } from '../../../language-server/generated/ast.js';
 import { CrossModelCommand } from '../../common/cross-model-command.js';
@@ -42,7 +42,7 @@ export class SystemDiagramDeleteOperationHandler extends JsonOperationHandler {
       for (const elementId of operation.elementIds) {
          const element = this.modelState.index.findSemanticElement(elementId, isDiagramElement);
          // simply remove any diagram nodes or edges from the diagram
-         if (isEntityNode(element)) {
+         if (isLogicalEntityNode(element)) {
             deleteInfo.nodes.push(element);
             deleteInfo.edges.push(...this.modelState.systemDiagram.edges.filter(edge => isRelatedEdge(edge, element)));
          } else if (isSystemDiagramEdge(element)) {
@@ -53,7 +53,7 @@ export class SystemDiagramDeleteOperationHandler extends JsonOperationHandler {
    }
 }
 
-function isRelatedEdge(edge: SystemDiagramEdge, node: EntityNode): boolean {
+function isRelatedEdge(edge: SystemDiagramEdge, node: LogicalEntityNode): boolean {
    if (isRelationshipEdge(edge)) {
       return edge.sourceNode?.ref === node || edge.targetNode?.ref === node;
    } else {
@@ -61,11 +61,11 @@ function isRelatedEdge(edge: SystemDiagramEdge, node: EntityNode): boolean {
    }
 }
 
-function isDiagramElement(item: unknown): item is SystemDiagramEdge | EntityNode {
-   return isSystemDiagramEdge(item) || isEntityNode(item);
+function isDiagramElement(item: unknown): item is SystemDiagramEdge | LogicalEntityNode {
+   return isSystemDiagramEdge(item) || isLogicalEntityNode(item);
 }
 
 interface DeleteInfo {
-   nodes: EntityNode[];
+   nodes: LogicalEntityNode[];
    edges: SystemDiagramEdge[];
 }

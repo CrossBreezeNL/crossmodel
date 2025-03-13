@@ -116,6 +116,7 @@ export function createLogicalEntity(
       id,
       name,
       attributes: [],
+      identifiers: [],
       customProperties: [],
       superEntities: [],
       ...opts

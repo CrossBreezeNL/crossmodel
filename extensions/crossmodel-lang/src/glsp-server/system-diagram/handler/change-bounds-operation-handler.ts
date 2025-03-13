@@ -17,7 +17,7 @@ export class SystemDiagramChangeBoundsOperationHandler extends JsonOperationHand
 
    protected changeBounds(operation: ChangeBoundsOperation): void {
       operation.newBounds.forEach(elementAndBounds => {
-         const node = this.modelState.index.findEntityNode(elementAndBounds.elementId);
+         const node = this.modelState.index.findLogicalEntityNode(elementAndBounds.elementId);
          if (node) {
             // we store the given bounds directly in our diagram node
             node.x = elementAndBounds.newPosition?.x || node.x;

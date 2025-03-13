@@ -4,7 +4,7 @@
 import { INHERITANCE_EDGE_TYPE } from '@crossbreeze/protocol';
 import { EdgeCreationChecker, GModelElement, ModelState, getOrThrow } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
-import { Entity, EntityNode, isInheritanceEdge } from '../../../language-server/generated/ast.js';
+import { LogicalEntity, LogicalEntityNode, isInheritanceEdge } from '../../../language-server/generated/ast.js';
 import { SystemModelState } from '../model/system-model-state.js';
 
 @injectable()
@@ -18,8 +18,8 @@ export class SystemEdgeCreationChecker implements EdgeCreationChecker {
       if (edgeType !== INHERITANCE_EDGE_TYPE) {
          return true;
       }
-      const baseEntityNode = getOrThrow(this.modelState.index.findEntityNode(sourceElement.id), 'Base entity node not found');
-      const superEntityNode = getOrThrow(this.modelState.index.findEntityNode(targetElement.id), 'Super entity node not found');
+      const baseEntityNode = getOrThrow(this.modelState.index.findLogicalEntityNode(sourceElement.id), 'Base entity node not found');
+      const superEntityNode = getOrThrow(this.modelState.index.findLogicalEntityNode(targetElement.id), 'Super entity node not found');
       if (!baseEntityNode.entity.ref || !superEntityNode.entity.ref) {
          return false;
       }
@@ -47,7 +47,7 @@ export class SystemEdgeCreationChecker implements EdgeCreationChecker {
       return true;
    }
 
-   protected hasExistingInheritanceEdge(baseEntityNode: EntityNode, superEntityNode: EntityNode): boolean {
+   protected hasExistingInheritanceEdge(baseEntityNode: LogicalEntityNode, superEntityNode: LogicalEntityNode): boolean {
       const existingInheritanceEdge = this.modelState.systemDiagram.edges.find(edge => {
          if (!isInheritanceEdge(edge)) {
             return false;
@@ -60,7 +60,7 @@ export class SystemEdgeCreationChecker implements EdgeCreationChecker {
       return !!existingInheritanceEdge;
    }
 
-   protected hasSuperEntity(baseEntity: Entity, superEntity: Entity): boolean {
+   protected hasSuperEntity(baseEntity: LogicalEntity, superEntity: LogicalEntity): boolean {
       return baseEntity.superEntities.some(entity => entity.ref === superEntity);
    }
 }

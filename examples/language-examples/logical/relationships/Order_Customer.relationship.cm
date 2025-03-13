@@ -6,5 +6,5 @@ relationship:
     child: Order
     childCardinality: multiple
     attributes:
-        - parent: Customer.Id
-          child: Order.CustomerId
+        - parent: Customer.Customer_Id
+          child: Order.Customer_Id

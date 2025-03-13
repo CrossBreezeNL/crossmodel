@@ -3,7 +3,7 @@
  ********************************************************************************/
 import { ENTITY_NODE_TYPE, LABEL_ENTITY, REFERENCE_CONTAINER_TYPE, REFERENCE_PROPERTY, REFERENCE_VALUE } from '@crossbreeze/protocol';
 import { ArgsUtil, GNode, GNodeBuilder } from '@eclipse-glsp/server';
-import { EntityNode } from '../../../language-server/generated/ast.js';
+import { LogicalEntityNode } from '../../../language-server/generated/ast.js';
 import { getAttributes } from '../../../language-server/util/ast-util.js';
 import { AttributeCompartment, AttributesCompartmentBuilder, createHeader } from '../../common/nodes.js';
 import { SystemModelIndex } from './system-model-index.js';
@@ -17,7 +17,7 @@ export class GEntityNode extends GNode {
 }
 
 export class GEntityNodeBuilder extends GNodeBuilder<GEntityNode> {
-   set(node: EntityNode, index: SystemModelIndex): this {
+   set(node: LogicalEntityNode, index: SystemModelIndex): this {
       this.id(index.createId(node));
 
       // Get the reference that the DiagramNode holds to the Entity in the .langium file.
@@ -25,7 +25,7 @@ export class GEntityNodeBuilder extends GNodeBuilder<GEntityNode> {
 
       // Options which are the same for every node
       this.addCssClasses('diagram-node', 'entity');
-      this.addArg(REFERENCE_CONTAINER_TYPE, EntityNode);
+      this.addArg(REFERENCE_CONTAINER_TYPE, LogicalEntityNode);
       this.addArg(REFERENCE_PROPERTY, 'entity');
       this.addArg(REFERENCE_VALUE, node.entity.$refText);
 

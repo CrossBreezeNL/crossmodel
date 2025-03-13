@@ -10,7 +10,7 @@
     },
     {
       "name": "keyword.control.cross-model",
-      "match": "\\b(TRUE|apply|attribute|attributes|baseNode|child|childCardinality|childRole|conditions|cross-join|customProperties|datatype|dependencies|description|diagram|edges|entity|expression|from|height|id|identifier|inherits|inner-join|join|left-join|length|mapping|mappings|multiple|name|nodes|one|parent|parentCardinality|parentRole|precision|relationship|scale|sourceNode|sources|superNode|systemDiagram|target|targetNode|true|value|width|x|y|zero)\\b"
+      "match": "\\b(TRUE|apply|attribute|attributes|baseNode|child|childCardinality|childRole|conditions|cross-join|customProperties|datatype|dependencies|description|diagram|edges|entity|expression|from|height|id|identifier|identifiers|inherits|inner-join|join|left-join|length|mapping|mappings|multiple|name|nodes|one|parent|parentCardinality|parentRole|precision|primary|relationship|scale|sourceNode|sources|superNode|systemDiagram|target|targetNode|true|value|width|x|y|zero)\\b"
     },
     {
       "name": "string.quoted.double.cross-model",

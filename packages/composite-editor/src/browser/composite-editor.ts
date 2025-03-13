@@ -208,7 +208,7 @@ export class CompositeEditor extends BaseWidget implements SaveableSource, Navig
 
    protected async createPrimaryWidget(options: CompositeWidgetOptions): Promise<Widget> {
       switch (this.fileType) {
-         case 'Entity':
+         case 'LogicalEntity':
             return this.createFormWidget(options);
          case 'Relationship':
             return this.createFormWidget(options);

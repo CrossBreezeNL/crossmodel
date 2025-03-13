@@ -3,8 +3,8 @@ entity:
     name: "Address"
     description: "The address of a customer."
     attributes:
-      - id: CustomerID
-        name: "Customer ID"
+      - id: Customer_Id
+        name: "Customer Id"
         datatype: "Integer"
       - id: Street
         name: "Street"
@@ -18,10 +18,13 @@ entity:
           - name: Author
             value: "CrossBreeze"
           - name: ExampleEntityAttribute
+    identifiers:
+      - id: Address_Surrogate_Identifier
+        name: "Address Surrogate Identifier"
+        primary: true
+        attributes:
+        - Customer_Id
     customProperties:
       - name: Author
         value: "CrossBreeze"
       - name: ExampleEntity
-    identifier:
-      - attributes:
-        - CustomerID

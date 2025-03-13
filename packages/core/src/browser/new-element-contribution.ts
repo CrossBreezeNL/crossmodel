@@ -62,10 +62,10 @@ const NEW_ELEMENT_TEMPLATES: NewElementTemplate[] = [
    {
       id: 'crossbreeze.new.entity',
       label: 'Entity',
-      memberType: 'Entity',
-      toUri: joinWithExt(ModelFileExtensions.Entity, join),
+      memberType: 'LogicalEntity',
+      toUri: joinWithExt(ModelFileExtensions.LogicalEntity, join),
       category: TEMPLATE_CATEGORY,
-      iconClass: ModelStructure.Entity.ICON_CLASS,
+      iconClass: ModelStructure.LogicalEntity.ICON_CLASS,
       content: ({ name }) =>
          INITIAL_ENTITY_CONTENT.replace(/\$\{name\}/gi, quote(toPascal(name))).replace(/\$\{id\}/gi, toId(toPascal(name)))
    },

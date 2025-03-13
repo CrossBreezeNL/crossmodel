@@ -54,13 +54,13 @@ export class SystemToolPaletteProvider extends ToolPaletteItemProvider {
                   id: 'entity-create-tool',
                   sortString: '4',
                   label: 'Create Entity',
-                  icon: ModelStructure.Entity.ICON,
+                  icon: ModelStructure.LogicalEntity.ICON,
                   actions: [TriggerNodeCreationAction.create(ENTITY_NODE_TYPE, { args: { type: 'create' } })]
                },
                {
                   id: 'relationship-create-tool',
                   sortString: '5',
-                  label: 'Create 1:1 Relationship',
+                  label: 'Create Relationship',
                   icon: ModelStructure.Relationship.ICON,
                   actions: [TriggerEdgeCreationAction.create(RELATIONSHIP_EDGE_TYPE)]
                },

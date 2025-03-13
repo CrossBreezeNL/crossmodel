@@ -4,7 +4,7 @@
 import { AddEntityOperation, codiconCSSString } from '@crossbreeze/protocol';
 import { ContextActionsProvider, EditorContext, LabeledAction, ModelState, Point } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
-import { EntityNode } from '../../../language-server/generated/ast.js';
+import { LogicalEntityNode } from '../../../language-server/generated/ast.js';
 import { SystemModelState } from '../model/system-model-state.js';
 
 /**
@@ -20,7 +20,7 @@ export class SystemDiagramAddEntityActionProvider implements ContextActionsProvi
    async getActions(editorContext: EditorContext): Promise<LabeledAction[]> {
       const completionItems = this.state.services.language.references.ScopeProvider.complete({
          container: { globalId: this.state.systemDiagram.id! },
-         syntheticElements: [{ property: 'nodes', type: EntityNode }],
+         syntheticElements: [{ property: 'nodes', type: LogicalEntityNode }],
          property: 'entity'
       });
       return completionItems.map<LabeledAction>(item => ({

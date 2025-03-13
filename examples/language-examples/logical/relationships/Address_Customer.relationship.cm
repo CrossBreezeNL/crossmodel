@@ -6,8 +6,8 @@ relationship:
     child: Address
     childCardinality: multiple
     attributes:
-      - parent: Customer.Id
-        child: Address.CustomerID
+      - parent: Customer.Customer_Id
+        child: Address.Customer_Id
         customProperties:
           - name: Author
             value: "CrossBreeze"

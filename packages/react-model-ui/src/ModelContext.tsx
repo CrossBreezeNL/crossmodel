@@ -4,7 +4,7 @@
 import {
    CrossModelRoot,
    CrossReferenceContext,
-   Entity,
+   LogicalEntity,
    Mapping,
    ModelDiagnostic,
    ReferenceableElement,
@@ -72,7 +72,7 @@ export function useReadonly(): boolean {
    return ModelDiagnostic.hasErrors(useDiagnostics());
 }
 
-export function useEntity(): Entity {
+export function useEntity(): LogicalEntity {
    return useModel().entity!;
 }
 

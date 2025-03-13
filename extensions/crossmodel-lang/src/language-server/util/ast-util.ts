@@ -11,10 +11,10 @@ import {
    AttributeMappingSource,
    AttributeMappingTarget,
    CrossModelRoot,
-   Entity,
-   EntityNode,
-   EntityNodeAttribute,
    LogicalAttribute,
+   LogicalEntity,
+   LogicalEntityNode,
+   LogicalEntityNodeAttribute,
    Mapping,
    Relationship,
    RelationshipEdge,
@@ -24,7 +24,7 @@ import {
    TargetObject,
    TargetObjectAttribute,
    isCrossModelRoot,
-   isEntity,
+   isLogicalEntity,
    isMapping,
    isRelationship,
    isSystemDiagram
@@ -51,21 +51,21 @@ export const IMPLICIT_ATTRIBUTES_PROPERTY = '$attributes';
 export const IMPLICIT_OWNER_PROPERTY = '$owner';
 export const IMPLICIT_ID_PROPERTY = '$id';
 
-export function getAttributes(node: EntityNode): EntityNodeAttribute[];
+export function getAttributes(node: LogicalEntityNode): LogicalEntityNodeAttribute[];
 export function getAttributes(node: SourceObject): SourceObjectAttribute[];
 export function getAttributes(node: TargetObject): TargetObjectAttribute[];
 export function getAttributes<T>(node: any): T[] {
    return (node[IMPLICIT_ATTRIBUTES_PROPERTY] as T[]) ?? [];
 }
 
-export function setAttributes(node: EntityNode, attributes: EntityNodeAttribute[]): void;
+export function setAttributes(node: LogicalEntityNode, attributes: LogicalEntityNodeAttribute[]): void;
 export function setAttributes(node: SourceObject, attributes: SourceObjectAttribute[]): void;
 export function setAttributes(node: TargetObject, attributes: TargetObjectAttribute[]): void;
 export function setAttributes(node: object, attributes: LogicalAttribute[]): void {
    (node as any)[IMPLICIT_ATTRIBUTES_PROPERTY] = attributes;
 }
 
-export function getOwner(node: EntityNodeAttribute): EntityNode;
+export function getOwner(node: LogicalEntityNodeAttribute): LogicalEntityNode;
 export function getOwner(node: SourceObjectAttribute): SourceObject;
 export function getOwner(node: TargetObjectAttribute): TargetObject;
 export function getOwner(node?: AstNode): AstNode | undefined;
@@ -73,7 +73,7 @@ export function getOwner<T>(node: any): T | undefined {
    return node?.[IMPLICIT_OWNER_PROPERTY] as T;
 }
 
-export function setOwner(attribute: EntityNodeAttribute, owner: EntityNode): EntityNodeAttribute;
+export function setOwner(attribute: LogicalEntityNodeAttribute, owner: LogicalEntityNode): LogicalEntityNodeAttribute;
 export function setOwner(attribute: SourceObjectAttribute, owner: SourceObject): SourceObjectAttribute;
 export function setOwner(attribute: TargetObjectAttribute, owner: TargetObject): TargetObjectAttribute;
 export function setOwner<T>(attribute: T, owner: object): T {
@@ -104,18 +104,19 @@ export function isImplicitProperty(prop: string, obj: any): boolean {
    );
 }
 
-export function createEntity(
+export function createLogicalEntity(
    container: CrossModelRoot,
    id: string,
    name: string,
-   opts?: Partial<Omit<Entity, '$container' | '$type' | 'id' | 'name'>>
-): Entity {
+   opts?: Partial<Omit<LogicalEntity, '$container' | '$type' | 'id' | 'name'>>
+): LogicalEntity {
    return {
       $container: container,
-      $type: 'Entity',
+      $type: 'LogicalEntity',
       id,
       name,
       attributes: [],
+      identifiers: [],
       customProperties: [],
       superEntities: [],
       ...opts
@@ -123,7 +124,7 @@ export function createEntity(
 }
 
 export function createLogicalAttribute(
-   container: Entity,
+   container: LogicalEntity,
    id: string,
    name: string,
    opts?: Partial<Omit<LogicalAttribute, '$container' | '$type' | 'id' | 'name'>>
@@ -143,8 +144,8 @@ export function createRelationship(
    container: CrossModelRoot,
    id: string,
    name: string,
-   parent: Reference<Entity>,
-   child: Reference<Entity>,
+   parent: Reference<LogicalEntity>,
+   child: Reference<LogicalEntity>,
    opts?: Partial<Omit<Relationship, '$container' | '$type' | 'id' | 'name' | 'parent' | 'child'>>
 ): Relationship {
    return {
@@ -178,14 +179,14 @@ export function createSystemDiagram(
 export function createEntityNode(
    container: SystemDiagram,
    id: string,
-   entity: Reference<Entity>,
+   entity: Reference<LogicalEntity>,
    position: Point,
    dimension: Dimension,
-   opts?: Partial<Omit<EntityNode, '$container' | '$type' | 'id' | 'entity'>>
-): EntityNode {
+   opts?: Partial<Omit<LogicalEntityNode, '$container' | '$type' | 'id' | 'entity'>>
+): LogicalEntityNode {
    return {
       $container: container,
-      $type: 'EntityNode',
+      $type: 'LogicalEntityNode',
       id,
       entity,
       ...position,
@@ -198,8 +199,8 @@ export function createRelationshipEdge(
    container: SystemDiagram,
    id: string,
    relationship: Reference<Relationship>,
-   sourceNode: Reference<EntityNode>,
-   targetNode: Reference<EntityNode>,
+   sourceNode: Reference<LogicalEntityNode>,
+   targetNode: Reference<LogicalEntityNode>,
    opts?: Partial<Omit<RelationshipEdge, '$container' | '$type' | 'id' | 'relationship' | 'sourceNode' | 'targetNode'>>
 ): RelationshipEdge {
    return {
@@ -213,7 +214,7 @@ export function createRelationshipEdge(
    };
 }
 
-export function createSourceObject(entity: Entity | AstNodeDescription, container: Mapping, idProvider: IdProvider): SourceObject {
+export function createSourceObject(entity: LogicalEntity | AstNodeDescription, container: Mapping, idProvider: IdProvider): SourceObject {
    const entityId = isAstNodeDescription(entity)
       ? getLocalName(entity)
       : entity.id ?? idProvider.getLocalId(entity) ?? entity.name ?? 'unknown';
@@ -299,7 +300,7 @@ export type DocumentContent = LangiumDocument | AstNode;
 export type TypeGuard<T> = (item: unknown) => item is T;
 
 export function isSemanticRoot(element: unknown): element is SemanticRoot {
-   return isEntity(element) || isMapping(element) || isRelationship(element) || isSystemDiagram(element);
+   return isLogicalEntity(element) || isMapping(element) || isRelationship(element) || isSystemDiagram(element);
 }
 
 export function findSemanticRoot(input: DocumentContent): SemanticRoot | undefined;
@@ -325,8 +326,8 @@ export function getSemanticRootFromAstRoot<T extends SemanticRoot>(
    return undefined;
 }
 
-export function findEntity(input: DocumentContent): Entity | undefined {
-   return findSemanticRoot(input, isEntity);
+export function findEntity(input: DocumentContent): LogicalEntity | undefined {
+   return findSemanticRoot(input, isLogicalEntity);
 }
 
 export function findRelationship(input: DocumentContent): Relationship | undefined {

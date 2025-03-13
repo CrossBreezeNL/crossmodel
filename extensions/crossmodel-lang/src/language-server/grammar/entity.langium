@@ -1,24 +1,30 @@
 import 'terminals'
 import 'common'
 
-interface Entity extends DataElementContainer, WithCustomProperties {
-    superEntities: @Entity[]
+interface LogicalEntity extends DataElementContainer, WithCustomProperties {
+    superEntities: @LogicalEntity[]
     attributes: LogicalAttribute[]
+    identifiers: LogicalIdentifier[]
 }
 
-// Entity definition 
-Entity returns Entity:
+// LogicalEntity definition 
+LogicalEntity returns LogicalEntity:
     'entity' ':'
         INDENT
             NamedObjectFragment
             ('inherits' ':'
                 INDENT
-                    (LIST_ITEM superEntities+=[Entity:IDReference])+
+                    (LIST_ITEM superEntities+=[LogicalEntity:IDReference])+
                 DEDENT
             )?
             ('attributes' ':'
                 INDENT
                     (LIST_ITEM attributes+=LogicalAttribute)+
+                DEDENT
+            )?
+            ('identifiers' ':'
+                INDENT
+                    (LIST_ITEM identifiers+=LogicalIdentifier)+
                 DEDENT
             )?
             CustomPropertiesFragment?
@@ -39,5 +45,21 @@ LogicalAttribute returns LogicalAttribute:
     ('precision' ':' precision=NUMBER)?
     ('scale' ':' scale=NUMBER)?
     (identifier?='identifier' ':' ('TRUE' | 'true'))?
+    CustomPropertiesFragment?
+;
+
+interface LogicalIdentifier extends NamedObject, WithCustomProperties {
+    primary?: boolean;
+    attributes: @LogicalAttribute[]
+}
+
+LogicalIdentifier returns LogicalIdentifier:
+    NamedObjectFragment
+    (primary?='primary' ':' ('TRUE' | 'true'))?
+    ('attributes' ':'
+        INDENT
+            (LIST_ITEM attributes+=[LogicalAttribute:IDReference])+
+        DEDENT
+    )?
     CustomPropertiesFragment?
 ;

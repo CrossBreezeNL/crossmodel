@@ -23,19 +23,19 @@ test.describe.serial('Add/Edit/Delete relationship in a diagram ', () => {
    });
 
    async function getNewRelationship(diagramEditor: IntegratedSystemDiagramEditor): Promise<Relationship> {
-      const sourceEntity = await diagramEditor.getEntity(CUSTOMER_ENTITY_ID);
-      const targetEntity = await diagramEditor.getEntity(ORDER_ENTITY_ID);
+      const sourceEntity = await diagramEditor.getLogicalEntity(CUSTOMER_ENTITY_ID);
+      const targetEntity = await diagramEditor.getLogicalEntity(ORDER_ENTITY_ID);
       return diagramEditor.diagram.graph.getEdgeBetween(Relationship, { sourceNode: sourceEntity, targetNode: targetEntity });
    }
 
    test('Create new relationship via toolbox', async () => {
       // Open the system diagram and create a relationship between the customer and order entity using the '1:1 Relationship tool'.
       const diagramEditor = await app.openCompositeEditor(SYSTEM_DIAGRAM_PATH, 'System Diagram');
-      const sourceEntity = await diagramEditor.getEntity(CUSTOMER_ENTITY_ID);
-      const targetEntity = await diagramEditor.getEntity(ORDER_ENTITY_ID);
+      const sourceEntity = await diagramEditor.getLogicalEntity(CUSTOMER_ENTITY_ID);
+      const targetEntity = await diagramEditor.getLogicalEntity(ORDER_ENTITY_ID);
 
       await diagramEditor.waitForCreationOfType(Relationship, async () => {
-         await diagramEditor.enableTool('Create 1:1 Relationship');
+         await diagramEditor.enableTool('Create Relationship');
          const targetPosition = (await targetEntity.bounds()).position('middle_center');
          await sourceEntity.dragToAbsolutePosition(targetPosition.data);
       });

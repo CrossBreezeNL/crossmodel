@@ -4,17 +4,17 @@
 
 import { ModelFileExtensions } from '@crossbreeze/protocol';
 import { entity1 } from './test-utils/test-documents/entity/entity1.js';
-import { createCrossModelTestServices, parseEntity, testUri } from './test-utils/utils.js';
+import { createCrossModelTestServices, parseLogicalEntity, testUri } from './test-utils/utils.js';
 
 const services = createCrossModelTestServices();
 
 describe('CrossModel Filename Validation', () => {
    test('Mismatching id and filename does not yield error', async () => {
-      const entity = await parseEntity({
+      const entity = await parseLogicalEntity({
          services,
          text: entity1,
          validation: true,
-         documentUri: testUri('Customer2' + ModelFileExtensions.Entity)
+         documentUri: testUri('Customer2' + ModelFileExtensions.LogicalEntity)
       });
       expect(entity.id).toBe('Customer');
       expect(entity.$document.diagnostics).toHaveLength(1);

@@ -29,7 +29,7 @@ Mapping returns Mapping:
 ;
 
 interface SourceObject extends SourceDataElementContainer, WithCustomProperties {
-    entity: @Entity;
+    entity: @LogicalEntity;
     join: string;
     dependencies: SourceObjectDependency[]
     conditions: SourceObjectCondition[]
@@ -37,7 +37,7 @@ interface SourceObject extends SourceDataElementContainer, WithCustomProperties 
 
 SourceObject returns SourceObject:
     IdentifiedObjectFragment
-    'entity' ':' entity=[Entity:IDReference] // implies attributes through entity
+    'entity' ':' entity=[LogicalEntity:IDReference] // implies attributes through entity
     'join' ':' join=JoinType
     ('dependencies' ':'
         INDENT
@@ -75,13 +75,13 @@ PrimaryExpression infers BooleanExpression:
 ;
 
 interface TargetObject extends WithCustomProperties {
-    entity: @Entity;
+    entity: @LogicalEntity;
     mappings: AttributeMapping[];
 }
 
 TargetObject returns TargetObject:
     INDENT
-        'entity' ':' entity=[Entity:IDReference] // implies attributes through entity
+        'entity' ':' entity=[LogicalEntity:IDReference] // implies attributes through entity
         ('mappings' ':'
             INDENT 
                 (LIST_ITEM mappings+=AttributeMapping)+     

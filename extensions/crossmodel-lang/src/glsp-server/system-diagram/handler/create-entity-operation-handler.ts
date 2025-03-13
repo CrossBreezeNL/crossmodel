@@ -14,7 +14,7 @@ import {
 } from '@eclipse-glsp/server';
 import { inject, injectable } from '@theia/core/shared/inversify';
 import { URI, Utils as UriUtils } from 'vscode-uri';
-import { CrossModelRoot, Entity, EntityNode } from '../../../language-server/generated/ast.js';
+import { CrossModelRoot, LogicalEntity, LogicalEntityNode } from '../../../language-server/generated/ast.js';
 import { Utils } from '../../../language-server/util/uri-util.js';
 import { CrossModelCommand } from '../../common/cross-model-command.js';
 import { SystemModelState } from '../model/system-model-state.js';
@@ -38,10 +38,10 @@ export class SystemDiagramCreateEntityOperationHandler extends JsonCreateNodeOpe
       }
       const container = this.modelState.systemDiagram;
       const location = this.getLocation(operation) ?? Point.ORIGIN;
-      const node: EntityNode = {
-         $type: EntityNode,
+      const node: LogicalEntityNode = {
+         $type: LogicalEntityNode,
          $container: container,
-         id: this.modelState.idProvider.findNextId(EntityNode, entity.name + 'Node', container),
+         id: this.modelState.idProvider.findNextId(LogicalEntityNode, entity.name + 'Node', container),
          entity: {
             $refText: this.modelState.idProvider.getNodeId(entity) || entity.id || '',
             ref: entity
@@ -61,12 +61,12 @@ export class SystemDiagramCreateEntityOperationHandler extends JsonCreateNodeOpe
    /**
     * Creates a new entity and stores it on a file on the file system.
     */
-   protected async createAndSaveEntity(operation: CreateNodeOperation): Promise<Entity | undefined> {
+   protected async createAndSaveEntity(operation: CreateNodeOperation): Promise<LogicalEntity | undefined> {
       // create entity, serialize and re-read to ensure everything is up to date and linked properly
       const entityRoot: CrossModelRoot = { $type: 'CrossModelRoot' };
-      const id = this.modelState.idProvider.findNextId(Entity, 'NewEntity');
-      const entity: Entity = {
-         $type: 'Entity',
+      const id = this.modelState.idProvider.findNextId(LogicalEntity, 'NewEntity');
+      const entity: LogicalEntity = {
+         $type: 'LogicalEntity',
          $container: entityRoot,
          id,
          name: id,

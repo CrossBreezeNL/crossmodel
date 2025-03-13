@@ -4,7 +4,7 @@
 import { ElementHandle } from '@playwright/test';
 import { TheiaApp, TheiaEditor, isElementVisible } from '@theia/playwright';
 import { CMForm } from './form/cm-form';
-import { EntityForm } from './form/entiy-form';
+import { LogicalEntityForm } from './form/entiy-form';
 import { RelationshipForm } from './form/relationship-form';
 
 const CMPropertiesViewData = {
@@ -36,9 +36,9 @@ export abstract class CMPropertiesView<F extends CMForm> extends TheiaEditor {
    }
 }
 
-export class EntityPropertiesView extends CMPropertiesView<EntityForm> {
-   async form(): Promise<EntityForm> {
-      const entityForm = new EntityForm(this, this.modelRootSelector);
+export class EntityPropertiesView extends CMPropertiesView<LogicalEntityForm> {
+   async form(): Promise<LogicalEntityForm> {
+      const entityForm = new LogicalEntityForm(this, this.modelRootSelector);
       await entityForm.waitForVisible();
       return entityForm;
    }

@@ -18,7 +18,7 @@ export function EntityForm(): React.ReactElement {
    const readonly = useReadonly();
 
    return (
-      <Form id={entity.id} name={entity.name ?? ModelFileType.Entity} iconClass={ModelStructure.Entity.ICON_CLASS}>
+      <Form id={entity.id} name={entity.name ?? ModelFileType.LogicalEntity} iconClass={ModelStructure.LogicalEntity.ICON_CLASS}>
          <FormSection label='General'>
             <TextField
                fullWidth={true}

@@ -2,7 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { EntityType, ModelFileType, ModelStructure, ReferenceableElement } from '@crossbreeze/protocol';
+import { LogicalEntityType, ModelFileType, ModelStructure, ReferenceableElement } from '@crossbreeze/protocol';
 import { Autocomplete, TextField } from '@mui/material';
 import * as React from 'react';
 import { useModelDispatch, useModelQueryApi, useReadonly, useRelationship } from '../../ModelContext';
@@ -50,7 +50,7 @@ export function RelationshipForm(): React.ReactElement {
                optionLoader={referenceableElements}
                getOptionLabel={referenceLabelProvider}
                onChange={(_evt, newReference) => dispatch({ type: 'relationship:change-parent', parent: newReference.label })}
-               value={{ uri: '', label: relationship.parent ?? '', type: EntityType }}
+               value={{ uri: '', label: relationship.parent ?? '', type: LogicalEntityType }}
                disabled={readonly}
                selectOnFocus={true}
             />
@@ -70,7 +70,7 @@ export function RelationshipForm(): React.ReactElement {
                optionLoader={referenceableElements}
                getOptionLabel={referenceLabelProvider}
                onChange={(_evt, newReference) => dispatch({ type: 'relationship:change-child', child: newReference.label })}
-               value={{ uri: '', label: relationship.child ?? '', type: EntityType }}
+               value={{ uri: '', label: relationship.child ?? '', type: LogicalEntityType }}
                clearOnBlur={true}
                disabled={readonly}
                selectOnFocus={true}

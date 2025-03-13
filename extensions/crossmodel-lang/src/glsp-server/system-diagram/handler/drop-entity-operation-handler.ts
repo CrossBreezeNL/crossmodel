@@ -6,7 +6,7 @@ import { DropEntityOperation } from '@crossbreeze/protocol';
 import { Command, JsonOperationHandler, ModelState } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
 import { URI } from 'vscode-uri';
-import { EntityNode } from '../../../language-server/generated/ast.js';
+import { LogicalEntityNode } from '../../../language-server/generated/ast.js';
 import { CrossModelCommand } from '../../common/cross-model-command.js';
 import { SystemModelState } from '../model/system-model-state.js';
 
@@ -34,10 +34,10 @@ export class SystemDiagramDropEntityOperationHandler extends JsonOperationHandle
          const entity = document?.root?.entity;
          if (entity) {
             // create node for entity
-            const node: EntityNode = {
-               $type: EntityNode,
+            const node: LogicalEntityNode = {
+               $type: LogicalEntityNode,
                $container: container,
-               id: this.modelState.idProvider.findNextId(EntityNode, entity.id + 'Node', this.modelState.systemDiagram),
+               id: this.modelState.idProvider.findNextId(LogicalEntityNode, entity.id + 'Node', this.modelState.systemDiagram),
                entity: {
                   $refText: this.modelState.idProvider.getGlobalId(entity) || entity.id || '',
                   ref: entity

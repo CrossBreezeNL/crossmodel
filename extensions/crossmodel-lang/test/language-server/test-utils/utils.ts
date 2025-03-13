@@ -10,11 +10,11 @@ import { PackageJson } from 'type-fest';
 import { CrossModelServices, createCrossModelServices } from '../../../src/language-server/cross-model-module.js';
 import {
    CrossModelRoot,
-   Entity,
+   LogicalEntity,
    Mapping,
    Relationship,
    SystemDiagram,
-   isEntity,
+   isLogicalEntity,
    isMapping,
    isRelationship,
    isSystemDiagram
@@ -87,8 +87,8 @@ export async function parseSemanticRoot<T extends SemanticRoot>(
    return semanticRoot as WithDocument<T>;
 }
 
-export async function parseEntity(input: DocumentInput, assert: ParseAssert = {}): Promise<WithDocument<Entity>> {
-   return parseSemanticRoot(input, assert, isEntity);
+export async function parseLogicalEntity(input: DocumentInput, assert: ParseAssert = {}): Promise<WithDocument<LogicalEntity>> {
+   return parseSemanticRoot(input, assert, isLogicalEntity);
 }
 
 export async function parseRelationship(input: DocumentInput, assert: ParseAssert = {}): Promise<WithDocument<Relationship>> {

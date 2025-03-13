@@ -2,7 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 import { describe, expect, test } from '@jest/globals';
-import { EntityNode } from '../../src/language-server/generated/ast.js';
+import { LogicalEntityNode } from '../../src/language-server/generated/ast.js';
 import { createCrossModelTestServices, parseSystemDiagram } from './test-utils/utils.js';
 
 const services = createCrossModelTestServices();
@@ -65,22 +65,22 @@ describe('NameUtil', () => {
    describe('findAvailableNodeName', () => {
       test('should return given name if unique', async () => {
          const diagram = await parseSystemDiagram({ services, text: ex1 });
-         expect(services.references.IdProvider.findNextId(EntityNode, 'nodeA', diagram)).toBe('nodeA');
+         expect(services.references.IdProvider.findNextId(LogicalEntityNode, 'nodeA', diagram)).toBe('nodeA');
       });
 
       test('should return unique name if given is taken', async () => {
          const diagram = await parseSystemDiagram({ services, text: ex2 });
-         expect(services.references.IdProvider.findNextId(EntityNode, 'nodeA', diagram)).toBe('nodeA1');
+         expect(services.references.IdProvider.findNextId(LogicalEntityNode, 'nodeA', diagram)).toBe('nodeA1');
       });
 
       test('should properly count up if name is taken', async () => {
          const diagram = await parseSystemDiagram({ services, text: ex3 });
-         expect(services.references.IdProvider.findNextId(EntityNode, 'nodeA', diagram)).toBe('nodeA2');
+         expect(services.references.IdProvider.findNextId(LogicalEntityNode, 'nodeA', diagram)).toBe('nodeA2');
       });
 
       test('should find lowest count if multiple are taken', async () => {
          const diagram = await parseSystemDiagram({ services, text: ex4 });
-         expect(services.references.IdProvider.findNextId(EntityNode, 'nodeA', diagram)).toBe('nodeA3');
+         expect(services.references.IdProvider.findNextId(LogicalEntityNode, 'nodeA', diagram)).toBe('nodeA3');
       });
    });
 });

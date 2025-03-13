@@ -85,7 +85,7 @@ test.describe.serial('Add/Edit/Delete model from explorer', () => {
       const menuItem = await contextMenu.menuItemByNamePath('New Element', 'Data Model...');
       expect(menuItem).toBeDefined();
       await menuItem?.click();
-      await confirmCreationDialog(app, 'NewModel2', 'physical', '0.0.2');
+      await confirmCreationDialog(app, 'NewModel2', 'relational', '0.0.2');
       await explorer.activate();
 
       // Verify that the model was created as expected

@@ -9,7 +9,7 @@ import { CMCompositeEditor, hasViewError } from '../cm-composite-editor';
 import { IntegratedEditor } from '../cm-integrated-editor';
 import { EntityPropertiesView } from '../cm-properties-view';
 import { CMTheiaIntegration } from '../cm-theia-integration';
-import { Entity } from './diagram-elements';
+import { LogicalEntity } from './diagram-elements';
 import { SystemDiagram, WaitForModelUpdateOptions } from './system-diagram';
 import { SystemTools } from './system-tool-box';
 
@@ -49,22 +49,22 @@ export class IntegratedSystemDiagramEditor extends IntegratedEditor {
       return paletteItem.click();
    }
 
-   async getEntity(entityLabel: string): Promise<Entity> {
-      return this.diagram.graph.getNodeByLabel(entityLabel, Entity);
+   async getLogicalEntity(logicalEntityLabel: string): Promise<LogicalEntity> {
+      return this.diagram.graph.getNodeByLabel(logicalEntityLabel, LogicalEntity);
    }
 
-   async getEntities(entityLabel: string): Promise<Entity[]> {
-      return this.diagram.graph.getNodesByLabel(entityLabel, Entity);
+   async getLogicalEntities(logicalEntityLabel: string): Promise<LogicalEntity[]> {
+      return this.diagram.graph.getNodesByLabel(logicalEntityLabel, LogicalEntity);
    }
 
-   async findEntity(entityLabel: string): Promise<Entity | undefined> {
-      const entities = await this.diagram.graph.getNodesByLabel(entityLabel, Entity);
-      return entities.length > 0 ? entities[0] : undefined;
+   async findLogicalEntity(logicalEntityLabel: string): Promise<LogicalEntity | undefined> {
+      const logicalEntities = await this.diagram.graph.getNodesByLabel(logicalEntityLabel, LogicalEntity);
+      return logicalEntities.length > 0 ? logicalEntities[0] : undefined;
    }
 
-   async selectEntityAndOpenProperties(entityLabel: string): Promise<EntityPropertiesView> {
-      const entity = await this.diagram.graph.getNodeByLabel(entityLabel, Entity);
-      await entity.select();
+   async selectLogicalEntityAndOpenProperties(logicalEntityLabel: string): Promise<EntityPropertiesView> {
+      const logicalEntity = await this.diagram.graph.getNodeByLabel(logicalEntityLabel, LogicalEntity);
+      await logicalEntity.select();
       const view = new EntityPropertiesView(this.app);
       if (!(await view.isTabVisible())) {
          await this.page.keyboard.press('Alt+Shift+P');
@@ -77,7 +77,7 @@ export class IntegratedSystemDiagramEditor extends IntegratedEditor {
     * Invoke the 'Show Entity` tool at the given position.
     * i.e. select the tool and click at the given position.
     */
-   async invokeShowEntityToolAtPosition(position: InteractablePosition): Promise<void> {
+   async invokeShowLogicalEntityToolAtPosition(position: InteractablePosition): Promise<void> {
       await this.enableTool('Show Entity');
       // Wait for the insert-indicator to appear
       await this.page.waitForSelector('.insert-indicator', { state: 'attached' });

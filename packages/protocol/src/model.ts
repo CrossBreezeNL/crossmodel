@@ -4,7 +4,7 @@
 
 const ModelFileTypeValues = {
    Generic: 'Generic',
-   Entity: 'Entity',
+   LogicalEntity: 'LogicalEntity',
    Relationship: 'Relationship',
    Mapping: 'Mapping',
    SystemDiagram: 'SystemDiagram'
@@ -14,8 +14,8 @@ export const ModelFileType = {
    ...ModelFileTypeValues,
    getIconClass: (type: ModelFileType) => {
       switch (type) {
-         case 'Entity':
-            return ModelStructure.Entity.ICON_CLASS;
+         case 'LogicalEntity':
+            return ModelStructure.LogicalEntity.ICON_CLASS;
          case 'Relationship':
             return ModelStructure.Relationship.ICON_CLASS;
          case 'SystemDiagram':
@@ -28,8 +28,8 @@ export const ModelFileType = {
    },
    getFileExtension(type: ModelFileType): string | undefined {
       switch (type) {
-         case 'Entity':
-            return ModelFileExtensions.Entity;
+         case 'LogicalEntity':
+            return ModelFileExtensions.LogicalEntity;
          case 'Generic':
             return ModelFileExtensions.Generic;
          case 'Mapping':
@@ -45,7 +45,7 @@ export type ModelFileType = (typeof ModelFileTypeValues)[keyof typeof ModelFileT
 
 export const ModelFileExtensions = {
    Generic: '.cm',
-   Entity: '.entity.cm',
+   LogicalEntity: '.entity.cm',
    Relationship: '.relationship.cm',
    Mapping: '.mapping.cm',
    SystemDiagram: '.system-diagram.cm',
@@ -57,7 +57,7 @@ export const ModelFileExtensions = {
    },
 
    isEntityFile(uri: string): boolean {
-      return uri.endsWith(this.Entity);
+      return uri.endsWith(this.LogicalEntity);
    },
 
    isRelationshipFile(uri: string): boolean {
@@ -74,8 +74,8 @@ export const ModelFileExtensions = {
 
    getName(uri: string): string {
       // since we have file extensions with two '.', we cannot use the default implementation that only works for one '.'
-      if (uri.endsWith(this.Entity)) {
-         return uri.substring(0, uri.length - this.Entity.length);
+      if (uri.endsWith(this.LogicalEntity)) {
+         return uri.substring(0, uri.length - this.LogicalEntity.length);
       }
       if (uri.endsWith(this.Relationship)) {
          return uri.substring(0, uri.length - this.Relationship.length);
@@ -105,7 +105,7 @@ export const ModelFileExtensions = {
          return 'Relationship';
       }
       if (this.isEntityFile(uri)) {
-         return 'Entity';
+         return 'LogicalEntity';
       }
       if (this.isModelFile(uri)) {
          return 'Generic';
@@ -124,8 +124,8 @@ export const ModelFileExtensions = {
          return undefined;
       }
       switch (fileType) {
-         case 'Entity':
-            return ModelStructure.Entity.ICON_CLASS;
+         case 'LogicalEntity':
+            return ModelStructure.LogicalEntity.ICON_CLASS;
          case 'Relationship':
             return ModelStructure.Relationship.ICON_CLASS;
          case 'SystemDiagram':
@@ -139,7 +139,7 @@ export const ModelFileExtensions = {
 
    detectFileType(content: string): ModelFileType | undefined {
       if (content.startsWith('entity')) {
-         return 'Entity';
+         return 'LogicalEntity';
       }
       if (content.startsWith('relationship')) {
          return 'Relationship';
@@ -164,7 +164,7 @@ export const ModelStructure = {
       ICON_CLASS: 'codicon codicon-globe',
       ICON: 'globe'
    },
-   Entity: {
+   LogicalEntity: {
       FOLDER: 'entities',
       ICON_CLASS: 'codicon codicon-git-commit',
       ICON: 'git-commit'

@@ -3,16 +3,18 @@ entity:
     name: "Order"
     description: "Order placed by a customer in the Customer table."
     attributes:
-      - id: Id
-        name: "Id"
+      - id: Order_Id
+        name: "Order Id"
       - id: OrderDate
         name: "OrderDate"
       - id: OrderNumber
         name: "OrderNumber"
-      - id: CustomerId
-        name: "CustomerId"
+      - id: Customer_Id
+        name: "Customer Id"
       - id: TotalAmount
         name: "TotalAmount"
-    identifier:
-      - attributes:
-        - Id
+    identifiers:
+      - id: Order_Surrogate_Identifier
+        name: "Order Surrogate Identifier"
+        attributes:
+          - Order_Id

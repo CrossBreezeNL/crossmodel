@@ -3,8 +3,8 @@ entity:
     name: "Order"
     description: "Order placed by a customer in the Customer table."
     attributes:
-      - id: Id
-        name: "Id"
+      - id: Order_Id
+        name: "Order Id"
         datatype: "Integer"
       - id: OrderDate
         name: "OrderDate"
@@ -14,14 +14,16 @@ entity:
         name: "OrderNumber"
         datatype: "Text"
         length: 50
-      - id: CustomerId
-        name: "CustomerId"
+      - id: Customer_Id
+        name: "Customer Id"
         datatype: "Integer"
       - id: TotalAmount
         name: "TotalAmount"
         datatype: "Decimal"
         precision: 38
         scale: 6
-    identifier:
-      - attributes:
-        - Id
+    identifiers:
+      - id: Order_Surrogate_Identifier
+        name: "Order Surrogate Identifier"
+        attributes:
+          - Order_Id

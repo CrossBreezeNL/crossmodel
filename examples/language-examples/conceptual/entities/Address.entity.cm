@@ -3,12 +3,15 @@ entity:
     name: "Address"
     description: "The address of a customer."
     attributes:
-      - id: CustomerID
-        name: "Customer ID"
+      - id: Customer_Id
+        name: "Customer Id"
       - id: Street
         name: "Street"
       - id: CountryCode
         name: "Country Code"
-    identifier:
-      - attributes:
-        - CustomerID
+    identifiers:
+      - id: Address_Surrogate_Identifier
+        name: "Address Surrogate Identifier"
+        primary: true
+        attributes:
+        - Customer_Id

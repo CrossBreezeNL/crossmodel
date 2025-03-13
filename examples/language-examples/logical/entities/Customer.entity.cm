@@ -2,11 +2,11 @@ entity:
     id: Customer
     name: "Customer"
     attributes:
-      - id: Id
-        name: "Id"
+      - id: Customer_Id
+        name: "Customer Id"
         datatype: "Integer"
-        relatedConceptualAttributes:
-          - id: ExampleCRM_CDM.Customer.Id
+        #relatedConceptualAttributes:
+        #  - id: ExampleCRM_CDM.Customer.Id
       - id: First_Name
         name: "First Name"
         datatype: "Text"
@@ -30,6 +30,19 @@ entity:
       - id: Birth_Date
         name: "Birth Date"
         datatype: "Date"
-    identifier:
-      - attributes:
-        - Id
+    identifiers:
+      - id: Customer_Surrogate_Identifier
+        name: "Customer Surrogate Identifier"
+        primary: true
+        attributes:
+        - Customer_Id
+      - id: Customer_Natural_Identifier
+        name: "Customer Natural Identifier"
+        attributes:
+        - First_Name
+        - Last_Name
+        - Birth_Date
+        customProperties:
+          - name: Author
+            value: "CrossBreeze"
+          - name: ExampleCustomPropertyOnIdentifier

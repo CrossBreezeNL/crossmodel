@@ -182,6 +182,15 @@ export class CrossModelValidator {
    }
 
    checkLogicalEntity(entity: LogicalEntity, accept: ValidationAcceptor): void {
+      // Check that there is only one primary identifier
+      const primaryIdentifiers = entity.identifiers.filter(identifier => identifier.primary === true);
+      if (primaryIdentifiers.length > 1) {
+         accept('error', `${primaryIdentifiers.length} primary identifiers defined, there should only be 1.`, {
+            node: entity,
+            property: 'identifiers'
+         });
+      }
+
       const cycle = this.findInheritanceCycle(entity);
       if (cycle.length > 0) {
          accept('error', `Inheritance cycle detected: ${cycle.join(' -> ')}.`, { node: entity, property: 'superEntities' });

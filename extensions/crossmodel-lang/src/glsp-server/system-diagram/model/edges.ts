@@ -54,6 +54,8 @@ export class GInheritanceEdgeBuilder extends GEdgeBuilder<GInheritanceEdge> {
       this.id(index.createId(edge));
       this.addCssClasses('diagram-edge', 'inheritance');
       this.addArg('edgePadding', 5);
+      this.routerKind('manhattan');
+
       const sourceId = index.createId(edge.baseNode?.ref);
       const targetId = index.createId(edge.superNode?.ref);
 

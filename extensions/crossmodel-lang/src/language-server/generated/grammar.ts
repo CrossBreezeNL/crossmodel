@@ -1786,24 +1786,11 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
         "$type": "Group",
         "elements": [
           {
-            "$type": "Keyword",
-            "value": "id"
-          },
-          {
-            "$type": "Keyword",
-            "value": ":"
-          },
-          {
-            "$type": "Assignment",
-            "feature": "id",
-            "operator": "=",
-            "terminal": {
-              "$type": "RuleCall",
-              "rule": {
-                "$ref": "#/rules@6"
-              },
-              "arguments": []
-            }
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@14"
+            },
+            "arguments": []
           },
           {
             "$type": "Keyword",

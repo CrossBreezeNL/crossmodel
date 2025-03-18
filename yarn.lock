@@ -3119,6 +3119,14 @@
     react-autosize-textarea "^7.0.0"
     tslib "^2.6.2"
 
+"@theia/secondary-window@1.57.1":
+  version "1.57.1"
+  resolved "https://registry.yarnpkg.com/@theia/secondary-window/-/secondary-window-1.57.1.tgz#8fbb09cf4903cb6a9037708996f9a1b54fa8fb06"
+  integrity sha512-QDwYFG0VCPPd9m9a0k3ajt/4McdyzsR0V4uwlwb1kphseLmaLKZ5Mn+ZujI+6PbALU98UqX9ExK7u+MJpFAi6A==
+  dependencies:
+    "@theia/core" "1.57.1"
+    tslib "^2.6.2"
+
 "@theia/task@1.57.1":
   version "1.57.1"
   resolved "https://registry.yarnpkg.com/@theia/task/-/task-1.57.1.tgz#6ae456c1c7dd5eeb62a04dd7e0995be9169b375f"

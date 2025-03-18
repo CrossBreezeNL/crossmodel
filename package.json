@@ -16,7 +16,7 @@
     "build:packages": "lerna run --scope=\"@crossbreeze/*\" build",
     "clean": "lerna run clean",
     "format": "yarn prettier-eslint --write '**/*.{ts,tsx,js,cjs,mjs,css}' '**/package.json'",
-    "postinstall": "theia check:theia-version",
+    "postinstall": "theia check:theia-version && theia-patch",
     "lint": "lerna run lint",
     "package:extensions": "lerna run --scope={crossmodel-lang,crossmodel-theme} package:vsix",
     "start:browser": "yarn theia:browser start",

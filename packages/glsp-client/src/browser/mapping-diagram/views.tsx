@@ -3,7 +3,7 @@
  ********************************************************************************/
 /* eslint-disable react/no-unknown-property */
 
-import { GEdgeView } from '@eclipse-glsp/client';
+import { PolylineEdgeViewWithGapsOnIntersections } from '@eclipse-glsp/client';
 import { injectable } from 'inversify';
 import { DiagramNodeView } from '../views';
 
@@ -20,4 +20,4 @@ export class SourceStringNodeView extends DiagramNodeView {}
 export class TargetObjectNodeView extends DiagramNodeView {}
 
 @injectable()
-export class AttributeMappingEdgeView extends GEdgeView {}
+export class AttributeMappingEdgeView extends PolylineEdgeViewWithGapsOnIntersections {}

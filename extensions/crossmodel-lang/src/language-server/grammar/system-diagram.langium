@@ -71,7 +71,7 @@ interface InheritanceEdge extends SystemDiagramEdge {
 }
 
 InheritanceEdge returns InheritanceEdge:
-    'id' ':' id=ID
+    IdentifiedObjectFragment
     'baseNode' ':' baseNode=[LogicalEntityNode:IDReference]
     'superNode' ':' superNode=[LogicalEntityNode:IDReference]
 ;

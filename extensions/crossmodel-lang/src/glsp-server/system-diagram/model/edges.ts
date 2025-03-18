@@ -10,6 +10,7 @@ import {
    RELATIONSHIP_EDGE_TYPE
 } from '@crossbreeze/protocol';
 import { GEdge, GEdgeBuilder } from '@eclipse-glsp/server';
+import { combineIds } from '../../../language-server/cross-model-naming.js';
 import { InheritanceEdge, RelationshipEdge } from '../../../language-server/generated/ast.js';
 import { SystemModelIndex } from './system-model-index.js';
 
@@ -26,6 +27,7 @@ export class GRelationshipEdgeBuilder extends GEdgeBuilder<GRelationshipEdge> {
       this.id(index.createId(edge));
       this.addCssClasses('diagram-edge', 'relationship');
       this.addArg('edgePadding', 5);
+      this.routerKind('manhattan');
       this.addArg(REFERENCE_CONTAINER_TYPE, RelationshipEdge);
       this.addArg(REFERENCE_PROPERTY, 'relationship');
       this.addArg(REFERENCE_VALUE, edge.relationship.$refText);
@@ -53,8 +55,10 @@ export class GInheritanceEdgeBuilder extends GEdgeBuilder<GInheritanceEdge> {
       this.id(index.createId(edge));
       this.addCssClasses('diagram-edge', 'inheritance');
       this.addArg('edgePadding', 5);
-      const sourceId = index.createId(edge.baseNode?.ref);
-      const targetId = index.createId(edge.superNode?.ref);
+      this.routerKind('manhattan');
+
+      const sourceId = index.findId(edge.baseNode?.ref, () => combineIds(index.assertId(edge.$container), edge.baseNode.$refText));
+      const targetId = index.findId(edge.superNode?.ref, () => combineIds(index.assertId(edge.$container), edge.superNode.$refText));
 
       this.sourceId(sourceId || '');
       this.targetId(targetId || '');

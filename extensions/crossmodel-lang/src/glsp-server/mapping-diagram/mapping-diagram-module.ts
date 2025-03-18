@@ -2,8 +2,10 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 import {
+   ActionHandlerConstructor,
    BindingTarget,
    CommandPaletteActionProvider,
+   ComputedBoundsActionHandler,
    DiagramConfiguration,
    DiagramModule,
    GModelFactory,
@@ -33,6 +35,7 @@ import { MappingDiagramGModelFactory } from './model/mapping-diagram-gmodel-fact
 import { MappingModelIndex } from './model/mapping-model-index.js';
 import { MappingModelState } from './model/mapping-model-state.js';
 import { MappingToolPaletteProvider } from './tool-palette/mapping-tool-palette-provider.js';
+import { MappingComputedBoundsActionHandler } from './handler/mapping-computed-bounds-action-handler.js';
 
 /**
  * Provides configuration about our mapping diagrams.
@@ -51,6 +54,11 @@ export class MappingDiagramModule extends DiagramModule {
 
    protected override bindModelSubmissionHandler(): BindingTarget<ModelSubmissionHandler> {
       return CrossModelSubmissionHandler;
+   }
+
+   protected override configureActionHandlers(binding: InstanceMultiBinding<ActionHandlerConstructor>): void {
+      super.configureActionHandlers(binding);
+      binding.rebind(ComputedBoundsActionHandler, MappingComputedBoundsActionHandler);
    }
 
    protected override configureOperationHandlers(binding: InstanceMultiBinding<OperationHandlerConstructor>): void {

@@ -9,6 +9,7 @@ import { Serializer } from '../model-server/serializer.js';
 import {
    AttributeMapping,
    CrossModelRoot,
+   InheritanceEdge,
    isAttributeMappingSource,
    isAttributeMappingTarget,
    isCustomProperty,
@@ -65,6 +66,7 @@ const PROPERTY_ORDER = new Map<string, string[]>([
    [SystemDiagram, [...IDENTIFIED_PROPERTIES, 'nodes', 'edges']],
    [LogicalEntityNode, [...IDENTIFIED_PROPERTIES, 'entity', 'x', 'y', 'width', 'height']],
    [RelationshipEdge, [...IDENTIFIED_PROPERTIES, 'relationship', 'sourceNode', 'targetNode']],
+   [InheritanceEdge, [...IDENTIFIED_PROPERTIES, 'baseNode', 'superNode']],
    [Mapping, [...IDENTIFIED_PROPERTIES, 'sources', 'target', ...CUSTOM_PROPERTIES]],
    [SourceObject, [...IDENTIFIED_PROPERTIES, 'entity', 'join', 'dependencies', 'conditions', ...CUSTOM_PROPERTIES]],
    [TargetObject, ['entity', 'mappings', ...CUSTOM_PROPERTIES]],

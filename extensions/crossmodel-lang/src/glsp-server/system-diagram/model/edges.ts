@@ -10,6 +10,7 @@ import {
    RELATIONSHIP_EDGE_TYPE
 } from '@crossbreeze/protocol';
 import { GEdge, GEdgeBuilder } from '@eclipse-glsp/server';
+import { combineIds } from '../../../language-server/cross-model-naming.js';
 import { InheritanceEdge, RelationshipEdge } from '../../../language-server/generated/ast.js';
 import { SystemModelIndex } from './system-model-index.js';
 
@@ -56,8 +57,8 @@ export class GInheritanceEdgeBuilder extends GEdgeBuilder<GInheritanceEdge> {
       this.addArg('edgePadding', 5);
       this.routerKind('manhattan');
 
-      const sourceId = index.createId(edge.baseNode?.ref);
-      const targetId = index.createId(edge.superNode?.ref);
+      const sourceId = index.findId(edge.baseNode?.ref, () => combineIds(index.assertId(edge.$container), edge.baseNode.$refText));
+      const targetId = index.findId(edge.superNode?.ref, () => combineIds(index.assertId(edge.$container), edge.superNode.$refText));
 
       this.sourceId(sourceId || '');
       this.targetId(targetId || '');

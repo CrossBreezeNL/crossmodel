@@ -5,7 +5,9 @@
 import { GRID } from '@crossbreeze/protocol';
 import {
    ConsoleLogger,
+   GLSPHiddenBoundsUpdater,
    GLSPMousePositionTracker,
+   GModelElement,
    GlspCommandPalette,
    LogLevel,
    MetadataPlacer,
@@ -14,10 +16,13 @@ import {
    ToolManager,
    ToolPalette,
    bindAsService,
-   bindOrRebind
+   bindOrRebind,
+   isRoutable,
+   toElementAndRoutingPoints
 } from '@eclipse-glsp/client';
 import { GlspSelectionDataService } from '@eclipse-glsp/theia-integration';
 import { ContainerModule, injectable, interfaces } from '@theia/core/shared/inversify';
+import { VNode } from 'snabbdom';
 import { CmMetadataPlacer } from './cm-metadata-placer';
 import { CrossModelCommandPalette, CrossModelMousePositionTracker } from './cross-model-command-palette';
 import { CrossModelMouseDeleteTool } from './cross-model-delete-tool';
@@ -50,6 +55,9 @@ export function createCrossModelDiagramModule(registry: interfaces.ContainerModu
 
       bindAsService(bind, TYPES.IUIExtension, CrossModelErrorExtension);
       rebind(MetadataPlacer).to(CmMetadataPlacer).inSingletonScope();
+
+      bind(CrossModelHiddenBoundsUpdater).toSelf().inSingletonScope();
+      rebind(GLSPHiddenBoundsUpdater).to(CrossModelHiddenBoundsUpdater).inSingletonScope();
    });
 }
 
@@ -60,5 +68,21 @@ export class CrossModelToolManager extends ToolManager {
       // since setting the _defaultToolsEnabled flag to true will short-circuit the enableDefaultTools method
       // we only set it to true if truly all default tools are enabled
       this._defaultToolsEnabled = this.activeTools.length === this.defaultTools.length;
+   }
+}
+
+@injectable()
+export class CrossModelHiddenBoundsUpdater extends GLSPHiddenBoundsUpdater {
+   override decorate(vnode: VNode, element: GModelElement): VNode {
+      super.decorate(vnode, element);
+      if (isRoutable(element)) {
+         const addedRoute = this.element2route.pop();
+         if (addedRoute?.newRoutingPoints && addedRoute.newRoutingPoints.length >= 2) {
+            this.element2route.push(addedRoute);
+         } else {
+            this.element2route.push(toElementAndRoutingPoints(element));
+         }
+      }
+      return vnode;
    }
 }

@@ -22,7 +22,7 @@
     "download:plugins": "theia download:plugins",
     "package": "yarn package:pre && electron-builder -c.mac.identity=null --publish never && yarn package:post",
     "package:extensions": "yarn --cwd ../../extensions/crossmodel-lang package -o ../../applications/electron-app/plugins/",
-    "package:post": "rimraf plugins/crossmodel-lang* && yarn --cwd ../../extensions/crossmodel-lang symlink",
+    "package:post": "rimraf --glob plugins/crossmodel-lang* && yarn --cwd ../../extensions/crossmodel-lang symlink",
     "package:pre": "rimraf dist plugins/crossmodel-lang && yarn package:extensions",
     "package:preview": "yarn package:pre && electron-builder -c.mac.identity=null --dir && yarn package:post",
     "rebuild": "theia rebuild:electron --cacheRoot ../..",
@@ -50,6 +50,7 @@
     "@theia/plugin-ext-vscode": "1.57.1",
     "@theia/preferences": "1.57.1",
     "@theia/process": "1.57.1",
+    "@theia/secondary-window": "1.57.1",
     "@theia/terminal": "1.57.1",
     "@theia/vsx-registry": "1.57.1",
     "@theia/workspace": "1.57.1"

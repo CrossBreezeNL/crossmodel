@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "yarn && yarn clean && tsc --incremental && yarn playwright:install",
-    "clean": "rimraf lib *.tsbuildinfo .eslintcache",
+    "clean": "rimraf --glob lib *.tsbuildinfo .eslintcache",
     "lint": "eslint -c ../.eslintrc.js --ext .ts ./src",
     "playwright:install": "playwright install chromium --with-deps",
     "test": "",

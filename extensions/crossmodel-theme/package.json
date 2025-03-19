@@ -20,7 +20,7 @@
   "publisher": "CrossBreeze",
   "scripts": {
     "build": "echo \"Nothing to build\"",
-    "clean": "rimraf out *.vsix",
+    "clean": "rimraf --glob out *.vsix",
     "package:vsix": "vsce package --yarn",
     "symlink": "yarn symlink:browser && yarn symlink:electron",
     "symlink:browser": "symlink-dir . ../../applications/browser-app/plugins/crossmodel-theme",

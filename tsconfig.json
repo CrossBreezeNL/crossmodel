@@ -25,6 +25,9 @@
       "path": "packages/model-service"
     },
     {
+      "path": "packages/model-assistant"
+    },
+    {
       "path": "packages/react-model-ui"
     },
     {

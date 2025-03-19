@@ -1,0 +1,43 @@
+{
+  "name": "@crossbreezenl/model-assistant",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Modeling assistant for crossmodel",
+  "homepage": "https://github.com/CrossBreezeNL/crossmodel",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CrossBreezeNL/crossmodel"
+  },
+  "license": "AGPL-3.0-or-later",
+  "author": {
+    "name": "CrossBreeze",
+    "email": "devops@crossbreeze.nl"
+  },
+  "main": "index.js",
+  "files": [
+    "lib",
+    "src",
+    "style"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rimraf lib tsconfig.tsbuildinfo",
+    "lint": "eslint -c ../../.eslintrc.js --ext .ts,.tsx ./src",
+    "test": "jest --passWithNoTests",
+    "watch": "tsc -w"
+  },
+  "dependencies": {
+    "@theia/ai-chat": "1.60.2",
+    "@theia/ai-chat-ui": "1.60.2",
+    "@theia/ai-code-completion": "1.60.2",
+    "@theia/ai-core": "1.60.2",
+    "@theia/ai-history": "1.60.2",
+    "@theia/ai-openai": "1.60.2",
+    "@theia/ai-terminal": "1.60.2"
+  },
+  "theiaExtensions": [
+    {
+      "frontend": "lib/browser/model-assistant-frontend-module"
+    }
+  ]
+}

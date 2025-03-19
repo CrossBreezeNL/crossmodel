@@ -2479,6 +2479,122 @@
     "@babel/runtime" "^7.12.5"
     "@testing-library/dom" "^7.28.1"
 
+"@theia/ai-chat-ui@1.57.1":
+  version "1.57.1"
+  resolved "https://registry.yarnpkg.com/@theia/ai-chat-ui/-/ai-chat-ui-1.57.1.tgz#ce23c6c192d4bdb668609c6e6e465897252bf69c"
+  integrity sha512-jhAw7Q/hzTSFYtA3v0uT31UNUx2u6T3VIJFAVGBUnnje914yMnz11WkmSzIcDzWPFfxsm8BMTs2fRdFZeyAOig==
+  dependencies:
+    "@theia/ai-chat" "1.57.1"
+    "@theia/ai-core" "1.57.1"
+    "@theia/core" "1.57.1"
+    "@theia/editor" "1.57.1"
+    "@theia/editor-preview" "1.57.1"
+    "@theia/filesystem" "1.57.1"
+    "@theia/monaco" "1.57.1"
+    "@theia/monaco-editor-core" "1.83.101"
+    "@theia/workspace" "1.57.1"
+    minimatch "^5.1.0"
+    tslib "^2.6.2"
+    uuid "^9.0.1"
+
+"@theia/ai-chat@1.57.1":
+  version "1.57.1"
+  resolved "https://registry.yarnpkg.com/@theia/ai-chat/-/ai-chat-1.57.1.tgz#160b101a81275b6649ab3edc52ad21071ff7e951"
+  integrity sha512-AlJBgjq+5C23uILDFy5j4wickI5WBqFkKITqzCgjLtJ51rHr/DsUzM+Ym3zIJfQyE+8O3EYpbToJh9/L3kt1bQ==
+  dependencies:
+    "@theia/ai-core" "1.57.1"
+    "@theia/ai-history" "1.57.1"
+    "@theia/core" "1.57.1"
+    "@theia/filesystem" "1.57.1"
+    "@theia/workspace" "1.57.1"
+    minimatch "^5.1.0"
+    tslib "^2.6.2"
+
+"@theia/ai-code-completion@1.57.1":
+  version "1.57.1"
+  resolved "https://registry.yarnpkg.com/@theia/ai-code-completion/-/ai-code-completion-1.57.1.tgz#a8a2f677fbf56879c001cac74c91972a1b304848"
+  integrity sha512-+CKmchxC3WdMSnE8+5fQgI+h7yhVL0nmkLk0CyjPhbHflvj0jbDTtD86V1U5AWXFE92+OoSeCRKXzcYfAWx/5A==
+  dependencies:
+    "@theia/ai-core" "1.57.1"
+    "@theia/core" "1.57.1"
+    "@theia/filesystem" "1.57.1"
+    "@theia/monaco-editor-core" "1.83.101"
+    "@theia/output" "1.57.1"
+    "@theia/workspace" "1.57.1"
+    minimatch "^5.1.0"
+    tslib "^2.6.2"
+
+"@theia/ai-core@1.57.1":
+  version "1.57.1"
+  resolved "https://registry.yarnpkg.com/@theia/ai-core/-/ai-core-1.57.1.tgz#046cea9e40cc6b89d7dbcd70544df5485d4449b5"
+  integrity sha512-IdwJfGxL+FK7HE0GnwpRGCm1vtqrRwcd3E1CBfp9Y0nspdqbx8UhMEsP6B7/HQ4/lVfmOmOcZ2s2RM9NqOFmBg==
+  dependencies:
+    "@theia/core" "1.57.1"
+    "@theia/editor" "1.57.1"
+    "@theia/filesystem" "1.57.1"
+    "@theia/monaco" "1.57.1"
+    "@theia/monaco-editor-core" "1.83.101"
+    "@theia/output" "1.57.1"
+    "@theia/variable-resolver" "1.57.1"
+    "@theia/workspace" "1.57.1"
+    "@types/js-yaml" "^4.0.9"
+    js-yaml "^4.1.0"
+    minimatch "^5.1.0"
+    tslib "^2.6.2"
+
+"@theia/ai-history@1.57.1":
+  version "1.57.1"
+  resolved "https://registry.yarnpkg.com/@theia/ai-history/-/ai-history-1.57.1.tgz#3b588fe8a10cd820eecebdeb195bd1ae36121481"
+  integrity sha512-CAn7G83WhgUViP8xx0VdU7p29410wSDmnENyCNg8uvswNNlDjSTI0u/yY32T13mmXE2aNlXmfno/9x259KuLfQ==
+  dependencies:
+    "@theia/ai-core" "1.57.1"
+    "@theia/core" "1.57.1"
+    "@theia/filesystem" "1.57.1"
+    "@theia/output" "1.57.1"
+    "@theia/workspace" "1.57.1"
+    minimatch "^5.1.0"
+    tslib "^2.6.2"
+
+"@theia/ai-openai@1.57.1":
+  version "1.57.1"
+  resolved "https://registry.yarnpkg.com/@theia/ai-openai/-/ai-openai-1.57.1.tgz#5e966dc7837ba371471432b9a8affc8162716a7b"
+  integrity sha512-SXpOqaX8B8Vzv0E6eXmperopJYcRHsUJsEyGq8l3BIzqRSRirJwP8udyoFAkdfVZTFaEwc5x8acrZHGG13yojw==
+  dependencies:
+    "@theia/ai-core" "1.57.1"
+    "@theia/core" "1.57.1"
+    "@theia/filesystem" "1.57.1"
+    "@theia/workspace" "1.57.1"
+    minimatch "^5.1.0"
+    openai "^4.55.7"
+    tslib "^2.6.2"
+
+"@theia/ai-terminal@1.57.1":
+  version "1.57.1"
+  resolved "https://registry.yarnpkg.com/@theia/ai-terminal/-/ai-terminal-1.57.1.tgz#0e1cbc67e5dbfc226c58c1fb14c3e4c775b127d0"
+  integrity sha512-l5DkudvgMdJTQcwqro6PlZWzBbsM7CRKWel/nTkDSrikzFb7WsXpf5VK5edx3COrg3kxebLxDnhA8L1eAVN1hw==
+  dependencies:
+    "@theia/ai-chat" "1.57.1"
+    "@theia/ai-core" "1.57.1"
+    "@theia/core" "1.57.1"
+    "@theia/terminal" "1.57.1"
+    zod "^3.23.8"
+    zod-to-json-schema "^3.23.2"
+
+"@theia/ai-workspace-agent@1.57.1":
+  version "1.57.1"
+  resolved "https://registry.yarnpkg.com/@theia/ai-workspace-agent/-/ai-workspace-agent-1.57.1.tgz#65a044a25fe974f2ec5379dbd37cbdb792dd5815"
+  integrity sha512-/W08aBUPsAnl+RZgXqnxu3q5MkFSGn1C9BR4Re1tVi51uNNttiCyX/TRUnoKg4nIYSm8r3m1EhA219XHhZXnTQ==
+  dependencies:
+    "@theia/ai-chat" "1.57.1"
+    "@theia/ai-core" "1.57.1"
+    "@theia/core" "1.57.1"
+    "@theia/filesystem" "1.57.1"
+    "@theia/navigator" "1.57.1"
+    "@theia/terminal" "1.57.1"
+    "@theia/workspace" "1.57.1"
+    ignore "^6.0.0"
+    minimatch "^9.0.0"
+
 "@theia/application-manager@1.57.1":
   version "1.57.1"
   resolved "https://registry.yarnpkg.com/@theia/application-manager/-/application-manager-1.57.1.tgz#2c7ea030678dbb33a783053208a34985825e7cf4"
@@ -3506,6 +3622,11 @@
     expect "^29.0.0"
     pretty-format "^29.0.0"
 
+"@types/js-yaml@^4.0.9":
+  version "4.0.9"
+  resolved "https://registry.yarnpkg.com/@types/js-yaml/-/js-yaml-4.0.9.tgz#cd82382c4f902fed9691a2ed79ec68c5898af4c2"
+  integrity sha512-k4MGaQl5TGo/iipqb2UDG2UwjXziSWkh0uysQelTlJpX1qGlpUZYm8PnO4DxG1qBomtJUdYJ6qR6xdIah10JLg==
+
 "@types/json-schema@*", "@types/json-schema@^7.0.12", "@types/json-schema@^7.0.5", "@types/json-schema@^7.0.8", "@types/json-schema@^7.0.9":
   version "7.0.14"
   resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.14.tgz#74a97a5573980802f32c8e47b663530ab3b6b7d1"
@@ -3625,10 +3746,25 @@
     "@types/node" "*"
     form-data "^4.0.0"
 
+"@types/node-fetch@^2.6.4":
+  version "2.6.12"
+  resolved "https://registry.yarnpkg.com/@types/node-fetch/-/node-fetch-2.6.12.tgz#8ab5c3ef8330f13100a7479e2cd56d3386830a03"
+  integrity sha512-8nneRWKCg3rMtF69nLQJnOYUcbafYeFSjqkw3jCRLsqkWFlHaoQrr5mXmofFGOx3DKn7UfmBMyov8ySvLRVldA==
+  dependencies:
+    "@types/node" "*"
+    form-data "^4.0.0"
+
 "@types/node@*", "@types/node@>=10.0.0":
   version "20.8.9"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-20.8.9.tgz#646390b4fab269abce59c308fc286dcd818a2b08"
   integrity sha512-UzykFsT3FhHb1h7yD4CA4YhBHq545JC0YnEz41xkipN88eKQtL6rSgocL5tbAP6Ola9Izm/Aw4Ora8He4x0BHg==
+  dependencies:
+    undici-types "~5.26.4"
+
+"@types/node@^18.11.18":
+  version "18.19.80"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.19.80.tgz#6d6008e8920dddcd23f9dd33da24684ef57d487c"
+  integrity sha512-kEWeMwMeIvxYkeg1gTc01awpwLbfMRZXdIhwRcakd/KlK53jmRC26LqcbIt7fnAQTu5GzlnWmzA3H6+l1u6xxQ==
   dependencies:
     undici-types "~5.26.4"
 
@@ -8630,6 +8766,11 @@ forever-agent@~0.6.1:
   resolved "https://registry.yarnpkg.com/forever-agent/-/forever-agent-0.6.1.tgz#fbc71f0c41adeb37f96c577ad1ed42d8fdacca91"
   integrity sha512-j0KLYPhm6zeac4lz3oJ3o65qvgQCcPubiyotZrXqEaG4hNagNYO8qdlUrX5vwqv9ohqeT/Z3j6+yW067yWWdUw==
 
+form-data-encoder@1.7.2:
+  version "1.7.2"
+  resolved "https://registry.yarnpkg.com/form-data-encoder/-/form-data-encoder-1.7.2.tgz#1f1ae3dccf58ed4690b86d87e4f57c654fbab040"
+  integrity sha512-qfqtYan3rxrnCk1VYaA4H+Ms9xdpPqvLZa6xmMgFvhO32x7/3J/ExcTd6qpxM0vH2GdMI+poehyBZvqfMTto8A==
+
 form-data@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/form-data/-/form-data-4.0.0.tgz#93919daeaf361ee529584b9b31664dc12c9fa452"
@@ -8647,6 +8788,14 @@ form-data@~2.3.2:
     asynckit "^0.4.0"
     combined-stream "^1.0.6"
     mime-types "^2.1.12"
+
+formdata-node@^4.3.2:
+  version "4.4.1"
+  resolved "https://registry.yarnpkg.com/formdata-node/-/formdata-node-4.4.1.tgz#23f6a5cb9cb55315912cbec4ff7b0f59bbd191e2"
+  integrity sha512-0iirZp3uVDjVGt9p49aTaqjk84TrglENEDuqfdlZQ1roC9CWlPk6Avf8EEnZNcAqPonwkG35x4n3ww/1THYAeQ==
+  dependencies:
+    node-domexception "1.0.0"
+    web-streams-polyfill "4.0.0-beta.3"
 
 forwarded@0.2.0:
   version "0.2.0"
@@ -9543,6 +9692,11 @@ ignore@^5.2.0, ignore@^5.2.4:
   version "5.2.4"
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-5.2.4.tgz#a291c0c6178ff1b960befe47fcdec301674a6324"
   integrity sha512-MAb38BcSbH0eHNBxn7ql2NH/kX33OkB3lZ1BNdh7ENeRChHTYsTvWrMubiIAMNS2llXEEgZ1MUOBtXChP3kaFQ==
+
+ignore@^6.0.0:
+  version "6.0.2"
+  resolved "https://registry.yarnpkg.com/ignore/-/ignore-6.0.2.tgz#77cccb72a55796af1b6d2f9eb14fa326d24f4283"
+  integrity sha512-InwqeHHN2XpumIkMvpl/DCJVrAHgCsG5+cn1XlnLWGwtZBm8QJfSusItfrwx81CTp5agNZqpKU2J/ccC5nGT4A==
 
 image-size@~0.5.0:
   version "0.5.5"
@@ -11678,17 +11832,17 @@ minimatch@^5.0.1, minimatch@^5.1.0:
   dependencies:
     brace-expansion "^2.0.1"
 
+minimatch@^9.0.0, minimatch@^9.0.4:
+  version "9.0.5"
+  resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-9.0.5.tgz#d74f9dd6b57d83d8e98cfb82133b03978bc929e5"
+  integrity sha512-G6T0ZX48xgozx7587koeX9Ys2NYy6Gmv//P89sEte9V9whIapMNF4idKxnW2QtCcLiTWlb/wfCabAtAFWhhBow==
+  dependencies:
+    brace-expansion "^2.0.1"
+
 minimatch@^9.0.1:
   version "9.0.3"
   resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-9.0.3.tgz#a6e00c3de44c3a542bfaae70abfc22420a6da825"
   integrity sha512-RHiac9mvaRw0x3AYRgDC1CxAP7HTcNrrECeA8YYJeWnpo+2Q5CegtZjaotWTWxDG3UeGA1coE05iH1mPjT/2mg==
-  dependencies:
-    brace-expansion "^2.0.1"
-
-minimatch@^9.0.4:
-  version "9.0.5"
-  resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-9.0.5.tgz#d74f9dd6b57d83d8e98cfb82133b03978bc929e5"
-  integrity sha512-G6T0ZX48xgozx7587koeX9Ys2NYy6Gmv//P89sEte9V9whIapMNF4idKxnW2QtCcLiTWlb/wfCabAtAFWhhBow==
   dependencies:
     brace-expansion "^2.0.1"
 
@@ -12045,6 +12199,18 @@ node-api-version@^0.1.4:
   dependencies:
     semver "^7.3.5"
 
+node-domexception@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/node-domexception/-/node-domexception-1.0.0.tgz#6888db46a1f71c0b76b3f7555016b63fe64766e5"
+  integrity sha512-/jKZoMpw0F8GRwl4/eLROPA3cfcXtLApP0QzLmUT/HuPCZWyB7IY9ZrMeKw2O/nFIqPQB3PVM9aYm0F312AXDQ==
+
+node-fetch@^2.6.7:
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.7.0.tgz#d0f0fa6e3e2dc1d27efcd8ad99d550bda94d187d"
+  integrity sha512-c4FRfUm/dbcWZ7U+1Wq0AwCyFL+3nt2bEw05wfxSz+DWpWsitgmSgYmy2dQdWyKC1694ELPqMs/YzUSNozLt8A==
+  dependencies:
+    whatwg-url "^5.0.0"
+
 node-fetch@cjs:
   version "2.6.7"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.7.tgz#24de9fba827e3b4ae44dc8b20256a379160052ad"
@@ -12350,6 +12516,19 @@ open@^9.1.0:
     define-lazy-prop "^3.0.0"
     is-inside-container "^1.0.0"
     is-wsl "^2.2.0"
+
+openai@^4.55.7:
+  version "4.87.4"
+  resolved "https://registry.yarnpkg.com/openai/-/openai-4.87.4.tgz#f9d8da366a1ded2c7aa92cb9f2256755d0e58902"
+  integrity sha512-lsfM20jZY4A0lNexfoUAkfmrEXxaTXvv8OKYicpeAJUNHObpRgkvC7pxPgMnB6gc9ID8OCwzzhEhBpNy69UR7w==
+  dependencies:
+    "@types/node" "^18.11.18"
+    "@types/node-fetch" "^2.6.4"
+    abort-controller "^3.0.0"
+    agentkeepalive "^4.2.1"
+    form-data-encoder "1.7.2"
+    formdata-node "^4.3.2"
+    node-fetch "^2.6.7"
 
 opener@^1.5.1:
   version "1.5.2"
@@ -16060,6 +16239,11 @@ wcwidth@^1.0.0, wcwidth@^1.0.1:
   dependencies:
     defaults "^1.0.3"
 
+web-streams-polyfill@4.0.0-beta.3:
+  version "4.0.0-beta.3"
+  resolved "https://registry.yarnpkg.com/web-streams-polyfill/-/web-streams-polyfill-4.0.0-beta.3.tgz#2898486b74f5156095e473efe989dcf185047a38"
+  integrity sha512-QW95TCTaHmsYfHDybGMwO5IJIM93I/6vTRk+daHTWFPhwh+C8Cg7j7XyKrwrj8Ib6vYXe0ocYNrmzY4xAAN6ug==
+
 webidl-conversions@^3.0.0:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/webidl-conversions/-/webidl-conversions-3.0.1.tgz#24534275e2a7bc6be7bc86611cc16ae0a5654871"
@@ -16632,7 +16816,17 @@ yup@0.32.11:
     property-expr "^2.0.4"
     toposort "^2.0.2"
 
+zod-to-json-schema@^3.23.2:
+  version "3.24.4"
+  resolved "https://registry.yarnpkg.com/zod-to-json-schema/-/zod-to-json-schema-3.24.4.tgz#0d56fe9f01b07bbdb510a4d9382c499a1c9fd06b"
+  integrity sha512-0uNlcvgabyrni9Ag8Vghj21drk7+7tp7VTwwR7KxxXXc/3pbXz2PHlDgj3cICahgF1kHm4dExBFj7BXrZJXzig==
+
 zod@3.23.8:
   version "3.23.8"
   resolved "https://registry.yarnpkg.com/zod/-/zod-3.23.8.tgz#e37b957b5d52079769fb8097099b592f0ef4067d"
   integrity sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==
+
+zod@^3.23.8:
+  version "3.24.2"
+  resolved "https://registry.yarnpkg.com/zod/-/zod-3.24.2.tgz#8efa74126287c675e92f46871cfc8d15c34372b3"
+  integrity sha512-lY7CDW43ECgW9u1TcT3IoXHflywfVqDYze4waEz812jR/bZ8FHDsl7pFQoSZTz5N+2NqRXs8GBwnAwo3ZNxqhQ==

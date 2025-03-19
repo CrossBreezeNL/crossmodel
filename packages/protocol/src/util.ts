@@ -70,3 +70,12 @@ export function findNextUnique<T>(suggestion: string, existing: T[], nameGetter:
    }
    return name;
 }
+
+/** taken from the langium file, in newer Langium versions constants may be generated. */
+export const ID_REGEX = /^[_a-zA-Z@][\w_\-@/#]*$/;
+export const NPM_PACKAGE_NAME_REGEX = /^(?:(?:@(?:[a-z0-9-*~][a-z0-9-*._~]*)?\/[a-z0-9-._~])|[a-z0-9-~])[a-z0-9-._~]*$/;
+
+export function packageNameToId(input: string): string {
+   const unscoped = input.split('/').at(-1)!;
+   return unscoped.split(/[~.-]/).map(toPascal).join('');
+}

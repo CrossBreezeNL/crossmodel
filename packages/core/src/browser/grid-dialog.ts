@@ -2,8 +2,8 @@
  * Copyright (c) 2025 CrossBreeze.
  ********************************************************************************/
 
-import { inject } from '@theia/core/shared/inversify';
 import { LabelProvider } from '@theia/core/lib/browser';
+import { inject } from '@theia/core/shared/inversify';
 import { WorkspaceInputDialog, WorkspaceInputDialogProps } from '@theia/workspace/lib/browser/workspace-input-dialog';
 
 const GridInputDialogProps = Symbol('GridInputDialogProps');
@@ -49,7 +49,10 @@ export class GridInputDialog extends WorkspaceInputDialog {
          if (!inputFieldSet && !inputProps.options) {
             inputFieldSet = true;
             this.inputField.id = computedId;
+            this.inputField.placeholder = inputProps.placeholder || this.inputField.placeholder;
+            this.inputField.value = inputProps.value || this. inputField.value;
             this.grid.appendChild(this.inputField);
+            this.inputField.select();
          } else {
             const input = createInput({ ...inputProps, id: computedId });
             this.grid.appendChild(input);

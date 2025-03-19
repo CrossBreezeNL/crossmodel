@@ -3,12 +3,15 @@
  ********************************************************************************/
 import { ModelService } from '@crossbreeze/model-service/lib/common';
 import {
+   ID_REGEX,
    MappingType,
    ModelFileExtensions,
    ModelMemberPermissions,
    ModelStructure,
+   NPM_PACKAGE_NAME_REGEX,
    TargetObjectType,
    isMemberPermittedInModel,
+   packageNameToId,
    quote,
    toId,
    toPascal
@@ -44,6 +47,7 @@ interface NewElementTemplate<T extends readonly InputOptions[] = readonly InputO
    toUri: (parent: URI, name: string) => URI;
    memberType: string;
    content: string | ((options: FieldValues<T>) => string);
+   validateName(name: string): string | undefined;
    getInputOptions?(parent: URI, modelService: ModelService): MaybePromise<T>;
 }
 
@@ -63,22 +67,23 @@ const NEW_ELEMENT_TEMPLATES: Array<NewElementTemplate> = [
       id: 'crossbreeze.new.entity',
       label: 'Entity',
       memberType: 'LogicalEntity',
-      toUri: joinWithExt(ModelFileExtensions.LogicalEntity, join),
+      toUri: (parent, name) => join(parent, toId(name), ModelFileExtensions.LogicalEntity),
       category: TEMPLATE_CATEGORY,
       iconClass: ModelStructure.LogicalEntity.ICON_CLASS,
-      content: ({ name }) =>
-         INITIAL_ENTITY_CONTENT.replace(/\$\{name\}/gi, quote(toPascal(name))).replace(/\$\{id\}/gi, toId(toPascal(name)))
+      content: ({ name }) => INITIAL_ENTITY_CONTENT.replace(/\$\{name\}/gi, quote(name)).replace(/\$\{id\}/gi, toId(name)),
+      validateName: validateObjectName
    },
    {
       id: 'crossbreeze.new.relationship',
       label: 'Relationship',
       memberType: 'Relationship',
-      toUri: joinWithExt(ModelFileExtensions.Relationship, join),
+      toUri: (parent, name) => join(parent, toId(name), ModelFileExtensions.Relationship),
       category: TEMPLATE_CATEGORY,
       iconClass: ModelStructure.Relationship.ICON_CLASS,
+      validateName: validateObjectName,
       content: ({ name, parent, child }) => `relationship:
-    id: ${toId(toPascal(name))}
-    name: ${quote(toPascal(name))}
+    id: ${toId(name)}
+    name: ${quote(name)}
     parent: ${parent}
     child: ${child}
 `,
@@ -99,21 +104,22 @@ const NEW_ELEMENT_TEMPLATES: Array<NewElementTemplate> = [
       id: 'crossbreeze.new.system-diagram',
       label: 'System Diagram',
       memberType: 'SystemDiagram',
-      toUri: joinWithExt(ModelFileExtensions.SystemDiagram, join),
+      toUri: (parent, name) => join(parent, toId(name), ModelFileExtensions.SystemDiagram),
       category: TEMPLATE_CATEGORY,
+      validateName: validateObjectName,
       iconClass: ModelStructure.SystemDiagram.ICON_CLASS,
-      content: ({ name }) =>
-         INITIAL_DIAGRAM_CONTENT.replace(/\$\{name\}/gi, quote(toPascal(name))).replace(/\$\{id\}/gi, toId(toPascal(name)))
+      content: ({ name }) => INITIAL_DIAGRAM_CONTENT.replace(/\$\{name\}/gi, quote(name)).replace(/\$\{id\}/gi, toId(name))
    },
    {
       id: 'crossbreeze.new.mapping',
       label: 'Mapping',
       memberType: 'Mapping',
-      toUri: joinWithExt(ModelFileExtensions.Mapping, join),
+      toUri: (parent, name) => join(parent, toId(name), ModelFileExtensions.Mapping),
       category: TEMPLATE_CATEGORY,
       iconClass: ModelStructure.Mapping.ICON_CLASS,
+      validateName: validateObjectName,
       content: ({ name, target }) => `mapping:
-    id: ${toId(toPascal(name))}
+    id: ${toId(name)}
     target:
         entity: ${target}
 `,
@@ -134,12 +140,13 @@ const NEW_ELEMENT_TEMPLATES: Array<NewElementTemplate> = [
       label: 'Data Model',
       memberType: 'DataModel',
       category: TEMPLATE_CATEGORY,
+      validateName: validatePackageName,
       iconClass: ModelStructure.System.ICON_CLASS,
-      toUri: (selectedDirectory, name) => selectedDirectory.resolve(toPascal(name)).resolve('package.json'),
-      content: options => JSON.stringify({ ...options, name: toPascal(options.name), dependencies: {} }, undefined, 4),
+      toUri: (selectedDirectory, name) => selectedDirectory.resolve(packageNameToId(name)).resolve('package.json'),
+      content: options => JSON.stringify({ ...options, dependencies: {} }, undefined, 4),
       getInputOptions() {
          return [
-            { id: 'name', label: 'Model Name' },
+            { id: 'name', label: 'Model Name', placeholder: 'new-data-model', value: 'new-data-model' },
             { id: 'version', label: 'Version', placeholder: '1.0.0', value: '1.0.0' },
             {
                value: 'logical',
@@ -151,8 +158,6 @@ const NEW_ELEMENT_TEMPLATES: Array<NewElementTemplate> = [
       }
    }
 ];
-
-const ID_REGEX = /^[_a-zA-Z@][\w_\-@/#]*$/; /* taken from the langium file, in newer Langium versions constants may be generated. */
 
 const DERIVE_MAPPING_FROM_ENTITY: Command = {
    id: 'crossmodel.mapping',
@@ -306,7 +311,7 @@ export class CrossModelWorkspaceContribution extends WorkspaceCommandContributio
             inputs: (await template.getInputOptions?.(parent.resource, this.modelService)) ?? [{ id: 'name', label: 'Name' }],
             validate: value => {
                const name = JSON.parse(value).name ?? '';
-               return name && this.validateElementFileName(template.toUri(parent.resource, name), name);
+               return name && (template.validateName(name) || this.validateFile(template.toUri(parent.resource, name)));
             }
          },
          this.labelProvider
@@ -324,6 +329,10 @@ export class CrossModelWorkspaceContribution extends WorkspaceCommandContributio
       if (!ID_REGEX.test(name)) {
          return nls.localizeByDefault(`'${name}' is not a valid name, must match: ${ID_REGEX}.`);
       }
+      return this.validateFile(file);
+   }
+
+   protected validateFile(file: URI): Promise<string> | string {
       const root = this.workspaceService.tryGetRoots().find(candidate => candidate.resource.isEqualOrParent(file));
       const relativeName = root?.resource.relative(file)?.toString();
       if (!relativeName || !root) {
@@ -403,8 +412,21 @@ function join(parent: URI, name: string, ext: string): URI {
    return parent.resolve(applyFileExtension(name, ext));
 }
 
-function joinWithExt(ext: string, other: (parent: URI, name: string, extension: string) => URI): (parent: URI, name: string) => URI {
-   return function (parent: URI, name: string): URI {
-      return other(parent, name, ext);
-   };
+function validateObjectName(input: string): string | undefined {
+   const asId = toId(input);
+   if (!ID_REGEX.test(asId)) {
+      return `Derived ID '${asId}' does not match '${ID_REGEX}'.`;
+   }
+   return undefined;
+}
+
+function validatePackageName(input: string): string | undefined {
+   if (!NPM_PACKAGE_NAME_REGEX.test(input)) {
+      return `Name must match '${NPM_PACKAGE_NAME_REGEX}'.`;
+   }
+   const asId = packageNameToId(input);
+   if (!ID_REGEX.test(asId)) {
+      return `Derived ID '${asId}' does not match '${ID_REGEX}'.`;
+   }
+   return undefined;
 }

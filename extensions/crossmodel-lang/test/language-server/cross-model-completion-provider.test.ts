@@ -12,7 +12,7 @@ import { createCrossModelTestServices, MockFileSystem, parseProject, testUri } f
 const services = createCrossModelTestServices(MockFileSystem);
 const assertCompletion = expectCompletion(services);
 
-describe('CrossModelCompletionProvider', () => {
+describe.only('CrossModelCompletionProvider', () => {
    const text = expandToString`
     relationship:
        id: Address_Customer
@@ -46,6 +46,16 @@ describe('CrossModelCompletionProvider', () => {
          index: 0,
          expectedItems: ['Address', 'Order'],
          disposeAfterCheck: true
+      });
+   });
+
+   test('Completion for entity references in project A at scope of project A root directory', async () => {
+      await assertCompletion({
+         text,
+         parseOptions: { documentUri: testUri('projectA') },
+         index: 0,
+         expectedItems: ['Address', 'Order'],
+         disposeAfterCheck: false
       });
    });
 

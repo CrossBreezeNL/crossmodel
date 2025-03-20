@@ -166,7 +166,7 @@ export class CrossModelPackageManager {
       // find closest package info based on the given URI
       // we prefer longer path names as we are deeper in the nested hierarchy
       const packageInfos = [...this.uriToPackage.values()]
-         .filter(info => Utils.isChildOf(info.directory, uri))
+         .filter(info => Utils.isEqualOrParent(info.directory, uri))
          .sort((left, right) => right.directory.fsPath.length - left.directory.fsPath.length);
 
       return packageInfos[0];

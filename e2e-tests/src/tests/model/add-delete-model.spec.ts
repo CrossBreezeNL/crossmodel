@@ -20,9 +20,9 @@ async function confirmCreationDialog(app: CMApp, entityName: string, modelType: 
 
 test.describe.serial('Add/Edit/Delete model from explorer', () => {
    let app: CMApp;
-   const NEW_MODEL_PATH = 'testFolder/NewModel';
-   const NEW_MODEL_PACKAGE_PATH = 'testFolder/NewModel/package.json';
-   const NEW_MODEL2_PATH = 'testFolder/NewModel2';
+   const NEW_MODEL_PATH = 'testFolder/NewDataModel';
+   const NEW_MODEL_PACKAGE_PATH = 'testFolder/NewDataModel/package.json';
+   const NEW_MODEL2_PATH = 'testFolder/NewDataModel2';
    test.beforeAll(async ({ browser, playwright }) => {
       app = await CMApp.load({ browser, playwright });
    });
@@ -40,11 +40,11 @@ test.describe.serial('Add/Edit/Delete model from explorer', () => {
       if (!tabBarToolbarNewModel) {
          return;
       }
-      const name = 'NewModel';
-      const modeltype = 'logical';
+      const name = 'new-data-model';
+      const modelType = 'logical';
       const version = '0.0.1';
       await tabBarToolbarNewModel.trigger();
-      await confirmCreationDialog(app, 'NewModel', 'logical', '0.0.1');
+      await confirmCreationDialog(app, name, modelType, version);
 
       // Verify that the model was created as expected
       await explorer.activate();
@@ -54,7 +54,7 @@ test.describe.serial('Add/Edit/Delete model from explorer', () => {
       const editor = await app.openEditor(NEW_MODEL_PACKAGE_PATH, TheiaTextEditor);
       expect((await editor.textContentOfLineByLineNumber(2))?.trim()).toBe(`"name": "${name}",`);
       expect((await editor.textContentOfLineByLineNumber(3))?.trim()).toBe(`"version": "${version}",`);
-      expect((await editor.textContentOfLineByLineNumber(4))?.trim()).toBe(`"type": "${modeltype}",`);
+      expect((await editor.textContentOfLineByLineNumber(4))?.trim()).toBe(`"type": "${modelType}",`);
       expect((await editor.textContentOfLineByLineNumber(5))?.trim()).toBe('"dependencies": {}');
       await editor.saveAndClose();
       await explorer.activate();
@@ -85,7 +85,7 @@ test.describe.serial('Add/Edit/Delete model from explorer', () => {
       const menuItem = await contextMenu.menuItemByNamePath('New Element', 'Data Model...');
       expect(menuItem).toBeDefined();
       await menuItem?.click();
-      await confirmCreationDialog(app, 'NewModel2', 'relational', '0.0.2');
+      await confirmCreationDialog(app, 'new-data-model-2', 'relational', '0.0.2');
       await explorer.activate();
 
       // Verify that the model was created as expected

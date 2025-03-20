@@ -2,6 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 import * as rpc from 'vscode-jsonrpc/node';
+export * from './validation-errors';
 
 export const CrossModelRegex = {
    STRING: /^"[^"]*"$|^'[^']*'$/,
@@ -51,6 +52,30 @@ export interface CrossModelRoot extends CrossModelElement {
    relationship?: Relationship;
    mapping?: Mapping;
    systemDiagram?: SystemDiagram;
+}
+export type TypeGuard<T> = (item: unknown) => item is T;
+export type RootContainer = {
+   [Key in keyof CrossModelRoot as CrossModelRoot[Key] extends string ? never : Key]-?: CrossModelRoot[Key];
+};
+
+/** Enforces that an array contains all variants of a union type */
+type AllKeys<T, ArrayMembers extends any[] = []> = {
+   [Key in keyof T]: Exclude<keyof T, Key> extends never ? readonly [...ArrayMembers, Key] : AllKeys<Omit<T, Key>, [...ArrayMembers, Key]>;
+}[keyof T];
+
+export const ROOT_KEYS = ['entity', 'mapping', 'relationship', 'systemDiagram'] as const satisfies AllKeys<RootContainer>;
+
+export function getSemanticRoot<T extends Partial<{ [key in keyof RootContainer]: any }>, U extends T[keyof RootContainer]>(
+   root: T,
+   guard?: TypeGuard<U>
+): U | undefined {
+   for (const key of ROOT_KEYS) {
+      const candidate = root[key];
+      if (candidate && (!guard || guard(candidate))) {
+         return candidate;
+      }
+   }
+   return undefined;
 }
 
 export type RootObjectType = Exclude<CrossModelRoot[keyof CrossModelRoot], string | undefined>;
@@ -244,6 +269,7 @@ export interface ClientModelArgs {
 export interface OpenModelArgs extends ClientModelArgs {
    languageId?: string;
    version?: number;
+   text?: string;
 }
 
 export interface CloseModelArgs extends ClientModelArgs {}
@@ -256,10 +282,15 @@ export interface SaveModelArgs<T = CrossModelRoot> extends ClientModelArgs {
    model: T | string;
 }
 
+export interface FindIdArgs extends SyntheticDocument {
+   proposal: string;
+}
+
 export interface ModelDiagnostic {
    type: 'lexing-error' | 'parsing-error' | 'validation-error';
    message: string;
    severity: 'error' | 'warning' | 'info';
+   code?: number | string;
 }
 
 export namespace ModelDiagnostic {
@@ -409,6 +440,7 @@ export const RequestModelDiagramNode = new rpc.RequestType2<string, string, Elem
 
 export const FindReferenceableElements = new rpc.RequestType1<CrossReferenceContext, ReferenceableElement[], void>('server/complete');
 export const ResolveReference = new rpc.RequestType1<CrossReference, ResolvedElement | undefined, void>('server/resolve');
+export const FindNextId = new rpc.RequestType1<FindIdArgs, string, void>('server/nextId');
 
 export const UpdateModel = new rpc.RequestType1<UpdateModelArgs, CrossModelDocument, void>('server/update');
 export const SaveModel = new rpc.RequestType1<SaveModelArgs, void, void>('server/save');

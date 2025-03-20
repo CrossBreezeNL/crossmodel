@@ -3,16 +3,19 @@
  ********************************************************************************/
 import { expect, test } from '@playwright/test';
 import { CMApp } from '../../page-objects/cm-app';
-import { TheiaSingleInputDialog } from '../../page-objects/theia-single-input-dialog';
+import { CMCompositeEditor } from '../../page-objects/cm-composite-editor';
 
-async function confirmCreationDialog(app: CMApp, relationshipName: string): Promise<void> {
-   const dialog = new TheiaSingleInputDialog(app);
-   dialog.waitForVisible();
-   expect(await dialog.title()).toBe('New Relationship...');
-   await dialog.enterSingleInput(relationshipName);
-   await dialog.waitUntilMainButtonIsEnabled();
-   await dialog.confirm();
-   await dialog.waitForClosed();
+async function confirmCreationEditor(app: CMApp, parentPathFragment: string, entityName: string, description?: string): Promise<void> {
+   const untitledEditor = new CMCompositeEditor(parentPathFragment + '/NewRelationship.relationship.cm', app, 'untitled');
+   await untitledEditor.waitForVisible();
+   const formEditor = await untitledEditor.switchToFormEditor();
+   const form = (await formEditor.formFor('relationship')).generalSection;
+   await form.setName(entityName);
+   if (description) {
+      await form.setDescription(description);
+   }
+   formEditor.waitForDirty();
+   formEditor.saveAndClose();
 }
 
 test.describe('Add/Edit/Delete relationship from explorer', () => {
@@ -37,7 +40,7 @@ test.describe('Add/Edit/Delete relationship from explorer', () => {
          return;
       }
       await tabBarToolbarNewRelationship.trigger();
-      await confirmCreationDialog(app, 'NewRelationship');
+      await confirmCreationEditor(app, 'ExampleCRM/relationships', 'NewRelationship');
 
       // Verify that the relationship was created as expected
       explorer.activate();

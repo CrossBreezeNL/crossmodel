@@ -4,12 +4,15 @@
 import { ModelService } from '@crossbreezenl/model-service/lib/common';
 import {
    ID_REGEX,
+   LogicalEntityType,
    MappingType,
    ModelFileExtensions,
    ModelMemberPermissions,
    ModelStructure,
    NPM_PACKAGE_NAME_REGEX,
+   RelationshipType,
    TargetObjectType,
+   computeRelationshipName,
    isMemberPermittedInModel,
    packageNameToId,
    quote,
@@ -23,6 +26,7 @@ import {
    MaybePromise,
    MenuContribution,
    MenuModelRegistry,
+   UNTITLED_SCHEME,
    URI,
    UntitledResourceResolver,
    UriSelection,
@@ -46,14 +50,14 @@ interface NewElementTemplate<T extends readonly InputOptions[] = readonly InputO
    label: string;
    toUri: (parent: URI, name: string) => URI;
    memberType: string;
-   content: string | ((options: FieldValues<T>) => string);
-   validateName(name: string): string | undefined;
+   content: string | ((parent: URI, model: ModelService, options: FieldValues<T>) => string | Promise<string>);
+   validateName?(name: string): string | undefined;
    getInputOptions?(parent: URI, modelService: ModelService): MaybePromise<T>;
 }
 
 const INITIAL_ENTITY_CONTENT = `entity:
-    id: \${id}
-    name: \${name}
+    id: NewLogicalEntity
+    name: "NewLogicalEntity"
 `;
 
 const INITIAL_DIAGRAM_CONTENT = `systemDiagram:
@@ -62,42 +66,41 @@ const INITIAL_DIAGRAM_CONTENT = `systemDiagram:
 
 const TEMPLATE_CATEGORY = 'New Element';
 
-const NEW_ELEMENT_TEMPLATES: Array<NewElementTemplate> = [
+const NEW_ELEMENT_TEMPLATES: ReadonlyArray<NewElementTemplate> = [
    {
       id: 'crossbreeze.new.entity',
       label: 'Entity',
-      memberType: 'LogicalEntity',
-      toUri: (parent, name) => join(parent, toId(name), ModelFileExtensions.LogicalEntity),
+      memberType: LogicalEntityType,
+      toUri(parent) {
+         return join(parent, `New${this.memberType}`, ModelFileExtensions.LogicalEntity);
+      },
       category: TEMPLATE_CATEGORY,
       iconClass: ModelStructure.LogicalEntity.ICON_CLASS,
-      content: ({ name }) => INITIAL_ENTITY_CONTENT.replace(/\$\{name\}/gi, quote(name)).replace(/\$\{id\}/gi, toId(name)),
-      validateName: validateObjectName
+      content: INITIAL_ENTITY_CONTENT
    },
    {
       id: 'crossbreeze.new.relationship',
       label: 'Relationship',
-      memberType: 'Relationship',
-      toUri: (parent, name) => join(parent, toId(name), ModelFileExtensions.Relationship),
+      memberType: RelationshipType,
+      toUri(parent) {
+         return join(parent, `New${this.memberType}`, ModelFileExtensions.Relationship);
+      },
       category: TEMPLATE_CATEGORY,
       iconClass: ModelStructure.Relationship.ICON_CLASS,
-      validateName: validateObjectName,
-      content: ({ name, parent, child }) => `relationship:
-    id: ${toId(name)}
-    name: ${quote(name)}
-    parent: ${parent}
-    child: ${child}
-`,
-      async getInputOptions(parent, modelService) {
+      async content(parentUri, modelService) {
          const elements = await modelService.findReferenceableElements({
-            container: { uri: parent.toString(), type: this.memberType },
+            container: { uri: parentUri.toString(), type: this.memberType },
             property: 'parent'
          });
-         const options = Object.fromEntries(elements.map(element => [element.label, element.label]));
-         return [
-            { id: 'name', label: 'Name' },
-            { id: 'parent', label: 'Parent', options },
-            { id: 'child', label: 'Child', options, value: elements[1]?.label ?? elements[0]?.label }
-         ] as const;
+         const parent = elements.at(0)?.label;
+         const child = elements.at(1)?.label;
+         const name = computeRelationshipName(parent, child);
+         return `relationship:
+    id: New${this.memberType}
+    name: ${quote(toPascal(name))}
+    parent: ${parent}
+    child: ${child}
+`;
       }
    },
    {
@@ -108,7 +111,7 @@ const NEW_ELEMENT_TEMPLATES: Array<NewElementTemplate> = [
       category: TEMPLATE_CATEGORY,
       validateName: validateObjectName,
       iconClass: ModelStructure.SystemDiagram.ICON_CLASS,
-      content: ({ name }) => INITIAL_DIAGRAM_CONTENT.replace(/\$\{name\}/gi, quote(name)).replace(/\$\{id\}/gi, toId(name))
+      content: (_, __, { name }) => INITIAL_DIAGRAM_CONTENT.replace(/\$\{name\}/gi, quote(name)).replace(/\$\{id\}/gi, toId(name))
    },
    {
       id: 'crossbreeze.new.mapping',
@@ -118,7 +121,7 @@ const NEW_ELEMENT_TEMPLATES: Array<NewElementTemplate> = [
       category: TEMPLATE_CATEGORY,
       iconClass: ModelStructure.Mapping.ICON_CLASS,
       validateName: validateObjectName,
-      content: ({ name, target }) => `mapping:
+      content: (_, __, { name, target }) => `mapping:
     id: ${toId(name)}
     target:
         entity: ${target}
@@ -143,7 +146,7 @@ const NEW_ELEMENT_TEMPLATES: Array<NewElementTemplate> = [
       validateName: validatePackageName,
       iconClass: ModelStructure.System.ICON_CLASS,
       toUri: (selectedDirectory, name) => selectedDirectory.resolve(packageNameToId(name)).resolve('package.json'),
-      content: options => JSON.stringify({ ...options, dependencies: {} }, undefined, 4),
+      content: (_, __, options) => JSON.stringify({ ...options, dependencies: {} }, undefined, 4),
       getInputOptions() {
          return [
             { id: 'name', label: 'Model Name', placeholder: 'new-data-model', value: 'new-data-model' },
@@ -283,20 +286,32 @@ export class CrossModelWorkspaceContribution extends WorkspaceCommandContributio
       const parent = await this.getDirectory(uri);
       if (parent) {
          const parentUri = parent.resource;
-         const baseProps = {
-            title: 'New ' + template.label + '...',
-            parentUri: parentUri,
-            initialValue: 'New' + template.memberType,
-            placeholder: 'New ' + template.memberType
-         };
-         const options = await this.getMemberOptions(baseProps, template, parent);
-         if (!options) {
-            return;
+         if (template.memberType === LogicalEntityType || template.memberType === RelationshipType) {
+            const fileUri = template.toUri(parent.resource, '');
+            const content =
+               typeof template.content === 'string' ? template.content : await template.content(parent.resource, this.modelService, {});
+            const untitledUri = fileUri.withScheme(UNTITLED_SCHEME);
+            this.untitledResources.createUntitledResource(content, undefined, untitledUri);
+            open(this.openerService, untitledUri);
+         } else {
+            const options = await this.getMemberOptions(
+               {
+                  title: 'New ' + template.label + '...',
+                  parentUri: parentUri,
+                  initialValue: 'New' + template.memberType,
+                  placeholder: 'New ' + template.memberType
+               },
+               template,
+               parent
+            );
+            if (!options) {
+               return;
+            }
+            const { fileUri, content } = options;
+            await this.fileService.create(fileUri, content);
+            this.fireCreateNewFile({ parent: parentUri, uri: fileUri });
+            open(this.openerService, fileUri);
          }
-         const { fileUri, content } = options;
-         await this.fileService.create(fileUri, content);
-         this.fireCreateNewFile({ parent: parentUri, uri: fileUri });
-         open(this.openerService, fileUri);
       }
    }
 
@@ -311,7 +326,7 @@ export class CrossModelWorkspaceContribution extends WorkspaceCommandContributio
             inputs: (await template.getInputOptions?.(parent.resource, this.modelService)) ?? [{ id: 'name', label: 'Name' }],
             validate: value => {
                const name = JSON.parse(value).name ?? '';
-               return name && (template.validateName(name) || this.validateFile(template.toUri(parent.resource, name)));
+               return name && (template.validateName?.(name) || this.validateFile(template.toUri(parent.resource, name)));
             }
          },
          this.labelProvider
@@ -320,7 +335,8 @@ export class CrossModelWorkspaceContribution extends WorkspaceCommandContributio
          return undefined;
       }
       const fileUri = template.toUri(parent.resource, options.name);
-      const content = typeof template.content === 'string' ? template.content : template.content(options);
+      const content =
+         typeof template.content === 'string' ? template.content : await template.content(parent.resource, this.modelService, options);
       return { fileUri, content };
    }
 

@@ -1,8 +1,8 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { CrossReferenceContext, LogicalEntityType, RelationshipAttribute, RelationshipAttributeType } from '@crossbreezenl/protocol';
-import { GridColDef, GridRenderEditCellParams, useGridApiContext } from '@mui/x-data-grid';
+import { CrossReferenceContext, ModelDiagnostic, RelationshipAttribute, RelationshipAttributeType } from '@crossbreezenl/protocol';
+import { GridColDef, GridRenderCellParams, GridRenderEditCellParams, useGridApiContext } from '@mui/x-data-grid';
 import * as React from 'react';
 import { useModelDispatch, useModelQueryApi, useReadonly, useRelationship } from '../../ModelContext';
 import AsyncAutoComplete from './AsyncAutoComplete';
@@ -10,6 +10,19 @@ import GridComponent, { GridComponentRow } from './GridComponent';
 
 export interface EditAttributePropertyComponentProps extends GridRenderEditCellParams {
    property: 'child' | 'parent';
+}
+
+function getDiagnosticKey(props: { row: { idx: number }; field: string }): string {
+   return `attributes[${props.row.idx}].${props.field}`;
+}
+
+export function AttributePropertyComponent(
+   props: GridRenderCellParams & { diagnostics: Record<string, ModelDiagnostic[] | undefined> }
+): React.ReactNode {
+   const relevantDiagnostics = props.diagnostics[getDiagnosticKey(props)];
+   const content = props.row[props.field];
+   const title = relevantDiagnostics?.at(0)?.message || content;
+   return <div title={title}>{content}</div>;
 }
 
 export function EditAttributePropertyComponent({
@@ -32,7 +45,10 @@ export function EditAttributePropertyComponent({
       }),
       [relationship, property]
    );
-   const referenceableElements = React.useCallback(() => queryApi.findReferenceableElements(referenceCtx), [queryApi, referenceCtx]);
+   const referenceableElements = React.useCallback(
+      () => queryApi.findReferenceableElements(referenceCtx).then(elements => elements.map(element => element.label)),
+      [queryApi, referenceCtx]
+   );
 
    const handleValueChange = React.useCallback(
       (newValue: string): void => {
@@ -41,14 +57,24 @@ export function EditAttributePropertyComponent({
       [field, gridApi, id]
    );
 
+   const handleOptionsLoaded = React.useCallback(
+      (options: string[]) => {
+         if (options.length && !value) {
+            gridApi.current.setEditCellValue({ id, field, value: options[0] });
+         }
+      },
+      [value, field, gridApi, id]
+   );
+
    return (
       <AsyncAutoComplete
          autoFocus={hasFocus}
          fullWidth={true}
          label=''
          optionLoader={referenceableElements}
-         onChange={(_evt, newReference) => handleValueChange(newReference.label)}
-         value={{ uri: '', label: value ?? '', type: LogicalEntityType }}
+         onOptionsLoaded={handleOptionsLoaded}
+         onChange={(_evt, newReference) => handleValueChange(newReference)}
+         value={value ?? ''}
          clearOnBlur={true}
          selectOnFocus={true}
          disabled={readonly}
@@ -58,8 +84,11 @@ export function EditAttributePropertyComponent({
 }
 
 export type RelationshipAttributeRow = GridComponentRow<RelationshipAttribute>;
+export interface RelationshipAttributeDataGridProps {
+   diagnostics: Record<string, ModelDiagnostic[] | undefined>;
+}
 
-export function RelationshipAttributesDataGrid(): React.ReactElement {
+export function RelationshipAttributesDataGrid({ diagnostics }: RelationshipAttributeDataGridProps): React.ReactElement {
    const relationship = useRelationship();
    const dispatch = useModelDispatch();
    const readonly = useReadonly();
@@ -125,7 +154,9 @@ export function RelationshipAttributesDataGrid(): React.ReactElement {
             flex: 200,
             editable: !readonly,
             renderEditCell: params => <EditAttributePropertyComponent {...params} property='parent' />,
-            type: 'singleSelect'
+            renderCell: params => <AttributePropertyComponent {...params} diagnostics={diagnostics} />,
+            type: 'singleSelect',
+            cellClassName: params => (diagnostics[getDiagnosticKey(params)] && 'Mui-error') || ''
          },
          {
             field: 'child',
@@ -133,10 +164,12 @@ export function RelationshipAttributesDataGrid(): React.ReactElement {
             flex: 200,
             editable: !readonly,
             renderEditCell: params => <EditAttributePropertyComponent {...params} property='child' />,
-            type: 'singleSelect'
+            renderCell: params => <AttributePropertyComponent {...params} diagnostics={diagnostics} />,
+            type: 'singleSelect',
+            cellClassName: params => (diagnostics[getDiagnosticKey(params)] && 'Mui-error') || ''
          }
       ],
-      [readonly]
+      [readonly, diagnostics]
    );
 
    return (

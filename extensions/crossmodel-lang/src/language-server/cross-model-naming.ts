@@ -4,9 +4,11 @@
 
 import { findNextUnique, identity } from '@crossbreezenl/protocol';
 import { AstNode, AstUtils, CstNode, GrammarUtils, isAstNode, NameProvider } from 'langium';
+import { URI } from 'vscode-uri';
 import { CrossModelServices } from './cross-model-module.js';
 import { UNKNOWN_PROJECT_REFERENCE } from './cross-model-package-manager.js';
 import { findDocument, getOwner } from './util/ast-util.js';
+import { Utils } from './util/uri-util.js';
 
 export const ID_PROPERTY = 'id';
 
@@ -122,10 +124,11 @@ export class DefaultIdProvider implements NameProvider, IdProvider {
    }
 
    findNextId(type: string, proposal: string | undefined): string;
+   findNextId(type: string, proposal: string | undefined, uri: URI): string;
    findNextId(type: string, proposal: string | undefined, container: AstNode): string;
-   findNextId(type: string, proposal: string | undefined, container?: AstNode): string {
+   findNextId(type: string, proposal: string | undefined, container?: AstNode | URI): string {
       const idProposal = proposal?.replaceAll('.', '_');
-      return isAstNode(container) ? this.findNextLocalId(type, idProposal, container) : this.findNextGlobalId(type, idProposal);
+      return isAstNode(container) ? this.findNextLocalId(type, idProposal, container) : this.findNextGlobalId(type, idProposal, container);
    }
 
    protected getParent(node: AstNode): AstNode | undefined {
@@ -141,8 +144,9 @@ export class DefaultIdProvider implements NameProvider, IdProvider {
       return findNextUnique(proposal, knownIds, identity);
    }
 
-   findNextGlobalId(type: string, proposal: string | undefined = 'Element'): string {
+   findNextGlobalId(type: string, proposal: string | undefined = 'Element', uri?: URI): string {
       const knownIds = this.services.shared.workspace.IndexManager.allElements(type)
+         .filter(candidate => !uri || !Utils.areEqual(uri, candidate.documentUri))
          .map(element => element.name)
          .toArray();
       return findNextUnique(proposal, knownIds, identity);

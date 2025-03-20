@@ -38,6 +38,8 @@ export const ModelQueryApiContext = React.createContext<ModelQueryApi>(DEFAULT_Q
 
 export const ModelDirtyContext = React.createContext<boolean>(false);
 
+export const UntitledContext = React.createContext<boolean>(false);
+
 export const ModelDiagnosticsContext = React.createContext<ModelDiagnostic[]>([]);
 
 export function useModel(): CrossModelRoot {
@@ -70,6 +72,10 @@ export function useDirty(): boolean {
 
 export function useReadonly(): boolean {
    return ModelDiagnostic.hasParseErrors(useDiagnostics());
+}
+
+export function useUntitled(): boolean {
+   return React.useContext(UntitledContext);
 }
 
 export function useEntity(): LogicalEntity {

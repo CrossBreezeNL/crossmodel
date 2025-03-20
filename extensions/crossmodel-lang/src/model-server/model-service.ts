@@ -84,8 +84,12 @@ export class ModelService {
     */
    async close(args: CloseModelArgs): Promise<void> {
       if (this.documentManager.isOnlyOpenInClient(args.uri, args.clientId)) {
+         // If unable to read, document has been deleted. Nothing to restore.
+         const model = await this.documentManager.readFile(args.uri).catch(() => undefined);
          // we need to restore the original state without any unsaved changes
-         await this.update({ ...args, model: await this.documentManager.readFile(args.uri) });
+         if (model) {
+            await this.update({ ...args, model });
+         }
       }
       return this.documentManager.close(args);
    }
@@ -108,7 +112,11 @@ export class ModelService {
     */
    async request(uri: string, state = DocumentState.Validated): Promise<AstCrossModelDocument | undefined> {
       const documentUri = URI.parse(uri);
-      await this.documentBuilder.waitUntil(state, documentUri);
+      const documentInCurrentState = this.documents.getDocument(documentUri);
+      // Workaround for https://github.com/eclipse-langium/langium/issues/1827
+      if (!documentInCurrentState || documentInCurrentState.state < state) {
+         await this.documentBuilder.waitUntil(state, documentUri);
+      }
       const document = await this.documents.getOrCreateDocument(documentUri);
       const root = document.parseResult.value;
       return isCrossModelRoot(root) ? { root, diagnostics: document.diagnostics ?? [], uri } : undefined;
@@ -215,6 +223,12 @@ export class ModelService {
          return services.references.IdProvider.getGlobalId(node);
       }
       return undefined;
+   }
+
+   findNextId(uri: string, type: string, proposal: string): string {
+      const itemUri = URI.parse(uri);
+      const services = this.shared.ServiceRegistry.getServices(itemUri) as CrossModelServices;
+      return services.references.IdProvider.findNextId(type, proposal, itemUri);
    }
 
    async findReferenceableElements(args: CrossReferenceContext): Promise<ReferenceableElement[]> {

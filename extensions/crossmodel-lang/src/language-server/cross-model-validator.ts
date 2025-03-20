@@ -2,10 +2,12 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 import {
+   CrossModelValidationErrors,
    findAllExpressions,
    getExpression,
    getExpressionPosition,
    getExpressionText,
+   getSemanticRoot,
    isMemberPermittedInModel,
    ModelFileExtensions,
    ModelMemberPermissions
@@ -37,21 +39,17 @@ import {
    TargetObjectAttribute,
    WithCustomProperties
 } from './generated/ast.js';
-import { findDocument, getOwner, getSemanticRootFromAstRoot, isSemanticRoot } from './util/ast-util.js';
-
-export namespace CrossModelIssueCodes {
-   export const FilenameNotMatching = 'filename-not-matching';
-}
+import { findDocument, getOwner, isSemanticRoot } from './util/ast-util.js';
 
 export interface FilenameNotMatchingDiagnostic extends Diagnostic {
    data: {
-      code: typeof CrossModelIssueCodes.FilenameNotMatching;
+      code: typeof CrossModelValidationErrors.FilenameNotMatching;
    };
 }
 
 export namespace FilenameNotMatchingDiagnostic {
    export function is(diagnostic: Diagnostic): diagnostic is FilenameNotMatchingDiagnostic {
-      return diagnostic.data?.code === CrossModelIssueCodes.FilenameNotMatching;
+      return diagnostic.data?.code === CrossModelValidationErrors.FilenameNotMatching;
    }
 }
 
@@ -89,13 +87,21 @@ export class CrossModelValidator {
 
    checkNamedObject(namedObject: NamedObject, accept: ValidationAcceptor): void {
       if (namedObject.name === undefined || namedObject.name.length === 0) {
-         accept('error', 'The name cannot be empty', { node: namedObject, property: 'name' });
+         accept('error', 'The name cannot be empty', {
+            node: namedObject,
+            property: 'name',
+            data: { code: CrossModelValidationErrors.toMissing('name') }
+         });
       }
    }
 
    checkIdentifiedObject(identifiedObject: IdentifiedObject, accept: ValidationAcceptor): void {
       if (identifiedObject.id === undefined || identifiedObject.id.length === 0) {
-         accept('error', 'The id cannot be empty', { node: identifiedObject, property: 'id' });
+         accept('error', 'The id cannot be empty', {
+            node: identifiedObject,
+            property: 'id',
+            data: { code: CrossModelValidationErrors.toMissing('id') }
+         });
       } else {
          // Only perform the following checks when the id is known
          this.checkUniqueGlobalId(identifiedObject, accept);
@@ -123,7 +129,7 @@ export class CrossModelValidator {
          accept('warning', `Filename should match element id: ${identifiedObject.id}`, {
             node: identifiedObject,
             property: ID_PROPERTY,
-            data: { code: CrossModelIssueCodes.FilenameNotMatching }
+            data: { code: CrossModelValidationErrors.FilenameNotMatching }
          });
       }
    }
@@ -135,13 +141,21 @@ export class CrossModelValidator {
       }
       const globalId = this.services.references.IdProvider.getGlobalId(identifiedObject);
       if (!globalId) {
-         accept('error', 'Missing required id field', { node: identifiedObject, property: ID_PROPERTY });
+         accept('error', 'Missing required id field', {
+            node: identifiedObject,
+            property: ID_PROPERTY,
+            data: { code: CrossModelValidationErrors.toMissing('id') }
+         });
          return;
       }
       const allElements = Array.from(this.services.shared.workspace.IndexManager.allElements());
       const duplicates = allElements.filter(description => description.name === globalId);
       if (duplicates.length > 1) {
-         accept('error', 'Must provide a unique id.', { node: identifiedObject, property: ID_PROPERTY });
+         accept('error', 'Must provide a unique id.', {
+            node: identifiedObject,
+            property: ID_PROPERTY,
+            data: { code: CrossModelValidationErrors.toMalformed('id') }
+         });
       }
    }
 
@@ -168,7 +182,11 @@ export class CrossModelValidator {
       const knownIds: string[] = [];
       for (const node of nodes) {
          if (node.id && knownIds.includes(node.id)) {
-            accept('error', 'Must provide a unique id.', { node, property: ID_PROPERTY });
+            accept('error', 'Must provide a unique id.', {
+               node,
+               property: ID_PROPERTY,
+               data: { code: CrossModelValidationErrors.toMalformed('id') }
+            });
          } else if (node.id) {
             knownIds.push(node.id);
          }
@@ -179,7 +197,7 @@ export class CrossModelValidator {
       if (!isCrossModelRoot(node)) {
          return;
       }
-      const semanticRoot = getSemanticRootFromAstRoot(node);
+      const semanticRoot = getSemanticRoot(node);
       const info = this.services.shared.workspace.PackageManager.getPackageInfoByDocument(node.$document);
       const packageType = info?.type;
       // The problem is with the system type, not necessarily anything under it.
@@ -263,30 +281,69 @@ export class CrossModelValidator {
       // and that each attribute is only used once
       const usedParentAttributes: LogicalAttribute[] = [];
       const usedChildAttributes: LogicalAttribute[] = [];
-      for (const attribute of relationship.attributes) {
+      if (!relationship.child) {
+         accept('error', 'Child entity is required.', {
+            node: relationship,
+            property: 'child',
+            data: { code: CrossModelValidationErrors.toMissing('child') }
+         });
+      }
+      if (!relationship.parent) {
+         accept('error', 'Parent entity is required.', {
+            node: relationship,
+            property: 'parent',
+            data: { code: CrossModelValidationErrors.toMissing('parent') }
+         });
+      }
+
+      relationship.attributes.forEach((attribute, index) => {
          if (!attribute.parent) {
-            accept('error', 'Parent attribute is required.', { node: attribute, property: 'parent' });
+            accept('error', 'Parent attribute is required.', {
+               node: attribute,
+               property: 'parent',
+               data: { code: CrossModelValidationErrors.toMalformed(`attributes[${index}].parent`) }
+            });
          } else if (attribute.parent.ref) {
             if (attribute.parent?.ref?.$container !== relationship.parent?.ref) {
-               accept('error', 'Not a valid parent attribute.', { node: attribute, property: 'parent' });
+               accept('error', 'Not a valid parent attribute.', {
+                  node: attribute,
+                  property: 'parent',
+                  data: { code: CrossModelValidationErrors.toMalformed(`attributes[${index}].parent`) }
+               });
             } else if (usedParentAttributes.includes(attribute.parent.ref)) {
-               accept('error', 'Each parent attribute can only be referenced once.', { node: attribute, property: 'parent' });
+               accept('error', 'Each parent attribute can only be referenced once.', {
+                  node: attribute,
+                  property: 'parent',
+                  data: { code: CrossModelValidationErrors.toMalformed(`attributes[${index}].parent`) }
+               });
             } else {
                usedParentAttributes.push(attribute.parent.ref);
             }
          }
          if (!attribute.child) {
-            accept('error', 'Child attribute is required.', { node: attribute, property: 'child' });
+            accept('error', 'Child attribute is required.', {
+               node: attribute,
+               property: 'child',
+               data: { code: CrossModelValidationErrors.toMalformed(`attributes[${index}].child`) }
+            });
          } else if (attribute.child.ref) {
             if (attribute.child?.ref?.$container !== relationship.child?.ref) {
-               accept('error', 'Not a valid child attribute.', { node: attribute, property: 'child' });
+               accept('error', 'Not a valid child attribute.', {
+                  node: attribute,
+                  property: 'child',
+                  data: { code: CrossModelValidationErrors.toMalformed(`attributes[${index}].child`) }
+               });
             } else if (usedChildAttributes.includes(attribute.child.ref)) {
-               accept('error', 'Each child attribute can only be referenced once.', { node: attribute, property: 'child' });
+               accept('error', 'Each child attribute can only be referenced once.', {
+                  node: attribute,
+                  property: 'child',
+                  data: { code: CrossModelValidationErrors.toMalformed(`attributes[${index}].child`) }
+               });
             } else {
                usedChildAttributes.push(attribute.child.ref);
             }
          }
-      }
+      });
    }
 
    checkRelationshipEdge(edge: RelationshipEdge, accept: ValidationAcceptor): void {

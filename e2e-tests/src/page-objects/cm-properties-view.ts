@@ -4,7 +4,7 @@
 import { ElementHandle } from '@playwright/test';
 import { TheiaApp, TheiaEditor, isElementVisible } from '@theia/playwright';
 import { CMForm } from './form/cm-form';
-import { LogicalEntityForm } from './form/entiy-form';
+import { LogicalEntityForm } from './form/entity-form';
 import { RelationshipForm } from './form/relationship-form';
 
 const CMPropertiesViewData = {

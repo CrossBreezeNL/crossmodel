@@ -48,9 +48,16 @@ export function createPackageId(name?: string, version = '0.0.0'): string {
  * @returns package reference name
  */
 export function createPackageReferenceName(packageJson?: PackageJson): string {
-   // we prefer the our custom-introduced alias if it is specified, otherwise we will fall back on the package name
+   let name;
+   // we prefer our custom-introduced alias if it is specified, otherwise we will fall back on the package name
    // we do not care about the package version as we do not allow to install multiple versions of the same package
-   const name = (packageJson?.['alias'] as string | undefined) || packageJson?.name || UNKNOWN_PROJECT_ID;
+   if (typeof packageJson?.alias === 'string' && packageJson.alias) {
+      name = packageJson.alias;
+   } else if (typeof packageJson?.name === 'string' && packageJson.name) {
+      name = packageJson.name;
+   } else {
+      name = UNKNOWN_PROJECT_ID;
+   }
    // ensure we only have characters that are supported by our ID rule in the grammar and still look good to the user
    return name.split(' ').join('_').split(QUALIFIED_ID_SEPARATOR).join('-');
 }
@@ -156,7 +163,6 @@ export class CrossModelPackageManager {
       if (!uri) {
          return;
       }
-
       // see if we have a hit directly on a 'package.json' (faster)
       const packageInfo = this.uriToPackage.get(uri.toString());
       if (packageInfo) {
@@ -165,11 +171,20 @@ export class CrossModelPackageManager {
 
       // find closest package info based on the given URI
       // we prefer longer path names as we are deeper in the nested hierarchy
-      const packageInfos = [...this.uriToPackage.values()]
+      const closestParent = [...this.uriToPackage.values()]
          .filter(info => Utils.isEqualOrParent(info.directory, uri))
-         .sort((left, right) => right.directory.fsPath.length - left.directory.fsPath.length);
+         .sort((left, right) => right.directory.fsPath.length - left.directory.fsPath.length)
+         .at(0);
 
-      return packageInfos[0];
+      if (closestParent) {
+         return closestParent;
+      }
+
+      if (uri.scheme !== 'file') {
+         return this.getPackageInfoByURI(uri.with({ scheme: 'file' }));
+      }
+
+      return undefined;
    }
 
    isVisible(sourcePackageId: string, targetPackageId: string): boolean {

@@ -19,7 +19,8 @@ import {
    isRelationship,
    isSystemDiagram
 } from '../../../src/language-server/generated/ast.js';
-import { SemanticRoot, TypeGuard, WithDocument, findSemanticRoot } from '../../../src/language-server/util/ast-util.js';
+import { SemanticRoot, WithDocument, findSemanticRoot } from '../../../src/language-server/util/ast-util.js';
+import { TypeGuard } from '@crossbreezenl/protocol';
 
 export function createCrossModelTestServices(context: DefaultSharedModuleContext = EmptyFileSystem): CrossModelServices {
    return createCrossModelServices(context).CrossModel;

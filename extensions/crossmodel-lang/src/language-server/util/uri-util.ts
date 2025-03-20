@@ -12,23 +12,52 @@ export namespace Utils {
     * @returns true if the child URI is actually a child of the parent URI
     */
    export function isChildOf(parent: URI, child: URI): boolean {
-      // 1. Schemes and auhorities must match
-      if (parent.scheme !== child.scheme || parent.authority !== child.authority) {
+      // 1. Schemes and auhorities must match, and both must have paths
+      if (!areComparable(parent, child)) {
          return false;
       }
-      // 2. Both URIs must have hierarchical paths
-      if (!parent.path || !child.path) {
-         return false;
-      }
-      // 3. Handle 'file' scheme separately to account for filesystem specifics
+      // 2. Handle 'file' scheme separately to account for filesystem specifics
       if (parent.scheme === 'file') {
          const relative = path.relative(parent.fsPath, child.fsPath);
          return !!relative && !relative.startsWith('..') && !path.isAbsolute(relative);
       }
-      // 4. Handle other hierarchical schemes
+      // 3. Handle other hierarchical schemes
       const childPath = normalizePath(child.path);
       const parentPath = normalizePath(parent.path);
       return childPath.startsWith(parentPath + '/');
+   }
+
+   /**
+    *
+    * @param parent candidate parent {@link URI}
+    * @param child candidate child {@link URI}
+    * @returns `true` if the candidate parent is a parent or equal to the child, `false` otherwise.
+    */
+   export function isEqualOrParent(parent: URI, child: URI): boolean {
+      // 1. Must agree in scheme and authority and have paths.
+      if (!areComparable(parent, child)) {
+         return false;
+      }
+      // 2. If the child is strictly a child, then we are satisfied.
+      if (isChildOf(parent, child)) {
+         return true;
+      }
+      // 3. Otherwise, normalized paths should be identical.
+      const childPath = normalizePath(child.path);
+      const parentPath = normalizePath(parent.path);
+      return childPath === parentPath;
+   }
+
+   /** @returns `true` if the URI's agree in scheme and authority and both have paths, `false` otherwise. */
+   export function areComparable(left: URI, right: URI): boolean {
+      if (left.scheme !== right.scheme || left.authority !== right.authority) {
+         return false;
+      }
+      // 2. Both URIs must have hierarchical paths
+      if (!left.path || !right.path) {
+         return false;
+      }
+      return true;
    }
 
    /**

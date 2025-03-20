@@ -127,7 +127,7 @@ export class OpenTextDocumentManager {
       // only create a dummy document if it is already open as we use the synced state anyway
       const textDocument = this.isOpen(args.uri)
          ? this.createDummyDocument(args.uri, args.version)
-         : await this.createDocumentFromFileSystem(args.uri, args.languageId, args.version);
+         : await this.createDocumentFromTextOrFileSystem(args.uri, args.languageId, args.version, args.text);
 
       // open will trigger a change event which in turn will trigger a build
       this.textDocuments.notifyDidOpenTextDocument({ textDocument }, args.clientId);
@@ -160,7 +160,7 @@ export class OpenTextDocumentManager {
    }
 
    isOpen(uri: string): boolean {
-      return !!this.textDocuments.get(this.normalizedUri(uri)) || !!this.textDocuments.get(uri);
+      return !!this.textDocuments.get(uri) || !!this.textDocuments.get(this.normalizedUri(uri));
    }
 
    isOpenInLanguageClient(uri: string): boolean {
@@ -175,12 +175,13 @@ export class OpenTextDocumentManager {
       return TextDocumentItem.create(this.normalizedUri(uri), CrossModelLanguageMetaData.languageId, version, '');
    }
 
-   protected async createDocumentFromFileSystem(
+   protected async createDocumentFromTextOrFileSystem(
       uri: string,
       languageId: string = CrossModelLanguageMetaData.languageId,
-      version = 0
+      version = 0,
+      text?: string
    ): Promise<TextDocumentItem> {
-      return TextDocumentItem.create(uri, languageId, version, await this.readFile(uri));
+      return TextDocumentItem.create(uri, languageId, version, text ?? (await this.readFile(uri)));
    }
 
    async readFile(uri: string): Promise<string> {

@@ -18,5 +18,6 @@
     "forceConsistentCasingInFileNames": true
   },
   "include": ["src/**/*.ts", "test/**/*.ts"],
-  "exclude": ["out", "node_modules"]
+  "exclude": ["out", "node_modules"],
+  "references": [{ "path": "../../packages/protocol" }]
 }

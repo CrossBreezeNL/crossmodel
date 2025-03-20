@@ -13,7 +13,7 @@ test.describe.serial('Add/Edit/Delete relationship in a diagram ', () => {
    const SYSTEM_DIAGRAM_PATH = 'ExampleCRM/diagrams/CRM.system-diagram.cm';
    const CUSTOMER_ENTITY_ID = 'Customer';
    const ORDER_ENTITY_ID = 'Order';
-   const NEW_RELATIONSHIP_PATH = 'ExampleCRM/relationships/CustomerToOrder.relationship.cm';
+   const NEW_RELATIONSHIP_PATH = 'ExampleCRM/relationships/Customer_Order.relationship.cm';
 
    test.beforeAll(async ({ browser, playwright }) => {
       app = await CMApp.load({ browser, playwright });
@@ -43,8 +43,8 @@ test.describe.serial('Add/Edit/Delete relationship in a diagram ', () => {
       // Verify that the relationship edge is created in the diagram
       const diagramCodeEditor = await diagramEditor.parent.switchToCodeEditor();
       expect(await diagramCodeEditor.textContentOfLineByLineNumber(16)).toMatch('edges:');
-      expect(await diagramCodeEditor.textContentOfLineByLineNumber(17)).toMatch('- id: CustomerToOrderEdge');
-      expect(await diagramCodeEditor.textContentOfLineByLineNumber(18)).toMatch('relationship: ExampleCRM.CustomerToOrder');
+      expect(await diagramCodeEditor.textContentOfLineByLineNumber(17)).toMatch('- id: Customer_OrderEdge');
+      expect(await diagramCodeEditor.textContentOfLineByLineNumber(18)).toMatch('relationship: ExampleCRM.Customer_Order');
       expect(await diagramCodeEditor.textContentOfLineByLineNumber(19)).toMatch('sourceNode: CustomerNode');
       expect(await diagramCodeEditor.textContentOfLineByLineNumber(20)).toMatch('targetNode: OrderNode');
       await diagramCodeEditor.saveAndClose();
@@ -56,8 +56,8 @@ test.describe.serial('Add/Edit/Delete relationship in a diagram ', () => {
       // Verify the relationship file contents is as expected
       const entityCodeEditor = await app.openCompositeEditor(NEW_RELATIONSHIP_PATH, 'Code Editor');
       expect(await entityCodeEditor.textContentOfLineByLineNumber(1)).toBe('relationship:');
-      expect(await entityCodeEditor.textContentOfLineByLineNumber(2)).toMatch('id: CustomerToOrder');
-      expect(await entityCodeEditor.textContentOfLineByLineNumber(3)).toMatch('name: "CustomerToOrder"');
+      expect(await entityCodeEditor.textContentOfLineByLineNumber(2)).toMatch('id: Customer_Order');
+      expect(await entityCodeEditor.textContentOfLineByLineNumber(3)).toMatch('name: "Customer_Order"');
       expect(await entityCodeEditor.textContentOfLineByLineNumber(4)).toMatch('parent: Customer');
       expect(await entityCodeEditor.textContentOfLineByLineNumber(5)).toMatch('child: Order');
       await entityCodeEditor.saveAndClose();

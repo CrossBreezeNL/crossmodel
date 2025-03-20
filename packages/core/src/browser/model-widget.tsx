@@ -16,7 +16,7 @@ import {
    SourceObjectComponent,
    SourceObjectRenderProps
 } from '@crossbreezenl/react-model-ui';
-import { Emitter, Event } from '@theia/core';
+import { Emitter, Event, ResourceProvider } from '@theia/core';
 import { LabelProvider, Message, OpenerService, ReactWidget, Saveable, open } from '@theia/core/lib/browser';
 import { ThemeService } from '@theia/core/lib/browser/theming';
 import URI from '@theia/core/lib/common/uri';
@@ -43,6 +43,7 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
    @inject(ThemeService) protected readonly themeService: ThemeService;
    @inject(EditorPreferences) protected readonly editorPreferences: EditorPreferences;
    @inject(OpenerService) protected readonly openerService: OpenerService;
+   @inject(ResourceProvider) protected readonly resourceProvider: ResourceProvider;
 
    protected readonly onDirtyChangedEmitter = new Emitter<void>();
    onDirtyChanged: Event<void> = this.onDirtyChangedEmitter.event;
@@ -67,9 +68,7 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
 
       this.toDispose.pushAll([
          this.serviceClient.onModelUpdate(event => {
-            if (event.sourceClientId !== this.options.clientId && event.document.uri === this.document?.uri) {
-               this.handleExternalUpdate(event);
-            }
+            this.handleExternalUpdate(event);
          }),
          this.editorPreferences.onPreferenceChanged(event => {
             if (event.preferenceName === 'files.autoSave') {
@@ -100,10 +99,16 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
 
    protected async openModel(uri: string): Promise<CrossModelDocument | undefined> {
       try {
-         const document = await this.modelService.open({ clientId: this.options.clientId, uri, version: this.options.version });
+         const { clientId, version } = this.options;
+         const documentUri = new URI(uri);
+         const text =
+            documentUri.scheme === 'file'
+               ? undefined // The server can read files on disk.
+               : await this.resourceProvider(documentUri).then(resource => resource.readContents());
+         const document = await this.modelService.open({ clientId, version, text, uri });
          return document;
-      } catch (error: any) {
-         this.error = error;
+      } catch (error) {
+         this.error = error instanceof Error ? error.message : error?.toString() ?? 'Unknown error.';
          return undefined;
       }
    }
@@ -143,6 +148,13 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
                clearTimeout(saveTimeout);
             }, this.autoSaveDelay);
          }
+      }
+   }
+
+   async revert(options?: Saveable.RevertOptions | undefined): Promise<void> {
+      // Dummy implementation to allow saving untitled but modified form editor.
+      if (this.document?.uri && new URI(this.document.uri).scheme === 'untitled') {
+         this.setDirty(false);
       }
    }
 

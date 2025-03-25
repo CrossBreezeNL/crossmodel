@@ -23,22 +23,22 @@ Mapping returns Mapping:
                     (LIST_ITEM sources+=SourceObject)+
                 DEDENT
             )?
-            'target' ':' target=TargetObject
+            ('target' ':' target=TargetObject)?
             CustomPropertiesFragment?
         DEDENT
 ;
 
 interface SourceObject extends SourceDataElementContainer, WithCustomProperties {
-    entity: @LogicalEntity;
-    join: string;
+    entity?: @LogicalEntity;
+    join?: string;
     dependencies: SourceObjectDependency[]
     conditions: SourceObjectCondition[]
 }
 
 SourceObject returns SourceObject:
     IdentifiedObjectFragment
-    'entity' ':' entity=[LogicalEntity:IDReference] // implies attributes through entity
-    'join' ':' join=JoinType
+    ('entity' ':' entity=[LogicalEntity:IDReference])? // implies attributes through entity
+    ('join' ':' join=JoinType)?
     ('dependencies' ':'
         INDENT
             (LIST_ITEM dependencies+=SourceObjectDependency)*
@@ -75,13 +75,13 @@ PrimaryExpression infers BooleanExpression:
 ;
 
 interface TargetObject extends WithCustomProperties {
-    entity: @LogicalEntity;
+    entity?: @LogicalEntity;
     mappings: AttributeMapping[];
 }
 
 TargetObject returns TargetObject:
     INDENT
-        'entity' ':' entity=[LogicalEntity:IDReference] // implies attributes through entity
+        'entity' ':' (entity=[LogicalEntity:IDReference])? // implies attributes through entity
         ('mappings' ':'
             INDENT 
                 (LIST_ITEM mappings+=AttributeMapping)+     
@@ -92,13 +92,13 @@ TargetObject returns TargetObject:
 ;
 
 interface AttributeMapping extends WithCustomProperties {
-    attribute: AttributeMappingTarget;
+    attribute?: AttributeMappingTarget;
     sources: AttributeMappingSource[];
     expression: string;
 }
 
 AttributeMapping returns AttributeMapping:
-    'attribute' ':' attribute=AttributeMappingTarget
+    'attribute' ':' (attribute=AttributeMappingTarget)?
     ('sources' ':' 
         INDENT 
             (LIST_ITEM sources+=AttributeMappingSource)+     

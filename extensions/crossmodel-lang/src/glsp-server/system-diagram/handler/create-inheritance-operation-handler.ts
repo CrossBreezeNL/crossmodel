@@ -54,6 +54,10 @@ export class SystemDiagramCreateInheritanceOperationHandler extends JsonCreateEd
       });
 
       const superEntityGlobalId = this.modelState.idProvider.getGlobalId(superEntityNode.entity.ref)!;
+      // If the id of the super entity is not set yet, we can't create an inheritance.
+      if (!superEntityNode.entity.ref.id) {
+         return undefined;
+      }
       const isInScope = scope.elementScope.getElement(superEntityNode.entity.ref.id) ?? scope.elementScope.getElement(superEntityGlobalId);
       if (!isInScope) {
          return undefined;
@@ -78,7 +82,7 @@ export class SystemDiagramCreateInheritanceOperationHandler extends JsonCreateEd
       };
       this.modelState.systemDiagram.edges.push(edge);
       this.actionDispatcher.dispatchAfterNextUpdate(
-         SelectAction.create({ selectedElementsIDs: [this.modelState.idProvider.getLocalId(edge) ?? edge.id] })
+         SelectAction.create({ selectedElementsIDs: [this.modelState.idProvider.getLocalId(edge) ?? edge.id!] })
       );
    }
 }

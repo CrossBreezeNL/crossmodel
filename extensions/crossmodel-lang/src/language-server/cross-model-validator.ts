@@ -205,6 +205,10 @@ export class CrossModelValidator {
       function depthFirst(current: LogicalEntity): string[] {
          const currentId = current.id;
 
+         if (currentId === undefined) {
+            return [];
+         }
+
          // Mark the current node as visited and add to recursion stack
          visited.add(currentId);
          recursionStack.add(currentId);
@@ -216,6 +220,10 @@ export class CrossModelValidator {
                continue; // Ignore unresolved references
             }
             const superId = superEntity.id;
+            if (superId === undefined) {
+               continue; // Ignore reference without an id
+            }
+
             if (!visited.has(superId)) {
                const cycle = depthFirst(superEntity);
                if (cycle.length > 0) {
@@ -245,7 +253,9 @@ export class CrossModelValidator {
       const usedParentAttributes: LogicalAttribute[] = [];
       const usedChildAttributes: LogicalAttribute[] = [];
       for (const attribute of relationship.attributes) {
-         if (attribute.parent.ref) {
+         if (!attribute.parent) {
+            accept('error', 'Parent attribute is required.', { node: attribute, property: 'parent' });
+         } else if (attribute.parent.ref) {
             if (attribute.parent?.ref?.$container !== relationship.parent?.ref) {
                accept('error', 'Not a valid parent attribute.', { node: attribute, property: 'parent' });
             } else if (usedParentAttributes.includes(attribute.parent.ref)) {
@@ -254,7 +264,9 @@ export class CrossModelValidator {
                usedParentAttributes.push(attribute.parent.ref);
             }
          }
-         if (attribute.child.ref) {
+         if (!attribute.child) {
+            accept('error', 'Child attribute is required.', { node: attribute, property: 'child' });
+         } else if (attribute.child.ref) {
             if (attribute.child?.ref?.$container !== relationship.child?.ref) {
                accept('error', 'Not a valid child attribute.', { node: attribute, property: 'child' });
             } else if (usedChildAttributes.includes(attribute.child.ref)) {
@@ -324,7 +336,9 @@ export class CrossModelValidator {
    checkTargetObject(target: TargetObject, accept: ValidationAcceptor): void {
       const knownAttributes: TargetObjectAttribute[] = [];
       for (const mapping of target.mappings) {
-         if (mapping.attribute.value.ref && knownAttributes.includes(mapping.attribute.value.ref)) {
+         if (!mapping.attribute) {
+            accept('error', 'Each attribute mapping must have a target attribute.', { node: mapping });
+         } else if (mapping.attribute.value.ref && knownAttributes.includes(mapping.attribute.value.ref)) {
             accept('error', 'Each target attribute can only be mapped once.', { node: mapping.attribute });
          } else if (mapping.attribute.value.ref) {
             knownAttributes.push(mapping.attribute.value.ref);

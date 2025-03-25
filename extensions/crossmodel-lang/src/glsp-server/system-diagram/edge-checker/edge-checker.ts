@@ -40,6 +40,10 @@ export class SystemEdgeCreationChecker implements EdgeCreationChecker {
       });
 
       const superEntityGlobalId = this.modelState.idProvider.getGlobalId(superEntityNode.entity.ref)!;
+      // If the id of the super entity is missing, we don't allow the edge creation
+      if (!superEntityNode.entity.ref.id) {
+         return false;
+      }
       const isInScope = scope.elementScope.getElement(superEntityNode.entity.ref.id) ?? scope.elementScope.getElement(superEntityGlobalId);
       if (!isInScope) {
          return false;

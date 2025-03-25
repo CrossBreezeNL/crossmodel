@@ -172,22 +172,9 @@ export function isCrossModelRoot(item: unknown): item is CrossModelRoot {
     return reflection.isInstance(item, CrossModelRoot);
 }
 
-export interface CustomProperty extends AstNode {
-    readonly $container: WithCustomProperties;
-    readonly $type: 'CustomProperty';
-    name: string;
-    value?: string;
-}
-
-export const CustomProperty = 'CustomProperty';
-
-export function isCustomProperty(item: unknown): item is CustomProperty {
-    return reflection.isInstance(item, CustomProperty);
-}
-
 export interface IdentifiedObject extends AstNode {
-    readonly $type: 'DataElement' | 'DataElementContainer' | 'DataElementContainerLink' | 'DataElementContainerMapping' | 'DataElementMapping' | 'IdentifiedObject' | 'InheritanceEdge' | 'LogicalAttribute' | 'LogicalEntity' | 'LogicalEntityNode' | 'LogicalEntityNodeAttribute' | 'LogicalIdentifier' | 'Mapping' | 'NamedObject' | 'Relationship' | 'RelationshipEdge' | 'SourceDataElementContainer' | 'SourceObject' | 'SourceObjectAttribute' | 'SystemDiagram' | 'SystemDiagramEdge' | 'TargetObjectAttribute';
-    id: string;
+    readonly $type: 'CustomProperty' | 'DataElement' | 'DataElementContainer' | 'DataElementContainerLink' | 'DataElementContainerMapping' | 'DataElementMapping' | 'IdentifiedObject' | 'InheritanceEdge' | 'LogicalAttribute' | 'LogicalEntity' | 'LogicalEntityNode' | 'LogicalEntityNodeAttribute' | 'LogicalIdentifier' | 'Mapping' | 'NamedObject' | 'Relationship' | 'RelationshipEdge' | 'SourceDataElementContainer' | 'SourceObject' | 'SourceObjectAttribute' | 'SystemDiagram' | 'SystemDiagramEdge' | 'TargetObjectAttribute';
+    id?: string;
 }
 
 export const IdentifiedObject = 'IdentifiedObject';
@@ -305,9 +292,9 @@ export function isLogicalEntityNode(item: unknown): item is LogicalEntityNode {
 }
 
 export interface NamedObject extends IdentifiedObject {
-    readonly $type: 'DataElement' | 'DataElementContainer' | 'DataElementContainerLink' | 'LogicalAttribute' | 'LogicalEntity' | 'LogicalEntityNodeAttribute' | 'LogicalIdentifier' | 'NamedObject' | 'Relationship' | 'SourceObjectAttribute' | 'TargetObjectAttribute';
+    readonly $type: 'CustomProperty' | 'DataElement' | 'DataElementContainer' | 'DataElementContainerLink' | 'LogicalAttribute' | 'LogicalEntity' | 'LogicalEntityNodeAttribute' | 'LogicalIdentifier' | 'NamedObject' | 'Relationship' | 'SourceObjectAttribute' | 'TargetObjectAttribute';
     description?: string;
-    name: string;
+    name?: string;
 }
 
 export const NamedObject = 'NamedObject';
@@ -353,7 +340,7 @@ export function isSystemDiagramEdge(item: unknown): item is SystemDiagramEdge {
 export interface AttributeMapping extends WithCustomProperties {
     readonly $container: TargetObject;
     readonly $type: 'AttributeMapping';
-    attribute: AttributeMappingTarget;
+    attribute?: AttributeMappingTarget;
     expression: string;
     sources: Array<AttributeMappingSource>;
 }
@@ -422,10 +409,10 @@ export interface Relationship extends DataElementContainerLink, WithCustomProper
     readonly $container: CrossModelRoot;
     readonly $type: 'Relationship';
     attributes: Array<RelationshipAttribute>;
-    child: Reference<LogicalEntity>;
+    child?: Reference<LogicalEntity>;
     childCardinality?: string;
     childRole?: string;
-    parent: Reference<LogicalEntity>;
+    parent?: Reference<LogicalEntity>;
     parentCardinality?: string;
     parentRole?: string;
 }
@@ -439,8 +426,8 @@ export function isRelationship(item: unknown): item is Relationship {
 export interface RelationshipAttribute extends WithCustomProperties {
     readonly $container: Relationship;
     readonly $type: 'RelationshipAttribute';
-    child: Reference<LogicalAttribute>;
-    parent: Reference<LogicalAttribute>;
+    child?: Reference<LogicalAttribute>;
+    parent?: Reference<LogicalAttribute>;
 }
 
 export const RelationshipAttribute = 'RelationshipAttribute';
@@ -454,8 +441,8 @@ export interface SourceObject extends SourceDataElementContainer, WithCustomProp
     readonly $type: 'SourceObject';
     conditions: Array<SourceObjectCondition>;
     dependencies: Array<SourceObjectDependency>;
-    entity: Reference<LogicalEntity>;
-    join: string;
+    entity?: Reference<LogicalEntity>;
+    join?: string;
 }
 
 export const SourceObject = 'SourceObject';
@@ -467,7 +454,7 @@ export function isSourceObject(item: unknown): item is SourceObject {
 export interface TargetObject extends WithCustomProperties {
     readonly $container: Mapping;
     readonly $type: 'TargetObject';
-    entity: Reference<LogicalEntity>;
+    entity?: Reference<LogicalEntity>;
     mappings: Array<AttributeMapping>;
 }
 
@@ -475,6 +462,18 @@ export const TargetObject = 'TargetObject';
 
 export function isTargetObject(item: unknown): item is TargetObject {
     return reflection.isInstance(item, TargetObject);
+}
+
+export interface CustomProperty extends NamedObject {
+    readonly $container: WithCustomProperties;
+    readonly $type: 'CustomProperty';
+    value?: string;
+}
+
+export const CustomProperty = 'CustomProperty';
+
+export function isCustomProperty(item: unknown): item is CustomProperty {
+    return reflection.isInstance(item, CustomProperty);
 }
 
 export interface DataElement extends NamedObject {
@@ -619,6 +618,7 @@ export class CrossModelAstReflection extends AbstractAstReflection {
             case TargetObject: {
                 return this.isSubtype(WithCustomProperties, supertype);
             }
+            case CustomProperty:
             case DataElement:
             case DataElementContainer:
             case DataElementContainerLink: {
@@ -751,15 +751,6 @@ export class CrossModelAstReflection extends AbstractAstReflection {
                         { name: 'mapping' },
                         { name: 'relationship' },
                         { name: 'systemDiagram' }
-                    ]
-                };
-            }
-            case CustomProperty: {
-                return {
-                    name: CustomProperty,
-                    properties: [
-                        { name: 'name' },
-                        { name: 'value' }
                     ]
                 };
             }
@@ -997,6 +988,17 @@ export class CrossModelAstReflection extends AbstractAstReflection {
                         { name: 'customProperties', defaultValue: [] },
                         { name: 'entity' },
                         { name: 'mappings', defaultValue: [] }
+                    ]
+                };
+            }
+            case CustomProperty: {
+                return {
+                    name: CustomProperty,
+                    properties: [
+                        { name: 'description' },
+                        { name: 'id' },
+                        { name: 'name' },
+                        { name: 'value' }
                     ]
                 };
             }

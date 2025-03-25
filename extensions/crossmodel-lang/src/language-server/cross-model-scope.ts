@@ -143,10 +143,12 @@ export class CrossModelScopeComputation extends DefaultScopeComputation {
             setOwner({ ...attribute, $type: LogicalEntityNodeAttribute }, node)
          ) ?? [];
       setAttributes(node, attributes);
-      return attributes.map(attribute => this.descriptions.createDescription(attribute, combineIds(nodeId, attribute.id), document));
+      return attributes
+         .filter(attribute => attribute.id !== undefined) // Only process attributes with an id
+         .map(attribute => this.descriptions.createDescription(attribute, combineIds(nodeId, attribute.id!), document));
    }
 
-   protected getLogicalEntity(node: AstNode & { entity: Reference<LogicalEntity> }, document: LangiumDocument): LogicalEntity | undefined {
+   protected getLogicalEntity(node: AstNode & { entity?: Reference<LogicalEntity> }, document: LangiumDocument): LogicalEntity | undefined {
       try {
          return fixDocument(node, document).entity?.ref;
       } catch (error) {
@@ -163,7 +165,9 @@ export class CrossModelScopeComputation extends DefaultScopeComputation {
       const attributes =
          entity.attributes.map<SourceObjectAttribute>(attribute => setOwner({ ...attribute, $type: SourceObjectAttribute }, node)) ?? [];
       setAttributes(node, attributes);
-      return attributes.map(attribute => this.descriptions.createDescription(attribute, combineIds(nodeId, attribute.id), document));
+      return attributes
+         .filter(attribute => attribute.id !== undefined) // Ensure attribute.id is defined
+         .map(attribute => this.descriptions.createDescription(attribute, combineIds(nodeId, attribute.id!), document));
    }
 
    protected processTargetObject(node: TargetObject, nodeId: string, document: LangiumDocument): AstNodeDescription[] {

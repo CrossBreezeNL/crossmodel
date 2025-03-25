@@ -22,13 +22,15 @@ export class MappingModelState extends CrossModelState {
          const targetAttributes = target ? getAttributes(target) : [];
          // we want to ensure that each target attribute has a mapping that we can manipulate in our editor
          // the change will automatically be persisted with the next change that is done
-         targetAttributes.forEach(targetAttribute => {
-            if (!target.mappings.find(mapping => mapping.attribute.value.ref === targetAttribute)) {
-               const mapping = createAttributeMapping(target, undefined, targetAttribute.id);
-               (mapping.attribute.value as any).ref = targetAttribute;
-               target.mappings.push(mapping);
-            }
-         });
+         targetAttributes
+            .filter(targetAttribute => targetAttribute.id !== undefined)
+            .forEach(targetAttribute => {
+               if (!target.mappings.find(mapping => mapping.attribute?.value.ref === targetAttribute)) {
+                  const mapping = createAttributeMapping(target, undefined, targetAttribute.id!);
+                  (mapping.attribute?.value as any).ref = targetAttribute;
+                  target.mappings.push(mapping);
+               }
+            });
       }
    }
 

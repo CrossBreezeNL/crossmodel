@@ -269,12 +269,20 @@ export namespace ModelDiagnostic {
       return diagnostic.severity === 'error';
    }
 
+   export function isParseError(diagnostic: ModelDiagnostic): boolean {
+      return diagnostic.type === 'parsing-error';
+   }
+
    export function errors(diagnostics: ModelDiagnostic[]): ModelDiagnostic[] {
       return diagnostics.filter(isError);
    }
 
    export function hasErrors(diagnostics: ModelDiagnostic[]): boolean {
       return diagnostics.some(isError);
+   }
+
+   export function hasParseErrors(diagnostics: ModelDiagnostic[]): boolean {
+      return diagnostics.some(isParseError);
    }
 }
 

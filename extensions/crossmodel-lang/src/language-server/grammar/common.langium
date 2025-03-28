@@ -49,7 +49,7 @@ interface WithCustomProperties {
 fragment CustomPropertiesFragment returns WithCustomProperties:
     'customProperties' ':'
         INDENT
-            (LIST_ITEM customProperties+=CustomPropertyFragment)*
+            (LIST_ITEM customProperties+=CustomProperty)+
         DEDENT
     ;
 
@@ -57,6 +57,6 @@ interface CustomProperty extends NamedObject {
     value?: string;
 }
 
-CustomPropertyFragment returns CustomProperty:
+CustomProperty returns CustomProperty:
     NamedObjectFragment
     ('value' ':' value=STRING)?;

@@ -899,7 +899,7 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
                 }
               }
             ],
-            "cardinality": "*"
+            "cardinality": "+"
           },
           {
             "$type": "RuleCall",
@@ -918,7 +918,7 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
     },
     {
       "$type": "ParserRule",
-      "name": "CustomPropertyFragment",
+      "name": "CustomProperty",
       "returnType": {
         "$ref": "#/interfaces@12"
       },

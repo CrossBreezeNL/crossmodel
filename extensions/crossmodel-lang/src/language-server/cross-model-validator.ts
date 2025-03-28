@@ -17,13 +17,13 @@ import { ID_PROPERTY, IdentifiableAstNode } from './cross-model-naming.js';
 import {
    AttributeMapping,
    CrossModelAstType,
+   IdentifiedObject,
    InheritanceEdge,
    isCrossModelRoot,
-   isLogicalAttribute,
    isLogicalEntity,
    isMapping,
-   isRelationship,
    isSystemDiagram,
+   isWithCustomProperties,
    LogicalAttribute,
    LogicalEntity,
    Mapping,
@@ -64,6 +64,7 @@ export function registerValidationChecks(services: CrossModelServices): void {
 
    const checks: ValidationChecks<CrossModelAstType> = {
       AstNode: validator.checkNode,
+      IdentifiedObject: validator.checkIdentifiedObject,
       AttributeMapping: validator.checkAttributeMapping,
       LogicalEntity: validator.checkLogicalEntity,
       Mapping: validator.checkMapping,
@@ -87,69 +88,77 @@ export class CrossModelValidator {
 
    checkNamedObject(namedObject: NamedObject, accept: ValidationAcceptor): void {
       if (namedObject.name === undefined || namedObject.name.length === 0) {
-         accept('error', 'The name of this object cannot be empty', { node: namedObject, property: 'name' });
+         accept('error', 'The name cannot be empty', { node: namedObject, property: 'name' });
+      }
+   }
+
+   checkIdentifiedObject(identifiedObject: IdentifiedObject, accept: ValidationAcceptor): void {
+      if (identifiedObject.id === undefined || identifiedObject.id.length === 0) {
+         accept('error', 'The id cannot be empty', { node: identifiedObject, property: 'id' });
+      } else {
+         // Only perform the following checks when the id is know.
+         this.checkUniqueGlobalId(identifiedObject, accept);
+         this.checkUniqueLocalId(identifiedObject, accept);
+         this.checkMatchingFilename(identifiedObject, accept);
       }
    }
 
    checkNode(node: AstNode, accept: ValidationAcceptor): void {
-      this.checkUniqueGlobalId(node, accept);
-      this.checkUniqueNodeId(node, accept);
-      this.checkMatchingFilename(node, accept);
       this.checkFitsPackage(node, accept);
    }
 
-   protected checkMatchingFilename(node: AstNode, accept: ValidationAcceptor): void {
-      if (!isSemanticRoot(node)) {
+   protected checkMatchingFilename(identifiedObject: IdentifiedObject, accept: ValidationAcceptor): void {
+      if (!isSemanticRoot(identifiedObject)) {
          return;
       }
-      if (!node.id) {
-         // diagrams may not have ids set and therefore are not required to match the filename
-         return;
-      }
-      const document = findDocument(node);
+      const document = findDocument(identifiedObject);
       if (!document) {
          return;
       }
       const basename = UriUtils.basename(document.uri);
       const extname = ModelFileExtensions.getFileExtension(basename) ?? UriUtils.extname(document.uri);
       const basenameWithoutExt = basename.slice(0, -extname.length);
-      if (basenameWithoutExt.toLowerCase() !== node.id.toLocaleLowerCase()) {
-         accept('warning', `Filename should match element id: ${node.id}`, {
-            node,
+      if (basenameWithoutExt.toLowerCase() !== identifiedObject.id?.toLocaleLowerCase()) {
+         accept('warning', `Filename should match element id: ${identifiedObject.id}`, {
+            node: identifiedObject,
             property: ID_PROPERTY,
             data: { code: CrossModelIssueCodes.FilenameNotMatching }
          });
       }
    }
 
-   protected checkUniqueGlobalId(node: AstNode, accept: ValidationAcceptor): void {
-      if (!this.isExportedGlobally(node)) {
+   // Check the uniqueness of ids of semantic root elements.
+   protected checkUniqueGlobalId(identifiedObject: IdentifiedObject, accept: ValidationAcceptor): void {
+      if (!isSemanticRoot(identifiedObject)) {
          return;
       }
-      const globalId = this.services.references.IdProvider.getGlobalId(node);
+      const globalId = this.services.references.IdProvider.getGlobalId(identifiedObject);
       if (!globalId) {
-         accept('error', 'Missing required id field', { node, property: ID_PROPERTY });
+         accept('error', 'Missing required id field', { node: identifiedObject, property: ID_PROPERTY });
          return;
       }
       const allElements = Array.from(this.services.shared.workspace.IndexManager.allElements());
       const duplicates = allElements.filter(description => description.name === globalId);
       if (duplicates.length > 1) {
-         accept('error', 'Must provide a unique id.', { node, property: ID_PROPERTY });
+         accept('error', 'Must provide a unique id.', { node: identifiedObject, property: ID_PROPERTY });
       }
    }
 
-   protected isExportedGlobally(node: AstNode): boolean {
-      // we export anything with an id from entities and relationships and all root nodes, see CrossModelScopeComputation
-      return isLogicalEntity(node) || isLogicalAttribute(node) || isRelationship(node) || isSystemDiagram(node) || isMapping(node);
-   }
-
-   protected checkUniqueNodeId(node: AstNode, accept: ValidationAcceptor): void {
+   // Check the uniqueness of ids of non-semantic root identified objects.
+   protected checkUniqueLocalId(node: AstNode, accept: ValidationAcceptor): void {
+      if (isLogicalEntity(node)) {
+         this.markDuplicateIds(node.attributes, accept);
+         this.markDuplicateIds(node.identifiers, accept);
+      }
       if (isSystemDiagram(node)) {
          this.markDuplicateIds(node.edges, accept);
          this.markDuplicateIds(node.nodes, accept);
       }
       if (isMapping(node)) {
          this.markDuplicateIds(node.sources, accept);
+      }
+      if (isWithCustomProperties(node)) {
+         this.markDuplicateIds(node.customProperties, accept);
       }
    }
 

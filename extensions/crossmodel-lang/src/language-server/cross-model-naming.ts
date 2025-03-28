@@ -80,6 +80,8 @@ export class DefaultIdProvider implements NameProvider, IdProvider {
          return undefined;
       }
       let parent = this.getParent(node);
+      // Recurse through the parents to get the full local id.
+      // For example for custom property of an attribute its <entity-id.attribute-id.custom-property-id).
       while (parent) {
          const parentId = this.getNodeId(parent);
          if (parentId) {

@@ -22,7 +22,7 @@ export interface CrossModelElement {
 }
 
 export interface IdentifiedObject {
-   id?: string;
+   id: string;
    $globalId: string;
 }
 

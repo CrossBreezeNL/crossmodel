@@ -23,7 +23,7 @@ export function Header({ name, id, iconClass }: HeaderProps): React.ReactElement
 
    return (
       <AppBar position='sticky'>
-         {ModelDiagnostic.hasErrors(diagnostics) && createEditorError(ERRONEOUS_MODEL)}
+         {ModelDiagnostic.hasParseErrors(diagnostics) && createEditorError(ERRONEOUS_MODEL)}
          <Toolbar variant='dense' sx={{ minHeight: '40px' }}>
             <Box sx={{ display: { xs: 'none', sm: 'flex' }, flexGrow: 1, gap: '1em', alignItems: 'center' }}>
                {iconClass && <Icon baseClassName='codicon' className={iconClass} sx={{ fontSize: '1.7em !important' }} />}

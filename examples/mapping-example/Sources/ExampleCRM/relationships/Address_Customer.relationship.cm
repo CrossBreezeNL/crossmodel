@@ -7,10 +7,14 @@ relationship:
       - parent: Customer.Customer_ID
         child: ExampleCRM.Address.Customer_ID
         customProperties:
-          - name: Author
+          - id: author
+            name: "Author"
             value: "CrossBreeze"
-          - name: ExampleRelationshipAttribute
+          - id: exampleRelationshipAttribute
+            name: "ExampleRelationshipAttribute"
     customProperties:
-      - name: Author
+      - id: author
+        name: "Author"
         value: "CrossBreeze"
-      - name: ExampleRelationship
+      - id: exampleRelationship
+        name: "ExampleRelationship"

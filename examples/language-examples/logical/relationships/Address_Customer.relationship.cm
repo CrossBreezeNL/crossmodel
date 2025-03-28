@@ -9,10 +9,14 @@ relationship:
       - parent: Customer.Customer_Id
         child: Address.Customer_Id
         customProperties:
-          - name: Author
+          - id: author
+            name: "Author"
             value: "CrossBreeze"
-          - name: ExampleRelationshipAttribute
+          - id: exampleRelationshipAttribute
+            name: "ExampleRelationshipAttribute"
     customProperties:
-      - name: Author
+      - id: author
+        name: "Author"
         value: "CrossBreeze"
-      - name: ExampleRelationship
+      - id: exampleRelationship
+        name: "ExampleRelationship"

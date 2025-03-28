@@ -35,9 +35,11 @@ mapping:
         conditions:
           - CalcAgeSourceObject.BirthDate = Customer.Birth_Date
         customProperties:
-          - name: Author
+          - id: author
+            name: "Author"
             value: "CrossBreeze"
-          - name: ExampleMappingSource
+          - id: exampleMappingSource
+            name: "ExampleMappingSource"
     target:
         entity: CompleteCustomer
         mappings:
@@ -58,14 +60,20 @@ mapping:
             expression: "Fixed String"
           - attribute: Today
             customProperties:
-              - name: Author
+              - id: author
+                name: "Author"
                 value: "CrossBreeze"
-              - name: ExampleEntityTargetAttribute
+              - id: exampleEntityTargetAttribute
+                name: "ExampleEntityTargetAttribute"
         customProperties:
-          - name: Author
+          - id: author
+            name: "Author"
             value: "CrossBreeze"
-          - name: ExampleMappingTarget
+          - id: exampleMappingTarget
+            name: "ExampleMappingTarget"
     customProperties:
-      - name: Author
+      - id: author
+        name: "Author"
         value: "CrossBreeze"
-      - name: ExampleMapping
+      - id: exampleMapping
+        name: "ExampleMapping"

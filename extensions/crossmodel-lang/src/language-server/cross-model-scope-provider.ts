@@ -219,7 +219,12 @@ export class CrossModelScopeProvider extends PackageScopeProvider {
             return description.name.startsWith(container.$container.parent?.$refText + '.');
          }
       }
-      if (isSourceObject(container) && property === 'entity' && container.$container.target.entity.ref) {
+      if (
+         isSourceObject(container) &&
+         property === 'entity' &&
+         container.$container.target.entity &&
+         container.$container.target.entity.ref
+      ) {
          const targetEntity = container.$container.target.entity.ref;
          if (description instanceof GlobalAstNodeDescription) {
             return description.name !== this.idProvider.getGlobalId(targetEntity);

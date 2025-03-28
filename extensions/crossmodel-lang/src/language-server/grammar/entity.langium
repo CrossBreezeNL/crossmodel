@@ -44,7 +44,7 @@ LogicalAttribute returns LogicalAttribute:
     ('length' ':' length=NUMBER)?
     ('precision' ':' precision=NUMBER)?
     ('scale' ':' scale=NUMBER)?
-    (identifier?='identifier' ':' ('TRUE' | 'true'))?
+    (identifier?='identifier' ':' ('TRUE' | 'true'))? // To-be removed in future (identifiers collection on entity is replacement for this information).
     CustomPropertiesFragment?
 ;
 

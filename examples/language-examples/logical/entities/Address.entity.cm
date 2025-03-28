@@ -15,9 +15,11 @@ entity:
         datatype: "Text"
         length: 3
         customProperties:
-          - name: Author
+          - id: author
+            name: "Author"
             value: "CrossBreeze"
-          - name: ExampleEntityAttribute
+          - id: exampleEntityAttribute
+            name: "ExampleEntityAttribute"
     identifiers:
       - id: Address_Surrogate_Identifier
         name: "Address Surrogate Identifier"
@@ -25,6 +27,8 @@ entity:
         attributes:
         - Customer_Id
     customProperties:
-      - name: Author
+      - id: author
+        name: "Author"
         value: "CrossBreeze"
-      - name: ExampleEntity
+      - id: ExampleEntity
+        name: "ExampleEntity"

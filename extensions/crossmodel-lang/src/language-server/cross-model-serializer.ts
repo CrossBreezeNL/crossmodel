@@ -12,7 +12,6 @@ import {
    InheritanceEdge,
    isAttributeMappingSource,
    isAttributeMappingTarget,
-   isCustomProperty,
    isJoinCondition,
    isLogicalAttribute,
    isRelationship,
@@ -113,7 +112,6 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot> {
          (key === 'superEntities' && Array.isArray(parent)) ||
          propertyOf(parent, key, isRelationship, 'parentCardinality') ||
          propertyOf(parent, key, isRelationship, 'childCardinality') ||
-         propertyOf(parent, key, isCustomProperty, 'name') ||
          propertyOf(parent, key, isSourceObject, 'join') ||
          (!Array.isArray(value) && this.isValidReference(parent, key, value))
       ) {

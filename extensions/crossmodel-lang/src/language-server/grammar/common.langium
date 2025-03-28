@@ -3,20 +3,20 @@ import 'terminals'
 // Common interfaces and fragments.
 
 interface IdentifiedObject {
-    id: string;
+    id?: string;
 }
 
 fragment IdentifiedObjectFragment returns IdentifiedObject:
-    'id' ':' id=ID;
+    'id' ':' (id=ID)?;
 
 interface NamedObject extends IdentifiedObject {
-    name: string;
+    name?: string;
     description?: string;
 }
 
 fragment NamedObjectFragment returns NamedObject:
     IdentifiedObjectFragment
-    'name' ':' name=STRING
+    ('name' ':' name=STRING)?
     ('description' ':' description=STRING)?
 ;
 
@@ -49,10 +49,14 @@ interface WithCustomProperties {
 fragment CustomPropertiesFragment returns WithCustomProperties:
     'customProperties' ':'
         INDENT
-            (LIST_ITEM customProperties+=CustomProperty)*
+            (LIST_ITEM customProperties+=CustomProperty)+
         DEDENT
     ;
 
-CustomProperty:
-    'name' ':' name=ID
+interface CustomProperty extends NamedObject {
+    value?: string;
+}
+
+CustomProperty returns CustomProperty:
+    NamedObjectFragment
     ('value' ':' value=STRING)?;

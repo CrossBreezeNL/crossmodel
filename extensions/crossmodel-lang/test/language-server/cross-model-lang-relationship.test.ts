@@ -39,12 +39,12 @@ describe('CrossModel language Relationship', () => {
 
       expect(isReference(relationship.parent)).toBe(true);
       expect(isReference(relationship.child)).toBe(true);
-      expect(relationship.parent.$refText).toBe('Customer');
-      expect(relationship.child.$refText).toBe('Order');
+      expect(relationship.parent?.$refText).toBe('Customer');
+      expect(relationship.child?.$refText).toBe('Order');
    });
 
    test('relationship with indentation error', async () => {
-      await parseRelationship({ services, text: relationship2 }, { parserErrors: 2 });
+      await parseRelationship({ services, text: relationship2 }, { parserErrors: 1 });
    });
 
    test('relationship with attributes', async () => {

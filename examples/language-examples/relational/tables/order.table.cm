@@ -48,5 +48,6 @@ table:
         columns:
           - order_number
     customProperties:
-      - name: distribution_key
+      - id: distribution_key
+        name: "Distribution Key"
         value: "customer_id"

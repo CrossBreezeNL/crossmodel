@@ -69,7 +69,7 @@ export function useDirty(): boolean {
 }
 
 export function useReadonly(): boolean {
-   return ModelDiagnostic.hasErrors(useDiagnostics());
+   return ModelDiagnostic.hasParseErrors(useDiagnostics());
 }
 
 export function useEntity(): LogicalEntity {

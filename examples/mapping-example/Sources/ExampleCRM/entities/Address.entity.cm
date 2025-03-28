@@ -14,11 +14,6 @@ entity:
         name: "Country Code"
         datatype: "Text"
         length: 3
-        customProperties:
-          - name: Author
-            value: "CrossBreeze"
-          - name: ExampleEntityAttribute
     customProperties:
-      - name: Author
-        value: "CrossBreeze"
-      - name: ExampleEntity
+      - id: author
+        name: "Author"

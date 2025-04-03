@@ -4,7 +4,7 @@ on:
       runs-on:
         required: true
         type: string
-        default: "['ubuntu-latest', 'windows-2022', 'macos-13']"
+        default: "['ubuntu-22.04', 'windows-2022', 'macos-13']"
 
 env:
   NODE_VERSION: 20.x

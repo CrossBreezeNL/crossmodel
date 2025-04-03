@@ -1,5 +1,10 @@
 on:
   workflow_call:
+    inputs:
+      runs-on:
+        required: true
+        type: string
+        default: "['ubuntu-latest', 'windows-2022', 'macos-13']"
 
 env:
   NODE_VERSION: 20.x
@@ -18,7 +23,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-2022, ubuntu-22.04, macos-13]
+        os: ${{ fromJSON(inputs.runs-on) }}
 
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60

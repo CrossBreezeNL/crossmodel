@@ -1,7 +1,7 @@
 name: cicd-feature
 
 on:
-  push:
+  pull_request:
     branches:
       - feature/*
       - issue/*
@@ -10,5 +10,3 @@ on:
 jobs:
   build-and-test:
     uses: ./.github/workflows/build-and-test.yml
-    inputs:
-      runs-on: "['ubuntu-latest']"

@@ -91,7 +91,7 @@ jobs:
 
       # Run lint only on Linux (since it only makes sense to run it once, and linux is the fastest).
       - name: Lint
-        if: always() && runner.os == 'Linux'
+        if: runner.os == 'Linux'
         run: yarn lint
 
       # Run lint only on Linux (since it only makes sense to run it once, and linux is the fastest).

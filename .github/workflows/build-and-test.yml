@@ -28,6 +28,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
 
+    permissions:
+      contents: read
+      packages: write
+
     steps:
       # Checkout the code.
       - name: checkout
@@ -38,6 +42,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@crossbreeze'
 
       # Setup Python
       - name: Setup Python ${{ env.PYTHON_VERSION }}
@@ -98,6 +104,8 @@ jobs:
       - name: Publish packages
         if: runner.os == 'Linux'
         run: yarn publish:packages
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # Publish a test report using the unit test result files published in the previous step (which was executed per OS).
   publish-unit-test-report:

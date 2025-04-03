@@ -9,7 +9,7 @@
   "homepage": "https://github.com/CrossBreezeNL/crossmodel",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/CrossBreezeNL/crossmodel"
+    "url": "https://github.com/crossbreezenl/crossmodel.git"
   },
   "license": "AGPL-3.0-or-later",
   "author": {
@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@crossbreeze/model-service": "0.0.0",
-    "@crossbreeze/protocol": "0.0.0",
+    "@crossbreezenl/protocol": "0.0.0",
     "@theia/core": "1.57.1",
     "@theia/filesystem": "1.57.1",
     "@theia/markers": "1.57.1",

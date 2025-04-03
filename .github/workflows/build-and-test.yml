@@ -89,6 +89,11 @@ jobs:
         if: always() && runner.os == 'Linux'
         run: yarn lint
 
+      # Run lint only on Linux (since it only makes sense to run it once, and linux is the fastest).
+      - name: Publish packages
+        if: runner.os == 'Linux'
+        run: yarn publish:packages
+
   # Publish a test report using the unit test result files published in the previous step (which was executed per OS).
   publish-unit-test-report:
     name: Publish Unit Test Report

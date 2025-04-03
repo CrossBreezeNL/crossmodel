@@ -2,8 +2,8 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 
-import { ModelService } from '@crossbreeze/model-service/lib/common';
-import { ModelStructure } from '@crossbreeze/protocol';
+import { ModelService } from '@crossbreezenl/model-service/lib/common';
+import { ModelStructure } from '@crossbreezenl/protocol';
 import { Emitter, MaybePromise } from '@theia/core';
 import { DepthFirstTreeIterator, LabelProvider, LabelProviderContribution, Tree, TreeDecorator, TreeNode } from '@theia/core/lib/browser';
 import { WidgetDecoration } from '@theia/core/lib/browser/widget-decoration';

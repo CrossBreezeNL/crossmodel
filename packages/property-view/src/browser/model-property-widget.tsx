@@ -6,8 +6,8 @@ import { ApplicationShell, ShouldSaveDialog } from '@theia/core/lib/browser';
 import { PropertyDataService } from '@theia/property-view/lib/browser/property-data-service';
 import { PropertyViewContentWidget } from '@theia/property-view/lib/browser/property-view-content-widget';
 
-import { CrossModelWidget } from '@crossbreeze/core/lib/browser';
-import { RenderProps } from '@crossbreeze/protocol';
+import { CrossModelWidget } from '@crossbreezenl/core/lib/browser';
+import { RenderProps } from '@crossbreezenl/protocol';
 import { GLSPDiagramWidget, GlspSelection, getDiagramWidget } from '@eclipse-glsp/theia-integration';
 import { inject, injectable } from '@theia/core/shared/inversify';
 import * as deepEqual from 'fast-deep-equal';

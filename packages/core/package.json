@@ -1,5 +1,5 @@
 {
-  "name": "@crossbreeze/core",
+  "name": "@crossbreezenl/core",
   "version": "0.0.0",
   "private": true,
   "description": "CrossModel Core Contribution",
@@ -29,8 +29,9 @@
     "watch": "tsc -w"
   },
   "dependencies": {
-    "@crossbreeze/model-service": "0.0.0",
+    "@crossbreezenl/model-service": "0.0.0",
     "@crossbreezenl/protocol": "0.0.0",
+    "@crossbreezenl/react-model-ui": "0.0.0",
     "@theia/core": "1.57.1",
     "@theia/filesystem": "1.57.1",
     "@theia/markers": "1.57.1",

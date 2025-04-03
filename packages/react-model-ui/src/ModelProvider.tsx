@@ -2,7 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { CrossModelRoot } from '@crossbreeze/protocol';
+import { CrossModelRoot } from '@crossbreezenl/protocol';
 import * as React from 'react';
 import { useImmerReducer } from 'use-immer';
 import {

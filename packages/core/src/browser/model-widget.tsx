@@ -2,8 +2,8 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { ModelService, ModelServiceClient } from '@crossbreeze/model-service/lib/common';
-import { CrossModelDocument, CrossModelRoot, ModelDiagnostic, ModelUpdatedEvent, RenderProps } from '@crossbreeze/protocol';
+import { ModelService, ModelServiceClient } from '@crossbreezenl/model-service/lib/common';
+import { CrossModelDocument, CrossModelRoot, ModelDiagnostic, ModelUpdatedEvent, RenderProps } from '@crossbreezenl/protocol';
 import {
    EntityComponent,
    ErrorView,
@@ -15,7 +15,7 @@ import {
    SaveCallback,
    SourceObjectComponent,
    SourceObjectRenderProps
-} from '@crossbreeze/react-model-ui';
+} from '@crossbreezenl/react-model-ui';
 import { Emitter, Event } from '@theia/core';
 import { LabelProvider, Message, OpenerService, ReactWidget, Saveable, open } from '@theia/core/lib/browser';
 import { ThemeService } from '@theia/core/lib/browser/theming';

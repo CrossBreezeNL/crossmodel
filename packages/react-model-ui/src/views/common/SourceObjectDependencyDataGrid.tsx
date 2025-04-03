@@ -8,7 +8,7 @@ import {
    SourceObject,
    SourceObjectDependency,
    SourceObjectDependencyType
-} from '@crossbreeze/protocol';
+} from '@crossbreezenl/protocol';
 import { GridColDef, GridRenderEditCellParams, useGridApiContext } from '@mui/x-data-grid';
 import * as React from 'react';
 import { useModelDispatch, useModelQueryApi, useReadonly } from '../../ModelContext';

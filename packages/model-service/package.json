@@ -1,5 +1,5 @@
 {
-  "name": "@crossbreeze/model-service",
+  "name": "@crossbreezenl/model-service",
   "version": "0.0.0",
   "private": true,
   "description": "Model service to talk to the back-end server from the front-end via a JSON-rpc connection",

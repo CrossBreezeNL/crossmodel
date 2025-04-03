@@ -9,7 +9,7 @@ import {
    ModelDiagnostic,
    ReferenceableElement,
    Relationship
-} from '@crossbreeze/protocol';
+} from '@crossbreezenl/protocol';
 import * as React from 'react';
 import { DispatchAction, ModelReducer } from './ModelReducer';
 

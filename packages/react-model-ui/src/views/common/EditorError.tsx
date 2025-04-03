@@ -2,7 +2,7 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 
-import { codiconCSSString } from '@crossbreeze/protocol';
+import { codiconCSSString } from '@crossbreezenl/protocol';
 import React = require('react');
 
 export function createEditorError(message: string): React.ReactNode {

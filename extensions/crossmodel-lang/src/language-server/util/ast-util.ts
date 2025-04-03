@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { AttributeMappingSourceType } from '@crossbreeze/protocol';
+import { AttributeMappingSourceType } from '@crossbreezenl/protocol';
 import { Dimension, Point } from '@eclipse-glsp/server';
 import { AstNode, AstNodeDescription, AstUtils, LangiumDocument, Reference, isAstNode, isAstNodeDescription } from 'langium';
 import { ID_PROPERTY, IdProvider } from '../cross-model-naming.js';

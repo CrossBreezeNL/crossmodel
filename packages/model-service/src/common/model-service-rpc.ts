@@ -16,7 +16,7 @@ import {
    SystemInfoArgs,
    SystemUpdatedEvent,
    UpdateModelArgs
-} from '@crossbreeze/protocol';
+} from '@crossbreezenl/protocol';
 import { Event, RpcServer } from '@theia/core';
 
 /** Path used to communicate between the Theia frontend and backend */

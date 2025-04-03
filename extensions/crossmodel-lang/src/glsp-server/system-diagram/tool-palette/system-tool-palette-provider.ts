@@ -8,7 +8,7 @@ import {
    RELATIONSHIP_EDGE_TYPE,
    activateDefaultToolsAction,
    activateDeleteToolAction
-} from '@crossbreeze/protocol';
+} from '@crossbreezenl/protocol';
 import {
    Args,
    MaybePromise,

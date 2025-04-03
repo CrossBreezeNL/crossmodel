@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2025 CrossBreeze.
  ********************************************************************************/
-import { INHERITANCE_EDGE_TYPE } from '@crossbreeze/protocol';
+import { INHERITANCE_EDGE_TYPE } from '@crossbreezenl/protocol';
 import { EdgeCreationChecker, GModelElement, ModelState, getOrThrow } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
 import { LogicalEntity, LogicalEntityNode, isInheritanceEdge } from '../../../language-server/generated/ast.js';

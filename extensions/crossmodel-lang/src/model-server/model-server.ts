@@ -28,7 +28,7 @@ import {
    SystemInfoArgs,
    UpdateModel,
    UpdateModelArgs
-} from '@crossbreeze/protocol';
+} from '@crossbreezenl/protocol';
 import { AstNode, AstUtils, isReference } from 'langium';
 import { Disposable } from 'vscode-jsonrpc';
 import * as rpc from 'vscode-jsonrpc/node.js';

@@ -2,7 +2,7 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 
-import { LogicalAttribute } from '@crossbreeze/protocol';
+import { LogicalAttribute } from '@crossbreezenl/protocol';
 import { DispatchAction, ModelAction, ModelState, moveDown, moveUp, undefinedIfEmpty } from './ModelReducer';
 
 export interface EntityChangeNameAction extends ModelAction {

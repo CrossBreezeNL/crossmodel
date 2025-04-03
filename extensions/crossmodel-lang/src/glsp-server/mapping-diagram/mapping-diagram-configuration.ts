@@ -7,7 +7,7 @@ import {
    SOURCE_STRING_NODE_TYPE,
    TARGET_ATTRIBUTE_MAPPING_EDGE_TYPE,
    TARGET_OBJECT_NODE_TYPE
-} from '@crossbreeze/protocol';
+} from '@crossbreezenl/protocol';
 import { DefaultTypes, DiagramConfiguration, ServerLayoutKind, ShapeTypeHint, getDefaultMapping } from '@eclipse-glsp/server';
 import { injectable } from 'inversify';
 

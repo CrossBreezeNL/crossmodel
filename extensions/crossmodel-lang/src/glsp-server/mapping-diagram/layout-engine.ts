@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
-import { SOURCE_NUMBER_NODE_TYPE, SOURCE_STRING_NODE_TYPE, TARGET_OBJECT_NODE_TYPE, isLeftPortId } from '@crossbreeze/protocol';
+import { SOURCE_NUMBER_NODE_TYPE, SOURCE_STRING_NODE_TYPE, TARGET_OBJECT_NODE_TYPE, isLeftPortId } from '@crossbreezenl/protocol';
 import { GCompartment, GModelRoot, GNode, GPort, LayoutEngine, MaybePromise, findParentByClass } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
 import { getOwner } from '../../language-server/util/ast-util.js';

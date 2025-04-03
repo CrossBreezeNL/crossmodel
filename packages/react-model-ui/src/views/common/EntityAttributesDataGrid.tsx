@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { LogicalAttribute, LogicalAttributeType, findNextUnique, toId } from '@crossbreeze/protocol';
+import { LogicalAttribute, LogicalAttributeType, findNextUnique, toId } from '@crossbreezenl/protocol';
 import CheckBoxOutlineBlankOutlined from '@mui/icons-material/CheckBoxOutlineBlankOutlined';
 import CheckBoxOutlined from '@mui/icons-material/CheckBoxOutlined';
 import { GridColDef } from '@mui/x-data-grid';

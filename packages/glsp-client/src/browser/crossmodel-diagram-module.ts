@@ -2,7 +2,7 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 
-import { GRID } from '@crossbreeze/protocol';
+import { GRID } from '@crossbreezenl/protocol';
 import {
    ConsoleLogger,
    GLSPHiddenBoundsUpdater,

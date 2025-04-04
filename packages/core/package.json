@@ -1,6 +1,6 @@
 {
   "name": "@crossbreezenl/core",
-  "version": "0.0.1-beta.1",
+  "version": "0.0.1-beta.2",
   "description": "CrossModel Core Contribution",
   "keywords": [
     "theia-extension"
@@ -28,9 +28,9 @@
     "watch": "tsc -w"
   },
   "dependencies": {
-    "@crossbreezenl/model-service": "^0.0.1-beta.1",
-    "@crossbreezenl/protocol": "^0.0.1-beta.1",
-    "@crossbreezenl/react-model-ui": "^0.0.1-beta.1",
+    "@crossbreezenl/model-service": "^0.0.1-beta.2",
+    "@crossbreezenl/protocol": "^0.0.1-beta.2",
+    "@crossbreezenl/react-model-ui": "^0.0.1-beta.2",
     "@theia/core": "1.57.1",
     "@theia/filesystem": "1.57.1",
     "@theia/markers": "1.57.1",

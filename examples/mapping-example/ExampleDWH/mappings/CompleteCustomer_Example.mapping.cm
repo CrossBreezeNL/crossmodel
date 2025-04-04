@@ -6,20 +6,6 @@ mapping:
         join: from
         conditions:
           - Customer.Customer_ID > 0
-      - id: Address
-        entity: ExampleCRM.Address
-        join: left-join
-        dependencies:
-          - Customer
-        conditions:
-          - Address.Customer_ID = Customer.Customer_ID
-      - id: Country
-        entity: ExampleMasterdata.Country
-        join: left-join
-        dependencies:
-          - Address
-        conditions:
-          - Country.Code = Address.Country_Code
       - id: AddressSourceObject
         entity: ExampleCRM.Address
         join: inner-join
@@ -27,6 +13,13 @@ mapping:
           - Customer
         conditions:
           - AddressSourceObject.Customer_ID = Customer.Customer_ID
+      - id: Country
+        entity: ExampleMasterdata.Country
+        join: left-join
+        dependencies:
+          - AddressSourceObject
+        conditions:
+          - Country.Code = AddressSourceObject.Country_Code
       - id: CalcAgeSourceObject
         entity: CalcAge
         join: apply
@@ -35,9 +28,11 @@ mapping:
         conditions:
           - CalcAgeSourceObject.BirthDate = Customer.Birth_Date
         customProperties:
-          - name: Author
+          - id: author
+            name: "Author"
             value: "CrossBreeze"
-          - name: ExampleMappingSource
+          - id: exampleMappingSource
+            name: "ExampleMappingSource"
     target:
         entity: CompleteCustomer
         mappings:
@@ -58,14 +53,20 @@ mapping:
             expression: "Fixed String"
           - attribute: Today
             customProperties:
-              - name: Author
+              - id: author
+                name: "Author"
                 value: "CrossBreeze"
-              - name: ExampleEntityTargetAttribute
+              - id: exampleEntityTargetAttribute
+                name: "ExampleEntityTargetAttribute"
         customProperties:
-          - name: Author
+          - id: author
+            name: "Author"
             value: "CrossBreeze"
-          - name: ExampleMappingTarget
+          - id: exampleMappingTarget
+            name: "ExampleMappingTarget"
     customProperties:
-      - name: Author
+      - id: author
+        name: "Author"
         value: "CrossBreeze"
-      - name: ExampleMapping
+      - id: exampleMapping
+        name: "ExampleMapping"

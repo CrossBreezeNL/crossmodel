@@ -71,7 +71,7 @@ export class GTargetObjectNodeBuilder extends GNodeBuilder<GTargetObjectNode> {
       const attributesContainer = new AttributesCompartmentBuilder().set(id);
       for (const attribute of attributes) {
          const attrComp = AttributeCompartment.builder().set(attribute, index, (attr, attrId) => this.markExpression(node, attr, attrId));
-         const mappingIdx = node.mappings.findIndex(mapping => mapping.attribute.value.ref === attribute);
+         const mappingIdx = node.mappings.findIndex(mapping => mapping.attribute?.value.ref === attribute);
          if (mappingIdx >= 0) {
             attrComp.addArg(RenderProps.TARGET_ATTRIBUTE_MAPPING_IDX, mappingIdx);
          }
@@ -84,7 +84,7 @@ export class GTargetObjectNodeBuilder extends GNodeBuilder<GTargetObjectNode> {
    }
 
    protected markExpression(node: TargetObject, attribute: TargetObjectAttribute, id: string): GLabel | undefined {
-      return node.mappings.some(mapping => mapping.attribute.value.ref === attribute && !!mapping.expression)
+      return node.mappings.some(mapping => mapping.attribute?.value.ref === attribute && !!mapping.expression)
          ? GLabel.builder().id(`${id}_attribute_expression_marker`).text('𝑓ᵪ').addCssClasses('attribute_expression_marker').build()
          : undefined;
    }

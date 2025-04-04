@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
-import { TARGET_ATTRIBUTE_MAPPING_EDGE_TYPE, isLeftPortId, isPortId } from '@crossbreeze/protocol';
+import { isLeftPortId, isPortId, TARGET_ATTRIBUTE_MAPPING_EDGE_TYPE } from '@crossbreeze/protocol';
 import {
    Command,
    CreateEdgeOperation,
@@ -12,7 +12,7 @@ import {
 } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
 import { combineIds } from '../../../language-server/cross-model-naming.js';
-import { isSourceObjectAttribute, isTargetObjectAttribute } from '../../../language-server/generated/ast.js';
+import { isSourceObjectAttribute, isTargetObjectAttribute, SourceObject } from '../../../language-server/generated/ast.js';
 import { createAttributeMapping, createAttributeMappingSource, getOwner } from '../../../language-server/util/ast-util.js';
 import { CrossModelCommand } from '../../common/cross-model-command.js';
 import { MappingModelState } from '../model/mapping-model-state.js';
@@ -40,11 +40,12 @@ export class MappingEdgeCreationOperationHandler extends JsonCreateEdgeOperation
          const container = this.modelState.mapping.target;
          const sourceElement = this.modelState.index.findSemanticElement(sourceElementId, isSourceObjectAttribute);
          const targetElement = this.modelState.index.findSemanticElement(targetElementId, isTargetObjectAttribute);
-         if (!targetElement || !sourceElement) {
+         const sourceObject = <SourceObject>getOwner(sourceElement);
+         if (!targetElement?.id || !sourceElement?.id || !sourceObject?.id) {
             return;
          }
-         const sourceAttributeReference = combineIds(getOwner(sourceElement).id, sourceElement.id);
-         const existingMapping = container.mappings.find(mapping => mapping.attribute.value.ref?.id === targetElement.id);
+         const sourceAttributeReference = combineIds(sourceObject.id, sourceElement.id);
+         const existingMapping = container.mappings.find(mapping => mapping.attribute?.value.ref?.id === targetElement.id);
          if (existingMapping) {
             existingMapping.sources.push(createAttributeMappingSource(existingMapping, sourceAttributeReference));
          } else {

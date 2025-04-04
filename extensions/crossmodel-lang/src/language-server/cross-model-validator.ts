@@ -17,12 +17,11 @@ import { ID_PROPERTY, IdentifiableAstNode } from './cross-model-naming.js';
 import {
    AttributeMapping,
    CrossModelAstType,
+   IdentifiedObject,
    InheritanceEdge,
    isCrossModelRoot,
-   isLogicalAttribute,
    isLogicalEntity,
    isMapping,
-   isRelationship,
    isSystemDiagram,
    LogicalAttribute,
    LogicalEntity,
@@ -35,7 +34,8 @@ import {
    SourceObjectCondition,
    SourceObjectDependency,
    TargetObject,
-   TargetObjectAttribute
+   TargetObjectAttribute,
+   WithCustomProperties
 } from './generated/ast.js';
 import { findDocument, getOwner, getSemanticRootFromAstRoot, isSemanticRoot } from './util/ast-util.js';
 
@@ -64,6 +64,7 @@ export function registerValidationChecks(services: CrossModelServices): void {
 
    const checks: ValidationChecks<CrossModelAstType> = {
       AstNode: validator.checkNode,
+      IdentifiedObject: validator.checkIdentifiedObject,
       AttributeMapping: validator.checkAttributeMapping,
       LogicalEntity: validator.checkLogicalEntity,
       Mapping: validator.checkMapping,
@@ -74,7 +75,8 @@ export function registerValidationChecks(services: CrossModelServices): void {
       SourceObjectCondition: validator.checkSourceObjectCondition,
       SourceObjectDependency: validator.checkSourceObjectDependency,
       TargetObject: validator.checkTargetObject,
-      NamedObject: validator.checkNamedObject
+      NamedObject: validator.checkNamedObject,
+      WithCustomProperties: validator.checkUniqueCustomerPropertyId
    };
    registry.register(checks, validator);
 }
@@ -87,63 +89,68 @@ export class CrossModelValidator {
 
    checkNamedObject(namedObject: NamedObject, accept: ValidationAcceptor): void {
       if (namedObject.name === undefined || namedObject.name.length === 0) {
-         accept('error', 'The name of this object cannot be empty', { node: namedObject, property: 'name' });
+         accept('error', 'The name cannot be empty', { node: namedObject, property: 'name' });
+      }
+   }
+
+   checkIdentifiedObject(identifiedObject: IdentifiedObject, accept: ValidationAcceptor): void {
+      if (identifiedObject.id === undefined || identifiedObject.id.length === 0) {
+         accept('error', 'The id cannot be empty', { node: identifiedObject, property: 'id' });
+      } else {
+         // Only perform the following checks when the id is known
+         this.checkUniqueGlobalId(identifiedObject, accept);
+         this.checkUniqueLocalId(identifiedObject, accept);
+         this.checkMatchingFilename(identifiedObject, accept);
       }
    }
 
    checkNode(node: AstNode, accept: ValidationAcceptor): void {
-      this.checkUniqueGlobalId(node, accept);
-      this.checkUniqueNodeId(node, accept);
-      this.checkMatchingFilename(node, accept);
       this.checkFitsPackage(node, accept);
    }
 
-   protected checkMatchingFilename(node: AstNode, accept: ValidationAcceptor): void {
-      if (!isSemanticRoot(node)) {
+   protected checkMatchingFilename(identifiedObject: IdentifiedObject, accept: ValidationAcceptor): void {
+      if (!isSemanticRoot(identifiedObject)) {
          return;
       }
-      if (!node.id) {
-         // diagrams may not have ids set and therefore are not required to match the filename
-         return;
-      }
-      const document = findDocument(node);
+      const document = findDocument(identifiedObject);
       if (!document) {
          return;
       }
       const basename = UriUtils.basename(document.uri);
       const extname = ModelFileExtensions.getFileExtension(basename) ?? UriUtils.extname(document.uri);
       const basenameWithoutExt = basename.slice(0, -extname.length);
-      if (basenameWithoutExt.toLowerCase() !== node.id.toLocaleLowerCase()) {
-         accept('warning', `Filename should match element id: ${node.id}`, {
-            node,
+      if (basenameWithoutExt.toLowerCase() !== identifiedObject.id?.toLocaleLowerCase()) {
+         accept('warning', `Filename should match element id: ${identifiedObject.id}`, {
+            node: identifiedObject,
             property: ID_PROPERTY,
             data: { code: CrossModelIssueCodes.FilenameNotMatching }
          });
       }
    }
 
-   protected checkUniqueGlobalId(node: AstNode, accept: ValidationAcceptor): void {
-      if (!this.isExportedGlobally(node)) {
+   // Check the uniqueness of ids of semantic root elements.
+   protected checkUniqueGlobalId(identifiedObject: IdentifiedObject, accept: ValidationAcceptor): void {
+      if (!isSemanticRoot(identifiedObject)) {
          return;
       }
-      const globalId = this.services.references.IdProvider.getGlobalId(node);
+      const globalId = this.services.references.IdProvider.getGlobalId(identifiedObject);
       if (!globalId) {
-         accept('error', 'Missing required id field', { node, property: ID_PROPERTY });
+         accept('error', 'Missing required id field', { node: identifiedObject, property: ID_PROPERTY });
          return;
       }
       const allElements = Array.from(this.services.shared.workspace.IndexManager.allElements());
       const duplicates = allElements.filter(description => description.name === globalId);
       if (duplicates.length > 1) {
-         accept('error', 'Must provide a unique id.', { node, property: ID_PROPERTY });
+         accept('error', 'Must provide a unique id.', { node: identifiedObject, property: ID_PROPERTY });
       }
    }
 
-   protected isExportedGlobally(node: AstNode): boolean {
-      // we export anything with an id from entities and relationships and all root nodes, see CrossModelScopeComputation
-      return isLogicalEntity(node) || isLogicalAttribute(node) || isRelationship(node) || isSystemDiagram(node) || isMapping(node);
-   }
-
-   protected checkUniqueNodeId(node: AstNode, accept: ValidationAcceptor): void {
+   // Check the uniqueness of ids of non-semantic root identified objects.
+   protected checkUniqueLocalId(node: AstNode, accept: ValidationAcceptor): void {
+      if (isLogicalEntity(node)) {
+         this.markDuplicateIds(node.attributes, accept);
+         this.markDuplicateIds(node.identifiers, accept);
+      }
       if (isSystemDiagram(node)) {
          this.markDuplicateIds(node.edges, accept);
          this.markDuplicateIds(node.nodes, accept);
@@ -151,6 +158,10 @@ export class CrossModelValidator {
       if (isMapping(node)) {
          this.markDuplicateIds(node.sources, accept);
       }
+   }
+
+   checkUniqueCustomerPropertyId(node: WithCustomProperties, accept: ValidationAcceptor): void {
+      this.markDuplicateIds(node.customProperties, accept);
    }
 
    protected markDuplicateIds(nodes: IdentifiableAstNode[], accept: ValidationAcceptor): void {
@@ -205,6 +216,10 @@ export class CrossModelValidator {
       function depthFirst(current: LogicalEntity): string[] {
          const currentId = current.id;
 
+         if (currentId === undefined) {
+            return [];
+         }
+
          // Mark the current node as visited and add to recursion stack
          visited.add(currentId);
          recursionStack.add(currentId);
@@ -216,6 +231,10 @@ export class CrossModelValidator {
                continue; // Ignore unresolved references
             }
             const superId = superEntity.id;
+            if (superId === undefined) {
+               continue; // Ignore reference without an id
+            }
+
             if (!visited.has(superId)) {
                const cycle = depthFirst(superEntity);
                if (cycle.length > 0) {
@@ -245,7 +264,9 @@ export class CrossModelValidator {
       const usedParentAttributes: LogicalAttribute[] = [];
       const usedChildAttributes: LogicalAttribute[] = [];
       for (const attribute of relationship.attributes) {
-         if (attribute.parent.ref) {
+         if (!attribute.parent) {
+            accept('error', 'Parent attribute is required.', { node: attribute, property: 'parent' });
+         } else if (attribute.parent.ref) {
             if (attribute.parent?.ref?.$container !== relationship.parent?.ref) {
                accept('error', 'Not a valid parent attribute.', { node: attribute, property: 'parent' });
             } else if (usedParentAttributes.includes(attribute.parent.ref)) {
@@ -254,7 +275,9 @@ export class CrossModelValidator {
                usedParentAttributes.push(attribute.parent.ref);
             }
          }
-         if (attribute.child.ref) {
+         if (!attribute.child) {
+            accept('error', 'Child attribute is required.', { node: attribute, property: 'child' });
+         } else if (attribute.child.ref) {
             if (attribute.child?.ref?.$container !== relationship.child?.ref) {
                accept('error', 'Not a valid child attribute.', { node: attribute, property: 'child' });
             } else if (usedChildAttributes.includes(attribute.child.ref)) {
@@ -324,7 +347,9 @@ export class CrossModelValidator {
    checkTargetObject(target: TargetObject, accept: ValidationAcceptor): void {
       const knownAttributes: TargetObjectAttribute[] = [];
       for (const mapping of target.mappings) {
-         if (mapping.attribute.value.ref && knownAttributes.includes(mapping.attribute.value.ref)) {
+         if (!mapping.attribute) {
+            accept('error', 'Each attribute mapping must have a target attribute.', { node: mapping });
+         } else if (mapping.attribute.value.ref && knownAttributes.includes(mapping.attribute.value.ref)) {
             accept('error', 'Each target attribute can only be mapped once.', { node: mapping.attribute });
          } else if (mapping.attribute.value.ref) {
             knownAttributes.push(mapping.attribute.value.ref);

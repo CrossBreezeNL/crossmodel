@@ -104,14 +104,13 @@ jobs:
       - name: Generate version bump and changelog
         if: runner.os == 'Linux'
         # If this is a PR and the base_ref is main (so we are merging into main), we want to create a new version.
-        run:
+        run: |
           git config user.name "${{ github.actor }}"
           git config user.email "${{ github.actor}}@users.noreply.github.com"
-          npx lerna version --conventional-commits --conventional-prerelease --preid beta --yes
-
           # if [ ${{ github.base_ref }} = main ]; then
           #   npx lerna version --conventional-commits --conventional-graduate --yes
           # else
+          npx lerna version --conventional-commits --conventional-prerelease --preid beta --yes
           # fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

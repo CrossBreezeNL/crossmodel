@@ -1,7 +1,6 @@
 {
   "name": "@crossbreezenl/property-view",
   "version": "0.0.1-beta.0",
-  "private": true,
   "description": "Property view for crossmodel",
   "keywords": [
     "theia-extension"

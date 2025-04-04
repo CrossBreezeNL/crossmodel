@@ -1,7 +1,6 @@
 {
   "name": "@crossbreezenl/protocol",
   "version": "0.0.1-beta.0",
-  "private": true,
   "description": "CrossModel Protocol Extensions between Server and Client",
   "homepage": "https://github.com/CrossBreezeNL/crossmodel",
   "repository": {

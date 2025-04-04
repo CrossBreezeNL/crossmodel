@@ -1,7 +1,6 @@
 {
   "name": "@crossbreezenl/composite-editor",
   "version": "0.0.1-beta.0",
-  "private": true,
   "description": "CrossModel Editor Contribution",
   "keywords": [
     "theia-extension"

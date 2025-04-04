@@ -1,7 +1,6 @@
 {
   "name": "@crossbreezenl/form-client",
   "version": "0.0.1-beta.0",
-  "private": true,
   "description": "CrossModel Form-based Editor Contribution",
   "keywords": [
     "theia-extension"

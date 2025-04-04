@@ -1,8 +1,8 @@
 {
   "name": "crossmodel-theme",
   "displayName": "crossmodel-theme",
+  "version": "0.0.1-beta.3",
   "private": true,
-  "version": "0.0.1-beta.2",
   "description": "CrossModel Theme",
   "categories": [
     "Themes"

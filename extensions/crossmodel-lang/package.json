@@ -9,7 +9,7 @@
   "homepage": "https://github.com/CrossBreezeNL/crossmodel",
   "repository": {
     "type": "git",
-    "https://github.com/crossbreezenl/crossmodel.gitdel.git"
+    "url": "git+https://github.com/crossbreezenl/crossmodel.git"
   },
   "license": "AGPL-3.0-or-later",
   "author": {

@@ -41,7 +41,7 @@ export class MappingEdgeCreationOperationHandler extends JsonCreateEdgeOperation
          const sourceElement = this.modelState.index.findSemanticElement(sourceElementId, isSourceObjectAttribute);
          const targetElement = this.modelState.index.findSemanticElement(targetElementId, isTargetObjectAttribute);
          const sourceEntity = <LogicalEntity | undefined>getOwner(sourceElement);
-         if (!targetElement || !targetElement.id || !sourceElement || !sourceElement.id || !sourceEntity || !sourceEntity.id) {
+         if (!targetElement?.id || !sourceElement?.id || !sourceEntity?.id) {
             return;
          }
          const sourceAttributeReference = combineIds(sourceEntity.id, sourceElement.id);

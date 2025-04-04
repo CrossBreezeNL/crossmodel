@@ -96,7 +96,7 @@ export class CrossModelValidator {
       if (identifiedObject.id === undefined || identifiedObject.id.length === 0) {
          accept('error', 'The id cannot be empty', { node: identifiedObject, property: 'id' });
       } else {
-         // Only perform the following checks when the id is know.
+         // Only perform the following checks when the id is known
          this.checkUniqueGlobalId(identifiedObject, accept);
          this.checkUniqueLocalId(identifiedObject, accept);
          this.checkMatchingFilename(identifiedObject, accept);

@@ -1,6 +1,6 @@
 {
   "name": "@crossbreezenl/property-view",
-  "version": "0.0.0",
+  "version": "0.0.1-beta.0",
   "private": true,
   "description": "Property view for crossmodel",
   "keywords": [
@@ -30,10 +30,10 @@
     "watch": "tsc -w"
   },
   "dependencies": {
-    "@crossbreezenl/glsp-client": "0.0.0",
-    "@crossbreezenl/model-service": "0.0.0",
-    "@crossbreezenl/protocol": "0.0.0",
-    "@crossbreezenl/react-model-ui": "0.0.0",
+    "@crossbreezenl/glsp-client": "^0.0.1-beta.0",
+    "@crossbreezenl/model-service": "^0.0.1-beta.0",
+    "@crossbreezenl/protocol": "^0.0.1-beta.0",
+    "@crossbreezenl/react-model-ui": "^0.0.1-beta.0",
     "@eclipse-glsp/theia-integration": "next",
     "@theia/core": "1.57.1",
     "@theia/filesystem": "1.57.1",

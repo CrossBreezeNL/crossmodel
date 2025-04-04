@@ -23,7 +23,6 @@ import {
    isLogicalEntity,
    isMapping,
    isSystemDiagram,
-   isWithCustomProperties,
    LogicalAttribute,
    LogicalEntity,
    Mapping,
@@ -35,7 +34,8 @@ import {
    SourceObjectCondition,
    SourceObjectDependency,
    TargetObject,
-   TargetObjectAttribute
+   TargetObjectAttribute,
+   WithCustomProperties
 } from './generated/ast.js';
 import { findDocument, getOwner, getSemanticRootFromAstRoot, isSemanticRoot } from './util/ast-util.js';
 
@@ -75,7 +75,8 @@ export function registerValidationChecks(services: CrossModelServices): void {
       SourceObjectCondition: validator.checkSourceObjectCondition,
       SourceObjectDependency: validator.checkSourceObjectDependency,
       TargetObject: validator.checkTargetObject,
-      NamedObject: validator.checkNamedObject
+      NamedObject: validator.checkNamedObject,
+      WithCustomProperties: validator.checkUniqueCustomerPropertyId
    };
    registry.register(checks, validator);
 }
@@ -157,9 +158,10 @@ export class CrossModelValidator {
       if (isMapping(node)) {
          this.markDuplicateIds(node.sources, accept);
       }
-      if (isWithCustomProperties(node)) {
-         this.markDuplicateIds(node.customProperties, accept);
-      }
+   }
+
+   checkUniqueCustomerPropertyId(node: WithCustomProperties, accept: ValidationAcceptor): void {
+      this.markDuplicateIds(node.customProperties, accept);
    }
 
    protected markDuplicateIds(nodes: IdentifiableAstNode[], accept: ValidationAcceptor): void {

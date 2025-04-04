@@ -1,6 +1,7 @@
 {
   "name": "crossmodel-lang",
   "displayName": "crossmodel-lang",
+  "private": true,
   "version": "0.0.1-beta.2",
   "description": "CrossModel Language",
   "categories": [

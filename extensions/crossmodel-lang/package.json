@@ -9,7 +9,7 @@
   "homepage": "https://github.com/CrossBreezeNL/crossmodel",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/crossbreezenl/crossmodel.git"
+    "https://github.com/crossbreezenl/crossmodel.gitdel.git"
   },
   "license": "AGPL-3.0-or-later",
   "author": {
@@ -122,7 +122,7 @@
     "vscode": "^1.95.0"
   },
   "publishConfig": {
-    "access": "restricted",
+    "access": "public",
     "registry": "https://npm.pkg.github.com"
   }
 }

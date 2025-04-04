@@ -44,6 +44,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           registry-url: 'https://npm.pkg.github.com'
           scope: '@crossbreezenl'
+          cache: 'yarn'
 
       # Setup Python
       - name: Setup Python ${{ env.PYTHON_VERSION }}
@@ -100,10 +101,16 @@ jobs:
         if: runner.os == 'Linux'
         run: yarn lint
 
-      # Run lint only on Linux (since it only makes sense to run it once, and linux is the fastest).
-      - name: Publish packages
+      - name: Generate version bump and changelog
         if: runner.os == 'Linux'
-        run: yarn publish:packages
+        run: npx lerna version --conventional-commits --yes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Run lint only on Linux (since it only makes sense to run it once, and linux is the fastest).
+      - name: Publish packages to GitHub Packages
+        if: runner.os == 'Linux'
+        run: npx lerna publish from-package --yes
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

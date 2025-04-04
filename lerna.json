@@ -1,4 +1,5 @@
 {
+  "$schema": "node_modules/lerna/schemas/lerna-schema.json",
   "version": "0.0.0",
   "npmClient": "yarn",
   "command": {
@@ -6,7 +7,6 @@
       "stream": true
     },
     "version": {
-      "allowBranch": "main",
       "conventionalCommits": true,
       "changelogPreset": "conventional-changelog-angular",
       "createRelease": "github",

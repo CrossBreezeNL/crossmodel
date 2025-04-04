@@ -9,11 +9,13 @@ import { Serializer } from '../model-server/serializer.js';
 import {
    AttributeMapping,
    CrossModelRoot,
+   CustomProperty,
    InheritanceEdge,
    isAttributeMappingSource,
    isAttributeMappingTarget,
    isJoinCondition,
    isLogicalAttribute,
+   isLogicalIdentifier,
    isRelationship,
    isSourceObject,
    isSourceObjectDependency,
@@ -21,6 +23,7 @@ import {
    LogicalAttribute,
    LogicalEntity,
    LogicalEntityNode,
+   LogicalIdentifier,
    Mapping,
    reflection,
    Relationship,
@@ -45,7 +48,7 @@ const CUSTOM_PROPERTIES = ['customProperties'];
  * It cannot be derived for interfaces as the interface order does not reflect property order in grammar due to inheritance.
  */
 const PROPERTY_ORDER = new Map<string, string[]>([
-   [LogicalEntity, [...NAMED_OBJECT_PROPERTIES, 'superEntities', 'attributes', ...CUSTOM_PROPERTIES]],
+   [LogicalEntity, [...NAMED_OBJECT_PROPERTIES, 'superEntities', 'attributes', 'identifiers', ...CUSTOM_PROPERTIES]],
    [LogicalAttribute, [...NAMED_OBJECT_PROPERTIES, 'datatype', 'length', 'precision', 'scale', 'identifier', ...CUSTOM_PROPERTIES]],
    [
       Relationship,
@@ -69,7 +72,9 @@ const PROPERTY_ORDER = new Map<string, string[]>([
    [Mapping, [...IDENTIFIED_PROPERTIES, 'sources', 'target', ...CUSTOM_PROPERTIES]],
    [SourceObject, [...IDENTIFIED_PROPERTIES, 'entity', 'join', 'dependencies', 'conditions', ...CUSTOM_PROPERTIES]],
    [TargetObject, ['entity', 'mappings', ...CUSTOM_PROPERTIES]],
-   [AttributeMapping, ['attribute', 'sources', 'expression', ...CUSTOM_PROPERTIES]]
+   [AttributeMapping, ['attribute', 'sources', 'expression', ...CUSTOM_PROPERTIES]],
+   [CustomProperty, [...NAMED_OBJECT_PROPERTIES, 'value']],
+   [LogicalIdentifier, [...NAMED_OBJECT_PROPERTIES, 'primary', 'attributes', ...CUSTOM_PROPERTIES]]
 ]);
 PROPERTY_ORDER.set(SourceObjectAttribute, PROPERTY_ORDER.get(LogicalAttribute) ?? []);
 PROPERTY_ORDER.set(TargetObjectAttribute, PROPERTY_ORDER.get(LogicalAttribute) ?? []);
@@ -142,6 +147,10 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot> {
                }
                if (isLogicalAttribute(value) && prop === 'identifier' && propValue === false) {
                   // special: skip identifier property if it is false
+                  return undefined;
+               }
+               if (isLogicalIdentifier(value) && prop === 'primary' && propValue === false) {
+                  // special: skip primary property if it is false
                   return undefined;
                }
                // arrays and objects start on a new line -- skip some objects that we do not actually serialize in object structure

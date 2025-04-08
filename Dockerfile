@@ -28,7 +28,6 @@ ENV NODE_OPTIONS=--max_old_space_size=4096
 # - Remove unnecessary files for the browser application
 RUN yarn --pure-lockfile --skip-integrity-check --network-timeout 100000 && \
     yarn build:packages && \
-    yarn build:extensions && \
     yarn package:extensions && \
     yarn theia:browser build && \
     unzip extensions/crossmodel-lang/*.vsix -d applications/browser-app/plugins/crossmodel-lang && \

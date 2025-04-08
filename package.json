@@ -1,6 +1,5 @@
 {
-  "name": "parent",
-  "version": "0.0.0",
+  "name": "crossmodel-core",
   "private": true,
   "workspaces": [
     "packages/*",

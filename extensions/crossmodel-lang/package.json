@@ -2,7 +2,6 @@
   "name": "@crossbreezenl/crossmodel-lang-ext",
   "displayName": "crossmodel-lang",
   "version": "0.0.1-beta.5",
-  "private": true,
   "description": "CrossModel Language",
   "categories": [
     "Programming Languages"

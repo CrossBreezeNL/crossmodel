@@ -118,7 +118,7 @@ jobs:
       # Run lint only on Linux (since it only makes sense to run it once, and linux is the fastest).
       - name: Publish packages to GitHub Packages
         if: runner.os == 'Linux'
-        run: npx lerna publish from-package --yes
+        run: npx lerna publish from-package --no-private --yes
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

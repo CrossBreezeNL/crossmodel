@@ -22,7 +22,6 @@
     "build": "tsc -b",
     "clean": "rimraf lib tsconfig.tsbuildinfo",
     "lint": "eslint -c ../../.eslintrc.js --ext .ts,.tsx ./src",
-    "publish": "npm publish",
     "test": "cross-env NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest --passWithNoTests",
     "watch": "tsc -w"
   },

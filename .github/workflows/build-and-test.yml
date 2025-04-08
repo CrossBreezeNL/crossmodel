@@ -62,84 +62,80 @@ jobs:
           NODE_OPTIONS: --max_old_space_size=4096
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # https://github.com/microsoft/vscode-ripgrep/issues/9
 
-      # # Execute the tests.
-      # - name: Run Unit Tests
-      #   run: yarn test
-      #   env:
-      #     # The test result file name can be controlled using the following environment variable.
-      #     JEST_JUNIT_OUTPUT_NAME: ${{ runner.os }}-unit-test-results
+      # Execute the tests.
+      - name: Run Unit Tests
+        run: yarn test
+        env:
+          # The test result file name can be controlled using the following environment variable.
+          JEST_JUNIT_OUTPUT_NAME: ${{ runner.os }}-unit-test-results
 
-      # # Upload Unit Test Results (The different files for the OSes will end up in the same artifact).
-      # - name: Upload Unit Test Results
-      #   if: always()
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: unit-test-results-${{ runner.os }}
-      #     # Include the unit-test-results folders (which is in the root of the workspace).
-      #     path: unit-test-results
-      #     retention-days: 30
+      # Upload Unit Test Results (The different files for the OSes will end up in the same artifact).
+      - name: Upload Unit Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-results-${{ runner.os }}
+          # Include the unit-test-results folders (which is in the root of the workspace).
+          path: unit-test-results
+          retention-days: 30
 
-      # # Run PlayWright tests, only on Linux container.
-      # - name: Install Playwright Browsers
-      #   if: runner.os == 'Linux'
-      #   run: yarn --cwd ./e2e-tests/ playwright:install
-      # - name: Run Playwright tests
-      #   if: runner.os == 'Linux'
-      #   uses: coactions/setup-xvfb@b6b4fcfb9f5a895edadc3bc76318fae0ac17c8b3 # v1.0.1
-      #   with:
-      #     run: yarn ui-test
-      # - name: Upload PlayWrite test report
-      #   if: always() && runner.os == 'Linux'
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: allure-results
-      #     path: e2e-tests/allure-results/
-      #     retention-days: 30
-
-      # # Run lint only on Linux (since it only makes sense to run it once, and linux is the fastest).
-      # - name: Lint
-      #   if: runner.os == 'Linux'
-      #   run: yarn lint
-
-      - name: Generate version bump and changelog
+      # Run PlayWright tests, only on Linux container.
+      - name: Install Playwright Browsers
         if: runner.os == 'Linux'
-        # If this is a PR and the base_ref is main (so we are merging into main), we want to create a new version.
+        run: yarn --cwd ./e2e-tests/ playwright:install
+      - name: Run Playwright tests
+        if: runner.os == 'Linux'
+        uses: coactions/setup-xvfb@b6b4fcfb9f5a895edadc3bc76318fae0ac17c8b3 # v1.0.1
+        with:
+          run: yarn ui-test
+      - name: Upload PlayWrite test report
+        if: always() && runner.os == 'Linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results
+          path: e2e-tests/allure-results/
+          retention-days: 30
+
+      # Run lint only on Linux (since it only makes sense to run it once, and linux is the fastest).
+      - name: Lint
+        if: runner.os == 'Linux'
+        run: yarn lint
+
+        # If this is a commit on main, we want to create a new version.
+      - name: Generate version bump and changelog
+        if: github.base_ref == 'main' && runner.os == 'Linux'
         run: |
           git config user.name "${{ github.actor }}"
           git config user.email "${{ github.actor}}@users.noreply.github.com"
-          # if [ ${{ github.base_ref }} = main ]; then
-          #   npx lerna version --conventional-commits --conventional-graduate --yes
-          # else
-          npx lerna version --conventional-commits --conventional-prerelease --preid beta --yes
-          # fi
+          npx lerna version --conventional-commits --yes
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # Run lint only on Linux (since it only makes sense to run it once, and linux is the fastest).
+      # Publish the new version (after commit on main).
       - name: Publish packages to GitHub Packages
-        if: runner.os == 'Linux'
+        if: github.base_ref == 'main' && runner.os == 'Linux'
         run: npx lerna publish from-package --yes
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  # # Publish a test report using the unit test result files published in the previous step (which was executed per OS).
-  # publish-unit-test-report:
-  #   name: Publish Unit Test Report
-  #   needs: build-and-test
-  #   runs-on: ubuntu-latest
-  #   if: always()
-  #   steps:
-  #     # Download the test results artifacts.
-  #     - name: Download Unit Test Results
-  #       uses: actions/download-artifact@v4
-  #       with:
-  #         path: unit-test-results
-  #         pattern: unit-test-results-*
-  #         merge-multiple: true
-  #     # Publish Test Results
-  #     - name: Publish Unit Test Results
-  #       uses: EnricoMi/publish-unit-test-result-action@30eadd5010312f995f0d3b3cff7fe2984f69409e # v2.16.1
-  #       with:
-  #         check_name: Unit Test Results
-  #         files: |
-  #           unit-test-results/**/*.xml
+  # Publish a test report using the unit test result files published in the previous step (which was executed per OS).
+  publish-unit-test-report:
+    name: Publish Unit Test Report
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      # Download the test results artifacts.
+      - name: Download Unit Test Results
+        uses: actions/download-artifact@v4
+        with:
+          path: unit-test-results
+          pattern: unit-test-results-*
+          merge-multiple: true
+      # Publish Test Results
+      - name: Publish Unit Test Results
+        uses: EnricoMi/publish-unit-test-result-action@30eadd5010312f995f0d3b3cff7fe2984f69409e # v2.16.1
+        with:
+          check_name: Unit Test Results
+          files: |
+            unit-test-results/**/*.xml

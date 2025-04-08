@@ -6,8 +6,7 @@
     "packages/*",
     "applications/*",
     "extensions/*",
-    "e2e-tests",
-    "./"
+    "e2e-tests"
   ],
   "scripts": {
     "build": "lerna run build",

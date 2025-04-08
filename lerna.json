@@ -10,7 +10,8 @@
       "conventionalCommits": true,
       "changelogPreset": "conventional-changelog-angular",
       "createRelease": "github",
-      "push": true
+      "push": true,
+      "includeRoot": true
     },
     "publish": {
       "ignoreChanges": ["**/*.md"]

@@ -1,6 +1,6 @@
 {
   "name": "crossmodel-browser-app",
-  "version": "0.0.1-beta.5",
+  "version": "0.0.1-beta.6",
   "private": true,
   "description": "CrossModel Community Edition",
   "homepage": "https://github.com/CrossBreezeNL/crossmodel",
@@ -24,13 +24,13 @@
     "watch": "theia build --watch --mode development"
   },
   "dependencies": {
-    "@crossbreezenl/composite-editor": "^0.0.1-beta.5",
-    "@crossbreezenl/core": "^0.0.1-beta.5",
-    "@crossbreezenl/form-client": "^0.0.1-beta.5",
-    "@crossbreezenl/glsp-client": "^0.0.1-beta.5",
-    "@crossbreezenl/model-service": "^0.0.1-beta.5",
-    "@crossbreezenl/product": "^0.0.1-beta.5",
-    "@crossbreezenl/property-view": "^0.0.1-beta.5",
+    "@crossbreezenl/composite-editor": "^0.0.1-beta.6",
+    "@crossbreezenl/core": "^0.0.1-beta.6",
+    "@crossbreezenl/form-client": "^0.0.1-beta.6",
+    "@crossbreezenl/glsp-client": "^0.0.1-beta.6",
+    "@crossbreezenl/model-service": "^0.0.1-beta.6",
+    "@crossbreezenl/product": "^0.0.1-beta.6",
+    "@crossbreezenl/property-view": "^0.0.1-beta.6",
     "@theia/core": "1.57.1",
     "@theia/editor": "1.57.1",
     "@theia/filesystem": "1.57.1",

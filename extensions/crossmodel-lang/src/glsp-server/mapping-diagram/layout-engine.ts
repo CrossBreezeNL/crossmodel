@@ -60,7 +60,7 @@ export class MappingDiagramLayoutEngine implements LayoutEngine {
 
       const idx = this.modelState.index;
       const sourceNodeOrder = [...target.mappings]
-         .sort((left, right) => (left.attribute.value.ref?.$containerIndex ?? 0) - (right.attribute.value.ref?.$containerIndex ?? 0))
+         .sort((left, right) => (left.attribute?.value.ref?.$containerIndex ?? 0) - (right.attribute?.value.ref?.$containerIndex ?? 0))
          .flatMap(mapping => mapping.sources.map(source => idx.createId(getOwner(source.value.ref))));
       return (left: GNode, right: GNode): number => {
          if (!sourceNodeOrder.includes(left.id)) {

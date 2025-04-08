@@ -57,7 +57,7 @@ export class SystemDiagramCreateRelationshipOperationHandler extends JsonCreateE
             };
             this.modelState.systemDiagram.edges.push(edge);
             this.actionDispatcher.dispatchAfterNextUpdate(
-               SelectAction.create({ selectedElementsIDs: [this.modelState.idProvider.getLocalId(edge) ?? edge.id] })
+               SelectAction.create({ selectedElementsIDs: [this.modelState.idProvider.getLocalId(edge) ?? edge.id!] })
             );
          }
       }

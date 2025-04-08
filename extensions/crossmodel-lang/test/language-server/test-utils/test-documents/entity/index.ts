@@ -3,6 +3,7 @@
  ********************************************************************************/
 export * from './address.js';
 export * from './customer.js';
+export * from './entity-with-custom-properties.js';
 export * from './entity1.js';
 export * from './entity2.js';
 export * from './entity3.js';

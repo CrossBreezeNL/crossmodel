@@ -1,12 +1,13 @@
 {
   "name": "parent",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "private": true,
   "workspaces": [
     "packages/*",
     "applications/*",
     "extensions/*",
-    "e2e-tests"
+    "e2e-tests",
+    "./"
   ],
   "scripts": {
     "build": "lerna run build",
@@ -18,8 +19,6 @@
     "postinstall": "theia check:theia-version && theia-patch",
     "lint": "lerna run lint",
     "package:extensions": "lerna run --scope=\"@crossbreezenl/*-ext\" package:vsix",
-    "publish": "publish:packages",
-    "publish:packages": "lerna run --scope=\"@crossbreezenl/*\" publish",
     "start:browser": "yarn theia:browser start",
     "start:electron": "yarn theia:electron start",
     "start:verdaccio": "yarn verdaccio --config verdaccio-config.yaml",

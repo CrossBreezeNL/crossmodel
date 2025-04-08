@@ -1,7 +1,7 @@
 {
   "name": "@crossbreezenl/crossmodel-lang-ext",
   "displayName": "crossmodel-lang",
-  "version": "0.0.1-beta.8",
+  "version": "0.0.0",
   "description": "CrossModel Language",
   "categories": [
     "Programming Languages"
@@ -87,7 +87,7 @@
     "onStartupFinished"
   ],
   "dependencies": {
-    "@crossbreezenl/protocol": "^0.0.1-beta.8",
+    "@crossbreezenl/protocol": "^0.0.0",
     "@eclipse-glsp/layout-elk": "next",
     "@eclipse-glsp/server": "next",
     "chalk": "~4.1.2",

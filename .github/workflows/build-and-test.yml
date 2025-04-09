@@ -7,7 +7,7 @@ on:
         default: "['ubuntu-22.04', 'windows-2022', 'macos-13']"
       # Whether to bump package/extension versions and publish them.
       version-and-publish:
-        required: true
+        required: false
         type: boolean
 
 defaults:

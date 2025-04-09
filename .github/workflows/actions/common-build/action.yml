@@ -1,0 +1,34 @@
+name: Common checkout and software setup
+description: Shared build step logic
+
+runs:
+  using: "composite"
+  steps:
+      # Checkout the code.
+      - name: checkout
+        uses: actions/checkout@v4
+
+      # Setup Node
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@crossbreezenl'
+          cache: 'yarn'
+
+      # Setup Python
+      - name: Setup Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      # Build the code.
+      - name: Build
+        # We set a timeout here as a fix for the timeout issues which sometimes occur when connecting the the npm repo.
+        run: |
+          yarn --skip-integrity-check --network-timeout 100000
+          yarn build:browser
+        env:
+          NODE_OPTIONS: --max_old_space_size=4096
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # https://github.com/microsoft/vscode-ripgrep/issues/9

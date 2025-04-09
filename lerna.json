@@ -9,7 +9,6 @@
     "version": {
       "conventionalCommits": true,
       "changelogPreset": "conventional-changelog-angular",
-      "createRelease": "github",
       "push": true,
       "exact": true
     },

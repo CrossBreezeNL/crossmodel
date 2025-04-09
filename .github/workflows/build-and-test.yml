@@ -34,37 +34,10 @@ jobs:
 
     permissions:
       contents: write  # Allow push tag permission
-      packages: write
 
     steps:
-      # Checkout the code.
-      - name: checkout
-        uses: actions/checkout@v4
-
-      # Setup Node
-      - name: Setup Node.js ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          registry-url: 'https://npm.pkg.github.com'
-          scope: '@crossbreezenl'
-          cache: 'yarn'
-
-      # Setup Python
-      - name: Setup Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-
-      # Build the code.
-      - name: Build
-        # We set a timeout here as a fix for the timeout issues which sometimes occur when connecting the the npm repo.
-        run: |
-          yarn --skip-integrity-check --network-timeout 100000
-          yarn build:browser
-        env:
-          NODE_OPTIONS: --max_old_space_size=4096
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # https://github.com/microsoft/vscode-ripgrep/issues/9
+      # Checkout, setup node & python and build.
+      - uses: ./.github/actions/common-build
 
       # Execute the tests.
       - name: Run Unit Tests
@@ -93,7 +66,7 @@ jobs:
         with:
           run: yarn ui-test
       - name: Upload PlayWrite test report
-        if: always() && runner.os == 'Linux'
+        if: ${{ !cancelled() && runner.os == 'Linux'}} 
         uses: actions/upload-artifact@v4
         with:
           name: allure-results
@@ -111,25 +84,13 @@ jobs:
         run: |
           git config user.name "${{ github.actor }}"
           git config user.email "${{ github.actor}}@users.noreply.github.com"
-          npx lerna version --conventional-commits --yes
+          if [ ${{ github.base_ref }} = main ]; then
+            npx lerna version --conventional-commits --yes
+          else
+            npx lerna version --conventional-commits --conventional-prerelease beta --yes
+          fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Publish packages to GitHub Packages
-        if: inputs.version-and-publish && runner.os == 'Linux'
-        run: npx lerna publish from-package --yes
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Package vs-code extensions.
-        if: inputs.version-and-publish && runner.os == 'Linux'
-        run: yarn package:extensions
-      - name: Upload vs-code extensions
-        if: inputs.version-and-publish && runner.os == 'Linux'
-        uses: actions/upload-artifact@v4
-        with:
-          name: vscode-extensions
-          path: extensions/*/*.vsix
 
 
   # Publish a test report using the unit test result files published in the previous step (which was executed per OS).

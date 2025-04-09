@@ -16,7 +16,6 @@ runs:
         run: |
           echo "PYTHON_VERSION=3.11.4" >> "$GITHUB_ENV"
           echo "NODE_VERSION=20.x" >> "$GITHUB_ENV"
-          echo "NODE_OPTIONS='--max_old_space_size=8192'" >> "$GITHUB_ENV"
           echo "GITHUB_TOKEN=${{ inputs.GITHUB_TOKEN }}" >> "$GITHUB_ENV"
 
       # Setup Node

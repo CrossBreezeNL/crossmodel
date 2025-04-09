@@ -26,6 +26,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
 
+    env:
+      NODE_OPTIONS: --max_old_space_size=8192
+
     permissions:
       contents: write  # Allow push tag permission
 

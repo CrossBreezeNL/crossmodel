@@ -5,6 +5,10 @@ on:
     tags:
       - 'v*'
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   release:
     name: Create Release
@@ -21,6 +25,8 @@ jobs:
 
       # Setup node & python and build.
       - uses: ./.github/actions/common-build
+        with:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish packages to GitHub Packages
         if: inputs.version-and-publish && runner.os == 'Linux'

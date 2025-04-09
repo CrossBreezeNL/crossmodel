@@ -1,19 +1,24 @@
 name: Common checkout and software setup
 description: Shared build step logic
 
-env:
-  NODE_VERSION: 20.x
-  PYTHON_VERSION: 3.11.4
-  NODE_OPTIONS: --max_old_space_size=8192
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # https://github.com/microsoft/vscode-ripgrep/issues/9
-
-defaults:
-  run:
-    shell: bash
+inputs:
+  GITHUB_TOKEN:
+    description: 'The GitHub token'
+    required: true
 
 runs:
   using: "composite"
   steps:
+      # Set environment variables
+      - name: Set env variables
+        shell: bash
+        # We set env variables on the GITHUB_ENV variable so they value is available in all consecutive steps.
+        run: |
+          echo "PYTHON_VERSION="3.11.4" >> "$GITHUB_ENV"
+          echo "NODE_VERSION="20.x" >> "$GITHUB_ENV"
+          echo "NODE_OPTIONS="--max_old_space_size=8192" >> "$GITHUB_ENV"
+          echo "GITHUB_TOKEN="${{ inputs.GITHUB_TOKEN }}" >> "$GITHUB_ENV"
+
       # Setup Node
       - name: Setup Node.js ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v4
@@ -24,13 +29,14 @@ runs:
           cache: 'yarn'
 
       # Setup Python
-      - name: Setup Python ${{ env.PYTHON_VERSION }}
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
       # Build the code.
       - name: Build
+        shell: bash
         # We set a timeout here as a fix for the timeout issues which sometimes occur when connecting the the npm repo.
         run: |
           yarn --skip-integrity-check --network-timeout 100000

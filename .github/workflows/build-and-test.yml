@@ -36,6 +36,8 @@ jobs:
 
       # Setup node & python and build.
       - uses: ./.github/actions/common-build
+        with:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # Execute the tests.
       - name: Run Unit Tests

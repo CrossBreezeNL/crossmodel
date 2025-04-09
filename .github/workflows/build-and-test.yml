@@ -22,6 +22,7 @@ jobs:
   build-and-test:
     env:
       NODE_OPTIONS: --max_old_space_size=8192
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # https://github.com/microsoft/vscode-ripgrep/issues/9
     name: ${{ matrix.os }}
 
     strategy:

@@ -4,10 +4,6 @@ description: Shared build step logic
 runs:
   using: "composite"
   steps:
-      # Checkout the code.
-      - name: checkout
-        uses: actions/checkout@v4
-
       # Setup Node
       - name: Setup Node.js ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v4

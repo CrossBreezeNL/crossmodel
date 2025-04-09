@@ -15,7 +15,11 @@ jobs:
       packages: write
 
     steps:
-      # Checkout, setup node & python and build.
+      # Checkout the code.
+      - name: checkout
+        uses: actions/checkout@v4
+
+      # Setup node & python and build.
       - uses: ./.github/actions/common-build
 
       - name: Publish packages to GitHub Packages

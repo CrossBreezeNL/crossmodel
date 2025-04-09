@@ -1,7 +1,8 @@
 {
-  "name": "@crossbreezenl/crossmodel-lang-ext",
+  "name": "crossmodel-lang",
   "displayName": "crossmodel-lang",
   "version": "0.0.0",
+  "private": true,
   "description": "CrossModel Language",
   "categories": [
     "Programming Languages"
@@ -27,11 +28,11 @@
     "build:esbuild": "node esbuild.mjs",
     "build:tsc": "tsc -b tsconfig.json",
     "build:webpack": "webpack --mode development",
-    "clean": "rimraf out tsconfig.tsbuildinfo",
+    "clean": "rimraf --glob out *.vsix tsconfig.tsbuildinfo",
     "langium:generate": "langium generate",
     "langium:watch": "langium generate --watch",
     "lint": "eslint -c ./.eslintrc.cjs --ext .ts,.tsx ./src",
-    "package": "rimraf out && yarn package:webpack && yarn package:vsix",
+    "package": "rimraf --glob out *.vsix && yarn package:webpack && yarn package:vsix",
     "package:vsix": "vsce package --yarn --allow-star-activation",
     "package:webpack": "webpack --mode production --devtool hidden-source-map",
     "symlink": "yarn symlink:browser && yarn symlink:electron",

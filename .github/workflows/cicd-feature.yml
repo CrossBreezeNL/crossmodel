@@ -12,4 +12,3 @@ jobs:
     uses: ./.github/workflows/build-and-test.yml
     with:
       runs-on: "['ubuntu-22.04']"
-      version-and-publish: true # TEMP: To test whether this works, should be removed before merge.

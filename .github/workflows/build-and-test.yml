@@ -5,6 +5,10 @@ on:
         required: true
         type: string
         default: "['ubuntu-22.04', 'windows-2022', 'macos-13']"
+      # Whether to bump package/extension versions and publish them.
+      version-and-publish:
+        required: true
+        type: boolean
 
 env:
   NODE_VERSION: 20.x
@@ -96,14 +100,14 @@ jobs:
           path: e2e-tests/allure-results/
           retention-days: 30
 
-      # Run lint only on Linux (since it only makes sense to run it once, and linux is the fastest).
+      # The tasks below are only ran on Linux, so we only run them once.
+
       - name: Lint
         if: runner.os == 'Linux'
         run: yarn lint
 
-        # If this is a commit on main, we want to create a new version.
       - name: Generate version bump and changelog
-        if: github.base_ref == 'main' && runner.os == 'Linux'
+        if: inputs.version-and-publish && runner.os == 'Linux'
         run: |
           git config user.name "${{ github.actor }}"
           git config user.email "${{ github.actor}}@users.noreply.github.com"
@@ -111,12 +115,22 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # Publish the new version (after commit on main).
       - name: Publish packages to GitHub Packages
-        if: github.base_ref == 'main' && runner.os == 'Linux'
+        if: inputs.version-and-publish && runner.os == 'Linux'
         run: npx lerna publish from-package --yes
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Package vs-code extensions.
+        if: inputs.version-and-publish && runner.os == 'Linux'
+        run: yarn package:extensions
+      - name: Upload vs-code extensions
+        if: inputs.version-and-publish && runner.os == 'Linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: vscode-extensions
+          path: extensions/*/*.vsix
+
 
   # Publish a test report using the unit test result files published in the previous step (which was executed per OS).
   publish-unit-test-report:

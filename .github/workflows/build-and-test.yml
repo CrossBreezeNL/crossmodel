@@ -34,11 +34,12 @@ jobs:
 
     steps:
       # Checkout the code.
-      - name: checkout
+      - name: Checkout
         uses: actions/checkout@v4
 
       # Setup node & python and build.
-      - uses: ./.github/actions/common-build
+      - name: Setup & build
+        uses: ./.github/actions/common-build
         with:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

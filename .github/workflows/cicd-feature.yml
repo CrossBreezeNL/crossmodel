@@ -21,13 +21,10 @@ jobs:
         with:
           filterOutClosed: true
           filterOutDraft: true
-      - run: echo "PR ${prNumber} ${prTitle} at ${prUrl}"
+      - run: |
+          echo "prFound: ${{ steps.PR.outputs.pr_found }}"
+          echo "prUrl: ${{ steps.PR.outputs.pr_url }}
         if: steps.PR.outputs.pr_found == 'true'
-        env:
-          prFound: ${{ steps.PR.outputs.pr_found }}
-          prNumber: ${{ steps.PR.outputs.number }}
-          prUrl: ${{ steps.PR.outputs.pr_url }}
-          prTitle: ${{ steps.PR.outputs.pr_title }}
 
   build-and-test:
     needs: check-open-pr

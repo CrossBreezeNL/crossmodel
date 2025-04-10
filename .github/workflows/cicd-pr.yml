@@ -11,5 +11,3 @@ jobs:
     if: github.event.pull_request.draft == false
     # We only run on windows and macos here, since ubuntu already handled by the cicd-feature workflow on the push action.
     uses: ./.github/workflows/build-and-test.yml
-    with:
-      runs-on: "['windows-2022', 'macos-13']"

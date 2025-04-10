@@ -1,7 +1,8 @@
-name: cicd-main
+name: cicd-merge
 
 on:
-  push:
+  pull_request:
+    types: [closed]
     branches:
       - main
 
@@ -11,6 +12,8 @@ env:
 
 jobs:
   build-and-test:
+    # Only run when the pull request is merged, otherwise cancel.
+    if: github.event.pull_request.merged == true
     uses: ./.github/workflows/build-and-test.yml
 
   version-and-tag:

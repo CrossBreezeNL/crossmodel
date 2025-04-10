@@ -18,8 +18,9 @@ jobs:
       - name: Get PR info
         uses: 8BitJonny/gh-get-current-pr@3.0.0
         id: PR
-        filterOutClosed: true
-        filterOutDraft: true
+        with:
+          filterOutClosed: true
+          filterOutDraft: true
 
   build-and-test:
     needs: check-no-open-pr

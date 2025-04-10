@@ -2,7 +2,7 @@ on:
   workflow_call:
     inputs:
       runs-on:
-        required: true
+        required: false
         type: string
         default: "['ubuntu-22.04', 'windows-2022', 'macos-13']"
 

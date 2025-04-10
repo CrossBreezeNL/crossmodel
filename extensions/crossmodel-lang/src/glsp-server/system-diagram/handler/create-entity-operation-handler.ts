@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
-import { ENTITY_NODE_TYPE } from '@crossbreezenl/protocol';
+import { ENTITY_NODE_TYPE, toId } from '@crossbreezenl/protocol';
 import {
    Action,
    ActionDispatcher,
@@ -64,12 +64,13 @@ export class SystemDiagramCreateEntityOperationHandler extends JsonCreateNodeOpe
    protected async createAndSaveEntity(operation: CreateNodeOperation): Promise<LogicalEntity | undefined> {
       // create entity, serialize and re-read to ensure everything is up to date and linked properly
       const entityRoot: CrossModelRoot = { $type: 'CrossModelRoot' };
-      const id = this.modelState.idProvider.findNextId(LogicalEntity, 'NewEntity');
+      const name = operation.args?.name?.toString() ?? 'NewEntity';
+      const id = this.modelState.idProvider.findNextId(LogicalEntity, toId(name));
       const entity: LogicalEntity = {
          $type: 'LogicalEntity',
          $container: entityRoot,
          id,
-         name: id,
+         name,
          attributes: [],
          identifiers: [],
          superEntities: [],

@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "@crossbreezenl/core": "0.0.1",
+    "@crossbreezenl/model-service": "0.0.1",
     "@crossbreezenl/protocol": "0.0.1",
     "@crossbreezenl/react-model-ui": "0.0.1",
     "@eclipse-glsp/client": "next",

@@ -3,6 +3,7 @@
  ********************************************************************************/
 import { expect } from '@eclipse-glsp/glsp-playwright';
 import { test } from '@playwright/test';
+import { TheiaRenameDialog } from '@theia/playwright';
 import { CMApp } from '../../../page-objects/cm-app';
 import { LogicalEntity } from '../../../page-objects/system-diagram/diagram-elements';
 
@@ -29,6 +30,7 @@ test.describe.serial('Add/Edit/Delete entity in a diagram ', () => {
          await diagramEditor.enableTool('Create Entity');
          const taskBounds = await existingEntity.bounds();
          await taskBounds.position('top_center').moveRelative(0, -100).click();
+         await new TheiaRenameDialog(app).confirm();
       });
 
       // Verify that the entity node was created as expected in the diagram

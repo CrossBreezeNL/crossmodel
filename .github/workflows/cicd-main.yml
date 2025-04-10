@@ -20,6 +20,9 @@ jobs:
     permissions:
       contents: write  # Allow push tag permission
     steps:
+      # Checkout the code.
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Bump version and push tag
         run: |
           git config user.name "${{ github.actor }}"

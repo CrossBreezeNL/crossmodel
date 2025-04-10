@@ -12,8 +12,21 @@ env:
 jobs:
   build-and-test:
     uses: ./.github/workflows/build-and-test.yml
-    with:
-      version-and-publish: true
+
+  version-and-tag:
+    # Only bump version if build and test succeeded.
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Allow push tag permission
+    steps:
+      - name: Bump version and push tag
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor}}@users.noreply.github.com"
+          npx lerna version --conventional-commits --yes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # Publish a test report using the playwright result files published in the previous step (execute in Linux only).
   publish-playwright-test-report:

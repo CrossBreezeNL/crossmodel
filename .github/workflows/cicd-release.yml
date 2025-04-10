@@ -33,13 +33,11 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish packages to GitHub Packages
-        if: inputs.version-and-publish && runner.os == 'Linux'
         run: npx lerna publish from-package --yes
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Package vs-code extensions.
-        if: inputs.version-and-publish && runner.os == 'Linux'
         run: yarn package:extensions
 
       - name: Create release

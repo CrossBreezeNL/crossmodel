@@ -23,7 +23,7 @@ jobs:
           filterOutDraft: true
 
   build-and-test:
-    needs: check-no-open-pr
+    needs: check-open-pr
     if: needs.check-open-pr.outputs.open-pr-found == 'true'
     uses: ./.github/workflows/build-and-test.yml
     with:

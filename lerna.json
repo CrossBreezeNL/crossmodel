@@ -1,11 +1,19 @@
 {
-  "lerna": "2.4.0",
+  "$schema": "node_modules/lerna/schemas/lerna-schema.json",
   "version": "0.0.0",
-  "useWorkspaces": true,
   "npmClient": "yarn",
   "command": {
     "run": {
       "stream": true
+    },
+    "version": {
+      "conventionalCommits": true,
+      "noChangelog": true,
+      "push": true,
+      "exact": true
+    },
+    "publish": {
+      "ignoreChanges": ["**/*.md"]
     }
   }
 }

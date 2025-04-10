@@ -27,5 +27,6 @@ table:
           - child: customer_id
             parent: id
     customProperties:
-      - name: distribution_key
+      - id: distribution_key
+        name: "Distribution Key"
         value: "country_code"

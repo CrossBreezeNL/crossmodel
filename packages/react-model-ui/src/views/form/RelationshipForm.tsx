@@ -2,7 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { LogicalEntityType, ModelFileType, ModelStructure, ReferenceableElement } from '@crossbreeze/protocol';
+import { LogicalEntityType, ModelFileType, ModelStructure, ReferenceableElement } from '@crossbreezenl/protocol';
 import { Autocomplete, TextField } from '@mui/material';
 import * as React from 'react';
 import { useModelDispatch, useModelQueryApi, useReadonly, useRelationship } from '../../ModelContext';

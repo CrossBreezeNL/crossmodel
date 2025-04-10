@@ -2,7 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { findNextUnique, identity } from '@crossbreeze/protocol';
+import { findNextUnique, identity } from '@crossbreezenl/protocol';
 import { AstNode, AstUtils, CstNode, GrammarUtils, isAstNode, NameProvider } from 'langium';
 import { CrossModelServices } from './cross-model-module.js';
 import { UNKNOWN_PROJECT_REFERENCE } from './cross-model-package-manager.js';

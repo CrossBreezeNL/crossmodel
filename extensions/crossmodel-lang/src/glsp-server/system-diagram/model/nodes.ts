@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { ENTITY_NODE_TYPE, LABEL_ENTITY, REFERENCE_CONTAINER_TYPE, REFERENCE_PROPERTY, REFERENCE_VALUE } from '@crossbreeze/protocol';
+import { ENTITY_NODE_TYPE, LABEL_ENTITY, REFERENCE_CONTAINER_TYPE, REFERENCE_PROPERTY, REFERENCE_VALUE } from '@crossbreezenl/protocol';
 import { ArgsUtil, GNode, GNodeBuilder } from '@eclipse-glsp/server';
 import { LogicalEntityNode } from '../../../language-server/generated/ast.js';
 import { getAttributes } from '../../../language-server/util/ast-util.js';

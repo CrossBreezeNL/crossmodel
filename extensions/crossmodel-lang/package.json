@@ -10,7 +10,7 @@
   "homepage": "https://github.com/CrossBreezeNL/crossmodel",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/CrossBreezeNL/crossmodel"
+    "url": "git+https://github.com/crossbreezenl/crossmodel.git"
   },
   "license": "AGPL-3.0-or-later",
   "author": {
@@ -28,11 +28,11 @@
     "build:esbuild": "node esbuild.mjs",
     "build:tsc": "tsc -b tsconfig.json",
     "build:webpack": "webpack --mode development",
-    "clean": "rimraf out tsconfig.tsbuildinfo",
+    "clean": "rimraf --glob out *.vsix tsconfig.tsbuildinfo",
     "langium:generate": "langium generate",
     "langium:watch": "langium generate --watch",
     "lint": "eslint -c ./.eslintrc.cjs --ext .ts,.tsx ./src",
-    "package": "rimraf out && yarn package:webpack && yarn package:vsix",
+    "package": "rimraf --glob out *.vsix && yarn package:webpack && yarn package:vsix",
     "package:vsix": "vsce package --yarn --allow-star-activation",
     "package:webpack": "webpack --mode production --devtool hidden-source-map",
     "symlink": "yarn symlink:browser && yarn symlink:electron",
@@ -88,7 +88,7 @@
     "onStartupFinished"
   ],
   "dependencies": {
-    "@crossbreeze/protocol": "0.0.0",
+    "@crossbreezenl/protocol": "0.0.0",
     "@eclipse-glsp/layout-elk": "next",
     "@eclipse-glsp/server": "next",
     "chalk": "~4.1.2",
@@ -121,5 +121,9 @@
   },
   "engines": {
     "vscode": "^1.95.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://npm.pkg.github.com"
   }
 }

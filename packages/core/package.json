@@ -1,7 +1,6 @@
 {
-  "name": "@crossbreeze/core",
+  "name": "@crossbreezenl/core",
   "version": "0.0.0",
-  "private": true,
   "description": "CrossModel Core Contribution",
   "keywords": [
     "theia-extension"
@@ -9,7 +8,7 @@
   "homepage": "https://github.com/CrossBreezeNL/crossmodel",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/CrossBreezeNL/crossmodel"
+    "url": "git+https://github.com/crossbreezenl/crossmodel.git"
   },
   "license": "AGPL-3.0-or-later",
   "author": {
@@ -29,8 +28,9 @@
     "watch": "tsc -w"
   },
   "dependencies": {
-    "@crossbreeze/model-service": "0.0.0",
-    "@crossbreeze/protocol": "0.0.0",
+    "@crossbreezenl/model-service": "0.0.0",
+    "@crossbreezenl/protocol": "0.0.0",
+    "@crossbreezenl/react-model-ui": "0.0.0",
     "@theia/core": "1.57.1",
     "@theia/filesystem": "1.57.1",
     "@theia/markers": "1.57.1",

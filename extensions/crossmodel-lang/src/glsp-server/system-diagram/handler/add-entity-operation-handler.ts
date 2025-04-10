@@ -2,7 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { AddEntityOperation } from '@crossbreeze/protocol';
+import { AddEntityOperation } from '@crossbreezenl/protocol';
 import { Command, JsonOperationHandler, ModelState } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
 import { LogicalEntity, LogicalEntityNode } from '../../../language-server/generated/ast.js';

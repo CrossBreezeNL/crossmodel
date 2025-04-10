@@ -2,7 +2,7 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 
-import { RelationshipAttribute } from '@crossbreeze/protocol';
+import { RelationshipAttribute } from '@crossbreezenl/protocol';
 import { DispatchAction, ModelAction, ModelState, moveDown, moveUp, undefinedIfEmpty } from './ModelReducer';
 
 export interface RelationshipUpdateAction extends ModelAction {

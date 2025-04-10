@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
-import { ENTITY_NODE_TYPE } from '@crossbreeze/protocol';
+import { ENTITY_NODE_TYPE } from '@crossbreezenl/protocol';
 import {
    Action,
    ActionDispatcher,

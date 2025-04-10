@@ -2,7 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { RELATIONSHIP_EDGE_TYPE } from '@crossbreeze/protocol';
+import { RELATIONSHIP_EDGE_TYPE } from '@crossbreezenl/protocol';
 import {
    ActionDispatcher,
    Command,

@@ -1,0 +1,13 @@
+name: cicd-pr
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    # Don't run when the pull request is a draft
+    if: github.event.pull_request.draft == false
+    # We only run on windows and macos here, since ubuntu already handled by the cicd-feature workflow on the push action.
+    uses: ./.github/workflows/build-and-test.yml

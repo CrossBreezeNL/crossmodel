@@ -1,6 +1,5 @@
 {
-  "name": "parent",
-  "version": "1.0.0",
+  "name": "crossmodel-core",
   "private": true,
   "workspaces": [
     "packages/*",
@@ -10,10 +9,9 @@
   ],
   "scripts": {
     "build": "lerna run build",
-    "build:browser": "yarn build:packages && yarn build:extensions && yarn symlink:browser && yarn theia:browser build",
-    "build:electron": "yarn build:packages && yarn build:extensions && yarn symlink:electron && yarn theia:electron build",
-    "build:extensions": "lerna run --scope={crossmodel-lang,crossmodel-theme} build",
-    "build:packages": "lerna run --scope=\"@crossbreeze/*\" build",
+    "build:browser": "yarn build:packages && yarn symlink:browser && yarn theia:browser build",
+    "build:electron": "yarn build:packages && yarn symlink:electron && yarn theia:electron build",
+    "build:packages": "lerna run --scope=\"@crossbreezenl/*\" --scope={crossmodel-lang,crossmodel-theme} build",
     "clean": "lerna run clean",
     "format": "yarn prettier-eslint --write '**/*.{ts,tsx,js,cjs,mjs,css}' '**/package.json'",
     "postinstall": "theia check:theia-version && theia-patch",
@@ -54,7 +52,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "jest": "^29.7.0",
     "jest-junit": "^16.0.0",
-    "lerna": "2.4.0",
+    "lerna": "8.2.1",
     "prettier": "^3.1.0",
     "prettier-eslint": "^16.1.2",
     "prettier-eslint-cli": "^8.0.1",

@@ -1,7 +1,7 @@
 /** ******************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { ModelService } from '@crossbreeze/model-service/lib/common';
+import { ModelService } from '@crossbreezenl/model-service/lib/common';
 import {
    ID_REGEX,
    MappingType,
@@ -15,7 +15,7 @@ import {
    quote,
    toId,
    toPascal
-} from '@crossbreeze/protocol';
+} from '@crossbreezenl/protocol';
 import {
    Command,
    CommandContribution,

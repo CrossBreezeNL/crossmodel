@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { quote } from '@crossbreeze/protocol';
+import { quote } from '@crossbreezenl/protocol';
 import { AstNodeDescription, AstUtils, GrammarAST, GrammarUtils, MaybePromise, ReferenceInfo, Stream } from 'langium';
 import { CompletionAcceptor, CompletionContext, CompletionValueItem, DefaultCompletionProvider, NextFeature } from 'langium/lsp';
 import { v4 as uuid } from 'uuid';

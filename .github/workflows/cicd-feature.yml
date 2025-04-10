@@ -6,12 +6,34 @@ on:
       - feature/*
       - issue/*
       - bugfix/*
-  pull_request:
-    branches:
-      - feature/*
-      - issue/*
-      - bugfix/*
 
 jobs:
+  check-open-pr:
+    name: Check open PR
+    runs-on: ubuntu-latest
+    outputs:
+      open_pr_found: ${{ steps.output-pr-info.outputs.prFound }}
+    steps:
+      # Get open (non-draft) PR info.
+      - name: Get PR info
+        uses: 8BitJonny/gh-get-current-pr@3.0.0
+        id: PR
+        with:
+          filterOutClosed: true
+          filterOutDraft: true
+      - name: Output PR info
+        id: output-pr-info
+        if: steps.PR.outputs.pr_found == 'true'
+        run: |
+          echo "prFound: ${{ steps.PR.outputs.pr_found }}"
+          echo "prFound=${{ steps.PR.outputs.pr_found }}" >> "$GITHUB_OUTPUT"
+          echo "prUrl: ${{ steps.PR.outputs.pr_url }}"
+          echo "prUrl=${{ steps.PR.outputs.pr_url }}" >> "$GITHUB_OUTPUT"
+
   build-and-test:
+    needs: check-open-pr
+    # Only run the build if there is no open PR found (otherwise this is handled in the PR workflow).
+    if: ${{ needs.check-open-pr.outputs.open_pr_found != 'true' }}
     uses: ./.github/workflows/build-and-test.yml
+    with:
+      runs-on: "['ubuntu-22.04']"

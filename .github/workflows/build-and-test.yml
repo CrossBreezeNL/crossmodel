@@ -1,9 +1,10 @@
 on:
   workflow_call:
-
-env:
-  NODE_VERSION: 20.x
-  PYTHON_VERSION: 3.11.4
+    inputs:
+      runs-on:
+        required: false
+        type: string
+        default: "['ubuntu-22.04', 'windows-2022', 'macos-13']"
 
 defaults:
   run:
@@ -11,44 +12,29 @@ defaults:
 
 jobs:
   build-and-test:
-    env:
-      NODE_OPTIONS: --max_old_space_size=8192
     name: ${{ matrix.os }}
 
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-2022, ubuntu-22.04, macos-13]
+        os: ${{ fromJSON(inputs.runs-on) }}
 
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
 
+    env:
+      NODE_OPTIONS: --max_old_space_size=8192
+
     steps:
       # Checkout the code.
-      - name: checkout
+      - name: Checkout
         uses: actions/checkout@v4
 
-      # Setup Node
-      - name: Setup Node.js ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v4
+      # Setup node & python and build.
+      - name: Setup & build
+        uses: ./.github/actions/common-build
         with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      # Setup Python
-      - name: Setup Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-
-      # Build the code.
-      - name: Build
-        # We set a timeout here as a fix for the timeout issues which sometimes occur when connecting the the npm repo.
-        run: |
-          yarn --skip-integrity-check --network-timeout 100000
-          yarn build:browser
-        env:
-          NODE_OPTIONS: --max_old_space_size=4096
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # https://github.com/microsoft/vscode-ripgrep/issues/9
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # Execute the tests.
       - name: Run Unit Tests
@@ -57,17 +43,18 @@ jobs:
           # The test result file name can be controlled using the following environment variable.
           JEST_JUNIT_OUTPUT_NAME: ${{ runner.os }}-unit-test-results
 
-      # Upload Unit Test Results (The different files for the OSes will end up in the same artifact).
-      - name: Upload Unit Test Results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: unit-test-results-${{ runner.os }}
-          # Include the unit-test-results folders (which is in the root of the workspace).
-          path: unit-test-results
-          retention-days: 30
+      # The tasks below are only ran on Linux, so we only run them once.
 
-      # Run PlayWright tests, only on Linux container.
+      # Publish Test Results
+      - name: Publish Unit Test Results
+        if: ${{ !cancelled() && runner.os == 'Linux'}}
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          check_name: Unit Test Results
+          files: |
+            unit-test-results/**/*.xml
+
+      # Run PlayWright tests
       - name: Install Playwright Browsers
         if: runner.os == 'Linux'
         run: yarn --cwd ./e2e-tests/ playwright:install
@@ -77,36 +64,13 @@ jobs:
         with:
           run: yarn ui-test
       - name: Upload PlayWrite test report
-        if: always() && runner.os == 'Linux'
+        if: ${{ !cancelled() && runner.os == 'Linux'}}
         uses: actions/upload-artifact@v4
         with:
           name: allure-results
           path: e2e-tests/allure-results/
           retention-days: 30
 
-      # Run lint only on Linux (since it only makes sense to run it once, and linux is the fastest).
       - name: Lint
-        if: always() && runner.os == 'Linux'
+        if: runner.os == 'Linux'
         run: yarn lint
-
-  # Publish a test report using the unit test result files published in the previous step (which was executed per OS).
-  publish-unit-test-report:
-    name: Publish Unit Test Report
-    needs: build-and-test
-    runs-on: ubuntu-latest
-    if: always()
-    steps:
-      # Download the test results artifacts.
-      - name: Download Unit Test Results
-        uses: actions/download-artifact@v4
-        with:
-          path: unit-test-results
-          pattern: unit-test-results-*
-          merge-multiple: true
-      # Publish Test Results
-      - name: Publish Unit Test Results
-        uses: EnricoMi/publish-unit-test-result-action@30eadd5010312f995f0d3b3cff7fe2984f69409e # v2.16.1
-        with:
-          check_name: Unit Test Results
-          files: |
-            unit-test-results/**/*.xml

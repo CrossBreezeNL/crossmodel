@@ -1,0 +1,47 @@
+name: cicd-release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+
+    env:
+      NODE_OPTIONS: --max_old_space_size=8192
+
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+      # Checkout the code.
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Setup node & python and build.
+      - name: Setup & build
+        uses: ./.github/actions/common-build
+        with:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish packages to GitHub Packages
+        run: npx lerna publish from-package --yes
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Package vs-code extensions.
+        run: yarn package:extensions
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: extensions/*/*.vsix

@@ -1,15 +1,15 @@
 /********************************************************************************
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
-import { CrossModelWidgetOptions } from '@crossbreeze/core/lib/browser';
+import { CrossModelWidgetOptions } from '@crossbreezenl/core/lib/browser';
 import { FrontendApplicationContribution, OpenHandler, WidgetFactory } from '@theia/core/lib/browser';
 import { ContainerModule } from '@theia/core/shared/inversify';
 import { EditorPreviewManager } from '@theia/editor-preview/lib/browser/editor-preview-manager';
+import { FileResourceResolver } from '@theia/filesystem/lib/browser';
 import { CompositeEditor } from './composite-editor';
 import { CompositeEditorOpenHandler, CompositeEditorOptions } from './composite-editor-open-handler';
 import { CrossModelEditorManager } from './cross-model-editor-manager';
 import { CrossModelFileResourceResolver } from './cross-model-file-resource-resolver';
-import { FileResourceResolver } from '@theia/filesystem/lib/browser';
 
 export default new ContainerModule((bind, _unbind, _isBound, rebind) => {
    bind(CrossModelEditorManager).toSelf().inSingletonScope();

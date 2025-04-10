@@ -1,7 +1,6 @@
 {
-  "name": "@crossbreeze/model-service",
+  "name": "@crossbreezenl/model-service",
   "version": "0.0.0",
-  "private": true,
   "description": "Model service to talk to the back-end server from the front-end via a JSON-rpc connection",
   "keywords": [
     "theia-extension"
@@ -9,7 +8,7 @@
   "homepage": "https://github.com/CrossBreezeNL/crossmodel",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/CrossBreezeNL/crossmodel"
+    "url": "git+https://github.com/crossbreezenl/crossmodel.git"
   },
   "license": "AGPL-3.0-or-later",
   "author": {
@@ -31,7 +30,7 @@
     "watch": "tsc -w"
   },
   "dependencies": {
-    "@crossbreeze/protocol": "0.0.0",
+    "@crossbreezenl/protocol": "0.0.0",
     "@theia/core": "1.57.1"
   },
   "theiaExtensions": [

@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
-import { EnableToolsAction, activateDefaultToolsAction, activateDeleteToolAction } from '@crossbreeze/protocol';
+import { EnableToolsAction, activateDefaultToolsAction, activateDeleteToolAction } from '@crossbreezenl/protocol';
 import { Args, MaybePromise, PaletteItem, ToolPaletteItemProvider } from '@eclipse-glsp/server';
 import { injectable } from 'inversify';
 

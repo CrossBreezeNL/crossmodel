@@ -9,7 +9,7 @@ import {
    isRootElementReference,
    isSyntheticDocument,
    ReferenceableElement
-} from '@crossbreeze/protocol';
+} from '@crossbreezenl/protocol';
 import {
    AstNode,
    AstNodeDescription,

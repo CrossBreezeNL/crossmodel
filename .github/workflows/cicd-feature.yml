@@ -12,7 +12,7 @@ jobs:
     name: Check open PR
     runs-on: ubuntu-latest
     outputs:
-      open-pr-found: ${{ steps.PR.outputs.pr_found }}
+      open-pr-found: ${{ steps.PR.outputs.PR_FOUND }}
     steps:
       # Get open (non-draft) PR info.
       - name: Get PR info
@@ -21,6 +21,10 @@ jobs:
         with:
           filterOutClosed: true
           filterOutDraft: true
+      - run: echo "PR ${prNumber} ${prTitle} at ${prUrl}"
+        if: steps.PR.outputs.pr_found == 'true'
+        env:
+          PR_FOUND: ${{ steps.PR.outputs.pr_found }}
 
   build-and-test:
     needs: check-open-pr

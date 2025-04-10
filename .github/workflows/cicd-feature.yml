@@ -8,11 +8,11 @@ on:
       - bugfix/*
 
 jobs:
-  check_open_pr:
+  check-open-pr:
     name: Check open PR
     runs-on: ubuntu-latest
     outputs:
-      open_pr_found: ${{ steps.PR.outputs.pr_found }}
+      open_pr_found: ${{ steps.output-pr-info.outputs.pr_found }}
     steps:
       # Get open (non-draft) PR info.
       - name: Get PR info
@@ -21,14 +21,18 @@ jobs:
         with:
           filterOutClosed: true
           filterOutDraft: true
-      - run: |
-          echo "prFound: ${{ steps.PR.outputs.pr_found }}"
-          echo "prUrl: ${{ steps.PR.outputs.pr_url }}"
+      - name: Output PR info
+        if: output-pr-info
         if: steps.PR.outputs.pr_found == 'true'
+        run: |
+          echo "prFound: ${{ steps.PR.outputs.pr_found }}"
+          echo "prFound=${{ steps.PR.outputs.pr_found }}" >> "$GITHUB_OUTPUT"
+          echo "prUrl: ${{ steps.PR.outputs.pr_url }}"
+          echo "prUrl=${{ steps.PR.outputs.pr_url }}" >> "$GITHUB_OUTPUT"
 
   build-and-test:
-    needs: check_open_pr
-    if: needs.check_open_pr.outputs.open_pr_found == 'true'
+    needs: check-open-pr
+    if: needs.check-open-pr.outputs.open_pr_found == 'true'
     uses: ./.github/workflows/build-and-test.yml
     with:
       runs-on: "['ubuntu-22.04']"

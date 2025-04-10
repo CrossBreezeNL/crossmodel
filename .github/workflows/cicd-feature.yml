@@ -22,7 +22,7 @@ jobs:
           filterOutClosed: true
           filterOutDraft: true
       - name: Output PR info
-        if: output-pr-info
+        id: output-pr-info
         if: steps.PR.outputs.pr_found == 'true'
         run: |
           echo "prFound: ${{ steps.PR.outputs.pr_found }}"

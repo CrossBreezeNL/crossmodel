@@ -33,7 +33,7 @@ jobs:
   build-and-test:
     needs: check-open-pr
     # Only run the build if there is no open-pr found (otherwise this is handled in the PR workflow).
-    if: ${{ needs.check-open-pr.outputs.open_pr_found !== 'true' }}
+    if: ${{ needs.check-open-pr.outputs.open_pr_found != 'true' }}
     uses: ./.github/workflows/build-and-test.yml
     with:
       runs-on: "['ubuntu-22.04']"

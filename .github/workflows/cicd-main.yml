@@ -21,15 +21,25 @@ jobs:
       contents: write  # Allow push tag permission
     steps:
       # Checkout the code.
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+          # required
+          app-id: ${{ vars.XB_GH_APP_ID }}
+          private-key: ${{ secrets.XB_GH_BOT_CLIENT_SECRET }}
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          # Make sure the value of GITHUB_TOKEN will not be persisted in repo's config
+          persist-credentials: false
       - name: Bump version and push tag
         run: |
-          git config user.name "${{ github.actor }}"
-          git config user.email "${{ github.actor}}@users.noreply.github.com"
+          git config user.name "crossbreeze-github[bot]"
+          git config user.email "crossbreeze-github@users.noreply.github.com"
           npx lerna version --conventional-commits --yes
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
 
   # Publish a test report using the playwright result files published in the previous step (execute in Linux only).
   publish-playwright-test-report:

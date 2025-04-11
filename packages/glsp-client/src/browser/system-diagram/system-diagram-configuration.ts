@@ -9,13 +9,14 @@ import {
    RELATIONSHIP_EDGE_TYPE
 } from '@crossbreezenl/protocol';
 import {
-   ContainerConfiguration,
-   DefaultTypes,
-   GGraph,
-   GLabelView,
    configureDefaultModelElements,
    configureModelElement,
+   ContainerConfiguration,
+   DefaultTypes,
    editLabelFeature,
+   GGraph,
+   GLabelView,
+   GPort,
    gridModule,
    initializeDiagramContainer,
    overrideModelElement,
@@ -23,8 +24,11 @@ import {
 } from '@eclipse-glsp/client';
 import { GLSPDiagramConfiguration } from '@eclipse-glsp/theia-integration';
 import { Container } from '@theia/core/shared/inversify/index';
+import { LibavoidRouterOptions as ILibavoidRouterOptions } from 'sprotty-routing-libavoid';
 import { SystemDiagramLanguage } from '../../common/crossmodel-diagram-language';
+import { PortView } from '../../common/views';
 import { createCrossModelDiagramModule } from '../crossmodel-diagram-module';
+import { DEFAULT_LIBAVOID_ROUTER_OPTIONS, libAvoidModule, LibavoidRouterOptions } from '../libavoid-module';
 import { AttributeCompartment } from '../model';
 import { AttributeCompartmentView } from '../views';
 import { systemEdgeCreationToolModule } from './edge-creation-tool/edge-creation-tool-module';
@@ -44,6 +48,7 @@ export class SystemDiagramConfiguration extends GLSPDiagramConfiguration {
             replace: systemSelectModule
          },
          ...containerConfiguration,
+         libAvoidModule,
          systemHoverModule,
          gridModule,
          systemDiagramModule,
@@ -59,6 +64,7 @@ const systemDiagramModule = createCrossModelDiagramModule((bind, unbind, isBound
    // Use GLSP default model elements and their views
    // For example the model element with type 'node' (DefaultTypes.NODE) is represented by an SNode and rendered as RoundedCornerNodeView
    configureDefaultModelElements(context);
+   configureModelElement(context, DefaultTypes.PORT, GPort, PortView);
 
    // Bind views that can be rendered by the client-side
    // The glsp-server can send a request to render a specific view given a type, e.g. node:entity
@@ -70,4 +76,9 @@ const systemDiagramModule = createCrossModelDiagramModule((bind, unbind, isBound
    configureModelElement(context, ATTRIBUTE_COMPARTMENT_TYPE, AttributeCompartment, AttributeCompartmentView);
    configureModelElement(context, LABEL_ENTITY, GEditableLabel, GLabelView, { enable: [editLabelFeature] });
    configureModelElement(context, INHERITANCE_EDGE_TYPE, InheritanceEdge, InheritanceEdgeView);
+
+   rebind(LibavoidRouterOptions).toConstantValue({
+      ...DEFAULT_LIBAVOID_ROUTER_OPTIONS,
+      idealNudgingDistance: 25
+   } as ILibavoidRouterOptions);
 });

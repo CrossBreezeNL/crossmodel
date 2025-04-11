@@ -65,6 +65,17 @@
    fill: #fefffe;
 }
 
+.right-port,
+.left-port {
+   stroke-width: 0;
+   fill: var(--sprotty-edge);
+}
+
+.entity .left-port,
+.entity:not(.source-object) .right-port {
+   visibility: hidden;
+}
+
 .header-label {
    font-weight: bold;
    letter-spacing: 0.5px;

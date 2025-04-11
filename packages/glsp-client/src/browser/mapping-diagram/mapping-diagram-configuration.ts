@@ -11,6 +11,8 @@ import {
 } from '@crossbreezenl/protocol';
 import {
    ContainerConfiguration,
+   DefaultTypes,
+   GPort,
    configureDefaultModelElements,
    configureModelElement,
    gridModule,
@@ -22,19 +24,21 @@ import { GLSPDiagramConfiguration } from '@eclipse-glsp/theia-integration';
 import { Container } from '@theia/core/shared/inversify/index';
 import { MappingDiagramLanguage } from '../../common/crossmodel-diagram-language';
 import { createCrossModelDiagramModule } from '../crossmodel-diagram-module';
+import { libAvoidModule } from '../libavoid-module';
 import { AttributeCompartment } from '../model';
 import { AttributeCompartmentView } from '../views';
 import { mappingEdgeCreationToolModule } from './edge-creation-tool/edge-creation-tool-module';
 import { AttributeMappingEdge, SourceNumberNode, SourceObjectNode, SourceStringNode, TargetObjectNode } from './model';
 import { sourceObjectCreationToolModule } from './source-object-creation-tool/source-object-creation-tool-module';
 import { AttributeMappingEdgeView, SourceNumberNodeView, SourceObjectNodeView, SourceStringNodeView, TargetObjectNodeView } from './views';
+import { PortView } from '../../common/views';
 
 export class MappingDiagramConfiguration extends GLSPDiagramConfiguration {
    diagramType: string = MappingDiagramLanguage.diagramType;
 
    configureContainer(container: Container, ...containerConfiguration: ContainerConfiguration): Container {
       return initializeDiagramContainer(container, ...containerConfiguration, {
-         add: [gridModule, mappingDiagramModule, mappingEdgeCreationToolModule, sourceObjectCreationToolModule]
+         add: [gridModule, mappingDiagramModule, mappingEdgeCreationToolModule, sourceObjectCreationToolModule, libAvoidModule]
       });
    }
 }
@@ -45,6 +49,7 @@ const mappingDiagramModule = createCrossModelDiagramModule((bind, unbind, isBoun
    // Use GLSP default model elements and their views
    // For example the model element with type 'node' (DefaultTypes.NODE) is represented by an SNode and rendered as RoundedCornerNodeView
    configureDefaultModelElements(context);
+   configureModelElement(context, DefaultTypes.PORT, GPort, PortView);
 
    // Bind views that can be rendered by the client-side
    // The glsp-server can send a request to render a specific view given a type, e.g. node:entity

@@ -41,7 +41,8 @@
     "@theia/outline-view": "1.60.2",
     "@theia/output": "1.60.2",
     "@theia/preferences": "1.60.2",
-    "@theia/task": "1.60.2"
+    "@theia/task": "1.60.2",
+    "sprotty-routing-libavoid": "^1.3.0"
   },
   "theiaExtensions": [
     {

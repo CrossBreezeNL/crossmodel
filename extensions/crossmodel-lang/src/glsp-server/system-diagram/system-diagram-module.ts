@@ -10,6 +10,8 @@ import {
    GModelFactory,
    GModelIndex,
    InstanceMultiBinding,
+   LayoutEngine,
+   LayoutOperationHandler,
    ModelState,
    ModelSubmissionHandler,
    MultiBinding,
@@ -33,6 +35,8 @@ import { SystemDiagramCreateInheritanceOperationHandler } from './handler/create
 import { SystemDiagramCreateRelationshipOperationHandler } from './handler/create-relationship-operation-handler.js';
 import { SystemDiagramDeleteOperationHandler } from './handler/delete-operation-handler.js';
 import { SystemDiagramDropEntityOperationHandler } from './handler/drop-entity-operation-handler.js';
+import { SystemDiagramOperationHandler } from './handler/layout-operation-handler.js';
+import { SystemDiagramLayoutEngine } from './layout-engine.js';
 import { SystemDiagramGModelFactory } from './model/system-diagram-gmodel-factory.js';
 import { SystemModelIndex } from './model/system-model-index.js';
 import { SystemModelState } from './model/system-model-state.js';
@@ -68,11 +72,16 @@ export class SystemDiagramModule extends DiagramModule {
       binding.add(SystemDiagramCreateEntityOperationHandler);
       binding.add(SystemDiagramApplyLabelEditOperationHandler);
       binding.add(SystemDiagramCreateInheritanceOperationHandler);
+      binding.rebind(LayoutOperationHandler, SystemDiagramOperationHandler);
    }
 
    protected override configureContextActionProviders(binding: MultiBinding<ContextActionsProvider>): void {
       super.configureContextActionProviders(binding);
       binding.add(SystemDiagramAddEntityActionProvider);
+   }
+
+   protected override bindLayoutEngine(): BindingTarget<LayoutEngine> | undefined {
+      return SystemDiagramLayoutEngine;
    }
 
    protected override bindGModelIndex(): BindingTarget<GModelIndex> {

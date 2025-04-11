@@ -11,8 +11,10 @@ import {
    registerDiagramManager
 } from '@eclipse-glsp/theia-integration';
 
+import { FrontendApplicationContribution } from '@theia/core/lib/browser';
 import { SystemDiagramLanguage } from '../../common/crossmodel-diagram-language';
 import { CrossModelClientContribution } from '../crossmodel-client-contribution';
+import { LibAvoidInitializer } from '../libavoid-initializer';
 import { SystemDiagramConfiguration } from './system-diagram-configuration';
 import { SystemDiagramManager } from './system-diagram-manager';
 import { SystemDiagramWidget } from './system-diagram-widget';
@@ -38,6 +40,11 @@ export class SystemDiagramModule extends GLSPTheiaFrontendModule {
    override configureDiagramManager(context: ContainerContext): void {
       context.bind(SystemDiagramManager).toSelf().inSingletonScope();
       registerDiagramManager(context.bind, SystemDiagramManager, false);
+   }
+
+   override configure(context: ContainerContext): void {
+      context.bind(LibAvoidInitializer).toSelf().inSingletonScope();
+      context.bind(FrontendApplicationContribution).toService(LibAvoidInitializer);
    }
 }
 

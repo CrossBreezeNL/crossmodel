@@ -3,11 +3,12 @@
  ********************************************************************************/
 
 import {
-   GLSPLocator,
    definedAttr,
    EdgeSearchOptions,
+   getPModelElementConstructorOfType,
    GLSPAppOptions,
    GLSPIntegrationOptions,
+   GLSPLocator,
    GLSPSemanticApp,
    GLSPSemanticGraph,
    GraphConstructorOptions,
@@ -26,7 +27,7 @@ import {
    TypedEdge,
    waitForFunction
 } from '@eclipse-glsp/glsp-playwright';
-import { Locator } from '@playwright/test';
+import { expect, Locator } from '@playwright/test';
 import { SystemToolBox } from './system-tool-box';
 
 export class SystemDiagram extends GLSPSemanticApp {
@@ -167,7 +168,10 @@ export class SystemDiagramGraph extends GLSPSemanticGraph {
    ): Promise<TElement[]> {
       const elementType = PMetadata.getType(constructor);
 
-      const ids = await this.waitForCreation(elementType, creator);
+      // custom: straight lines may be detected as invisible if they do not have a height
+      const options = elementType.startsWith('edge') ? { visible: false } : undefined;
+
+      const ids = await this.waitForCreation(elementType, creator, options);
 
       let retriever = this.getModelElement.bind(this);
       if (isPNodeConstructor(constructor)) {
@@ -200,5 +204,27 @@ export class SystemDiagramGraph extends GLSPSemanticGraph {
       }
 
       return elements;
+   }
+
+   override async waitForCreation(elementType: string, creator: () => Promise<void>, options?: { visible?: boolean }): Promise<string[]> {
+      const nodes = await this.getModelElementsOfType(getPModelElementConstructorOfType(elementType));
+      const ids = await Promise.all(nodes.map(n => n.idAttr()));
+
+      await expect(async () => {
+         await creator();
+      }).toPass();
+
+      const ignore = ['.ghost-element', ...ids.map(id => `[id="${id}"]`)];
+      const createdLocator = this.locate().locator(`[data-svg-metadata-type="${elementType}"]:not(${ignore.join(',')})`);
+
+      await expect(createdLocator.first()).toBeVisible(options);
+      await expect(createdLocator.last()).toBeVisible(options);
+
+      const newIds: string[] = [];
+      for (const locator of await createdLocator.all()) {
+         newIds.push(await definedAttr(locator, 'id'));
+      }
+
+      return newIds;
    }
 }

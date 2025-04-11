@@ -5,7 +5,16 @@
 /* eslint-disable react/no-unknown-property */
 /* eslint-disable max-len */
 
-import { GCompartmentView, RenderingContext, RoundedCornerNodeView, RoundedCornerWrapper, svg } from '@eclipse-glsp/client';
+import {
+   GCompartmentView,
+   GNode,
+   Hoverable,
+   RenderingContext,
+   RoundedCornerNodeView,
+   RoundedCornerWrapper,
+   Selectable,
+   svg
+} from '@eclipse-glsp/client';
 import { ReactNode } from '@theia/core/shared/react';
 import { injectable } from 'inversify';
 import { VNode } from 'snabbdom';
@@ -19,6 +28,15 @@ export class DiagramNodeView extends RoundedCornerNodeView {
       // render a separator line
       return node.children[1] && node.children[1].children.length > 0 ? path + ' M 0,28  L ' + wrapper.element.bounds.width + ',28' : path;
    }
+
+   override render(node: Readonly<GNode & Hoverable & Selectable>, context: RenderingContext): VNode | undefined {
+      const view = super.render(node, context);
+      if (view?.data?.class) {
+         view.data.class.mouseover = node.hoverFeedback;
+         view.data.class.selected = node.selected;
+      }
+      return view;
+   }
 }
 
 @injectable()
@@ -26,7 +44,12 @@ export class AttributeCompartmentView extends GCompartmentView {
    override render(compartment: Readonly<AttributeCompartment>, context: RenderingContext): VNode | undefined {
       const translate = `translate(${compartment.bounds.x}, ${compartment.bounds.y})`;
       const vnode: any = (
-         <g transform={translate} class-identifier={compartment.args?.identifier}>
+         <g
+            transform={translate}
+            class-identifier={compartment.args?.identifier}
+            class-mouseover={compartment.hoverFeedback}
+            class-selected={compartment.selected}
+         >
             <rect
                class-attribute-compartment={true}
                class-mouseover={compartment.hoverFeedback}

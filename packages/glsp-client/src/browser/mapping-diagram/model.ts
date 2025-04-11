@@ -3,8 +3,9 @@
  ********************************************************************************/
 
 import { SOURCE_OBJECT_NODE_TYPE, TARGET_OBJECT_NODE_TYPE } from '@crossbreezenl/protocol';
-import { GEdge, GModelElement } from '@eclipse-glsp/client';
-import { RectangularNode } from 'sprotty/lib';
+import { GModelElement } from '@eclipse-glsp/client';
+import { RectangularNode } from 'sprotty';
+import { LibavoidEdge } from '../libavoid-model';
 
 export class SourceObjectNode extends RectangularNode {
    static is(element?: GModelElement): element is SourceObjectNode {
@@ -22,4 +23,4 @@ export class TargetObjectNode extends RectangularNode {
    }
 }
 
-export class AttributeMappingEdge extends GEdge {}
+export class AttributeMappingEdge extends LibavoidEdge {}

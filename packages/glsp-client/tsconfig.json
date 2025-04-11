@@ -3,9 +3,7 @@
   "compilerOptions": {
     "composite": true,
     "rootDir": "src",
-    "outDir": "lib",
-    "jsx": "react",
-    "reactNamespace": "JSX"
+    "outDir": "lib"
   },
   "include": ["src"]
 }

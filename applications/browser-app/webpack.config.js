@@ -26,7 +26,8 @@ configs[0].plugins.push(
          {
             context: path.resolve('.', '..', '..', 'applications', 'browser-app', 'ico'),
             from: '**'
-         }
+         },
+         { from: path.resolve('.', '..', '..', 'node_modules', 'libavoid-js', 'dist', 'libavoid.wasm'), to: './' }
       ]
    })
 );

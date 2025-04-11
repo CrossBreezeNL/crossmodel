@@ -65,6 +65,37 @@
    fill: #fefffe;
 }
 
+.attribute-port {
+   stroke-width: 0;
+   fill: var(--sprotty-edge);
+}
+
+.mapping-edge {
+   stroke: rgba(161, 197, 165, 0.65); /* rgba(161, 197, 165) === #a1c5a5 */
+}
+
+.source-object .right-port {
+   fill: rgba(161, 197, 165); /* rgba(161, 197, 165) === #a1c5a5 */
+}
+
+.target-object .left-port {
+   fill: rgba(168, 161, 197); /* rgba(168, 161, 197) === #a8a1c5 */
+}
+
+.attribute-compartment.selected .attribute-port,
+.entity.selected .attribute-port,
+.target-object.selected .attribute-port,
+.attribute-compartment.mouseover .attribute-port,
+.entity.mouseover:not(.selected) .attribute-port,
+.target-object.mouseover:not(.selected) .attribute-port {
+   fill: var(--theia-focusBorder);
+}
+
+.entity .left-port,
+.entity:not(.source-object) .right-port {
+   visibility: hidden;
+}
+
 .header-label {
    font-weight: bold;
    letter-spacing: 0.5px;
@@ -86,7 +117,8 @@
 
 .attribute-compartment.selected,
 .sprotty-node.selected,
-.sprotty-edge.selected {
+.sprotty-edge.selected,
+.sprotty-edge.connector-selected {
    stroke: var(--theia-focusBorder);
    stroke-width: 2px;
    stroke-dasharray: 6px 3px;

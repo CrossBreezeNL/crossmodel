@@ -6,7 +6,7 @@ import { GCompartment, GModelRoot, GNode, GPort, LayoutEngine, MaybePromise, fin
 import { inject, injectable } from 'inversify';
 import { getOwner } from '../../language-server/util/ast-util.js';
 import { MappingModelState } from './model/mapping-model-state.js';
-import { GTargetObjectNode } from './model/nodes.js';
+import { GSourceObjectNode, GTargetObjectNode } from './model/nodes.js';
 
 /**
  * Manual implementation until we have Elk Layouting properly working in this scenario.
@@ -44,10 +44,12 @@ export class MappingDiagramLayoutEngine implements LayoutEngine {
 
       // position ports to left and right side of parent whose size is given by the label
       index.getAllByClass(GPort).forEach(port => {
-         const attributeCompartmentSize = findParentByClass(port, GCompartment)?.size;
-         if (attributeCompartmentSize) {
-            const portX = isLeftPortId(port.id) ? 0 : attributeCompartmentSize.width;
-            port.position = { x: portX, y: attributeCompartmentSize.height / 2 };
+         const parentNode = isLeftPortId(port.id) ? findParentByClass(port, GTargetObjectNode) : findParentByClass(port, GSourceObjectNode);
+         const attributeCompartment = findParentByClass(port, GCompartment);
+         if (parentNode && attributeCompartment) {
+            const portX = isLeftPortId(port.id) ? -14 : parentNode.size.width - 14;
+            port.size = { width: 8, height: 8 };
+            port.position = { x: portX, y: attributeCompartment.size.height / 2 - port.size.height / 2 };
          }
       });
 

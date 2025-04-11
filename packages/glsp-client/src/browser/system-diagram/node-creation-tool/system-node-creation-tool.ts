@@ -16,11 +16,14 @@ import {
    MessageAction,
    NodeCreationTool,
    NodeCreationToolMouseListener,
+   Point,
    SetUIExtensionVisibilityAction,
    TYPES,
-   TrackedInsert
+   TrackedInsert,
+   applyCssClasses,
+   deleteCssClasses
 } from '@eclipse-glsp/client';
-import { SingleTextInputDialog } from '@theia/core/lib/browser';
+import { Message, SingleTextInputDialog, SingleTextInputDialogProps } from '@theia/core/lib/browser';
 import { inject, injectable } from '@theia/core/shared/inversify';
 import { CrossModelCommandPalette } from '../../cross-model-command-palette';
 
@@ -50,7 +53,7 @@ export class SystemNodeCreationToolMouseListener extends NodeCreationToolMouseLi
             contextElementsId: [this.ghostElementId]
          });
       } else if (this.triggerAction.args?.type === 'create') {
-         this.queryEntityName().then(name => {
+         this.queryEntityName(ctx, event, insert).then(name => {
             if (name === undefined) {
                // user cancelled the dialog
                return;
@@ -64,17 +67,20 @@ export class SystemNodeCreationToolMouseListener extends NodeCreationToolMouseLi
       throw new Error('Invalid node creation type');
    }
 
-   protected async queryEntityName(): Promise<string | undefined> {
+   protected async queryEntityName(ctx: GModelElement, event: MouseEvent, insert: TrackedInsert): Promise<string | undefined> {
       const referenceableEntities = await this.tool.modelService.findReferenceableElements({
          container: { uri: this.tool.diagramOptions.sourceUri!, type: RelationshipType },
          property: 'parent'
       });
       const existingNames = referenceableEntities.map(entity => entity.label);
       const nextUniqueName = findNextUnique('NewEntity', existingNames, identity);
-      return new SingleTextInputDialog({
+      const position = { x: event.pageX, y: event.pageY };
+      this.tool.dispatchActions([applyCssClasses(ctx.root, 'input-mode')]);
+      return new EntityNameInputDialog({
          title: 'Entity Name',
          placeholder: nextUniqueName,
          initialValue: nextUniqueName,
+         position,
          validate: name => {
             if (name.trim().length === 0) {
                return 'Entity name cannot be empty';
@@ -84,6 +90,33 @@ export class SystemNodeCreationToolMouseListener extends NodeCreationToolMouseLi
             }
             return true;
          }
-      }).open();
+      })
+         .open()
+         .finally(() => {
+            this.tool.dispatchActions([deleteCssClasses(ctx.root, 'input-mode')]);
+         });
+   }
+}
+
+class EntityNameInputDialogProps extends SingleTextInputDialogProps {
+   position?: Point;
+}
+
+class EntityNameInputDialog extends SingleTextInputDialog {
+   constructor(protected override props: EntityNameInputDialogProps) {
+      super(props);
+      this.addClass('entity-name-dialog');
+   }
+
+   protected override onAfterAttach(msg: Message): void {
+      super.onAfterAttach(msg);
+      if (this.props.position) {
+         const block = this.node.getElementsByClassName('dialogBlock')?.[0] as HTMLElement;
+         if (block) {
+            block.style.position = 'absolute';
+            block.style.left = `${this.props.position.x}px`;
+            block.style.top = `${this.props.position.y}px`;
+         }
+      }
    }
 }

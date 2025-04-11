@@ -15,11 +15,13 @@ import {
    GridEditCellProps,
    GridOverlay,
    GridPreProcessEditCellProps,
+   GridRowEditStartParams,
    GridRowEditStopParams,
    GridRowModes,
    GridRowModesModel,
    GridToolbarContainer,
-   GridValidRowModel
+   GridValidRowModel,
+   useGridApiRef
 } from '@mui/x-data-grid';
 import * as React from 'react';
 import { useReadonly } from '../../ModelContext';
@@ -73,7 +75,28 @@ export default function GridComponent<T extends GridValidRowModel>({
    const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>({});
    const [columns, setColumns] = React.useState<GridColDef<GridComponentRow<T>>[]>([]);
    const [rows, setRows] = React.useState<GridComponentRow<T>[]>([]);
+   const editedRow = React.useRef<number | string>();
+   const gridRef = React.useRef<HTMLDivElement>(null); // eslint-disable-line no-null/no-null
+   const gridApi = useGridApiRef();
    const readonly = useReadonly();
+
+   React.useEffect(() => {
+      // The grid will only handle focus changes if focus moves inside the form or there is a click on another React component.
+      // This ensures that changes of focus to non-React elements are handled as well.
+      const handleFocusChange = (e: FocusEvent): void => {
+         if (!(e.target instanceof Element) || gridRef.current?.contains(e.target) || editedRow.current === undefined) {
+            return;
+         }
+         gridApi.current.stopRowEditMode({ id: editedRow.current });
+         editedRow.current = undefined;
+      };
+      document.addEventListener('focusin', handleFocusChange);
+      return () => document.removeEventListener('focusin', handleFocusChange);
+   }, [gridApi]);
+
+   const handleRowEditStart = React.useCallback((params: GridRowEditStartParams): void => {
+      editedRow.current = params.id;
+   }, []);
 
    const validateRow = React.useCallback(
       (params: GridPreProcessEditCellProps, column: GridColDef<T>): GridEditCellProps => {
@@ -94,6 +117,7 @@ export default function GridComponent<T extends GridValidRowModel>({
 
    const handleRowUpdate = React.useCallback(
       async (newRow: GridComponentRow<T>, oldRow: GridComponentRow<T>): Promise<GridComponentRow<T>> => {
+         editedRow.current = undefined;
          const defaultRow: GridComponentRow<T> = { ...defaultEntry, idx: -1 };
          const updatedRow = mergeRightToLeft(defaultRow, oldRow, newRow);
          if (updatedRow.idx === undefined || updatedRow.idx < 0) {
@@ -117,13 +141,14 @@ export default function GridComponent<T extends GridValidRowModel>({
    const handleRowEditStop = React.useCallback(
       (params: GridRowEditStopParams<T>): void => {
          removeSyntheticRows();
+         editedRow.current = undefined;
       },
       [removeSyntheticRows]
    );
 
    const createSyntheticRow = React.useCallback(() => {
       const id = -1;
-      if (!rows.find(row => row.idx === -1)) {
+      if (!rows.find(row => row.idx === id)) {
          const syntheticRow = { ...defaultEntry, idx: id };
          let _$type = syntheticRow.$type;
          Object.defineProperty(syntheticRow, '$type', {
@@ -145,6 +170,7 @@ export default function GridComponent<T extends GridValidRowModel>({
       // put new row in edit mode
       const fieldToFocus = columns.length > 0 ? columns[0].field : undefined;
       setRowModesModel(oldModel => ({ ...oldModel, [id]: { mode: GridRowModes.Edit, fieldToFocus } }));
+      editedRow.current = id;
    }, [columns, defaultEntry, rows]);
 
    const deleteEntry = React.useCallback(
@@ -252,6 +278,9 @@ export default function GridComponent<T extends GridValidRowModel>({
          disableMultipleRowSelection={true}
          disableColumnMenu={true}
          disableDensitySelector={true}
+         onRowEditStart={handleRowEditStart}
+         apiRef={gridApi}
+         ref={gridRef}
          slots={{ toolbar: () => EditToolbar, noRowsOverlay: () => NoRowsOverlay }}
          sx={{
             fontSize: '1em',

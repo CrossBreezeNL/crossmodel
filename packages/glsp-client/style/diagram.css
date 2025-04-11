@@ -202,3 +202,21 @@
 .diagram-edge.inheritance.mouseover {
    marker-end: var(--svg-def-marker-inheritance-selected);
 }
+
+.dialogOverlay.entity-name-dialog {
+   background: revert;
+}
+
+.dialogOverlay.entity-name-dialog .dialogTitle,
+.dialogOverlay.entity-name-dialog .dialogControl {
+   display: none;
+   visibility: hidden;
+}
+
+.dialogOverlay.entity-name-dialog .dialogContent {
+   padding: 1px;
+}
+
+.sprotty-graph.input-mode {
+   background-color: rgba(0, 0, 0, 0.05);
+}

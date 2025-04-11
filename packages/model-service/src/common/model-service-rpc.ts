@@ -7,6 +7,7 @@ import {
    CrossModelDocument,
    CrossReference,
    CrossReferenceContext,
+   FindIdArgs,
    ModelUpdatedEvent,
    OpenModelArgs,
    ReferenceableElement,
@@ -44,6 +45,7 @@ export interface ModelServiceServer extends RpcServer<ModelServiceClient> {
    request(uri: string): Promise<CrossModelDocument | undefined>;
    findReferenceableElements(args: CrossReferenceContext): Promise<ReferenceableElement[]>;
    resolveReference(reference: CrossReference): Promise<ResolvedElement | undefined>;
+   findNextId(args: FindIdArgs): Promise<string>;
 
    // System API
    getSystemInfos(): Promise<SystemInfo[]>;

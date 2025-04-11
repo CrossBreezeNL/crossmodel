@@ -2,7 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { RELATIONSHIP_EDGE_TYPE } from '@crossbreezenl/protocol';
+import { RELATIONSHIP_EDGE_TYPE, computeRelationshipName, toId } from '@crossbreezenl/protocol';
 import {
    ActionDispatcher,
    Command,
@@ -75,12 +75,13 @@ export class SystemDiagramCreateRelationshipOperationHandler extends JsonCreateE
 
       // create relationship, serialize and re-read to ensure everything is up to date and linked properly
       const relationshipRoot: CrossModelRoot = { $type: 'CrossModelRoot' };
-      const relationshipId = this.modelState.idProvider.findNextId(Relationship, source + 'To' + target);
+      const name = computeRelationshipName(source, target);
+      const id = this.modelState.idProvider.findNextId(Relationship, toId(name));
       const relationship: Relationship = {
          $type: Relationship,
          $container: relationshipRoot,
-         id: relationshipId,
-         name: relationshipId,
+         id,
+         name,
          attributes: [],
          parent: { $refText: sourceNode.entity?.$refText || '' },
          child: { $refText: targetNode.entity?.$refText || '' },

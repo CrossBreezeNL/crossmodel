@@ -22,19 +22,22 @@ export interface IntegratedEditorType {
 export class CMCompositeEditor extends TheiaEditor {
    constructor(
       protected filePath: string,
-      public override app: CMApp
+      public override app: CMApp,
+      readonly scheme = 'file'
    ) {
       // shell-tab-code-editor-opener:file:///c%3A/Users/user/AppData/Local/Temp/cloud-ws-JBUhb6/sample.txt:1
       // code-editor-opener:file:///c%3A/Users/user/AppData/Local/Temp/cloud-ws-JBUhb6/sample.txt:1
       super(
          {
             tabSelector: normalizeId(
-               `#shell-tab-cm-composite-editor-handler:file://${urlEncodePath(
+               `#shell-tab-cm-composite-editor-handler:${scheme === 'file' ? 'file://' : `${scheme}:`}${urlEncodePath(
                   join(app.workspace.escapedPath, OSUtil.fileSeparator, filePath)
                )}`
             ),
             viewSelector: normalizeId(
-               `#cm-composite-editor-handler:file://${urlEncodePath(join(app.workspace.escapedPath, OSUtil.fileSeparator, filePath))}`
+               `#cm-composite-editor-handler:${scheme === 'file' ? 'file://' : `${scheme}:`}${urlEncodePath(
+                  join(app.workspace.escapedPath, OSUtil.fileSeparator, filePath)
+               )}`
             )
          },
          app
@@ -99,7 +102,9 @@ export class IntegratedCodeEditor extends IntegratedTextEditor {
       // code-editor-opener:file:///c%3A/Users/user/AppData/Local/Temp/cloud-ws-JBUhb6/sample.txt:1
       super(filePath, parent);
       this.data.viewSelector = normalizeId(
-         `#code-editor-opener:file://${urlEncodePath(join(this.app.workspace.escapedPath, OSUtil.fileSeparator, filePath))}`
+         `#code-editor-opener:${parent.scheme === 'file' ? 'file://' : `${parent.scheme}:`}${urlEncodePath(
+            join(this.app.workspace.escapedPath, OSUtil.fileSeparator, filePath)
+         )}`
       );
       this.data.tabSelector = tabSelector;
       this.monacoEditor = new TheiaMonacoEditor(this.viewSelector, parent.app);

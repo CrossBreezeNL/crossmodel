@@ -69,6 +69,7 @@ function createClientOptions(context: vscode.ExtensionContext): LanguageClientOp
    // Options to control the language client
    return {
       documentSelector: [
+         { scheme: 'untitled', language: 'cross-model' },
          { scheme: 'file', language: 'cross-model' },
          { scheme: 'file', pattern: '**/package.json' }
       ],

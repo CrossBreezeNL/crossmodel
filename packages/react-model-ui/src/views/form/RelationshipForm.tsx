@@ -2,10 +2,16 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { LogicalEntityType, ModelFileType, ModelStructure, ReferenceableElement } from '@crossbreezenl/protocol';
+import {
+   computeRelationshipName,
+   CrossModelValidationErrors,
+   ModelFileType,
+   ModelStructure,
+   ReferenceableElement
+} from '@crossbreezenl/protocol';
 import { Autocomplete, TextField } from '@mui/material';
 import * as React from 'react';
-import { useModelDispatch, useModelQueryApi, useReadonly, useRelationship } from '../../ModelContext';
+import { useDiagnostics, useModelDispatch, useModelQueryApi, useReadonly, useRelationship, useUntitled } from '../../ModelContext';
 import { modelComponent } from '../../ModelViewer';
 import { themed } from '../../ThemedViewer';
 import { FormSection } from '../FormSection';
@@ -19,12 +25,43 @@ export function RelationshipForm(): React.ReactElement {
    const api = useModelQueryApi();
    const relationship = useRelationship();
    const readonly = useReadonly();
+   const baseDiagnostics = useDiagnostics();
+   const untitled = useUntitled();
+   const diagnostics = CrossModelValidationErrors.getFieldErrors(baseDiagnostics);
+
+   const usingDefaultName = React.useMemo(
+      () => relationship.name === computeRelationshipName(relationship.parent, relationship.child),
+      [relationship.name, relationship.parent, relationship.child]
+   );
 
    const reference = React.useMemo(() => ({ container: { globalId: relationship!.id! }, property: 'parent' }), [relationship]);
-   const referenceableElements = React.useCallback(() => api.findReferenceableElements(reference), [api, reference]);
+   const referenceableElements = React.useCallback(
+      () => api.findReferenceableElements(reference).then(references => references.map(referenceLabelProvider)),
+      [api, reference]
+   );
    const referenceLabelProvider = (element: ReferenceableElement): string => element.label;
 
    const cardinalities = ['zero', 'one', 'multiple'];
+
+   const handleParentChange = React.useCallback(
+      (_: React.SyntheticEvent, newRef: string) => {
+         dispatch({ type: 'relationship:change-parent', parent: newRef });
+         if (untitled && usingDefaultName) {
+            dispatch({ type: 'relationship:change-name', name: computeRelationshipName(newRef, relationship.child) });
+         }
+      },
+      [dispatch, untitled, usingDefaultName, relationship]
+   );
+
+   const handleChildChange = React.useCallback(
+      (_: React.SyntheticEvent, newRef: string) => {
+         dispatch({ type: 'relationship:change-child', child: newRef });
+         if (untitled && usingDefaultName) {
+            dispatch({ type: 'relationship:change-name', name: computeRelationshipName(relationship.parent, newRef) });
+         }
+      },
+      [dispatch, untitled, usingDefaultName, relationship]
+   );
 
    return (
       <Form id={relationship.id} name={relationship.name ?? ModelFileType.Relationship} iconClass={ModelStructure.Relationship.ICON_CLASS}>
@@ -33,7 +70,10 @@ export function RelationshipForm(): React.ReactElement {
                label='Name'
                value={relationship.name ?? ''}
                disabled={readonly}
+               error={!!diagnostics.name?.length}
+               helperText={diagnostics.name?.at(0)?.message}
                onChange={event => dispatch({ type: 'relationship:change-name', name: event.target.value ?? '' })}
+               required={true}
             />
 
             <TextField
@@ -46,11 +86,11 @@ export function RelationshipForm(): React.ReactElement {
             />
 
             <AsyncAutoComplete
-               label='Parent *'
+               label='Parent'
                optionLoader={referenceableElements}
-               getOptionLabel={referenceLabelProvider}
-               onChange={(_evt, newReference) => dispatch({ type: 'relationship:change-parent', parent: newReference.label })}
-               value={{ uri: '', label: relationship.parent ?? '', type: LogicalEntityType }}
+               textFieldProps={{ required: true, helperText: diagnostics.parent?.at(0)?.message, error: !!diagnostics.parent?.length }}
+               onChange={handleParentChange}
+               value={relationship.parent}
                disabled={readonly}
                selectOnFocus={true}
             />
@@ -66,11 +106,11 @@ export function RelationshipForm(): React.ReactElement {
             />
 
             <AsyncAutoComplete
-               label='Child *'
+               label='Child'
                optionLoader={referenceableElements}
-               getOptionLabel={referenceLabelProvider}
-               onChange={(_evt, newReference) => dispatch({ type: 'relationship:change-child', child: newReference.label })}
-               value={{ uri: '', label: relationship.child ?? '', type: LogicalEntityType }}
+               textFieldProps={{ required: true, helperText: diagnostics.child?.at(0)?.message, error: !!diagnostics.child?.length }}
+               onChange={handleChildChange}
+               value={relationship.child}
                clearOnBlur={true}
                disabled={readonly}
                selectOnFocus={true}
@@ -87,7 +127,7 @@ export function RelationshipForm(): React.ReactElement {
             />
          </FormSection>
          <FormSection label='Attributes'>
-            <RelationshipAttributesDataGrid />
+            <RelationshipAttributesDataGrid diagnostics={diagnostics} />
          </FormSection>
       </Form>
    );

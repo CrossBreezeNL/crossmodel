@@ -5,7 +5,7 @@
 import { ERRONEOUS_MODEL, ModelDiagnostic } from '@crossbreezenl/protocol';
 import { OpenInNewOutlined, SaveOutlined } from '@mui/icons-material';
 import { AppBar, Box, Button, Icon, Toolbar, Typography } from '@mui/material';
-import { useDiagnostics, useDirty, useModelOpen, useModelSave } from '../../ModelContext';
+import { useDiagnostics, useDirty, useModelOpen, useModelSave, useUntitled } from '../../ModelContext';
 import { createEditorError } from '../common/EditorError';
 import React = require('react');
 
@@ -19,6 +19,7 @@ export function Header({ name, id, iconClass }: HeaderProps): React.ReactElement
    const saveModel = useModelSave();
    const openModel = useModelOpen();
    const dirty = useDirty();
+   const untitled = useUntitled();
    const diagnostics = useDiagnostics();
 
    return (
@@ -31,9 +32,11 @@ export function Header({ name, id, iconClass }: HeaderProps): React.ReactElement
                   {name}
                   {saveModel && dirty ? '*' : ''}
                </Typography>
-               <Typography variant='overline' component='div' sx={{ pt: '.5em' }}>
-                  ID: {id}
-               </Typography>
+               {!untitled && (
+                  <Typography variant='overline' component='div' sx={{ pt: '.5em' }}>
+                     ID: {id}
+                  </Typography>
+               )}
             </Box>
 
             <Box sx={{ display: { xs: 'none', sm: 'block' } }}>

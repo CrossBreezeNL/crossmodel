@@ -20,7 +20,7 @@ export class CMTheiaIntegration extends Integration implements ContextMenuIntegr
    }
 
    get contextMenuLocator(): Locator {
-      return this.page.locator('body > .p-Widget.p-Menu');
+      return this.page.locator('body > .lm-Widget.lm-Menu');
    }
 
    constructor(

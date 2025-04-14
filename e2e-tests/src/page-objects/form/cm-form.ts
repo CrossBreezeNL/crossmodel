@@ -41,7 +41,7 @@ export abstract class CMForm extends TheiaViewObject {
    }
 
    async isDirty(): Promise<boolean> {
-      const title = await this.page.$(this.selector + ' .form-title:not(.p-mod-hidden)');
+      const title = await this.page.$(this.selector + ' .form-title:not(.lm-mod-hidden)');
       const text = await title?.textContent();
       return text?.endsWith('*') ?? false;
    }

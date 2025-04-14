@@ -3,7 +3,7 @@
  ********************************************************************************/
 
 import {
-   asLocator,
+   GLSPLocator,
    definedAttr,
    EdgeSearchOptions,
    GLSPAppOptions,
@@ -116,14 +116,14 @@ export class SystemDiagramGraph extends GLSPSemanticGraph {
             }
 
             if (options?.sourceSelectorOrLocator) {
-               const sourceLocator = asLocator(options.sourceSelectorOrLocator, selector => this.locate().locator(selector));
+               const sourceLocator = GLSPLocator.asLocator(options.sourceSelectorOrLocator, selector => this.locate().locator(selector));
                const sourceId = await element.sourceId();
                const expectedId = await definedAttr(sourceLocator, 'id');
                sourceChecks.push(expectedId.includes(sourceId));
             }
 
             if (options?.targetSelectorOrLocator) {
-               const targetLocator = asLocator(options.targetSelectorOrLocator, selector => this.locate().locator(selector));
+               const targetLocator = GLSPLocator.asLocator(options.targetSelectorOrLocator, selector => this.locate().locator(selector));
                const targetId = await element.targetId();
                const expectedId = await definedAttr(targetLocator, 'id');
                sourceChecks.push(expectedId.includes(targetId));
@@ -144,7 +144,7 @@ export class SystemDiagramGraph extends GLSPSemanticGraph {
       constructor: PNodeConstructor<TElement>,
       options?: GraphConstructorOptions
    ): Promise<TElement[]> {
-      const locator = asLocator(selectorOrLocator, selector => this.locator.child(selector).locate());
+      const locator = GLSPLocator.asLocator(selectorOrLocator, selector => this.locator.child(selector).locate());
       const elements: TElement[] = [];
 
       for await (const childLocator of await locator.all()) {
@@ -186,7 +186,7 @@ export class SystemDiagramGraph extends GLSPSemanticGraph {
       options?: GraphConstructorOptions
    ): Promise<TElement[]> {
       super.getModelElements;
-      const locator = asLocator(selectorOrLocator, selector => this.locator.child(selector).locate());
+      const locator = GLSPLocator.asLocator(selectorOrLocator, selector => this.locator.child(selector).locate());
       const elements: TElement[] = [];
 
       for await (const childLocator of await locator.all()) {

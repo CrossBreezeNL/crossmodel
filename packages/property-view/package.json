@@ -33,10 +33,10 @@
     "@crossbreezenl/model-service": "0.1.0",
     "@crossbreezenl/protocol": "0.1.0",
     "@crossbreezenl/react-model-ui": "0.1.0",
-    "@eclipse-glsp/theia-integration": "next",
-    "@theia/core": "1.57.1",
-    "@theia/filesystem": "1.57.1",
-    "@theia/property-view": "1.57.1"
+    "@eclipse-glsp/theia-integration": "latest",
+    "@theia/core": "1.60.2",
+    "@theia/filesystem": "1.60.2",
+    "@theia/property-view": "1.60.2"
   },
   "theiaExtensions": [
     {

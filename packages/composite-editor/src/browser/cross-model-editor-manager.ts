@@ -13,7 +13,7 @@ import { EditorOpenerOptions, EditorWidget } from '@theia/editor/lib/browser';
  */
 @injectable()
 export class CrossModelEditorManager extends EditorPreviewManager {
-   public override revealSelection(widget: EditorWidget, input?: EditorOpenerOptions, uri?: URI): void {
-      super.revealSelection(widget, input, uri);
+   public override revealSelection(widget: EditorWidget, uri: URI, input?: EditorOpenerOptions): Promise<void> {
+      return super.revealSelection(widget, uri, input);
    }
 }

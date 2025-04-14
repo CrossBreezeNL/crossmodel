@@ -18,7 +18,7 @@
   "dependencies": {
     "@eclipse-glsp/glsp-playwright": "next",
     "@playwright/test": "^1.47.0",
-    "@theia/playwright": "1.57.1",
+    "@theia/playwright": "1.60.2",
     "ts-dedent": "^2.2.0"
   },
   "devDependencies": {

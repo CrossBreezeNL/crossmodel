@@ -42,7 +42,7 @@ export class CMCompositeEditor extends TheiaEditor {
    }
 
    protected editorTabSelector(editor: CompositeEditorName): string {
-      return this.viewSelector + ` div.p-TabBar-tabLabel:has-text("${editor}")`;
+      return this.viewSelector + ` div.lm-TabBar-tabLabel:has-text("${editor}")`;
    }
 
    protected isEditorTabVisible(editor: CompositeEditorName): Promise<boolean> {

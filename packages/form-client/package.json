@@ -1,6 +1,6 @@
 {
   "name": "@crossbreezenl/form-client",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "CrossModel Form-based Editor Contribution",
   "keywords": [
     "theia-extension"
@@ -27,8 +27,8 @@
     "watch": "tsc -w"
   },
   "dependencies": {
-    "@crossbreezenl/core": "0.1.0",
-    "@crossbreezenl/model-service": "0.1.0",
+    "@crossbreezenl/core": "0.1.1",
+    "@crossbreezenl/model-service": "0.1.1",
     "@crossbreezenl/protocol": "0.1.0",
     "@crossbreezenl/react-model-ui": "0.1.0",
     "@theia/core": "1.60.2",

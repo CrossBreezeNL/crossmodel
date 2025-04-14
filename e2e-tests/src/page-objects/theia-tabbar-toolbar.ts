@@ -6,7 +6,7 @@ import { TheiaViewObject } from './theia-view-object';
 
 export class TheiaTabBarToolbar extends TheiaViewObject {
    constructor(view: TheiaView) {
-      super(view, '.p-TabBar-toolbar');
+      super(view, '.lm-TabBar-toolbar');
    }
 
    async toolBarItem(commandId: string): Promise<TheiaToolbarItem | undefined> {

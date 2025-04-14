@@ -261,7 +261,7 @@ export class CompositeEditor extends BaseWidget implements SaveableSource, Navig
       const codeWidget = this.getCodeWidget();
       if (codeWidget) {
          this.tabPanel.currentWidget = codeWidget;
-         this.editorManager.revealSelection(codeWidget, options, this.resourceUri);
+         this.editorManager.revealSelection(codeWidget, this.resourceUri, options);
       }
    }
 

@@ -9,6 +9,11 @@ import React = require('react');
 export interface AsyncAutoCompleteProps<T> extends Omit<AutocompleteProps<T, false, true, false>, 'renderInput' | 'options'> {
    label: string;
    optionLoader: () => Promise<T[]>;
+   /**
+    * MUI shows a warning if the current value doesn't match an available option.
+    * This callback can be used to synchronize selection state with options.
+    */
+   onOptionsLoaded?: (options: T[]) => unknown;
    textFieldProps?: TextFieldProps;
 }
 
@@ -16,10 +21,11 @@ export interface AsyncAutoCompleteProps<T> extends Omit<AutocompleteProps<T, fal
 export default function AsyncAutoComplete<T>({
    label,
    optionLoader,
+   onOptionsLoaded,
    textFieldProps,
    ...props
 }: AsyncAutoCompleteProps<T>): React.ReactElement {
-   const [open, setOpen] = React.useState(props.open);
+   const [open, setOpen] = React.useState(!!props.open);
    const [options, setOptions] = React.useState<readonly T[]>([]);
    const loading = open && options.length === 0;
    const readonly = useReadonly();
@@ -32,6 +38,7 @@ export default function AsyncAutoComplete<T>({
       const loadOperation = async (): Promise<void> => {
          const loadedOptions = await optionLoader();
          if (active) {
+            onOptionsLoaded?.(loadedOptions);
             setOptions([...loadedOptions]);
          }
       };
@@ -40,7 +47,7 @@ export default function AsyncAutoComplete<T>({
       return () => {
          active = false;
       };
-   }, [loading, optionLoader]);
+   }, [loading, optionLoader, onOptionsLoaded]);
 
    return (
       <Autocomplete
@@ -60,6 +67,7 @@ export default function AsyncAutoComplete<T>({
                label={label}
                InputProps={{
                   ...params.InputProps,
+                  required: textFieldProps?.required,
                   endAdornment: (
                      <React.Fragment>
                         {loading ? <CircularProgress color='inherit' size={20} /> : null}

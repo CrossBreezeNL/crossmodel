@@ -8,6 +8,8 @@ import {
    CrossModelRoot,
    CrossReference,
    CrossReferenceContext,
+   FindIdArgs,
+   FindNextId,
    FindReferenceableElements,
    MODELSERVER_PORT_COMMAND,
    OnModelSaved,
@@ -176,6 +178,11 @@ export class ModelServiceServerImpl implements ModelServiceServer {
    async resolveReference(reference: CrossReference): Promise<ResolvedElement | undefined> {
       await this.initializeServerConnection();
       return this.connection.sendRequest(ResolveReference, reference);
+   }
+
+   async findNextId(args: FindIdArgs): Promise<string> {
+      await this.initializeServerConnection();
+      return this.connection.sendRequest(FindNextId, args);
    }
 
    async getSystemInfos(): Promise<SystemInfo[]> {

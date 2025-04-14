@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { AttributeMappingSourceType } from '@crossbreezenl/protocol';
+import { AttributeMappingSourceType, TypeGuard, getSemanticRoot } from '@crossbreezenl/protocol';
 import { Dimension, Point } from '@eclipse-glsp/server';
 import { AstNode, AstNodeDescription, AstUtils, LangiumDocument, Reference, isAstNode, isAstNodeDescription } from 'langium';
 import { ID_PROPERTY, IdProvider } from '../cross-model-naming.js';
@@ -39,13 +39,6 @@ export type RootContainer = {
 };
 
 export type SemanticRoot = RootContainer[keyof RootContainer];
-
-/** Enforces that an array contains all variants of a union type */
-type AllKeys<T, ArrayMembers extends any[] = []> = {
-   [Key in keyof T]: Exclude<keyof T, Key> extends never ? readonly [...ArrayMembers, Key] : AllKeys<Omit<T, Key>, [...ArrayMembers, Key]>;
-}[keyof T];
-
-const ROOT_KEYS = ['entity', 'mapping', 'relationship', 'systemDiagram'] as const satisfies AllKeys<RootContainer>;
 
 export const IMPLICIT_ATTRIBUTES_PROPERTY = '$attributes';
 export const IMPLICIT_OWNER_PROPERTY = '$owner';
@@ -297,7 +290,6 @@ export function fixDocument<T extends AstNode = AstNode, R extends AstNode = Ast
 
 export type WithDocument<T> = T & { $document: LangiumDocument<CrossModelRoot> };
 export type DocumentContent = LangiumDocument | AstNode;
-export type TypeGuard<T> = (item: unknown) => item is T;
 
 export function isSemanticRoot(element: unknown): element is SemanticRoot {
    return isLogicalEntity(element) || isMapping(element) || isRelationship(element) || isSystemDiagram(element);
@@ -310,20 +302,7 @@ export function findSemanticRoot<T extends SemanticRoot>(input: DocumentContent,
    if (!isCrossModelRoot(root)) {
       return undefined;
    }
-   return getSemanticRootFromAstRoot(root);
-}
-
-export function getSemanticRootFromAstRoot<T extends SemanticRoot>(
-   root: CrossModelRoot,
-   guard?: TypeGuard<T>
-): SemanticRoot | T | undefined {
-   for (const key of ROOT_KEYS) {
-      const candidate = root[key];
-      if (candidate && (!guard || guard(candidate))) {
-         return candidate;
-      }
-   }
-   return undefined;
+   return getSemanticRoot(root);
 }
 
 export function findEntity(input: DocumentContent): LogicalEntity | undefined {

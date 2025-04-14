@@ -43,8 +43,16 @@ export namespace Utils {
          return true;
       }
       // 3. Otherwise, normalized paths should be identical.
-      const childPath = normalizePath(child.path);
-      const parentPath = normalizePath(parent.path);
+      return arePathsEqual(parent, child);
+   }
+
+   export function areEqual(left: URI, right: URI): boolean {
+      return areComparable(left, right) && arePathsEqual(left, right);
+   }
+
+   function arePathsEqual(left: URI, right: URI): boolean {
+      const childPath = normalizePath(left.path);
+      const parentPath = normalizePath(right.path);
       return childPath === parentPath;
    }
 
@@ -139,7 +147,7 @@ export namespace Utils {
     */
    export function toRealURIorUndefined(uri: URI): URI | undefined {
       try {
-         return toRealURI(uri);
+         return uri.scheme === 'file' ? toRealURI(uri) : uri;
       } catch (error) {
          return undefined;
       }

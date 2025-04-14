@@ -7,7 +7,7 @@ import { join } from 'path';
 import { CMCompositeEditor, hasViewError } from '../cm-composite-editor';
 import { IntegratedEditor } from '../cm-integrated-editor';
 import { CMForm } from './cm-form';
-import { LogicalEntityForm } from './entiy-form';
+import { LogicalEntityForm } from './entity-form';
 import { RelationshipForm } from './relationship-form';
 export class IntegratedFormEditor extends IntegratedEditor {
    constructor(filePath: string, parent: CMCompositeEditor, tabSelector: string) {
@@ -15,7 +15,9 @@ export class IntegratedFormEditor extends IntegratedEditor {
          {
             tabSelector,
             viewSelector: normalizeId(
-               `#form-editor-opener:file://${urlEncodePath(join(parent.app.workspace.escapedPath, OSUtil.fileSeparator, filePath))}`
+               `#form-editor-opener:${parent.scheme === 'file' ? 'file://' : `${parent.scheme}:`}${urlEncodePath(
+                  join(parent.app.workspace.escapedPath, OSUtil.fileSeparator, filePath)
+               )}`
             )
          },
          parent

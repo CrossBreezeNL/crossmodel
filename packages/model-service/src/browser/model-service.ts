@@ -7,6 +7,7 @@ import {
    CrossModelDocument,
    CrossReference,
    CrossReferenceContext,
+   FindIdArgs,
    ModelUpdatedEvent,
    OpenModelArgs,
    ReferenceableElement,
@@ -71,6 +72,10 @@ export class ModelServiceImpl implements ModelService {
 
    resolveReference(reference: CrossReference): Promise<ResolvedElement | undefined> {
       return this.server.resolveReference(reference);
+   }
+
+   findNextId(args: FindIdArgs): Promise<string> {
+      return this.server.findNextId(args);
    }
 
    getSystemInfos(): Promise<SystemInfo[]> {

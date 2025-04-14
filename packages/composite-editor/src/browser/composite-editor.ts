@@ -6,7 +6,8 @@ import { CrossModelWidget, CrossModelWidgetOptions } from '@crossbreezenl/core/l
 import { FormEditorOpenHandler, FormEditorWidget } from '@crossbreezenl/form-client/lib/browser';
 import { MappingDiagramManager, SystemDiagramManager } from '@crossbreezenl/glsp-client/lib/browser/';
 import { MappingDiagramLanguage, SystemDiagramLanguage } from '@crossbreezenl/glsp-client/lib/common';
-import { ModelFileType, codiconCSSString } from '@crossbreezenl/protocol';
+import { ModelService } from '@crossbreezenl/model-service/lib/common';
+import { LogicalEntity, ModelFileType, ROOT_KEYS, Relationship, codiconCSSString, getSemanticRoot, toId } from '@crossbreezenl/protocol';
 import { FocusStateChangedAction, SetDirtyStateAction, toTypeGuard } from '@eclipse-glsp/client';
 import { GLSPDiagramWidget, GLSPDiagramWidgetContainer, GLSPDiagramWidgetOptions, GLSPSaveable } from '@eclipse-glsp/theia-integration';
 import { GLSPDiagramLanguage } from '@eclipse-glsp/theia-integration/lib/common';
@@ -21,11 +22,11 @@ import {
    NavigatableWidgetOptions,
    SaveOptions,
    Saveable,
-   SaveableSource,
    TabPanel,
    Widget,
    WidgetManager
 } from '@theia/core/lib/browser';
+import { BinaryBuffer } from '@theia/core/lib/common/buffer';
 import { inject, injectable, postConstruct } from '@theia/core/shared/inversify';
 import { EditorPreviewWidget } from '@theia/editor-preview/lib/browser/editor-preview-widget';
 import { EditorPreviewWidgetFactory } from '@theia/editor-preview/lib/browser/editor-preview-widget-factory';
@@ -35,8 +36,9 @@ import { MonacoEditorModel } from '@theia/monaco/lib/browser/monaco-editor-model
 import { CompositeEditorOptions } from './composite-editor-open-handler';
 import { CrossModelEditorManager } from './cross-model-editor-manager';
 import { CrossModelFileResourceResolver } from './cross-model-file-resource-resolver';
+import { DefaultSaveAsSaveableSource } from './cross-model-saveable-service';
 
-export class ReverseCompositeSaveable extends CompositeSaveable {
+export class ReverseCompositeSaveable extends CompositeSaveable implements Required<Pick<Saveable, 'serialize'>> {
    constructor(
       protected editor: CompositeEditor,
       protected fileResourceResolver: CrossModelFileResourceResolver
@@ -72,6 +74,23 @@ export class ReverseCompositeSaveable extends CompositeSaveable {
       }
    }
 
+   serialize(): Promise<BinaryBuffer> {
+      for (const saveable of this.saveables) {
+         if (typeof saveable.createSnapshot === 'function') {
+            const snapshot = saveable.createSnapshot();
+            if ('value' in snapshot) {
+               return Promise.resolve(BinaryBuffer.fromString(snapshot.value));
+            } else {
+               return Promise.resolve(BinaryBuffer.fromString(snapshot.read() ?? ''));
+            }
+         }
+         if (typeof saveable.serialize === 'function') {
+            return saveable.serialize();
+         }
+      }
+      throw new Error('Found no serializable saveable!');
+   }
+
    /**
     * Reset the dirty state (without triggering an additional save) of the non-active saveables after a save operation.
     */
@@ -95,12 +114,13 @@ export interface CompositeWidgetOptions extends NavigatableWidgetOptions {
 }
 
 @injectable()
-export class CompositeEditor extends BaseWidget implements SaveableSource, Navigatable, Partial<GLSPDiagramWidgetContainer> {
+export class CompositeEditor extends BaseWidget implements DefaultSaveAsSaveableSource, Navigatable, Partial<GLSPDiagramWidgetContainer> {
    @inject(CrossModelWidgetOptions) protected options: CompositeEditorOptions;
    @inject(LabelProvider) protected labelProvider: LabelProvider;
    @inject(WidgetManager) protected widgetManager: WidgetManager;
    @inject(CrossModelEditorManager) protected editorManager: CrossModelEditorManager;
    @inject(CrossModelFileResourceResolver) protected fileResourceResolver: CrossModelFileResourceResolver;
+   @inject(ModelService) protected readonly modelService: ModelService;
 
    protected tabPanel: TabPanel;
    saveable: CompositeSaveable;
@@ -169,6 +189,38 @@ export class CompositeEditor extends BaseWidget implements SaveableSource, Navig
 
    getResourceUri(): URI {
       return new URI(this.options.uri);
+   }
+
+   /** Updates ID of untitled editor to match user's name input. */
+   async getSaveAsUri(): Promise<URI | undefined> {
+      if (this.resourceUri.scheme === 'file') {
+         return;
+      }
+      const uri = this.resourceUri.toString();
+      const document = await this.modelService.open({ uri, clientId: 'save' });
+      try {
+         if (!document) {
+            return;
+         }
+         const node = getSemanticRoot(
+            document.root,
+            (candidate): candidate is LogicalEntity | Relationship => typeof candidate === 'object' && !!candidate && 'name' in candidate
+         );
+         const objectKey = ROOT_KEYS.find(candidate => candidate in document.root);
+         if (!node?.name || !objectKey) {
+            return;
+         }
+         const fullExtension = this.resourceUri.path.base.slice(this.resourceUri.path.base.indexOf('.'));
+         const newId = await this.modelService.findNextId({ uri, type: node.$type, proposal: toId(node.name) });
+         await this.modelService.update({
+            clientId: 'save',
+            model: { ...document.root, [objectKey]: { ...node, id: newId } },
+            uri: document.uri
+         });
+         return this.resourceUri.withScheme('file').parent.resolve(`${newId}${fullExtension}`);
+      } finally {
+         await this.modelService.close({ uri: this.resourceUri.toString(), clientId: 'save' });
+      }
    }
 
    protected override onAfterAttach(msg: Message): void {

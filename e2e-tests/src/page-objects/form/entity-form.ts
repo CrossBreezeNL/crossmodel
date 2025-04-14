@@ -2,7 +2,7 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 
-import { defined } from '@eclipse-glsp/glsp-playwright';
+import { defined, waitForFunction } from '@eclipse-glsp/glsp-playwright';
 import { Locator } from '@playwright/test';
 import { TheiaPageObject } from '@theia/playwright';
 import { TheiaView } from '@theia/playwright/lib/theia-view';
@@ -162,6 +162,7 @@ export class LogicalAttribute extends TheiaPageObject {
       await this.nameLocator.press('Enter');
       await this.nameLocator.locator('input').fill(name);
       await this.nameLocator.press('Enter');
+      await waitForFunction(async () => (await this.getName()) === name);
    }
 
    async getDatatype(): Promise<LogicalAttributeDatatype> {
@@ -173,6 +174,7 @@ export class LogicalAttribute extends TheiaPageObject {
       await this.dataType.getByRole('combobox').click();
       const selectionOverlay = this.page.locator('div[role="presentation"][id="menu-"]');
       await selectionOverlay.locator(`li[data-value="${datatype}"]`).press('Enter');
+      await waitForFunction(async () => (await this.getDatatype()) === datatype);
    }
 
    async isIdentifier(): Promise<boolean> {
@@ -180,8 +182,11 @@ export class LogicalAttribute extends TheiaPageObject {
    }
 
    async toggleIdentifier(): Promise<void> {
-      await this.identifierLocator.click({ clickCount: 2 });
+      const isIdentifier = await this.isIdentifier();
+      await this.identifierLocator.press('Enter');
       await this.identifierLocator.click();
+      await this.identifierLocator.press('Enter');
+      await waitForFunction(async () => (await this.isIdentifier()) !== isIdentifier);
    }
 
    async getDescription(): Promise<string> {
@@ -189,9 +194,10 @@ export class LogicalAttribute extends TheiaPageObject {
    }
 
    async setDescription(description: string): Promise<void> {
-      await this.descriptionLocator.click({ clickCount: 2 });
+      await this.descriptionLocator.press('Enter');
       await this.descriptionLocator.locator('input').fill(description);
       await this.descriptionLocator.press('Enter');
+      await waitForFunction(async () => (await this.getDescription()) === description);
    }
 
    async delete(): Promise<void> {

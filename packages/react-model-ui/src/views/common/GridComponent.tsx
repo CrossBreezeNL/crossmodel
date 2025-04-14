@@ -5,7 +5,7 @@ import { DeleteOutlined } from '@mui/icons-material';
 import AddIcon from '@mui/icons-material/Add';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import { Box, Typography } from '@mui/material';
+import { Box, popoverClasses, Typography } from '@mui/material';
 import Button from '@mui/material/Button';
 import {
    DataGrid,
@@ -57,6 +57,14 @@ export interface GridComponentProps<T extends GridValidRowModel> extends Omit<Da
    validateField?: ValidationFunction<T>;
 }
 
+export function isChildOf(child: Element, predicate: (parent: Element) => boolean): boolean {
+   let currentElement: Element | null = child;
+   while (currentElement && !predicate(currentElement)) {
+      currentElement = currentElement.parentElement;
+   }
+   return !!currentElement;
+}
+
 export default function GridComponent<T extends GridValidRowModel>({
    gridData,
    gridColumns,
@@ -84,7 +92,12 @@ export default function GridComponent<T extends GridValidRowModel>({
       // The grid will only handle focus changes if focus moves inside the form or there is a click on another React component.
       // This ensures that changes of focus to non-React elements are handled as well.
       const handleFocusChange = (e: FocusEvent): void => {
-         if (!(e.target instanceof Element) || gridRef.current?.contains(e.target) || editedRow.current === undefined) {
+         if (
+            !(e.target instanceof Element) ||
+            gridRef.current?.contains(e.target) ||
+            editedRow.current === undefined ||
+            isChildOf(e.target, parent => parent.classList.contains(popoverClasses.root)) // skip popover children to support select list
+         ) {
             return;
          }
          gridApi.current.stopRowEditMode({ id: editedRow.current });

@@ -6,6 +6,8 @@ on:
       - feature/*
       - issue/*
       - bugfix/*
+      - hotfix/*
+      - chore/*
 
 jobs:
   check-open-pr:

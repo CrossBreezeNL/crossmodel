@@ -2,17 +2,17 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 
-import { RelationshipAttribute } from '@crossbreezenl/protocol';
+import { RelationshipAttribute, unreachable } from '@crossbreezenl/protocol';
 import { DispatchAction, ModelAction, ModelState, moveDown, moveUp, undefinedIfEmpty } from './ModelReducer';
-
-export interface RelationshipUpdateAction extends ModelAction {
-   type: 'relationship:update';
-   name: string;
-}
 
 export interface RelationshipChangeNameAction extends ModelAction {
    type: 'relationship:change-name';
    name: string;
+}
+
+export interface RelationshipChangeIdAction extends ModelAction {
+   type: 'relationship:change-id';
+   id: string;
 }
 
 export interface RelationshipChangeDescriptionAction extends ModelAction {
@@ -67,8 +67,8 @@ export interface RelationshipAttributeDeleteAction extends ModelAction {
 }
 
 export type RelationshipDispatchAction =
-   | RelationshipUpdateAction
    | RelationshipChangeNameAction
+   | RelationshipChangeIdAction
    | RelationshipChangeDescriptionAction
    | RelationshipChangeParentAction
    | RelationshipChangeParentCardinalityAction
@@ -93,6 +93,10 @@ export function RelationshipModelReducer(state: ModelState, action: Relationship
    switch (action.type) {
       case 'relationship:change-name':
          relationship.name = undefinedIfEmpty(action.name);
+         break;
+
+      case 'relationship:change-id':
+         relationship.id = action.id;
          break;
 
       case 'relationship:change-description':
@@ -134,6 +138,8 @@ export function RelationshipModelReducer(state: ModelState, action: Relationship
       case 'relationship:attribute:delete-attribute':
          relationship.attributes.splice(action.attributeIdx, 1);
          break;
+      default:
+         return unreachable(action);
    }
    return state;
 }

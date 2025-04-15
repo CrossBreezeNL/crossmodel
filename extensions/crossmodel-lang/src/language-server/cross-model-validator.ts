@@ -119,7 +119,8 @@ export class CrossModelValidator {
          return;
       }
       const document = findDocument(identifiedObject);
-      if (!document) {
+      // Don't enforce filename requirement on untitled files: the name will be updated on save.
+      if (!document || document.uri.scheme === 'untitled') {
          return;
       }
       const basename = UriUtils.basename(document.uri);

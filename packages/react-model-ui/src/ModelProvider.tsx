@@ -13,7 +13,8 @@ import {
    ModelQueryApiContext,
    OpenModelContext,
    SaveModelContext,
-   UntitledContext
+   UntitledContext,
+   UriContext
 } from './ModelContext';
 import { DispatchAction, ModelReducer, ModelState } from './ModelReducer';
 import { ModelProviderProps } from './ModelViewer';
@@ -70,9 +71,11 @@ export function ModelProvider({
                <ModelDispatchContext.Provider value={dispatch}>
                   <ModelDirtyContext.Provider value={dirty}>
                      <ModelDiagnosticsContext.Provider value={document.diagnostics}>
-                        <UntitledContext.Provider value={isUntitled}>
-                           <ModelQueryApiContext.Provider value={modelQueryApi}>{children}</ModelQueryApiContext.Provider>
-                        </UntitledContext.Provider>
+                        <UriContext.Provider value={document.uri}>
+                           <UntitledContext.Provider value={isUntitled}>
+                              <ModelQueryApiContext.Provider value={modelQueryApi}>{children}</ModelQueryApiContext.Provider>
+                           </UntitledContext.Provider>
+                        </UriContext.Provider>
                      </ModelDiagnosticsContext.Provider>
                   </ModelDirtyContext.Provider>
                </ModelDispatchContext.Provider>

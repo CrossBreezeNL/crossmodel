@@ -7,11 +7,12 @@ import {
    CrossModelValidationErrors,
    ModelFileType,
    ModelStructure,
-   ReferenceableElement
+   ReferenceableElement,
+   toId
 } from '@crossbreezenl/protocol';
 import { Autocomplete, TextField } from '@mui/material';
 import * as React from 'react';
-import { useDiagnostics, useModelDispatch, useModelQueryApi, useReadonly, useRelationship, useUntitled } from '../../ModelContext';
+import { useDiagnostics, useModelDispatch, useModelQueryApi, useReadonly, useRelationship, useUntitled, useUri } from '../../ModelContext';
 import { modelComponent } from '../../ModelViewer';
 import { themed } from '../../ThemedViewer';
 import { FormSection } from '../FormSection';
@@ -27,7 +28,8 @@ export function RelationshipForm(): React.ReactElement {
    const readonly = useReadonly();
    const baseDiagnostics = useDiagnostics();
    const untitled = useUntitled();
-   const diagnostics = CrossModelValidationErrors.getFieldErrors(baseDiagnostics);
+   const uri = useUri();
+   const diagnostics = React.useMemo(() => CrossModelValidationErrors.getFieldErrors(baseDiagnostics), [baseDiagnostics]);
 
    const usingDefaultName = React.useMemo(
       () => relationship.name === computeRelationshipName(relationship.parent, relationship.child),
@@ -43,24 +45,46 @@ export function RelationshipForm(): React.ReactElement {
 
    const cardinalities = ['zero', 'one', 'multiple'];
 
+   const updateNameAndId = React.useCallback(
+      (parent?: string, child?: string) => {
+         const name = computeRelationshipName(parent, child);
+         const proposal = toId(name);
+         dispatch({ type: 'relationship:change-name', name });
+         api.findNextId({ uri, type: relationship.$type, proposal }).then(id => dispatch({ type: 'relationship:change-id', id }));
+      },
+      [dispatch, api, uri, relationship]
+   );
+
    const handleParentChange = React.useCallback(
       (_: React.SyntheticEvent, newRef: string) => {
          dispatch({ type: 'relationship:change-parent', parent: newRef });
          if (untitled && usingDefaultName) {
-            dispatch({ type: 'relationship:change-name', name: computeRelationshipName(newRef, relationship.child) });
+            updateNameAndId(newRef, relationship.child);
          }
       },
-      [dispatch, untitled, usingDefaultName, relationship]
+      [dispatch, untitled, usingDefaultName, relationship, updateNameAndId]
    );
 
    const handleChildChange = React.useCallback(
       (_: React.SyntheticEvent, newRef: string) => {
          dispatch({ type: 'relationship:change-child', child: newRef });
          if (untitled && usingDefaultName) {
-            dispatch({ type: 'relationship:change-name', name: computeRelationshipName(relationship.parent, newRef) });
+            updateNameAndId(relationship.parent, newRef);
          }
       },
-      [dispatch, untitled, usingDefaultName, relationship]
+      [dispatch, untitled, usingDefaultName, relationship, updateNameAndId]
+   );
+
+   const handleNameChange = React.useCallback(
+      (event: React.ChangeEvent<HTMLInputElement>) => {
+         dispatch({ type: 'relationship:change-name', name: event.target.value ?? '' });
+         if (untitled) {
+            api.findNextId({ uri, type: relationship.$type, proposal: toId(event.target.value) }).then(id =>
+               dispatch({ type: 'relationship:change-id', id })
+            );
+         }
+      },
+      [untitled, dispatch, api, uri, relationship]
    );
 
    return (
@@ -72,7 +96,7 @@ export function RelationshipForm(): React.ReactElement {
                disabled={readonly}
                error={!!diagnostics.name?.length}
                helperText={diagnostics.name?.at(0)?.message}
-               onChange={event => dispatch({ type: 'relationship:change-name', name: event.target.value ?? '' })}
+               onChange={handleNameChange}
                required={true}
             />
 
@@ -90,7 +114,7 @@ export function RelationshipForm(): React.ReactElement {
                optionLoader={referenceableElements}
                textFieldProps={{ required: true, helperText: diagnostics.parent?.at(0)?.message, error: !!diagnostics.parent?.length }}
                onChange={handleParentChange}
-               value={relationship.parent}
+               value={relationship.parent ?? ''}
                disabled={readonly}
                selectOnFocus={true}
             />
@@ -110,7 +134,7 @@ export function RelationshipForm(): React.ReactElement {
                optionLoader={referenceableElements}
                textFieldProps={{ required: true, helperText: diagnostics.child?.at(0)?.message, error: !!diagnostics.child?.length }}
                onChange={handleChildChange}
-               value={relationship.child}
+               value={relationship.child ?? ''}
                clearOnBlur={true}
                disabled={readonly}
                selectOnFocus={true}

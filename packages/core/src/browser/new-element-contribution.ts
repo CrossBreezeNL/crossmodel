@@ -12,7 +12,6 @@ import {
    NPM_PACKAGE_NAME_REGEX,
    RelationshipType,
    TargetObjectType,
-   computeRelationshipName,
    isMemberPermittedInModel,
    packageNameToId,
    quote,
@@ -26,6 +25,7 @@ import {
    MaybePromise,
    MenuContribution,
    MenuModelRegistry,
+   Resource,
    UNTITLED_SCHEME,
    URI,
    UntitledResourceResolver,
@@ -87,19 +87,10 @@ const NEW_ELEMENT_TEMPLATES: ReadonlyArray<NewElementTemplate> = [
       },
       category: TEMPLATE_CATEGORY,
       iconClass: ModelStructure.Relationship.ICON_CLASS,
-      async content(parentUri, modelService) {
-         const elements = await modelService.findReferenceableElements({
-            container: { uri: parentUri.toString(), type: this.memberType },
-            property: 'parent'
-         });
-         const parent = elements.at(0)?.label;
-         const child = elements.at(1)?.label;
-         const name = computeRelationshipName(parent, child);
+      async content() {
          return `relationship:
-    id: New${this.memberType}
-    name: ${quote(toPascal(name))}
-    parent: ${parent}
-    child: ${child}
+    id: Parent_Child
+    name: "Parent_Child"
 `;
       }
    },
@@ -290,9 +281,8 @@ export class CrossModelWorkspaceContribution extends WorkspaceCommandContributio
             const fileUri = template.toUri(parent.resource, '');
             const content =
                typeof template.content === 'string' ? template.content : await template.content(parent.resource, this.modelService, {});
-            const untitledUri = fileUri.withScheme(UNTITLED_SCHEME);
-            this.untitledResources.createUntitledResource(content, undefined, untitledUri);
-            open(this.openerService, untitledUri);
+            const resource = await this.getUntitledResource(fileUri, content);
+            await open(this.openerService, resource.uri);
          } else {
             const options = await this.getMemberOptions(
                {
@@ -338,6 +328,17 @@ export class CrossModelWorkspaceContribution extends WorkspaceCommandContributio
       const content =
          typeof template.content === 'string' ? template.content : await template.content(parent.resource, this.modelService, options);
       return { fileUri, content };
+   }
+
+   protected async getUntitledResource(fileUri: URI, content: string): Promise<Resource> {
+      let untitledUri = fileUri.withScheme(UNTITLED_SCHEME);
+      let suffix = 1;
+      while (this.untitledResources.has(untitledUri)) {
+         const base = untitledUri.path.base;
+         const pivot = base.indexOf('.');
+         untitledUri = untitledUri.parent.resolve(`${base.slice(0, pivot)}${suffix++}${base.slice(pivot)}`);
+      }
+      return this.untitledResources.createUntitledResource(content, undefined, untitledUri);
    }
 
    protected async validateElementFileName(file: URI, name: string): Promise<DialogError> {

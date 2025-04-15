@@ -7,7 +7,7 @@ import { FormEditorOpenHandler, FormEditorWidget } from '@crossbreezenl/form-cli
 import { MappingDiagramManager, SystemDiagramManager } from '@crossbreezenl/glsp-client/lib/browser/';
 import { MappingDiagramLanguage, SystemDiagramLanguage } from '@crossbreezenl/glsp-client/lib/common';
 import { ModelService } from '@crossbreezenl/model-service/lib/common';
-import { LogicalEntity, ModelFileType, ROOT_KEYS, Relationship, codiconCSSString, getSemanticRoot, toId } from '@crossbreezenl/protocol';
+import { ModelFileType, codiconCSSString, getSemanticRoot } from '@crossbreezenl/protocol';
 import { FocusStateChangedAction, SetDirtyStateAction, toTypeGuard } from '@eclipse-glsp/client';
 import { GLSPDiagramWidget, GLSPDiagramWidgetContainer, GLSPDiagramWidgetOptions, GLSPSaveable } from '@eclipse-glsp/theia-integration';
 import { GLSPDiagramLanguage } from '@eclipse-glsp/theia-integration/lib/common';
@@ -202,21 +202,12 @@ export class CompositeEditor extends BaseWidget implements DefaultSaveAsSaveable
          if (!document) {
             return;
          }
-         const node = getSemanticRoot(
-            document.root,
-            (candidate): candidate is LogicalEntity | Relationship => typeof candidate === 'object' && !!candidate && 'name' in candidate
-         );
-         const objectKey = ROOT_KEYS.find(candidate => candidate in document.root);
-         if (!node?.name || !objectKey) {
+         const node = getSemanticRoot(document.root);
+         if (!node) {
             return;
          }
          const fullExtension = this.resourceUri.path.base.slice(this.resourceUri.path.base.indexOf('.'));
-         const newId = await this.modelService.findNextId({ uri, type: node.$type, proposal: toId(node.name) });
-         await this.modelService.update({
-            clientId: 'save',
-            model: { ...document.root, [objectKey]: { ...node, id: newId } },
-            uri: document.uri
-         });
+         const newId = node.id;
          return this.resourceUri.withScheme('file').parent.resolve(`${newId}${fullExtension}`);
       } finally {
          await this.modelService.close({ uri: this.resourceUri.toString(), clientId: 'save' });

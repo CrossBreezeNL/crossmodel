@@ -2,10 +2,11 @@
  * Copyright (c) 2025 CrossBreeze.
  ********************************************************************************/
 import { PromptTemplate } from '@theia/ai-core';
+import { CreateLogicalEntityToolProvider } from './create-logical-entity-tool-provider';
 export const CROSSMODEL_SYSTEM_PROMPT = <PromptTemplate>{
    id: 'crossmodel:model-assistant',
    template: `
-You are a data modeling assistant integrated in a graphical diagram editor named CrossModel.
+You are a data modeling assistant integrated in a data modelling tool named CrossModel.
 You are keen on helping the end-user of CrossModel making data models.
 
 ## General diagramming
@@ -31,6 +32,8 @@ Instead, assume that the users sees a visual representation of the diagram at al
 Thus, never output the diagram state as JSON in your replies.
 Answer brief and don't repeat the state of the diagram.
 
-{{diagram}}
+## Available Tools
+
+- ~{${CreateLogicalEntityToolProvider.ID}}
 `
 };

@@ -22,7 +22,6 @@ import { ThemeService } from '@theia/core/lib/browser/theming';
 import URI from '@theia/core/lib/common/uri';
 import { inject, injectable, postConstruct } from '@theia/core/shared/inversify';
 import * as React from '@theia/core/shared/react';
-import { EditorPreferences } from '@theia/editor/lib/browser';
 import * as deepEqual from 'fast-deep-equal';
 import * as debounce from 'p-debounce';
 
@@ -41,7 +40,6 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
    @inject(ModelService) protected readonly modelService: ModelService;
    @inject(ModelServiceClient) protected serviceClient: ModelServiceClient;
    @inject(ThemeService) protected readonly themeService: ThemeService;
-   @inject(EditorPreferences) protected readonly editorPreferences: EditorPreferences;
    @inject(OpenerService) protected readonly openerService: OpenerService;
    @inject(ResourceProvider) protected readonly resourceProvider: ResourceProvider;
 
@@ -50,8 +48,6 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
    protected readonly onContentChangedEmitter = new Emitter<void>();
    onContentChanged: Event<void> = this.onContentChangedEmitter.event;
    dirty = false;
-   autoSave: 'off' | 'afterDelay' | 'onFocusChange' | 'onWindowChange';
-   autoSaveDelay: number;
 
    protected document?: CrossModelDocument;
    protected error: string | undefined;
@@ -63,20 +59,9 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
 
       this.setModel(this.options.uri);
 
-      this.autoSave = this.editorPreferences.get('files.autoSave');
-      this.autoSaveDelay = this.editorPreferences.get('files.autoSaveDelay');
-
       this.toDispose.pushAll([
          this.serviceClient.onModelUpdate(event => {
             this.handleExternalUpdate(event);
-         }),
-         this.editorPreferences.onPreferenceChanged(event => {
-            if (event.preferenceName === 'files.autoSave') {
-               this.autoSave = this.editorPreferences.get('files.autoSave');
-            }
-            if (event.preferenceName === 'files.autoSaveDelay') {
-               this.autoSaveDelay = this.editorPreferences.get('files.autoSaveDelay');
-            }
          }),
          this.themeService.onDidColorThemeChange(() => this.update())
       ]);
@@ -142,12 +127,6 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
          this.onContentChangedEmitter.fire();
          console.debug(`[${this.options.clientId}] Send update to server`);
          await this.modelService.update({ uri: this.document.uri, model: root, clientId: this.options.clientId });
-         if (this.autoSave !== 'off' && this.dirty) {
-            const saveTimeout = setTimeout(() => {
-               this.save();
-               clearTimeout(saveTimeout);
-            }, this.autoSaveDelay);
-         }
       }
    }
 

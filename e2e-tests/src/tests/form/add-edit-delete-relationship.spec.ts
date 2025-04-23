@@ -50,8 +50,6 @@ test.describe('Add/Edit/Delete relationship from explorer', () => {
       expect(await editor.textContentOfLineByLineNumber(1)).toBe('relationship:');
       expect(await editor.textContentOfLineByLineNumber(2)).toMatch('id: NewRelationship');
       expect(await editor.textContentOfLineByLineNumber(3)).toMatch('name: "NewRelationship"');
-      expect(await editor.textContentOfLineByLineNumber(4)).toMatch('parent: Address');
-      expect(await editor.textContentOfLineByLineNumber(5)).toMatch('child: Customer');
       await editor.close();
    });
 

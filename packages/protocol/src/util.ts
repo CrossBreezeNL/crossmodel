@@ -81,7 +81,7 @@ export function packageNameToId(input: string): string {
 }
 
 export function computeRelationshipName(parentName: string | undefined | null, childName: string | undefined | null): string {
-   return `${parentName || 'Parent'}_${childName || 'Child'}`;
+   return `${parentName || '<Parent>'} to ${childName || '<Child>'}`;
 }
 
 export function unreachable(input: never): never {

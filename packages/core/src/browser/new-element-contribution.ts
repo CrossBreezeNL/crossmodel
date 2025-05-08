@@ -56,12 +56,23 @@ interface NewElementTemplate<T extends readonly InputOptions[] = readonly InputO
 }
 
 const INITIAL_ENTITY_CONTENT = `entity:
-    id: NewLogicalEntity
-    name: "NewLogicalEntity"
+    id: _
+    name: ""
+`;
+
+const INITIAL_RELATIONSHIP_CONTENT = `relationship:
+    id: _Parent_to_Child_
+    name: "<Parent> to <Child>"
 `;
 
 const INITIAL_DIAGRAM_CONTENT = `systemDiagram:
     id: \${id}
+`;
+
+const INITIAL_MAPPING_CONTENT = `mapping:
+    id: \${id}
+    target:
+        entity: \${target}
 `;
 
 const TEMPLATE_CATEGORY = 'New Element';
@@ -87,12 +98,7 @@ const NEW_ELEMENT_TEMPLATES: ReadonlyArray<NewElementTemplate> = [
       },
       category: TEMPLATE_CATEGORY,
       iconClass: ModelStructure.Relationship.ICON_CLASS,
-      async content() {
-         return `relationship:
-    id: Parent_Child
-    name: "Parent_Child"
-`;
-      }
+      content: INITIAL_RELATIONSHIP_CONTENT
    },
    {
       id: 'crossbreeze.new.system-diagram',
@@ -112,11 +118,7 @@ const NEW_ELEMENT_TEMPLATES: ReadonlyArray<NewElementTemplate> = [
       category: TEMPLATE_CATEGORY,
       iconClass: ModelStructure.Mapping.ICON_CLASS,
       validateName: validateObjectName,
-      content: (_, __, { name, target }) => `mapping:
-    id: ${toId(name)}
-    target:
-        entity: ${target}
-`,
+      content: (_, __, { name, target }) => INITIAL_MAPPING_CONTENT.replace(/\$\{id\}/gi, toId(name)).replace(/\$\{target\}/gi, target),
       async getInputOptions(parent, modelService) {
          const elements = await modelService.findReferenceableElements({
             container: { uri: parent.toString(), type: this.memberType },

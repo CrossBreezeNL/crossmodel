@@ -2,12 +2,17 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 
-import { LogicalAttribute } from '@crossbreezenl/protocol';
+import { LogicalAttribute, unreachable } from '@crossbreezenl/protocol';
 import { DispatchAction, ModelAction, ModelState, moveDown, moveUp, undefinedIfEmpty } from './ModelReducer';
 
 export interface EntityChangeNameAction extends ModelAction {
    type: 'entity:change-name';
    name: string;
+}
+
+export interface EntityChangeIdAction extends ModelAction {
+   type: 'entity:change-id';
+   id: string;
 }
 
 export interface EntityChangeDescriptionAction extends ModelAction {
@@ -43,6 +48,7 @@ export interface LogicalAttributeDeleteAction extends ModelAction {
 
 export type EntityDispatchAction =
    | EntityChangeNameAction
+   | EntityChangeIdAction
    | EntityChangeDescriptionAction
    | LogicalAttributeUpdateAction
    | LogicalAttributeAddEmptyAction
@@ -66,7 +72,9 @@ export function EntityModelReducer(state: ModelState, action: EntityDispatchActi
       case 'entity:change-name':
          entity.name = undefinedIfEmpty(action.name);
          break;
-
+      case 'entity:change-id':
+         entity.id = action.id;
+         break;
       case 'entity:change-description':
          entity.description = undefinedIfEmpty(action.description);
          break;
@@ -94,6 +102,8 @@ export function EntityModelReducer(state: ModelState, action: EntityDispatchActi
       case 'entity:attribute:move-attribute-down':
          moveDown(entity.attributes, action.attributeIdx);
          break;
+      default:
+         unreachable(action);
    }
    return state;
 }

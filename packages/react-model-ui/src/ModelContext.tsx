@@ -4,6 +4,7 @@
 import {
    CrossModelRoot,
    CrossReferenceContext,
+   FindIdArgs,
    LogicalEntity,
    Mapping,
    ModelDiagnostic,
@@ -18,6 +19,7 @@ export type OpenCallback = () => void;
 
 export interface ModelQueryApi {
    findReferenceableElements(args: CrossReferenceContext): Promise<ReferenceableElement[]>;
+   findNextId(args: FindIdArgs): Promise<string>;
 }
 
 const DEFAULT_MODEL_ROOT: CrossModelRoot = { $type: 'CrossModelRoot' };
@@ -33,10 +35,14 @@ export const OpenModelContext = React.createContext<OpenCallback | undefined>(un
 export const DEFAULT_SAVE_CALLBACK = (): void => console.log('Saving this model is not supported.');
 export const SaveModelContext = React.createContext<SaveCallback | undefined>(undefined);
 
-export const DEFAULT_QUERY_API: ModelQueryApi = { findReferenceableElements: async () => [] };
+export const DEFAULT_QUERY_API: ModelQueryApi = { findReferenceableElements: async () => [], findNextId: () => Promise.resolve('') };
 export const ModelQueryApiContext = React.createContext<ModelQueryApi>(DEFAULT_QUERY_API);
 
 export const ModelDirtyContext = React.createContext<boolean>(false);
+
+export const UntitledContext = React.createContext<boolean>(false);
+
+export const UriContext = React.createContext<string>('');
 
 export const ModelDiagnosticsContext = React.createContext<ModelDiagnostic[]>([]);
 
@@ -70,6 +76,14 @@ export function useDirty(): boolean {
 
 export function useReadonly(): boolean {
    return ModelDiagnostic.hasParseErrors(useDiagnostics());
+}
+
+export function useUri(): string {
+   return React.useContext(UriContext);
+}
+
+export function useUntitled(): boolean {
+   return React.useContext(UntitledContext);
 }
 
 export function useEntity(): LogicalEntity {

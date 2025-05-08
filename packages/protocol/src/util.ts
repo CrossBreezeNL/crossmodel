@@ -79,3 +79,11 @@ export function packageNameToId(input: string): string {
    const unscoped = input.split('/').at(-1)!;
    return unscoped.split(/[~.-]/).map(toPascal).join('');
 }
+
+export function computeRelationshipName(parentName: string | undefined | null, childName: string | undefined | null): string {
+   return `${parentName || '<Parent>'} to ${childName || '<Child>'}`;
+}
+
+export function unreachable(input: never): never {
+   throw new Error('Value detected in unreachable assertion: ' + `${input}`);
+}

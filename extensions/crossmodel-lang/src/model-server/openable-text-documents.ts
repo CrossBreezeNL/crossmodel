@@ -7,6 +7,7 @@ import { NormalizedTextDocuments } from 'langium/lsp';
 import { basename } from 'path';
 import {
    CancellationToken,
+   Connection,
    DidChangeTextDocumentParams,
    DidCloseTextDocumentParams,
    DidOpenTextDocumentParams,
@@ -92,7 +93,7 @@ export class OpenableTextDocuments<T extends TextDocument> extends NormalizedTex
       return this['_willSaveWaitUntil'];
    }
 
-   public override listen(connection: any): Disposable {
+   public override listen(connection: Connection): Disposable {
       (<any>connection).__textDocumentSync = TextDocumentSyncKind.Incremental;
       const disposables: Disposable[] = [];
       disposables.push(
@@ -175,6 +176,11 @@ export class OpenableTextDocuments<T extends TextDocument> extends NormalizedTex
             this.log(syncedDocument.uri, `Remove synced document: ${syncedDocument.version} (no client left)`);
             this.__syncedDocuments.delete(event.textDocument.uri);
             this.__changeHistory.delete(event.textDocument.uri);
+            // Non-persistent files are dead if no client holds them.
+            const uri = URI.parse(event.textDocument.uri);
+            if (uri.scheme !== 'file') {
+               this.services.workspace.DocumentBuilder.update([], [uri]);
+            }
          }
       }
    }

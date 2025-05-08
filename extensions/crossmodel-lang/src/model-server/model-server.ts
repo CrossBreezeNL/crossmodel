@@ -9,6 +9,8 @@ import {
    CrossModelRoot,
    CrossReference,
    CrossReferenceContext,
+   FindIdArgs,
+   FindNextId,
    FindReferenceableElements,
    ModelDiagnostic,
    OnModelSaved,
@@ -59,6 +61,7 @@ export class ModelServer implements Disposable {
       this.toDispose.push(connection.onRequest(RequestModel, uri => this.requestModel(uri)));
       this.toDispose.push(connection.onRequest(FindReferenceableElements, args => this.complete(args)));
       this.toDispose.push(connection.onRequest(ResolveReference, args => this.resolve(args)));
+      this.toDispose.push(connection.onRequest(FindNextId, args => this.findNextId(args)));
       this.toDispose.push(connection.onRequest(UpdateModel, args => this.updateModel(args)));
       this.toDispose.push(connection.onRequest(SaveModel, args => this.saveModel(args)));
       this.toDispose.push(connection.onRequest(RequestSystemInfo, args => this.systemInfo(args)));
@@ -86,6 +89,10 @@ export class ModelServer implements Disposable {
       const uri = AstUtils.getDocument(node).uri.toString();
       const model = this.toSerializable(AstUtils.findRootNode(node)) as CrossModelRoot;
       return { uri, model };
+   }
+
+   protected findNextId({ uri, type, proposal }: FindIdArgs): string {
+      return this.modelService.findNextId(uri, type, proposal);
    }
 
    protected async openModel(args: OpenModelArgs): Promise<CrossModelDocument | undefined> {
@@ -165,6 +172,7 @@ export class ModelServer implements Disposable {
                : diagnostic.severity === DiagnosticSeverity.Warning
                  ? 'warning'
                  : 'info',
+         code: diagnostic.code ?? diagnostic.data?.code,
          type: langiumCode === 'lexing-error' ? 'lexing-error' : langiumCode === 'parsing-error' ? 'parsing-error' : 'validation-error'
       };
    }

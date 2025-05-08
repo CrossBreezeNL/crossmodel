@@ -16,13 +16,12 @@ import {
    SourceObjectComponent,
    SourceObjectRenderProps
 } from '@crossbreezenl/react-model-ui';
-import { Emitter, Event } from '@theia/core';
+import { Emitter, Event, ResourceProvider } from '@theia/core';
 import { LabelProvider, Message, OpenerService, ReactWidget, Saveable, open } from '@theia/core/lib/browser';
 import { ThemeService } from '@theia/core/lib/browser/theming';
 import URI from '@theia/core/lib/common/uri';
 import { inject, injectable, postConstruct } from '@theia/core/shared/inversify';
 import * as React from '@theia/core/shared/react';
-import { EditorPreferences } from '@theia/editor/lib/browser';
 import * as deepEqual from 'fast-deep-equal';
 import * as debounce from 'p-debounce';
 
@@ -41,16 +40,14 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
    @inject(ModelService) protected readonly modelService: ModelService;
    @inject(ModelServiceClient) protected serviceClient: ModelServiceClient;
    @inject(ThemeService) protected readonly themeService: ThemeService;
-   @inject(EditorPreferences) protected readonly editorPreferences: EditorPreferences;
    @inject(OpenerService) protected readonly openerService: OpenerService;
+   @inject(ResourceProvider) protected readonly resourceProvider: ResourceProvider;
 
    protected readonly onDirtyChangedEmitter = new Emitter<void>();
    onDirtyChanged: Event<void> = this.onDirtyChangedEmitter.event;
    protected readonly onContentChangedEmitter = new Emitter<void>();
    onContentChanged: Event<void> = this.onContentChangedEmitter.event;
    dirty = false;
-   autoSave: 'off' | 'afterDelay' | 'onFocusChange' | 'onWindowChange';
-   autoSaveDelay: number;
 
    protected document?: CrossModelDocument;
    protected error: string | undefined;
@@ -62,22 +59,9 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
 
       this.setModel(this.options.uri);
 
-      this.autoSave = this.editorPreferences.get('files.autoSave');
-      this.autoSaveDelay = this.editorPreferences.get('files.autoSaveDelay');
-
       this.toDispose.pushAll([
          this.serviceClient.onModelUpdate(event => {
-            if (event.sourceClientId !== this.options.clientId && event.document.uri === this.document?.uri) {
-               this.handleExternalUpdate(event);
-            }
-         }),
-         this.editorPreferences.onPreferenceChanged(event => {
-            if (event.preferenceName === 'files.autoSave') {
-               this.autoSave = this.editorPreferences.get('files.autoSave');
-            }
-            if (event.preferenceName === 'files.autoSaveDelay') {
-               this.autoSaveDelay = this.editorPreferences.get('files.autoSaveDelay');
-            }
+            this.handleExternalUpdate(event);
          }),
          this.themeService.onDidColorThemeChange(() => this.update())
       ]);
@@ -100,10 +84,16 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
 
    protected async openModel(uri: string): Promise<CrossModelDocument | undefined> {
       try {
-         const document = await this.modelService.open({ clientId: this.options.clientId, uri, version: this.options.version });
+         const { clientId, version } = this.options;
+         const documentUri = new URI(uri);
+         const text =
+            documentUri.scheme === 'file'
+               ? undefined // The server can read files on disk.
+               : await this.resourceProvider(documentUri).then(resource => resource.readContents());
+         const document = await this.modelService.open({ clientId, version, text, uri });
          return document;
-      } catch (error: any) {
-         this.error = error;
+      } catch (error) {
+         this.error = error instanceof Error ? error.message : error?.toString() ?? 'Unknown error.';
          return undefined;
       }
    }
@@ -137,12 +127,13 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
          this.onContentChangedEmitter.fire();
          console.debug(`[${this.options.clientId}] Send update to server`);
          await this.modelService.update({ uri: this.document.uri, model: root, clientId: this.options.clientId });
-         if (this.autoSave !== 'off' && this.dirty) {
-            const saveTimeout = setTimeout(() => {
-               this.save();
-               clearTimeout(saveTimeout);
-            }, this.autoSaveDelay);
-         }
+      }
+   }
+
+   async revert(options?: Saveable.RevertOptions | undefined): Promise<void> {
+      // Dummy implementation to allow saving untitled but modified form editor.
+      if (this.document?.uri && new URI(this.document.uri).scheme === 'untitled') {
+         this.setDirty(false);
       }
    }
 

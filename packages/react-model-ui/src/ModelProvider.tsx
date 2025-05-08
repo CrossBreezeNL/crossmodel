@@ -12,10 +12,13 @@ import {
    ModelDispatchContext,
    ModelQueryApiContext,
    OpenModelContext,
-   SaveModelContext
+   SaveModelContext,
+   UntitledContext,
+   UriContext
 } from './ModelContext';
 import { DispatchAction, ModelReducer, ModelState } from './ModelReducer';
 import { ModelProviderProps } from './ModelViewer';
+import { URI } from '@theia/core';
 
 export type UpdateCallback = (model: CrossModelRoot) => void;
 
@@ -60,7 +63,7 @@ export function ModelProvider({
          onModelUpdate(appState.model);
       }
    }, [appState, onModelUpdate]);
-
+   const isUntitled = React.useMemo(() => new URI(document.uri).scheme === 'untitled', [document.uri]);
    return (
       <ModelContext.Provider value={appState.model}>
          <OpenModelContext.Provider value={onModelOpen}>
@@ -68,7 +71,11 @@ export function ModelProvider({
                <ModelDispatchContext.Provider value={dispatch}>
                   <ModelDirtyContext.Provider value={dirty}>
                      <ModelDiagnosticsContext.Provider value={document.diagnostics}>
-                        <ModelQueryApiContext.Provider value={modelQueryApi}>{children}</ModelQueryApiContext.Provider>
+                        <UriContext.Provider value={document.uri}>
+                           <UntitledContext.Provider value={isUntitled}>
+                              <ModelQueryApiContext.Provider value={modelQueryApi}>{children}</ModelQueryApiContext.Provider>
+                           </UntitledContext.Provider>
+                        </UriContext.Provider>
                      </ModelDiagnosticsContext.Provider>
                   </ModelDirtyContext.Provider>
                </ModelDispatchContext.Provider>

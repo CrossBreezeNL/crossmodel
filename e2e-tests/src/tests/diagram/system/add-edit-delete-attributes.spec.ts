@@ -57,7 +57,7 @@ test.describe.serial('Add/Edit/Delete attributes to/from an entity in a diagram'
       await entityCodeEditor.saveAndClose();
    });
 
-   test('Edit attribute  via properties view', async () => {
+   test('Edit attribute via properties view', async () => {
       // Open the system diagram, select the entity and edit the new attribute via the property widget.
       const diagramEditor = await app.openCompositeEditor(SYSTEM_DIAGRAM_PATH, 'System Diagram');
       const propertyView = await diagramEditor.selectLogicalEntityAndOpenProperties(EMPTY_ENTITY_ID);

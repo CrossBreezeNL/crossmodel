@@ -16,6 +16,7 @@
   "main": "scripts/electron-main.js",
   "scripts": {
     "build": "yarn -s rebuild && theia build --app-target=\"electron\" --mode development && yarn download:plugins",
+    "postbuild": "cp -f ../../node_modules/libavoid-js/dist/libavoid.wasm ../../applications/electron-app/lib/frontend/libavoid.wasm",
     "bundle": "cross-env NODE_OPTIONS=--max-old-space-size=8192 && yarn build",
     "clean": "theia clean && rimraf lib src-gen",
     "deploy": "rimraf dist && electron-builder -c.mac.identity=null --publish always",

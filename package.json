@@ -33,6 +33,7 @@
     "watch:electron": "lerna run --parallel --ignore=\"crossmodel-browser-app\" watch"
   },
   "resolutions": {
+    "libavoid-js": "0.4.5",
     "node-abi": "^3.71.0"
   },
   "devDependencies": {

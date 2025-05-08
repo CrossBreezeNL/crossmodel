@@ -27,7 +27,7 @@ export class GRelationshipEdgeBuilder extends GEdgeBuilder<GRelationshipEdge> {
       this.id(index.createId(edge));
       this.addCssClasses('diagram-edge', 'relationship');
       this.addArg('edgePadding', 5);
-      this.routerKind('manhattan');
+      this.routerKind('libavoid');
       this.addArg(REFERENCE_CONTAINER_TYPE, RelationshipEdge);
       this.addArg(REFERENCE_PROPERTY, 'relationship');
       this.addArg(REFERENCE_VALUE, edge.relationship.$refText);
@@ -55,7 +55,7 @@ export class GInheritanceEdgeBuilder extends GEdgeBuilder<GInheritanceEdge> {
       this.id(index.createId(edge));
       this.addCssClasses('diagram-edge', 'inheritance');
       this.addArg('edgePadding', 5);
-      this.routerKind('manhattan');
+      this.routerKind('libavoid');
 
       const sourceId = index.findId(edge.baseNode?.ref, () => combineIds(index.assertId(edge.$container), edge.baseNode.$refText));
       const targetId = index.findId(edge.superNode?.ref, () => combineIds(index.assertId(edge.$container), edge.superNode.$refText));

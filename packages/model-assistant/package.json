@@ -27,8 +27,8 @@
     "watch": "tsc -w"
   },
   "dependencies": {
-    "@crossbreezenl/model-service": "^0.1.1",
-    "@crossbreezenl/protocol": "^0.1.1",
+    "@crossbreezenl/model-service": "0.2.0",
+    "@crossbreezenl/protocol": "0.2.0",
     "@theia/ai-chat": "1.60.2",
     "@theia/ai-chat-ui": "1.60.2",
     "@theia/ai-code-completion": "1.60.2",

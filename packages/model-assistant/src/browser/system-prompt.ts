@@ -33,7 +33,8 @@ Thus, never output the diagram state as JSON in your replies.
 Answer brief and don't repeat the state of the diagram.
 
 ## Available Tools
+- To create one new entity: ~{${CreateLogicalEntityToolProvider.ID}}
 
-- ~{${CreateLogicalEntityToolProvider.ID}}
+When specifying an name for an entity or attribute, don't use 'Id' or 'Name' as a name.
 `
 };

@@ -2,17 +2,12 @@
  * Copyright (c) 2025 CrossBreeze.
  ********************************************************************************/
 import { ModelService } from '@crossbreezenl/model-service/lib/common';
-import { quote, toId } from '@crossbreezenl/protocol';
+import { LogicalAttribute, OpenModelArgs, SaveModelArgs } from '@crossbreezenl/protocol';
 import { ToolProvider, ToolRequest } from '@theia/ai-core';
-import { URI } from '@theia/core';
+import { CommandRegistry, URI } from '@theia/core';
 import { inject, injectable } from '@theia/core/shared/inversify';
 import { FileService } from '@theia/filesystem/lib/browser/file-service';
 import { WorkspaceService } from '@theia/workspace/lib/browser';
-
-const INITIAL_ENTITY_CONTENT = `entity:
-    id: \${id}
-    name: \${name}
-`;
 
 @injectable()
 export class CreateLogicalEntityToolProvider implements ToolProvider {
@@ -25,6 +20,8 @@ export class CreateLogicalEntityToolProvider implements ToolProvider {
    protected fileService: FileService;
 
    @inject(ModelService) modelService: ModelService;
+
+   @inject(CommandRegistry) commandRegistry: CommandRegistry;
 
    async getWorkspaceRoot(): Promise<URI> {
       const wsRoots = await this.workspaceService.roots;
@@ -53,30 +50,75 @@ export class CreateLogicalEntityToolProvider implements ToolProvider {
    }
 
    private async createLogicalEntity(args: any): Promise<void> {
-      if (args.length === 0 || args.entity_name === undefined) {
+      if (args.length === 0 || args.name === undefined) {
          throw new Error('No entity name provided');
       }
-      const newEntityName = args.entity_name;
-      this.getProjectFolder().then(projectFolderUri => {
-         const newEntityFilePath: URI = projectFolderUri.resolve(newEntityName + '.entity.cm');
-         return this.fileService.create(
-            newEntityFilePath,
-            INITIAL_ENTITY_CONTENT.replace(/\$\{name\}/gi, quote(newEntityName)).replace(/\$\{id\}/gi, toId(newEntityName))
-         );
+      const newEntityName = args.name;
+      const projectFolderUri = await this.getProjectFolder();
+      // Execute the command to create a new entity
+      const entityUri = await this.commandRegistry.executeCommand('crossmodel.logical.entity.create', projectFolderUri, {
+         name: newEntityName,
+         description: args.description
       });
+      // If the entity is created, create the attributes.
+      if (entityUri !== undefined) {
+         const newDocument = await this.modelService.open(<OpenModelArgs>{ uri: entityUri!.toString() });
+         if (newDocument === undefined || newDocument.root === undefined) {
+            throw new Error('Failed to find logical entity document');
+         }
+         const entity = newDocument.root.entity;
+         // Push the attributes to the new entity
+         args.attributes.forEach((attribute: any) => {
+            // Create a plain object that matches the LogicalAttribute type
+            const newAttribute: LogicalAttribute = {
+               $type: 'LogicalAttribute',
+               $globalId: entity!.$globalId.concat(attribute.id),
+               id: attribute.id,
+               name: attribute.name,
+               description: attribute.description
+            };
+            entity?.attributes.push(newAttribute);
+         });
+         await this.modelService.save(<SaveModelArgs>{ uri: entityUri!.toString(), model: newDocument.root });
+         // this.commandRegistry.executeCommand(CommonCommands.SAVE.id);
+      }
    }
 
    getTool(): ToolRequest {
       return {
          id: CreateLogicalEntityToolProvider.ID,
-         name: CreateLogicalEntityToolProvider.ID,
+         name: 'create-logical-entity',
          description: 'Create an entity in a logical data model',
          parameters: {
             type: 'object',
             properties: {
-               entity_name: {
+               name: {
                   type: 'string',
                   description: 'The name of the entity to create'
+               },
+               description: {
+                  type: 'string',
+                  description: 'The description of the entity to create'
+               },
+               attributes: {
+                  type: 'array',
+                  items: {
+                     type: 'object',
+                     properties: {
+                        id: {
+                           type: 'string',
+                           description: 'The ID of the attribute (Can only contain letters, numbers, and underscores)'
+                        },
+                        name: {
+                           type: 'string',
+                           description: 'The name of the attribute'
+                        },
+                        description: {
+                           type: 'string',
+                           description: 'The description of the attribute'
+                        }
+                     }
+                  }
                }
             }
          },

@@ -33,7 +33,7 @@ import {
    UriSelection,
    nls
 } from '@theia/core';
-import { CommonMenus, DialogError, open } from '@theia/core/lib/browser';
+import { CommonMenus, DialogError, Widget, open } from '@theia/core/lib/browser';
 import { TabBarToolbarRegistry } from '@theia/core/lib/browser/shell/tab-bar-toolbar';
 import { inject, injectable } from '@theia/core/shared/inversify';
 import { EditorContextMenu } from '@theia/editor/lib/browser';
@@ -51,6 +51,7 @@ interface NewElementTemplate<T extends readonly InputOptions[] = readonly InputO
    label: string;
    toUri: (parent: URI, name: string) => URI;
    memberType: string;
+   onTabbarToolbar: boolean;
    content: string | ((parent: URI, model: ModelService, options: FieldValues<T>) => string | Promise<string>);
    validateName?(name: string): string | undefined;
    getInputOptions?(parent: URI, modelService: ModelService): MaybePromise<T>;
@@ -60,6 +61,11 @@ const INITIAL_ENTITY_CONTENT = `entity:
     id: _
     name: ""
 `;
+
+const CREATE_ENTITY_CONTENT = `entity:
+    id: \${id}
+    name: \${name}
+    description: \${description}`;
 
 const INITIAL_RELATIONSHIP_CONTENT = `relationship:
     id: _Parent_to_Child_
@@ -86,6 +92,7 @@ const NEW_ELEMENT_TEMPLATES: ReadonlyArray<NewElementTemplate> = [
    {
       id: 'crossbreeze.new.entity',
       label: 'Entity',
+      onTabbarToolbar: true,
       memberType: LogicalEntityType,
       toUri(parent) {
          return join(parent, `New${this.memberType}`, ModelFileExtensions.LogicalEntity);
@@ -95,8 +102,23 @@ const NEW_ELEMENT_TEMPLATES: ReadonlyArray<NewElementTemplate> = [
       content: INITIAL_ENTITY_CONTENT
    },
    {
+      id: 'crossmodel.logical.entity.create',
+      label: 'Entity (with name)',
+      onTabbarToolbar: false,
+      memberType: LogicalEntityType,
+      toUri: (parent, name) => join(parent, toId(name), ModelFileExtensions.LogicalEntity),
+      category: TEMPLATE_CATEGORY,
+      validateName: validateObjectName,
+      iconClass: ModelStructure.LogicalEntity.ICON_CLASS,
+      content: (_, __, { name, description }) =>
+         CREATE_ENTITY_CONTENT.replace(/\$\{id\}/gi, toId(name))
+            .replace(/\$\{name\}/gi, quote(name))
+            .replace(/\$\{description\}/gi, quote(description))
+   },
+   {
       id: 'crossbreeze.new.relationship',
       label: 'Relationship',
+      onTabbarToolbar: true,
       memberType: RelationshipType,
       toUri(parent) {
          return join(parent, `New${this.memberType}`, ModelFileExtensions.Relationship);
@@ -108,6 +130,7 @@ const NEW_ELEMENT_TEMPLATES: ReadonlyArray<NewElementTemplate> = [
    {
       id: 'crossbreeze.new.system-diagram',
       label: 'System Diagram',
+      onTabbarToolbar: true,
       memberType: 'SystemDiagram',
       toUri: (parent, name) => join(parent, toId(name), ModelFileExtensions.SystemDiagram),
       category: TEMPLATE_CATEGORY,
@@ -118,6 +141,7 @@ const NEW_ELEMENT_TEMPLATES: ReadonlyArray<NewElementTemplate> = [
    {
       id: 'crossbreeze.new.mapping',
       label: 'Mapping',
+      onTabbarToolbar: true,
       memberType: 'Mapping',
       toUri: (parent, name) => join(parent, toId(name), ModelFileExtensions.Mapping),
       category: TEMPLATE_CATEGORY,
@@ -139,6 +163,7 @@ const NEW_ELEMENT_TEMPLATES: ReadonlyArray<NewElementTemplate> = [
    {
       id: 'crossbreeze.new.data-model',
       label: 'Data Model',
+      onTabbarToolbar: true,
       memberType: 'DataModel',
       category: TEMPLATE_CATEGORY,
       validateName: validatePackageName,
@@ -160,6 +185,8 @@ const NEW_ELEMENT_TEMPLATES: ReadonlyArray<NewElementTemplate> = [
    }
 ];
 
+const ELEMENT_TEMPLATES_IN_MENUS = NEW_ELEMENT_TEMPLATES.filter(et => et.onTabbarToolbar);
+
 const DERIVE_MAPPING_FROM_ENTITY: Command = {
    id: 'crossmodel.mapping',
    label: 'Derive Mapping'
@@ -178,7 +205,7 @@ export class CrossModelWorkspaceContribution extends WorkspaceCommandContributio
             this.newWorkspaceRootUriAwareCommandHandler({
                isVisible: uri => doesTemplateFitPackage(uri, this.modelService, template),
                isEnabled: uri => doesTemplateFitPackage(uri, this.modelService, template),
-               execute: uri => this.createNewElementFile(uri, template)
+               execute: (uri, args) => this.createNewElementFile(uri, template, args)
             })
          );
       }
@@ -196,7 +223,7 @@ export class CrossModelWorkspaceContribution extends WorkspaceCommandContributio
    registerMenus(registry: MenuModelRegistry): void {
       // explorer context menu
       registry.registerSubmenu(NEW_ELEMENT_NAV_MENU, TEMPLATE_CATEGORY);
-      for (const [id, template] of NEW_ELEMENT_TEMPLATES.entries()) {
+      for (const [id, template] of ELEMENT_TEMPLATES_IN_MENUS.entries()) {
          registry.registerMenuAction(NEW_ELEMENT_NAV_MENU, {
             commandId: template.id,
             label: template.label + '...',
@@ -211,7 +238,7 @@ export class CrossModelWorkspaceContribution extends WorkspaceCommandContributio
 
       // main menu bar
       registry.registerSubmenu(NEW_ELEMENT_MAIN_MENU, TEMPLATE_CATEGORY);
-      for (const [id, template] of NEW_ELEMENT_TEMPLATES.entries()) {
+      for (const [id, template] of ELEMENT_TEMPLATES_IN_MENUS.entries()) {
          registry.registerMenuAction(NEW_ELEMENT_MAIN_MENU, {
             commandId: template.id,
             label: template.label + '...',
@@ -278,36 +305,49 @@ export class CrossModelWorkspaceContribution extends WorkspaceCommandContributio
       }
    }
 
-   protected async createNewElementFile(uri: URI, template: NewElementTemplate): Promise<void> {
+   protected async createNewElementFile(uri: URI, template: NewElementTemplate, args: any): Promise<URI | undefined> {
       const parent = await this.getDirectory(uri);
       if (parent) {
          const parentUri = parent.resource;
-         if (template.memberType === LogicalEntityType || template.memberType === RelationshipType) {
+         // If the template is a constant (not a function) we create an untitled resource.
+         if (typeof template.content === 'string') {
             const fileUri = template.toUri(parent.resource, '');
-            const content =
-               typeof template.content === 'string' ? template.content : await template.content(parent.resource, this.modelService, {});
-            const resource = await this.getUntitledResource(fileUri, content);
+            const resource = await this.getUntitledResource(fileUri, template.content);
             await open(this.openerService, resource.uri);
-         } else {
-            const options = await this.getMemberOptions(
-               {
-                  title: 'New ' + template.label + '...',
-                  parentUri: parentUri,
-                  initialValue: 'New' + template.memberType,
-                  placeholder: 'New ' + template.memberType
-               },
-               template,
-               parent
-            );
-            if (!options) {
-               return;
+            return resource.uri;
+         }
+         // Otherwise we create a new file with the content.
+         else {
+            let fileUri: URI;
+            let content: string;
+            // If args is not a widget and the name is passed, we pass the args to the content template.
+            if (!(args instanceof Widget) && args.name) {
+               fileUri = template.toUri(parent.resource, args.name);
+               content = await template.content(parentUri, this.modelService, args);
+            } else {
+               const options = await this.getMemberOptions(
+                  {
+                     title: 'New ' + template.label + '...',
+                     parentUri: parentUri,
+                     initialValue: 'New' + template.memberType,
+                     placeholder: 'New ' + template.memberType
+                  },
+                  template,
+                  parent
+               );
+               if (!options) {
+                  return undefined;
+               }
+               fileUri = options.fileUri;
+               content = options.content;
             }
-            const { fileUri, content } = options;
             await this.fileService.create(fileUri, content);
             this.fireCreateNewFile({ parent: parentUri, uri: fileUri });
-            open(this.openerService, fileUri);
+            await open(this.openerService, fileUri);
+            return fileUri;
          }
       }
+      return undefined;
    }
 
    protected async getMemberOptions(
@@ -371,7 +411,7 @@ export class CrossModelFileNavigatorContribution extends FileNavigatorContributi
    override registerCommands(registry: CommandRegistry): void {
       super.registerCommands(registry);
 
-      for (const template of NEW_ELEMENT_TEMPLATES) {
+      for (const template of ELEMENT_TEMPLATES_IN_MENUS) {
          registry.registerCommand(
             { ...template, label: undefined, id: template.id + '.toolbar' },
             {
@@ -398,7 +438,7 @@ export class CrossModelFileNavigatorContribution extends FileNavigatorContributi
    override async registerToolbarItems(toolbarRegistry: TabBarToolbarRegistry): Promise<void> {
       super.registerToolbarItems(toolbarRegistry);
 
-      for (const [id, template] of NEW_ELEMENT_TEMPLATES.entries()) {
+      for (const [id, template] of ELEMENT_TEMPLATES_IN_MENUS.entries()) {
          toolbarRegistry.registerItem({
             id: template.id + '.toolbar',
             command: template.id + '.toolbar',

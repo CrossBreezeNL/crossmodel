@@ -11,17 +11,22 @@ import {
 } from '@crossbreezenl/protocol';
 import {
    ContainerConfiguration,
+   DefaultTypes,
+   GPort,
+   RectangularNodeView,
    configureDefaultModelElements,
    configureModelElement,
    gridModule,
    hoverFeedbackFeature,
    initializeDiagramContainer,
+   overrideModelElement,
    selectFeature
 } from '@eclipse-glsp/client';
 import { GLSPDiagramConfiguration } from '@eclipse-glsp/theia-integration';
 import { Container } from '@theia/core/shared/inversify/index';
 import { MappingDiagramLanguage } from '../../common/crossmodel-diagram-language';
 import { createCrossModelDiagramModule } from '../crossmodel-diagram-module';
+import { libAvoidModule } from '../libavoid-module';
 import { AttributeCompartment } from '../model';
 import { AttributeCompartmentView } from '../views';
 import { mappingEdgeCreationToolModule } from './edge-creation-tool/edge-creation-tool-module';
@@ -34,7 +39,7 @@ export class MappingDiagramConfiguration extends GLSPDiagramConfiguration {
 
    configureContainer(container: Container, ...containerConfiguration: ContainerConfiguration): Container {
       return initializeDiagramContainer(container, ...containerConfiguration, {
-         add: [gridModule, mappingDiagramModule, mappingEdgeCreationToolModule, sourceObjectCreationToolModule]
+         add: [gridModule, mappingDiagramModule, mappingEdgeCreationToolModule, sourceObjectCreationToolModule, libAvoidModule]
       });
    }
 }
@@ -45,6 +50,7 @@ const mappingDiagramModule = createCrossModelDiagramModule((bind, unbind, isBoun
    // Use GLSP default model elements and their views
    // For example the model element with type 'node' (DefaultTypes.NODE) is represented by an SNode and rendered as RoundedCornerNodeView
    configureDefaultModelElements(context);
+   overrideModelElement(context, DefaultTypes.PORT, GPort, RectangularNodeView, { disable: [hoverFeedbackFeature, selectFeature] });
 
    // Bind views that can be rendered by the client-side
    // The glsp-server can send a request to render a specific view given a type, e.g. node:entity

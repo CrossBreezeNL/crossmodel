@@ -1211,14 +1211,6 @@
   dependencies:
     "@eclipse-glsp/protocol" next
 
-"@eclipse-glsp/layout-elk@next":
-  version "2.5.0-next.123"
-  resolved "https://registry.yarnpkg.com/@eclipse-glsp/layout-elk/-/layout-elk-2.5.0-next.123.tgz#024a89c9311e869e859993be32fb37295baebe67"
-  integrity sha512-n69EHuiW7QjKsaI0FiwZ/77scTvuftMqW3cuXHNW6ckfS+/QSo0sowiwDGu1Rra9tfm18/wF06qsvgaHeL0pxw==
-  dependencies:
-    "@eclipse-glsp/server" "2.5.0-next.123+948f71a"
-    elkjs "^0.7.1"
-
 "@eclipse-glsp/protocol@2.4.0", "@eclipse-glsp/protocol@next":
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/@eclipse-glsp/protocol/-/protocol-2.4.0.tgz#ac1192a367cefb7c654d0055d7403c3377ff4fe9"
@@ -1228,7 +1220,7 @@
     uuid "~10.0.0"
     vscode-jsonrpc "8.2.0"
 
-"@eclipse-glsp/server@2.5.0-next.123+948f71a", "@eclipse-glsp/server@next":
+"@eclipse-glsp/server@next":
   version "2.5.0-next.123"
   resolved "https://registry.yarnpkg.com/@eclipse-glsp/server/-/server-2.5.0-next.123.tgz#a355e348b5188b527ee1915f2fab593ce106d3d1"
   integrity sha512-Q3+mseCWm/rSYQvTsnI8P5e+M+DIxONv3TmsxjdJQLKWphgR3tmsKah8h4Cf9ALZ8DELSV7zmw+2R2dd8ixuUQ==
@@ -7904,10 +7896,10 @@ electron@30.1.2:
     "@types/node" "^20.9.0"
     extract-zip "^2.0.1"
 
-elkjs@^0.7.1:
-  version "0.7.1"
-  resolved "https://registry.yarnpkg.com/elkjs/-/elkjs-0.7.1.tgz#4751c5e918a4988139baf7f214e010aea22de969"
-  integrity sha512-lD86RWdh480/UuRoHhRcnv2IMkIcK6yMDEuT8TPBIbO3db4HfnVF+1lgYdQi99Ck0yb+lg5Eb46JCHI5uOsmAw==
+elkjs@^0.10.0:
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/elkjs/-/elkjs-0.10.0.tgz#abe2aa6cb25e7439b708fab873b2448d26ed33a1"
+  integrity sha512-v/3r+3Bl2NMrWmVoRTMBtHtWvRISTix/s9EfnsfEWApNrsmNjqgqJOispCGg46BPwIFdkag3N/HYSxJczvCm6w==
 
 emittery@^0.13.1:
   version "0.13.1"
@@ -11437,6 +11429,11 @@ levn@^0.4.1:
   dependencies:
     prelude-ls "^1.2.1"
     type-check "~0.4.0"
+
+libavoid-js@0.4.5:
+  version "0.4.5"
+  resolved "https://registry.yarnpkg.com/libavoid-js/-/libavoid-js-0.4.5.tgz#445f1f5efaaa0682972473e32b6de92d42f0664e"
+  integrity sha512-9BrYRXAQ+nmLuHZSqf4z52YN8TroBPxyqo6A6h6Pj03j5UYNx/Hhnd/rg+kiLVrE76wzBeBVO3OW7kaEpzYC9Q==
 
 libnpmaccess@8.0.6:
   version "8.0.6"

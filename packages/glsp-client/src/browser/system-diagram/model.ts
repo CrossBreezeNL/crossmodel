@@ -7,7 +7,6 @@ import {
    Dimension,
    EditableLabel,
    GChildElement,
-   GEdge,
    GLabel,
    GModelElement,
    GParentElement,
@@ -17,6 +16,7 @@ import {
    RectangularNode,
    WithEditableLabel
 } from '@eclipse-glsp/client';
+import { LibavoidEdge } from '../libavoid-model';
 
 export class EntityNode extends RectangularNode implements WithEditableLabel {
    get editableLabel(): (GChildElement & EditableLabel) | undefined {
@@ -24,9 +24,9 @@ export class EntityNode extends RectangularNode implements WithEditableLabel {
    }
 }
 
-export class RelationshipEdge extends GEdge {}
+export class RelationshipEdge extends LibavoidEdge {}
 
-export class InheritanceEdge extends GEdge {}
+export class InheritanceEdge extends LibavoidEdge {}
 
 export class GEditableLabel extends GLabel implements EditableLabel {
    editControlPositionCorrection = {

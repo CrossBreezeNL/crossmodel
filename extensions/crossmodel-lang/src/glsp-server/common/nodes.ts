@@ -72,7 +72,7 @@ export class AttributeCompartmentBuilder extends GCompartmentBuilder<AttributeCo
 
       const leftPortId = createLeftPortId(attributeId);
       index.indexSemanticElement(leftPortId, attribute);
-      this.add(GPort.builder().id(leftPortId).build());
+      this.add(GPort.builder().id(leftPortId).addCssClasses('attribute-port', 'left-port').build());
 
       this.add(
          GLabel.builder()
@@ -91,7 +91,7 @@ export class AttributeCompartmentBuilder extends GCompartmentBuilder<AttributeCo
       }
       const rightPortId = createRightPortId(attributeId);
       index.indexSemanticElement(rightPortId, attribute);
-      this.add(GPort.builder().id(rightPortId).build());
+      this.add(GPort.builder().id(rightPortId).addCssClasses('attribute-port', 'right-port').build());
       return this;
    }
 }

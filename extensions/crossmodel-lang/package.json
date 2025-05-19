@@ -89,11 +89,11 @@
   ],
   "dependencies": {
     "@crossbreezenl/protocol": "0.2.0",
-    "@eclipse-glsp/layout-elk": "next",
     "@eclipse-glsp/server": "next",
     "chalk": "~4.1.2",
     "chevrotain": "~11.0.3",
     "commander": "~10.0.0",
+    "elkjs": "^0.10.0",
     "langium": "^3.3.0",
     "p-debounce": "2.1.0",
     "prettier": "^3.1.0",

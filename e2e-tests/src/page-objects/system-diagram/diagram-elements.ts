@@ -13,6 +13,8 @@ import {
    PModelElementSnapshot,
    PNode,
    SVGMetadataUtils,
+   Selectable,
+   SelectableOptions,
    defined,
    useClickableFlow,
    useCommandPaletteCapability,
@@ -25,6 +27,7 @@ import {
    useRoutingPointCapability,
    useSelectableFlow
 } from '@eclipse-glsp/glsp-playwright/';
+import { Locator } from '@playwright/test';
 
 const LabelHeaderMixin = Mix(PLabel).flow(useClickableFlow).flow(useRenameableFlow).build();
 
@@ -96,4 +99,17 @@ const RelationshipMixin = Mix(PEdge)
 @EdgeMetadata({
    type: 'edge:relationship'
 })
-export class Relationship extends RelationshipMixin {}
+export class Relationship extends RelationshipMixin {
+   override click(options?: Parameters<Locator['click']>[0] & { dispatch?: boolean }): Promise<void> {
+      // custom: straight lines may be detected as invisible if they do not have a height so we use force click
+      return super.click({ force: true, ...options });
+   }
+
+   override async select(options?: SelectableOptions): Promise<void> {
+      // custom: straight lines may be detected as invisible if they do not have a height, so we wait for attached instead of visible
+      await this.click();
+      return this.locate()
+         .and(this.page.locator(`.${Selectable.CSS}`))
+         .waitFor({ state: 'attached' });
+   }
+}

@@ -9,13 +9,13 @@ import {
    RELATIONSHIP_EDGE_TYPE
 } from '@crossbreezenl/protocol';
 import {
-   ContainerConfiguration,
-   DefaultTypes,
-   GGraph,
-   GLabelView,
    configureDefaultModelElements,
    configureModelElement,
+   ContainerConfiguration,
+   DefaultTypes,
    editLabelFeature,
+   GGraph,
+   GLabelView,
    gridModule,
    initializeDiagramContainer,
    overrideModelElement,
@@ -25,6 +25,8 @@ import { GLSPDiagramConfiguration } from '@eclipse-glsp/theia-integration';
 import { Container } from '@theia/core/shared/inversify/index';
 import { SystemDiagramLanguage } from '../../common/crossmodel-diagram-language';
 import { createCrossModelDiagramModule } from '../crossmodel-diagram-module';
+import { libAvoidModule } from '../libavoid-module';
+import { DEFAULT_LIBAVOID_EDGE_ROUTER_CONFIG, LibavoidEdgeRouterConfiguration, LibavoidEdgeRouterOptions } from '../libavoid-options';
 import { AttributeCompartment } from '../model';
 import { AttributeCompartmentView } from '../views';
 import { systemEdgeCreationToolModule } from './edge-creation-tool/edge-creation-tool-module';
@@ -44,6 +46,7 @@ export class SystemDiagramConfiguration extends GLSPDiagramConfiguration {
             replace: systemSelectModule
          },
          ...containerConfiguration,
+         libAvoidModule,
          systemHoverModule,
          gridModule,
          systemDiagramModule,
@@ -70,4 +73,10 @@ const systemDiagramModule = createCrossModelDiagramModule((bind, unbind, isBound
    configureModelElement(context, ATTRIBUTE_COMPARTMENT_TYPE, AttributeCompartment, AttributeCompartmentView);
    configureModelElement(context, LABEL_ENTITY, GEditableLabel, GLabelView, { enable: [editLabelFeature] });
    configureModelElement(context, INHERITANCE_EDGE_TYPE, InheritanceEdge, InheritanceEdgeView);
+
+   rebind(LibavoidEdgeRouterOptions).toConstantValue({
+      ...DEFAULT_LIBAVOID_EDGE_ROUTER_CONFIG,
+      shapeBufferDistance: 35,
+      idealNudgingDistance: 25
+   } as LibavoidEdgeRouterConfiguration);
 });

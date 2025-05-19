@@ -38,8 +38,8 @@ export class GSourceObjectNodeBuilder extends GNodeBuilder<GSourceObjectNode> {
 
       this.layout('vbox')
          .addArgs(ArgsUtil.cornerRadius(3))
-         .addLayoutOption('prefWidth', 100)
-         .addLayoutOption('prefHeight', 100)
+         .addLayoutOption('prefWidth', 10)
+         .addLayoutOption('prefHeight', 10)
          .position(100, 100);
 
       return this;
@@ -79,7 +79,7 @@ export class GTargetObjectNodeBuilder extends GNodeBuilder<GTargetObjectNode> {
       }
       this.add(attributesContainer.build());
 
-      this.layout('vbox').addArgs(ArgsUtil.cornerRadius(3)).addLayoutOption('prefWidth', 100).addLayoutOption('prefHeight', 100);
+      this.layout('vbox').addArgs(ArgsUtil.cornerRadius(3)).addLayoutOption('prefWidth', 10).addLayoutOption('prefHeight', 10);
       return this;
    }
 

@@ -1,8 +1,18 @@
 /********************************************************************************
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
-import { SOURCE_NUMBER_NODE_TYPE, SOURCE_STRING_NODE_TYPE, TARGET_OBJECT_NODE_TYPE, isLeftPortId } from '@crossbreezenl/protocol';
-import { GCompartment, GModelRoot, GNode, GPort, LayoutEngine, MaybePromise, findParentByClass } from '@eclipse-glsp/server';
+import { SOURCE_NUMBER_NODE_TYPE, SOURCE_OBJECT_NODE_TYPE, SOURCE_STRING_NODE_TYPE, isLeftPortId } from '@crossbreezenl/protocol';
+import {
+   Bounds,
+   GCompartment,
+   GModelRoot,
+   GNode,
+   GPort,
+   LayoutEngine,
+   MaybePromise,
+   Writable,
+   findParentByClass
+} from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
 import { getOwner } from '../../language-server/util/ast-util.js';
 import { MappingModelState } from './model/mapping-model-state.js';
@@ -24,23 +34,30 @@ export class MappingDiagramLayoutEngine implements LayoutEngine {
       const index = this.modelState.index;
 
       // position source nodes in correct order
-      let offset = 0;
-      let maxSourceWidth = 0;
-      const marginBetweenSourceNodes = 20;
-      const marginBetweenSourceAndTarget = 300;
-      const sourceNodes = index.getAllByClass(GNode).filter(node => node.type !== TARGET_OBJECT_NODE_TYPE);
-      [...sourceNodes].sort(this.getSourceNodeOrderFunction()).forEach(node => {
-         node.position = { x: 0, y: offset };
-         maxSourceWidth = Math.max(maxSourceWidth, node.size.width);
-         offset += node.size.height + marginBetweenSourceNodes;
-      });
+      const topMargin = 10;
+      const leftMargin = 10;
 
-      // position target node vertically centered
+      const sourceNodeBounds: Writable<Bounds> = { x: leftMargin, y: topMargin, width: 0, height: 0 };
+
+      const gapBetweenSourceNodes = 20;
+      const sourceNodes = index.getElements(SOURCE_OBJECT_NODE_TYPE) as GNode[];
+      [...sourceNodes].sort(this.getSourceNodeOrderFunction()).forEach(node => {
+         node.position = { x: sourceNodeBounds.x, y: sourceNodeBounds.y + sourceNodeBounds.height };
+         sourceNodeBounds.width = Math.max(sourceNodeBounds.width, node.size.width);
+         sourceNodeBounds.height += node.size.height + gapBetweenSourceNodes;
+      });
+      sourceNodeBounds.height -= sourceNodes.length > 0 ? gapBetweenSourceNodes : 0; // remove last gap
+
+      const gapBetweenSourceAndTarget = 300;
       const targetNode = index.getAllByClass(GTargetObjectNode)[0];
-      targetNode.position = {
-         x: maxSourceWidth + marginBetweenSourceAndTarget,
-         y: offset / 2 - targetNode.size.height / 2 - marginBetweenSourceNodes
-      };
+      targetNode.position = { x: sourceNodeBounds.x + gapBetweenSourceAndTarget, y: sourceNodeBounds.y };
+      if (sourceNodes.length > 0) {
+         // position target node vertically centered to the source nodes
+         targetNode.position = {
+            x: sourceNodeBounds.x + sourceNodeBounds.width + gapBetweenSourceAndTarget,
+            y: Bounds.middle(sourceNodeBounds) - targetNode.size.height / 2
+         };
+      }
 
       // position ports to left and right side of parent whose size is given by the label
       index.getAllByClass(GPort).forEach(port => {

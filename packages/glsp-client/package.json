@@ -1,6 +1,6 @@
 {
   "name": "@crossbreezenl/glsp-client",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "CrossModel Viewer Contribution",
   "keywords": [
     "theia-extension"

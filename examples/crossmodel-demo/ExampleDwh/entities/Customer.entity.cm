@@ -1,0 +1,12 @@
+entity:
+    id: Customer
+    name: "Customer"
+    description: "Example customer target entity"
+    attributes:
+      - id: Customer_ID
+        name: "Customer ID"
+        datatype: "Text"
+        identifier: true
+      - id: Name
+        name: "Name"
+        datatype: "Text"

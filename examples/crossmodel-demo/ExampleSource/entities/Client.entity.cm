@@ -1,0 +1,14 @@
+entity:
+    id: Client
+    name: "Client"
+    description: "Example client entity"
+    attributes:
+      - id: Client_ID
+        name: "Client ID"
+        datatype: "Integer"
+      - id: First_Name
+        name: "First Name"
+        datatype: "Text"
+      - id: Last_Name
+        name: "Last Name"
+        datatype: "Text"

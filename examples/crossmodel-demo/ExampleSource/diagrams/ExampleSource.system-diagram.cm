@@ -1,0 +1,9 @@
+systemDiagram:
+    id: ExampleSource
+    nodes:
+      - id: ClientNode
+        entity: Client
+        x: 209
+        y: 187
+        width: 153.649658203125
+        height: 96

@@ -1,0 +1,6 @@
+{
+    "name": "example-source",
+    "version": "1.0.0",
+    "type": "logical",
+    "dependencies": {}
+}

@@ -1,0 +1,8 @@
+{
+    "name": "example-dwh",
+    "version": "1.0.0",
+    "type": "logical",
+    "dependencies": {
+        "example-source": "1.0.0"
+    }
+}

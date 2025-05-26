@@ -149,7 +149,7 @@ export class CrossModelValidator {
          });
          return;
       }
-      const allElements = Array.from(this.services.shared.workspace.IndexManager.allElements());
+      const allElements = Array.from(this.services.shared.workspace.IndexManager.allElements(identifiedObject.$type));
       const duplicates = allElements.filter(description => description.name === globalId);
       if (duplicates.length > 1) {
          accept('error', 'Must provide a unique id.', {

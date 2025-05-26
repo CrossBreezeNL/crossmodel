@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.2](https://github.com/crossbreezenl/crossmodel/compare/v0.2.1...v0.2.2) (2025-05-26)
+
+
+### Bug Fixes
+
+* Properly serialize id references for identifiers ([#145](https://github.com/crossbreezenl/crossmodel/issues/145)) ([5ca1f91](https://github.com/crossbreezenl/crossmodel/commit/5ca1f91eab681090ebe9e26a51169c3e81463339)), closes [#120](https://github.com/crossbreezenl/crossmodel/issues/120)
+
+
+
+
+
 ## [0.2.1](https://github.com/crossbreezenl/crossmodel/compare/v0.2.0...v0.2.1) (2025-05-19)
 
 **Note:** Version bump only for package crossmodel-lang

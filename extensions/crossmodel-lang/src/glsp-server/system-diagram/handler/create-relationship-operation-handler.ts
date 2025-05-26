@@ -2,7 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { RELATIONSHIP_EDGE_TYPE, computeRelationshipName, toId } from '@crossbreezenl/protocol';
+import { RELATIONSHIP_EDGE_TYPE, computeRelationshipName, toId, toIdReference } from '@crossbreezenl/protocol';
 import {
    ActionDispatcher,
    Command,
@@ -44,15 +44,15 @@ export class SystemDiagramCreateRelationshipOperationHandler extends JsonCreateE
                id: this.modelState.idProvider.findNextId(RelationshipEdge, relationship.id + 'Edge', this.modelState.systemDiagram),
                relationship: {
                   ref: relationship,
-                  $refText: this.modelState.idProvider.getGlobalId(relationship) || relationship.id || ''
+                  $refText: toIdReference(this.modelState.idProvider.getGlobalId(relationship) || relationship.id || '')
                },
                sourceNode: {
                   ref: sourceNode,
-                  $refText: this.modelState.idProvider.getNodeId(sourceNode) || sourceNode.id || ''
+                  $refText: toIdReference(this.modelState.idProvider.getNodeId(sourceNode) || sourceNode.id || '')
                },
                targetNode: {
                   ref: targetNode,
-                  $refText: this.modelState.idProvider.getNodeId(targetNode) || targetNode.id || ''
+                  $refText: toIdReference(this.modelState.idProvider.getNodeId(targetNode) || targetNode.id || '')
                }
             };
             this.modelState.systemDiagram.edges.push(edge);
@@ -83,8 +83,8 @@ export class SystemDiagramCreateRelationshipOperationHandler extends JsonCreateE
          id,
          name,
          attributes: [],
-         parent: { $refText: sourceNode.entity?.$refText || '' },
-         child: { $refText: targetNode.entity?.$refText || '' },
+         parent: { $refText: toIdReference(sourceNode.entity?.$refText || '') },
+         child: { $refText: toIdReference(targetNode.entity?.$refText || '') },
          customProperties: []
       };
 

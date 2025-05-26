@@ -25,7 +25,7 @@ export class MappingModelState extends CrossModelState {
          targetAttributes
             .filter(targetAttribute => targetAttribute.id !== undefined)
             .forEach(targetAttribute => {
-               if (!target.mappings.find(mapping => mapping.attribute?.value.ref === targetAttribute)) {
+               if (!target.mappings.find(mapping => mapping.attribute?.value.ref?.id === targetAttribute.id)) {
                   const mapping = createAttributeMapping(target, undefined, targetAttribute.id!);
                   (mapping.attribute?.value as any).ref = targetAttribute;
                   target.mappings.push(mapping);

@@ -8,7 +8,7 @@ export const CrossModelRegex = {
    STRING: /^"[^"]*"$|^'[^']*'$/,
    NUMBER: /^(-)?[0-9]+(\.[0-9]*)?$/,
    SL_COMMENT: /^#[^\n\r]*$/,
-   ID: /^[_a-zA-Z][\w_\-~$#@/\d$]*$/
+   ID: /^\^?[_a-zA-Z][\w_\-~$#@/\d]*$/
 };
 
 /**

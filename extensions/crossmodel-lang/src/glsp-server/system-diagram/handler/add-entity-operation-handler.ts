@@ -2,7 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { AddEntityOperation } from '@crossbreezenl/protocol';
+import { AddEntityOperation, toIdReference } from '@crossbreezenl/protocol';
 import { Command, JsonOperationHandler, ModelState } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
 import { LogicalEntity, LogicalEntityNode } from '../../../language-server/generated/ast.js';
@@ -37,7 +37,7 @@ export class SystemDiagramAddEntityOperationHandler extends JsonOperationHandler
             $container: container,
             id: this.modelState.idProvider.findNextId(LogicalEntityNode, entityDescription.name + 'Node', container),
             entity: {
-               $refText: entityDescription.name,
+               $refText: toIdReference(entityDescription.name),
                ref: entityDescription.node as LogicalEntity | undefined
             },
             x: operation.position.x,

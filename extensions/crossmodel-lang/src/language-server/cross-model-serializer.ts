@@ -115,6 +115,7 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot> {
       if (
          key === 'id' ||
          (key === 'superEntities' && Array.isArray(parent)) ||
+         (key === 'attributes' && Array.isArray(parent) && typeof parent?.[0] === 'string') ||
          propertyOf(parent, key, isRelationship, 'parentCardinality') ||
          propertyOf(parent, key, isRelationship, 'childCardinality') ||
          propertyOf(parent, key, isSourceObject, 'join') ||

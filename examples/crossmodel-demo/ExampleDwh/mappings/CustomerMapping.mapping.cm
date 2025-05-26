@@ -1,0 +1,15 @@
+mapping:
+    id: CustomerMapping
+    sources:
+      - id: ClientSourceObject
+        entity: example-source.Client
+        join: from
+    target:
+        entity: Customer
+        mappings:
+          - attribute: Customer_ID
+            sources:
+              - ClientSourceObject.Client_ID
+          - attribute: Name
+            sources:
+              - ClientSourceObject.Last_Name

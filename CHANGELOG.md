@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.3](https://github.com/CrossBreezeNL/crossmodel/compare/v0.2.2...v0.2.3) (2025-05-26)
+
+
+### Bug Fixes
+
+* Allow same global ids if types are different ([#144](https://github.com/CrossBreezeNL/crossmodel/issues/144)) ([4f11a47](https://github.com/CrossBreezeNL/crossmodel/commit/4f11a473d0d75bf2910c1fa2b6b3353e4f42b7fb)), closes [#134](https://github.com/CrossBreezeNL/crossmodel/issues/134)
+
+
+
+
+
 ## [0.2.2](https://github.com/CrossBreezeNL/crossmodel/compare/v0.2.1...v0.2.2) (2025-05-26)
 
 

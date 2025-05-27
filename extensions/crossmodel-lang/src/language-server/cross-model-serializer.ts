@@ -112,7 +112,7 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot> {
          return undefined;
       }
       if (isReference(value)) {
-         return value.$refText ?? value.$nodeDescription?.name;
+         return toIdReference(value.$refText ?? value.$nodeDescription?.name);
       }
       if (key === 'id') {
          // ensure we properly serialize IDs

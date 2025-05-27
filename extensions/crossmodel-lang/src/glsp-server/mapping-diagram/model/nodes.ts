@@ -74,6 +74,8 @@ export class GTargetObjectNodeBuilder extends GNodeBuilder<GTargetObjectNode> {
          const mappingIdx = node.mappings.findIndex(mapping => mapping.attribute?.value.ref === attribute);
          if (mappingIdx >= 0) {
             attrComp.addArg(RenderProps.TARGET_ATTRIBUTE_MAPPING_IDX, mappingIdx);
+         } else if (attribute.id) {
+            attrComp.addArg(RenderProps.TARGET_ATTRIBUTE_IDX, attribute.id);
          }
          attributesContainer.add(attrComp.build());
       }

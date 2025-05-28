@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.4](https://github.com/CrossBreezeNL/crossmodel/compare/v0.2.3...v0.2.4) (2025-05-28)
+
+
+### Bug Fixes
+
+* Allow keywords as IDs when being escaped with ^ ([#147](https://github.com/CrossBreezeNL/crossmodel/issues/147)) ([e24d642](https://github.com/CrossBreezeNL/crossmodel/commit/e24d6429b2336fdcf97439c408c795c6485f3c0b)), closes [#121](https://github.com/CrossBreezeNL/crossmodel/issues/121)
+
+
+
+
+
 ## [0.2.3](https://github.com/CrossBreezeNL/crossmodel/compare/v0.2.2...v0.2.3) (2025-05-26)
 
 

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.4](https://github.com/crossbreezenl/crossmodel/compare/v0.2.3...v0.2.4) (2025-05-28)
+
+**Note:** Version bump only for package @crossbreezenl/form-client
+
+
+
+
+
 # [0.2.0](https://github.com/crossbreezenl/crossmodel/compare/v0.1.1...v0.2.0) (2025-05-08)
 
 **Note:** Version bump only for package @crossbreezenl/form-client

@@ -13,3 +13,5 @@ mapping:
           - attribute: Name
             sources:
               - ClientSourceObject.Last_Name
+              - ClientSourceObject.First_Name
+            expression: "{{ClientSourceObject.First_Name}} || ' ' || {{ClientSourceObject.Last_Name}}"

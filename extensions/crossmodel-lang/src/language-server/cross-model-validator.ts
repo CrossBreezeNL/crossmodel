@@ -179,7 +179,7 @@ export class CrossModelValidator {
       this.markDuplicateIds(node.customProperties, accept);
    }
 
-   protected markDuplicateIds(nodes: IdentifiableAstNode[], accept: ValidationAcceptor): void {
+   protected markDuplicateIds(nodes: IdentifiableAstNode[] = [], accept: ValidationAcceptor): void {
       const knownIds: string[] = [];
       for (const node of nodes) {
          if (node.id && knownIds.includes(node.id)) {

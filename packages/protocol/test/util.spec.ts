@@ -2,7 +2,7 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 import { describe, expect, test } from '@jest/globals';
-import { codiconCSSString, findNextUnique, identity, quote, toId, unquote } from '../src/util';
+import { codiconCSSString, findNextUnique, identity, quote, toId, toIdReference, unquote } from '../src/util';
 
 describe('quote', () => {
    test('should quote a string with default quote character', () => {
@@ -59,6 +59,28 @@ describe('toId', () => {
 
    test('should prefix with underscore if necessary', () => {
       expect(toId('123invalid')).toBe('_123invalid');
+   });
+
+   test('should prefix reserved words with a caret', () => {
+      expect(toId('id')).toBe('^id');
+   });
+});
+
+describe('toIdReference', () => {
+   test('should prefix reserved words in the object name', () => {
+      expect(toIdReference('valid.id')).toBe('valid.^id');
+   });
+
+   test('should prefix reserved words in the model name', () => {
+      expect(toIdReference('entity.some')).toBe('^entity.some');
+   });
+
+   test('should prefix reserved words in both model and object name', () => {
+      expect(toIdReference('entity.id')).toBe('^entity.^id');
+   });
+
+   test('should return the input if there are not reserved words used', () => {
+      expect(toIdReference('some.reference')).toBe('some.reference');
    });
 });
 

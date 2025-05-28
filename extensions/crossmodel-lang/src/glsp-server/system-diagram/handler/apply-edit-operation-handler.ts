@@ -2,7 +2,7 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 
-import { toId } from '@crossbreezenl/protocol';
+import { toId, toIdReference } from '@crossbreezenl/protocol';
 import { ApplyLabelEditOperation, Command, getOrThrow, JsonOperationHandler, ModelState } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
 import { CrossModelRoot, LogicalEntity, LogicalEntityNode } from '../../../language-server/generated/ast.js';
@@ -46,8 +46,8 @@ export class SystemDiagramApplyLabelEditOperationHandler extends JsonOperationHa
       if (references.length === 0 || (references.length === 1 && references[0].sourceUri.fsPath === this.modelState.sourceUri)) {
          // if the diagram is the only reference to the entity, we can safely rename it
          // otherwise we need to ensure to implement proper rename behavior
-         entity.id = this.modelState.idProvider.findNextGlobalId(LogicalEntity, toId(entity.name));
-         entityNode.entity = { $refText: entity.id, ref: entity };
+         entity.id = toId(this.modelState.idProvider.findNextGlobalId(LogicalEntity, toId(entity.name)));
+         entityNode.entity = { $refText: toIdReference(entity.id), ref: entity };
       }
       await this.modelState.modelService.save({
          uri: document.uri.toString(),

@@ -58,7 +58,6 @@ export class ReverseCompositeSaveable extends CompositeSaveable implements Requi
          this.fileResourceResolver.autoOverwrite = true;
          const activeEditor = this.editor.activeWidget();
          const activeSaveable = Saveable.get(activeEditor);
-         activeSaveable?.dirty;
          if (activeSaveable) {
             await activeSaveable.save(options);
             // manually reset the dirty flag on the other editors (saveables) without triggering an actual save
@@ -94,7 +93,7 @@ export class ReverseCompositeSaveable extends CompositeSaveable implements Requi
    /**
     * Reset the dirty state (without triggering an additional save) of the non-active saveables after a save operation.
     */
-   protected resetDirtyState(activeSaveable: Saveable): void {
+   protected resetDirtyState(activeSaveable?: Saveable): void {
       this.saveables
          .filter(saveable => saveable !== activeSaveable)
          .forEach(saveable => {
@@ -106,6 +105,15 @@ export class ReverseCompositeSaveable extends CompositeSaveable implements Requi
                saveable.setDirty(false);
             }
          });
+   }
+
+   override async revert(options?: Saveable.RevertOptions): Promise<void> {
+      if (this.editor.getResourceUri().scheme === 'file') {
+         // for file resources, we can revert to the last saved state
+         return super.revert(options);
+      }
+      // for non-file, untitled resources, we do not care about the content and just reset the dirty state
+      this.resetDirtyState();
    }
 }
 

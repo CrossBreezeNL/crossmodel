@@ -10,7 +10,7 @@ import { AbstractAstReflection } from 'langium';
 export const CrossModelTerminals = {
     STRING: /"[^"]*"|'[^']*'/,
     NUMBER: /(-)?[0-9]+(\.[0-9]+)?/,
-    ID: /[_a-zA-Z][\w_\-~$#@/\d]*/,
+    ID: /\^?[_a-zA-Z][\w_\-~$#@/\d]*/,
     SL_COMMENT: /#[^\n\r]*/,
     INDENT: /:synthetic-indent:/,
     DEDENT: /:synthetic-dedent:/,

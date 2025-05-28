@@ -621,7 +621,7 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
       "name": "ID",
       "definition": {
         "$type": "RegexToken",
-        "regex": "/[_a-zA-Z][\\\\w_\\\\-~$#@/\\\\d]*/"
+        "regex": "/\\\\^?[_a-zA-Z][\\\\w_\\\\-~$#@/\\\\d]*/"
       },
       "fragment": false,
       "hidden": false

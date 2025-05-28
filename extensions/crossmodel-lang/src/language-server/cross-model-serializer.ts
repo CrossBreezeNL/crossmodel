@@ -2,12 +2,13 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { quote } from '@crossbreezenl/protocol';
+import { quote, toId, toIdReference } from '@crossbreezenl/protocol';
 import { AstNode, GenericAstNode, Grammar, isAstNode, isReference } from 'langium';
 import { collectAst } from 'langium/grammar';
 import { Serializer } from '../model-server/serializer.js';
 import {
    AttributeMapping,
+   BooleanExpression,
    CrossModelRoot,
    CustomProperty,
    InheritanceEdge,
@@ -31,6 +32,7 @@ import {
    RelationshipEdge,
    SourceObject,
    SourceObjectAttribute,
+   SourceObjectAttributeReference,
    StringLiteral,
    SystemDiagram,
    TargetObject,
@@ -110,25 +112,33 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot> {
          return undefined;
       }
       if (isReference(value)) {
-         return value.$refText ?? value.$nodeDescription?.name;
+         return toIdReference(value.$refText ?? value.$nodeDescription?.name);
+      }
+      if (key === 'id') {
+         // ensure we properly serialize IDs
+         return toId(value);
       }
       if (
-         key === 'id' ||
          (key === 'superEntities' && Array.isArray(parent)) ||
          (key === 'attributes' && Array.isArray(parent) && typeof parent?.[0] === 'string') ||
-         propertyOf(parent, key, isRelationship, 'parentCardinality') ||
-         propertyOf(parent, key, isRelationship, 'childCardinality') ||
-         propertyOf(parent, key, isSourceObject, 'join') ||
          (!Array.isArray(value) && this.isValidReference(parent, key, value))
       ) {
-         // values that we do not want to quote because they are ids or references
+         // ensure we properly serialize ID references
+         return toIdReference(value);
+      }
+      if (
+         propertyOf(parent, key, isRelationship, 'parentCardinality') ||
+         propertyOf(parent, key, isRelationship, 'childCardinality') ||
+         propertyOf(parent, key, isSourceObject, 'join')
+      ) {
+         // values that we do not want to quote
          return value;
       }
       if (isAttributeMappingSource(value) || isAttributeMappingTarget(value)) {
-         return value.value?.$refText ?? value.value;
+         return toIdReference(value.value?.$refText ?? value.value);
       }
       if (isSourceObjectDependency(value)) {
-         return value.source?.$refText ?? value.source;
+         return toIdReference(value.source?.$refText ?? value.source);
       }
       if (isJoinCondition(value)) {
          return this.serializeJoinCondition(value);
@@ -204,7 +214,7 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot> {
       }
       try {
          // if finding the reference type fails, is it not a valid reference
-         reflection.getReferenceType({ container: node, property: key, reference: { $refText: value } });
+         reflection.getReferenceType({ container: node, property: key, reference: { $refText: toIdReference(value) } });
          return true;
       } catch (error) {
          return false;
@@ -242,9 +252,19 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot> {
       if (text) {
          return text;
       }
-      const left = obj.expression.left.$type === StringLiteral ? quote(obj.expression.left.value) : obj.expression.left.value;
-      const right = obj.expression.right.$type === StringLiteral ? quote(obj.expression.right.value) : obj.expression.right.value;
+      const left = this.serializeBooleanExpression(obj.expression.left);
+      const right = this.serializeBooleanExpression(obj.expression.right);
       return [left, obj.expression.op, right].join(' ');
+   }
+
+   private serializeBooleanExpression(obj: BooleanExpression): string {
+      if (obj.$type === StringLiteral) {
+         return quote(obj.value);
+      }
+      if (obj.$type === SourceObjectAttributeReference) {
+         return toIdReference(obj.value as unknown as string);
+      }
+      return obj.value.toString();
    }
 }
 

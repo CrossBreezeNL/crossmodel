@@ -2,7 +2,7 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 
-import { ATTRIBUTE_COMPARTMENT_TYPE, createLeftPortId, createRightPortId } from '@crossbreezenl/protocol';
+import { ATTRIBUTE_COMPARTMENT_TYPE, createLeftPortId, createRightPortId } from '@crossmodel/protocol';
 import { DefaultTypes, GCompartment, GCompartmentBuilder, GLabel, GPort } from '@eclipse-glsp/server';
 import { LogicalAttribute } from '../../language-server/generated/ast.js';
 import { CrossModelIndex } from './cross-model-index.js';

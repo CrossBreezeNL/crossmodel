@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { AttributeMappingSourceType, TypeGuard, getSemanticRoot, toIdReference } from '@crossbreezenl/protocol';
+import { AttributeMappingSourceType, TypeGuard, getSemanticRoot, toIdReference } from '@crossmodel/protocol';
 import { Dimension, Point } from '@eclipse-glsp/server';
 import { AstNode, AstNodeDescription, AstUtils, LangiumDocument, Reference, isAstNode, isAstNodeDescription } from 'langium';
 import { ID_PROPERTY, IdProvider } from '../cross-model-naming.js';

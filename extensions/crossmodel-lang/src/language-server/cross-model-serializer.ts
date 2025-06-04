@@ -2,7 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { quote, toId, toIdReference } from '@crossbreezenl/protocol';
+import { quote, toId, toIdReference } from '@crossmodel/protocol';
 import { AstNode, GenericAstNode, Grammar, isAstNode, isReference } from 'langium';
 import { collectAst } from 'langium/grammar';
 import { Serializer } from '../model-server/serializer.js';

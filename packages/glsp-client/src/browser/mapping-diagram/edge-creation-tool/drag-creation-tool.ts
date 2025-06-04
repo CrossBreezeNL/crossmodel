@@ -2,7 +2,7 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 
-import { TARGET_ATTRIBUTE_MAPPING_EDGE_TYPE } from '@crossbreezenl/protocol';
+import { TARGET_ATTRIBUTE_MAPPING_EDGE_TYPE } from '@crossmodel/protocol';
 import {
    Action,
    BaseEditTool,

@@ -17,7 +17,7 @@ import {
    SystemInfoArgs,
    SystemUpdatedEvent,
    UpdateModelArgs
-} from '@crossbreezenl/protocol';
+} from '@crossmodel/protocol';
 import { Event } from '@theia/core';
 import { inject, injectable, postConstruct } from '@theia/core/shared/inversify';
 import { ModelService, ModelServiceClient, ModelServiceServer } from '../common';

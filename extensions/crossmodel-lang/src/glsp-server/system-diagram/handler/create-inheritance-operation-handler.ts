@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2025 CrossBreeze.
  ********************************************************************************/
-import { INHERITANCE_EDGE_TYPE, toIdReference } from '@crossbreezenl/protocol';
+import { INHERITANCE_EDGE_TYPE, toIdReference } from '@crossmodel/protocol';
 import {
    ActionDispatcher,
    Command,

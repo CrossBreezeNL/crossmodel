@@ -29,7 +29,7 @@ import {
    SystemInfoArgs,
    UpdateModel,
    UpdateModelArgs
-} from '@crossbreezenl/protocol';
+} from '@crossmodel/protocol';
 import { CommandService, MessageService } from '@theia/core';
 import { Deferred } from '@theia/core/lib/common/promise-util';
 import { inject, injectable } from '@theia/core/shared/inversify';

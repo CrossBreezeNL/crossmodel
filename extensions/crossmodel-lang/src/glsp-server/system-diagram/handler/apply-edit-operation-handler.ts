@@ -2,7 +2,7 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 
-import { toId, toIdReference } from '@crossbreezenl/protocol';
+import { toId, toIdReference } from '@crossmodel/protocol';
 import { ApplyLabelEditOperation, Command, getOrThrow, JsonOperationHandler, ModelState } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
 import { CrossModelRoot, LogicalEntity, LogicalEntityNode } from '../../../language-server/generated/ast.js';

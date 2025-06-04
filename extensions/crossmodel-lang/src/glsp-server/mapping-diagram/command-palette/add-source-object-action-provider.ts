@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { AddSourceObjectOperation, codiconCSSString } from '@crossbreezenl/protocol';
+import { AddSourceObjectOperation, codiconCSSString } from '@crossmodel/protocol';
 import { Args, CommandPaletteActionProvider, GModelElement, LabeledAction, Point } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
 import { SourceObject } from '../../../language-server/generated/ast.js';

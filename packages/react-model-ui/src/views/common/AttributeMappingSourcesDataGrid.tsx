@@ -9,7 +9,7 @@ import {
    CrossReferenceContext,
    ReferenceableElement,
    TargetObjectType
-} from '@crossbreezenl/protocol';
+} from '@crossmodel/protocol';
 import { GridColDef, GridRenderEditCellParams, useGridApiContext } from '@mui/x-data-grid';
 import * as React from 'react';
 import { useMapping, useModelDispatch, useModelQueryApi, useReadonly } from '../../ModelContext';

@@ -8,7 +8,7 @@ import {
    SourceObjectCondition,
    SourceObjectDependency,
    SourceObjectJoinType
-} from '@crossbreezenl/protocol';
+} from '@crossmodel/protocol';
 import { DispatchAction, ModelAction, ModelState, moveDown, moveUp } from './ModelReducer';
 
 export interface SourceObjectChangeJoinAction extends ModelAction {

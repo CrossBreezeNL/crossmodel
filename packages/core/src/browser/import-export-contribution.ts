@@ -2,8 +2,8 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 
-import { ModelService } from '@crossbreezenl/model-service/lib/common';
-import { ModelFileExtensions, ModelFileType, ModelStructure, SystemInfo } from '@crossbreezenl/protocol';
+import { ModelService } from '@crossmodel/model-service/lib/common';
+import { ModelFileExtensions, ModelFileType, ModelStructure, SystemInfo } from '@crossmodel/protocol';
 import {
    CancellationTokenSource,
    Command,

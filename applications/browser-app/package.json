@@ -3,10 +3,10 @@
   "version": "0.2.4",
   "private": true,
   "description": "CrossModel Community Edition",
-  "homepage": "https://github.com/CrossBreezeNL/crossmodel",
+  "homepage": "https://github.com/crossmodel/crossmodel-core",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/crossbreezenl/crossmodel.git"
+    "url": "git+https://github.com/crossmodel/crossmodel-core.git"
   },
   "license": "AGPL-3.0-or-later",
   "author": {
@@ -25,13 +25,13 @@
     "watch": "theia build --watch --mode development"
   },
   "dependencies": {
-    "@crossbreezenl/composite-editor": "0.2.4",
-    "@crossbreezenl/core": "0.2.4",
-    "@crossbreezenl/form-client": "0.2.4",
-    "@crossbreezenl/glsp-client": "0.2.4",
-    "@crossbreezenl/model-service": "0.2.4",
-    "@crossbreezenl/product": "0.2.0",
-    "@crossbreezenl/property-view": "0.2.4",
+    "@crossmodel/composite-editor": "0.2.4",
+    "@crossmodel/core": "0.2.4",
+    "@crossmodel/form-client": "0.2.4",
+    "@crossmodel/glsp-client": "0.2.4",
+    "@crossmodel/model-service": "0.2.4",
+    "@crossmodel/product": "0.2.0",
+    "@crossmodel/property-view": "0.2.4",
     "@theia/core": "1.60.2",
     "@theia/editor": "1.60.2",
     "@theia/filesystem": "1.60.2",

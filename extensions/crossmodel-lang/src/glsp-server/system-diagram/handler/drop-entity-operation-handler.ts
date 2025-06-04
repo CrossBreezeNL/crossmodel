@@ -2,7 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { DropEntityOperation, toIdReference } from '@crossmodel/protocol';
+import { DropEntityOperation, toIdReference } from '@crossbreezenl/protocol';
 import { Command, JsonOperationHandler, ModelState } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
 import { URI } from 'vscode-uri';

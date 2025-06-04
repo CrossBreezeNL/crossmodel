@@ -11,7 +11,7 @@
     "build": "lerna run build",
     "build:browser": "yarn build:packages && yarn symlink:browser && yarn theia:browser build",
     "build:electron": "yarn build:packages && yarn symlink:electron && yarn theia:electron build",
-    "build:packages": "lerna run --scope=\"@crossmodel/*\" --scope={crossmodel-lang,crossmodel-theme} build",
+    "build:packages": "lerna run --scope=\"@crossbreezenl/*\" --scope={crossmodel-lang,crossmodel-theme} build",
     "clean": "lerna run clean",
     "format": "yarn prettier-eslint --write '**/*.{ts,tsx,js,cjs,mjs,css}' '**/package.json'",
     "postinstall": "theia check:theia-version && theia-patch",

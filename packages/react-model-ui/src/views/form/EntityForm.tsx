@@ -2,7 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { CrossModelValidationErrors, ModelFileType, ModelStructure, toId } from '@crossmodel/protocol';
+import { CrossModelValidationErrors, ModelFileType, ModelStructure, toId } from '@crossbreezenl/protocol';
 import { TextField } from '@mui/material';
 import * as React from 'react';
 import { useDiagnostics, useEntity, useModelDispatch, useModelQueryApi, useReadonly, useUntitled, useUri } from '../../ModelContext';

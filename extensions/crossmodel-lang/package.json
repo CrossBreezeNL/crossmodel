@@ -7,10 +7,10 @@
   "categories": [
     "Programming Languages"
   ],
-  "homepage": "https://github.com/crossmodel/crossmodel-core",
+  "homepage": "https://github.com/CrossBreezeNL/crossmodel",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/crossmodel/crossmodel-core.git"
+    "url": "git+https://github.com/crossbreezenl/crossmodel.git"
   },
   "license": "AGPL-3.0-or-later",
   "author": {
@@ -88,7 +88,7 @@
     "onStartupFinished"
   ],
   "dependencies": {
-    "@crossmodel/protocol": "0.2.4",
+    "@crossbreezenl/protocol": "0.2.4",
     "@eclipse-glsp/server": "next",
     "chalk": "~4.1.2",
     "chevrotain": "~11.0.3",

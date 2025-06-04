@@ -2,7 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { CrossModelWidgetOptions } from '@crossmodel/core/lib/browser';
+import { CrossModelWidgetOptions } from '@crossbreezenl/core/lib/browser';
 import { ContainerModule } from '@theia/core/shared/inversify';
 import { PropertyDataService } from '@theia/property-view/lib/browser/property-data-service';
 import { PropertyViewWidget } from '@theia/property-view/lib/browser/property-view-widget';

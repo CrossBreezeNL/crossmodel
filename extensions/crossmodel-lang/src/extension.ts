@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { GLSP_PORT_COMMAND, MODELSERVER_PORT_COMMAND } from '@crossmodel/protocol';
+import { GLSP_PORT_COMMAND, MODELSERVER_PORT_COMMAND } from '@crossbreezenl/protocol';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import { LanguageClient, LanguageClientOptions, ServerOptions, TransportKind } from 'vscode-languageclient/node.js';

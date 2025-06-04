@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { AddEntityOperation, codiconCSSString } from '@crossmodel/protocol';
+import { AddEntityOperation, codiconCSSString } from '@crossbreezenl/protocol';
 import { ContextActionsProvider, EditorContext, LabeledAction, ModelState, Point } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
 import { LogicalEntityNode } from '../../../language-server/generated/ast.js';

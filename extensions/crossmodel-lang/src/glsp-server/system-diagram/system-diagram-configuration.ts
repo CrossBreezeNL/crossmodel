@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { ENTITY_NODE_TYPE, INHERITANCE_EDGE_TYPE, RELATIONSHIP_EDGE_TYPE } from '@crossmodel/protocol';
+import { ENTITY_NODE_TYPE, INHERITANCE_EDGE_TYPE, RELATIONSHIP_EDGE_TYPE } from '@crossbreezenl/protocol';
 import { DiagramConfiguration, EdgeTypeHint, ServerLayoutKind, getDefaultMapping } from '@eclipse-glsp/server';
 import { injectable } from 'inversify';
 

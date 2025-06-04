@@ -2,7 +2,6 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { TypeGuard } from '@crossmodel/protocol';
 import { EmptyFileSystem, FileSystemNode, FileSystemProvider, LangiumDocument, URI } from 'langium';
 import { DefaultSharedModuleContext, LangiumServices } from 'langium/lsp';
 import { ParseHelperOptions, parseDocument as langiumParseDocument } from 'langium/test';
@@ -21,6 +20,7 @@ import {
    isSystemDiagram
 } from '../../../src/language-server/generated/ast.js';
 import { SemanticRoot, WithDocument, findSemanticRoot } from '../../../src/language-server/util/ast-util.js';
+import { TypeGuard } from '@crossbreezenl/protocol';
 
 export function createCrossModelTestServices(context: DefaultSharedModuleContext = EmptyFileSystem): CrossModelServices {
    return createCrossModelServices(context).CrossModel;

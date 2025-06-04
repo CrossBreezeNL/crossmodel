@@ -2,7 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { SOURCE_OBJECT_NODE_TYPE, TARGET_OBJECT_NODE_TYPE } from '@crossmodel/protocol';
+import { SOURCE_OBJECT_NODE_TYPE, TARGET_OBJECT_NODE_TYPE } from '@crossbreezenl/protocol';
 import { GModelElement } from '@eclipse-glsp/client';
 import { RectangularNode } from 'sprotty';
 import { LibavoidEdge } from '../libavoid-model';

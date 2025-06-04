@@ -2,7 +2,7 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 
-import { AttributeMappingSource } from '@crossmodel/protocol';
+import { AttributeMappingSource } from '@crossbreezenl/protocol';
 import { DispatchAction, ModelAction, ModelState, moveDown, moveUp, undefinedIfEmpty } from './ModelReducer';
 
 export interface AttributeMappingChangeExpressionAction extends ModelAction {

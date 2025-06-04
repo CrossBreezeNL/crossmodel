@@ -14,7 +14,7 @@ import {
    SourceObjectCondition,
    StringLiteralType,
    quote
-} from '@crossmodel/protocol';
+} from '@crossbreezenl/protocol';
 import { DataGridProps, GridColDef, GridRenderEditCellParams, useGridApiContext } from '@mui/x-data-grid';
 import * as React from 'react';
 import { useModelDispatch, useModelQueryApi, useReadonly } from '../../ModelContext';

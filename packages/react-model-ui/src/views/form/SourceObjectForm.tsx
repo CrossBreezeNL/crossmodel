@@ -2,7 +2,7 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 
-import { SourceObjectJoinType } from '@crossmodel/protocol';
+import { SourceObjectJoinType } from '@crossbreezenl/protocol';
 import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, TextField } from '@mui/material';
 import * as React from 'react';
 import { useMapping, useModelDispatch, useReadonly } from '../../ModelContext';

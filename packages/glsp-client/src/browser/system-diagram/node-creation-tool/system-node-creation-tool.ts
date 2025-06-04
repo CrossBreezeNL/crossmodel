@@ -2,8 +2,8 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 
-import { ModelService } from '@crossmodel/model-service/lib/common';
-import { RelationshipType, findNextUnique, identity } from '@crossmodel/protocol';
+import { ModelService } from '@crossbreezenl/model-service/lib/common';
+import { RelationshipType, findNextUnique, identity } from '@crossbreezenl/protocol';
 import {
    Action,
    Args,

@@ -2,7 +2,7 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 
-import { ModelFileExtensions } from '@crossmodel/protocol';
+import { ModelFileExtensions } from '@crossbreezenl/protocol';
 import { UriUtils, type LangiumDocument } from 'langium';
 import type { CodeActionProvider } from 'langium/lsp';
 import { RenameFile, type CodeAction, type CodeActionParams } from 'vscode-languageserver-protocol';

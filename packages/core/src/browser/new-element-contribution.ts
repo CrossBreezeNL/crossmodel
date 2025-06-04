@@ -1,7 +1,7 @@
 /** ******************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { ModelService } from '@crossmodel/model-service/lib/common';
+import { ModelService } from '@crossbreezenl/model-service/lib/common';
 import {
    ID_REGEX,
    LogicalEntityType,
@@ -18,7 +18,7 @@ import {
    toId,
    toIdReference,
    toPascal
-} from '@crossmodel/protocol';
+} from '@crossbreezenl/protocol';
 import {
    Command,
    CommandContribution,

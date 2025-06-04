@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { MODELSERVER_PORT_COMMAND } from '@crossmodel/protocol';
+import { MODELSERVER_PORT_COMMAND } from '@crossbreezenl/protocol';
 import console from 'console';
 import * as net from 'net';
 import * as rpc from 'vscode-jsonrpc/node.js';

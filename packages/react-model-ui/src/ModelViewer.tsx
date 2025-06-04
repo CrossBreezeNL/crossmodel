@@ -2,7 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { CrossModelDocument } from '@crossmodel/protocol';
+import { CrossModelDocument } from '@crossbreezenl/protocol';
 import * as React from 'react';
 import { ModelQueryApi, OpenCallback, SaveCallback } from './ModelContext';
 import { ModelProvider, UpdateCallback } from './ModelProvider';

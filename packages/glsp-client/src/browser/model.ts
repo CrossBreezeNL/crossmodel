@@ -2,7 +2,7 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 
-import { ATTRIBUTE_COMPARTMENT_TYPE } from '@crossmodel/protocol';
+import { ATTRIBUTE_COMPARTMENT_TYPE } from '@crossbreezenl/protocol';
 import { Args, ArgsAware, GCompartment, GModelElement, Hoverable, Selectable, isSelectable } from '@eclipse-glsp/client';
 
 export class AttributeCompartment extends GCompartment implements Selectable, Hoverable, ArgsAware {

@@ -2,7 +2,7 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 
-import { AddEntityOperation } from '@crossmodel/protocol';
+import { AddEntityOperation } from '@crossbreezenl/protocol';
 import {
    Action,
    GLSPMousePositionTracker,

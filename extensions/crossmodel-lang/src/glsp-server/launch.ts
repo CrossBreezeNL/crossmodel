@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { GLSP_PORT_COMMAND } from '@crossmodel/protocol';
+import { GLSP_PORT_COMMAND } from '@crossbreezenl/protocol';
 import {
    LogLevel,
    LoggerFactory,

@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
-import { ENTITY_NODE_TYPE, findNextUnique, toIdReference } from '@crossmodel/protocol';
+import { ENTITY_NODE_TYPE, findNextUnique, toIdReference } from '@crossbreezenl/protocol';
 import {
    Action,
    ActionDispatcher,

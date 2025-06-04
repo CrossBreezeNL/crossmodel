@@ -11,7 +11,7 @@ import {
    isMemberPermittedInModel,
    ModelFileExtensions,
    ModelMemberPermissions
-} from '@crossmodel/protocol';
+} from '@crossbreezenl/protocol';
 import { AstNode, GrammarUtils, Reference, UriUtils, ValidationAcceptor, ValidationChecks } from 'langium';
 import { Diagnostic } from 'vscode-languageserver-protocol';
 import type { CrossModelServices } from './cross-model-module.js';

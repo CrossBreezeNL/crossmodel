@@ -8,7 +8,7 @@ import {
    REFERENCE_PROPERTY,
    REFERENCE_VALUE,
    RELATIONSHIP_EDGE_TYPE
-} from '@crossmodel/protocol';
+} from '@crossbreezenl/protocol';
 import { GEdge, GEdgeBuilder } from '@eclipse-glsp/server';
 import { combineIds } from '../../../language-server/cross-model-naming.js';
 import { InheritanceEdge, RelationshipEdge } from '../../../language-server/generated/ast.js';

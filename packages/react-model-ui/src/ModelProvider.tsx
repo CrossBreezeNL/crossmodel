@@ -2,8 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { CrossModelRoot } from '@crossmodel/protocol';
-import { URI } from '@theia/core';
+import { CrossModelRoot } from '@crossbreezenl/protocol';
 import * as React from 'react';
 import { useImmerReducer } from 'use-immer';
 import {
@@ -19,6 +18,7 @@ import {
 } from './ModelContext';
 import { DispatchAction, ModelReducer, ModelState } from './ModelReducer';
 import { ModelProviderProps } from './ModelViewer';
+import { URI } from '@theia/core';
 
 export type UpdateCallback = (model: CrossModelRoot) => void;
 

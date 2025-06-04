@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
-import { isLeftPortId, isPortId, TARGET_ATTRIBUTE_MAPPING_EDGE_TYPE } from '@crossbreezenl/protocol';
+import { isLeftPortId, isPortId, TARGET_ATTRIBUTE_MAPPING_EDGE_TYPE } from '@crossmodel/protocol';
 import {
    Command,
    CreateEdgeOperation,

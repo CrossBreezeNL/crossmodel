@@ -2,7 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { RELATIONSHIP_EDGE_TYPE, computeRelationshipName, toId, toIdReference } from '@crossbreezenl/protocol';
+import { RELATIONSHIP_EDGE_TYPE, computeRelationshipName, toId, toIdReference } from '@crossmodel/protocol';
 import {
    ActionDispatcher,
    Command,

@@ -9,7 +9,7 @@ import {
    isRootElementReference,
    isSyntheticDocument,
    ReferenceableElement
-} from '@crossbreezenl/protocol';
+} from '@crossmodel/protocol';
 import {
    AstNode,
    AstNodeDescription,

@@ -4,7 +4,7 @@
  * https://github.com/Aksem/sprotty-routing-libavoid
  ********************************************************************************/
 
-import { isLeftPortId } from '@crossbreezenl/protocol';
+import { isLeftPortId } from '@crossmodel/protocol';
 import {
    AbstractEdgeRouter,
    Action,

@@ -2,7 +2,7 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 
-import { ModelFileExtensions } from '@crossbreezenl/protocol';
+import { ModelFileExtensions } from '@crossmodel/protocol';
 import { entity1 } from './test-utils/test-documents/entity/entity1.js';
 import { createCrossModelTestServices, parseLogicalEntity, testUri } from './test-utils/utils.js';
 

@@ -7,7 +7,7 @@ import {
    INHERITANCE_EDGE_TYPE,
    LABEL_ENTITY,
    RELATIONSHIP_EDGE_TYPE
-} from '@crossbreezenl/protocol';
+} from '@crossmodel/protocol';
 import {
    configureDefaultModelElements,
    configureModelElement,

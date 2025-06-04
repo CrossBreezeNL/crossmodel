@@ -2,8 +2,8 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 
-import { ERRONEOUS_MODEL } from '@crossbreezenl/protocol';
-import { createEditorError } from '@crossbreezenl/react-model-ui/lib/views/common/EditorError';
+import { ERRONEOUS_MODEL } from '@crossmodel/protocol';
+import { createEditorError } from '@crossmodel/react-model-ui/lib/views/common/EditorError';
 import { EditorContextService, GLSPAbstractUIExtension } from '@eclipse-glsp/client';
 import { inject, injectable, postConstruct } from '@theia/core/shared/inversify';
 import { createRoot } from '@theia/core/shared/react-dom/client';

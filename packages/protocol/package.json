@@ -1,11 +1,11 @@
 {
-  "name": "@crossbreezenl/protocol",
+  "name": "@crossmodel/protocol",
   "version": "0.2.4",
   "description": "CrossModel Protocol Extensions between Server and Client",
-  "homepage": "https://github.com/CrossBreezeNL/crossmodel",
+  "homepage": "https://github.com/crossmodel/crossmodel-core",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/crossbreezenl/crossmodel.git"
+    "url": "git+https://github.com/crossmodel/crossmodel-core.git"
   },
   "license": "AGPL-3.0-or-later",
   "author": {

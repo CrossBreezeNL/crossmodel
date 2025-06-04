@@ -2,12 +2,12 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 
-import { CrossModelWidget, CrossModelWidgetOptions } from '@crossbreezenl/core/lib/browser';
-import { FormEditorOpenHandler, FormEditorWidget } from '@crossbreezenl/form-client/lib/browser';
-import { MappingDiagramManager, SystemDiagramManager } from '@crossbreezenl/glsp-client/lib/browser/';
-import { MappingDiagramLanguage, SystemDiagramLanguage } from '@crossbreezenl/glsp-client/lib/common';
-import { ModelService } from '@crossbreezenl/model-service/lib/common';
-import { ModelFileType, codiconCSSString, getSemanticRoot } from '@crossbreezenl/protocol';
+import { CrossModelWidget, CrossModelWidgetOptions } from '@crossmodel/core/lib/browser';
+import { FormEditorOpenHandler, FormEditorWidget } from '@crossmodel/form-client/lib/browser';
+import { MappingDiagramManager, SystemDiagramManager } from '@crossmodel/glsp-client/lib/browser/';
+import { MappingDiagramLanguage, SystemDiagramLanguage } from '@crossmodel/glsp-client/lib/common';
+import { ModelService } from '@crossmodel/model-service/lib/common';
+import { ModelFileType, codiconCSSString, getSemanticRoot } from '@crossmodel/protocol';
 import { FocusStateChangedAction, SetDirtyStateAction, toTypeGuard } from '@eclipse-glsp/client';
 import { GLSPDiagramWidget, GLSPDiagramWidgetContainer, GLSPDiagramWidgetOptions, GLSPSaveable } from '@eclipse-glsp/theia-integration';
 import { GLSPDiagramLanguage } from '@eclipse-glsp/theia-integration/lib/common';

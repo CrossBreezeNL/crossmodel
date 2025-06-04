@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { CrossModelRoot } from '@crossbreezenl/protocol';
+import { CrossModelRoot } from '@crossmodel/protocol';
 import { EntityDispatchAction, EntityModelReducer, isEntityDispatchAction } from './EntityModelReducer';
 import { MappingSourcesDispatchAction, MappingSourcesModelReducer, isMappingSourcesDispatchAction } from './MappingSourcesReducer';
 import { MappingTargetDispatchAction, MappingTargetModelReducer, isMappingTargetDispatchAction } from './MappingTargetReducer';

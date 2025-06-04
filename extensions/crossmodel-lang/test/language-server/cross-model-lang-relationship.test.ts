@@ -14,7 +14,7 @@ import {
 } from './test-utils/test-documents/relationship/index.js';
 import { createCrossModelTestServices, parseDocuments, parseRelationship, testUri } from './test-utils/utils.js';
 
-import { ModelFileExtensions } from '@crossbreezenl/protocol';
+import { ModelFileExtensions } from '@crossmodel/protocol';
 import { address } from './test-utils/test-documents/entity/address.js';
 import { customer } from './test-utils/test-documents/entity/customer.js';
 import { order } from './test-utils/test-documents/entity/order.js';

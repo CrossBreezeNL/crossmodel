@@ -30,7 +30,7 @@ import {
    SystemInfoArgs,
    UpdateModel,
    UpdateModelArgs
-} from '@crossbreezenl/protocol';
+} from '@crossmodel/protocol';
 import { AstNode, AstUtils, isReference } from 'langium';
 import { Disposable } from 'vscode-jsonrpc';
 import * as rpc from 'vscode-jsonrpc/node.js';

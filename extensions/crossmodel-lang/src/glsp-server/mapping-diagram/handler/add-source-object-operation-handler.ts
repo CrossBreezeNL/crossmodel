@@ -2,7 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { AddSourceObjectOperation } from '@crossbreezenl/protocol';
+import { AddSourceObjectOperation } from '@crossmodel/protocol';
 import { Command, JsonOperationHandler, ModelState } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
 import { SourceObject } from '../../../language-server/generated/ast.js';

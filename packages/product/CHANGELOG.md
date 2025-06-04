@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.5](https://github.com/crossmodel/crossmodel-core/compare/v0.2.4...v0.2.5) (2025-06-04)
+
+
+### Reverts
+
+* Revert "Renamed CrossBreezeNL and crossbreezenl to crossmodel." ([4c2c5ff](https://github.com/crossmodel/crossmodel-core/commit/4c2c5fff0b521d34f6660a59ef03eec4d8eab3bc))
+
+
+
+
+
 # [0.2.0](https://github.com/crossmodel/crossmodel-core/compare/v0.1.1...v0.2.0) (2025-05-08)
 
 **Note:** Version bump only for package @crossmodel/product

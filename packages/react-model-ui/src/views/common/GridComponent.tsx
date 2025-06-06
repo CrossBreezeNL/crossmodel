@@ -5,8 +5,8 @@ import { DeleteOutlined } from '@mui/icons-material';
 import AddIcon from '@mui/icons-material/Add';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import { Box, popoverClasses, Typography } from '@mui/material';
-import Button from '@mui/material/Button';
+import { Box, Button, Stack, Typography } from '@mui/material';
+import { popoverClasses } from '@mui/material/Popover';
 import {
    DataGrid,
    DataGridProps,
@@ -19,7 +19,6 @@ import {
    GridRowEditStopParams,
    GridRowModes,
    GridRowModesModel,
-   GridToolbarContainer,
    GridValidRowModel,
    useGridApiRef
 } from '@mui/x-data-grid';
@@ -100,7 +99,7 @@ export default function GridComponent<T extends GridValidRowModel>({
          ) {
             return;
          }
-         gridApi.current.stopRowEditMode({ id: editedRow.current });
+         gridApi.current?.stopRowEditMode({ id: editedRow.current });
          editedRow.current = undefined;
       };
       document.addEventListener('focusin', handleFocusChange);
@@ -242,9 +241,9 @@ export default function GridComponent<T extends GridValidRowModel>({
       setColumns(allColumns);
    }, [gridColumns, deleteEntry, onMoveDown, onMoveUp, rows.length, validateRow, readonly]);
 
-   const EditToolbar = React.useMemo(
-      () => (
-         <GridToolbarContainer>
+   function EditToolbar(): React.ReactElement {
+      return (
+         <Stack direction='row' spacing={1} sx={{ mb: 1 }}>
             <Button
                color='primary'
                startIcon={<AddIcon />}
@@ -264,84 +263,88 @@ export default function GridComponent<T extends GridValidRowModel>({
             ) : (
                <></>
             )}
-         </GridToolbarContainer>
-      ),
-      [createSyntheticRow, label, newEntryText, onAdd, readonly]
-   );
+         </Stack>
+      );
+   }
 
    const NoRowsOverlay = React.useMemo(() => <GridOverlay>{noEntriesText ?? 'No Entries'}</GridOverlay>, [noEntriesText]);
 
    return (
-      <DataGrid<GridComponentRow<T>>
-         rows={rows}
-         getRowId={getRowId}
-         columns={columns}
-         editMode='row'
-         rowModesModel={rowModesModel}
-         rowSelection={true}
-         onRowModesModelChange={handleRowModesModelChange}
-         onRowEditStop={handleRowEditStop}
-         processRowUpdate={handleRowUpdate}
-         onProcessRowUpdateError={handleRowUpdateError}
-         hideFooter={true}
-         density='compact'
-         disableColumnFilter={true}
-         disableColumnSelector={true}
-         disableColumnSorting={true}
-         disableMultipleRowSelection={true}
-         disableColumnMenu={true}
-         disableDensitySelector={true}
-         onRowEditStart={handleRowEditStart}
-         apiRef={gridApi}
-         ref={gridRef}
-         slots={{ toolbar: () => EditToolbar, noRowsOverlay: () => NoRowsOverlay }}
-         sx={{
-            fontSize: '1em',
-            width: '100%',
-            '&.MuiDataGrid-root': {
-               width: '100%'
-            },
-            '& .actions': {
-               color: 'text.secondary'
-            },
-            '& .textPrimary': {
-               color: 'text.primary'
-            },
-            '& :focus': {
-               outline: 'none !important'
-            },
-            '& .MuiOutlinedInput-notchedOutline': {
-               borderWidth: 0
-            },
-            '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
-               borderWidth: '0 !important'
-            },
-            '& .MuiDataGrid-row--editing .MuiDataGrid-cell': {
-               backgroundColor: 'transparent !important'
-            },
-            '& .MuiInputBase-input': {
-               padding: '0 9px',
-               fontSize: '13px'
-            },
-            '& .MuiAutocomplete-input, & .MuiAutocomplete-input': {
-               padding: '2px 3px !important',
-               fontSize: '13px'
-            },
-            '& .MuiSelect-select': {
-               paddingTop: '1px'
-            },
-            '& .Mui-error': {
-               backgroundColor: 'var(--theia-inputValidation-errorBackground)',
-               color: 'var(--theia-inputValidation-errorBorder)'
-            },
-            '& .MuiDataGrid-columnHeader': {
-               textTransform: 'uppercase',
-               fontSize: '0.75em',
-               letterSpacing: '0.1em'
-            }
-         }}
-         {...props}
-      />
+      <Box sx={{ width: '100%' }}>
+         <EditToolbar />
+         <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <DataGrid<GridComponentRow<T>>
+               rows={rows}
+               getRowId={getRowId}
+               columns={columns}
+               editMode='row'
+               rowModesModel={rowModesModel}
+               rowSelection={true}
+               onRowModesModelChange={handleRowModesModelChange}
+               onRowEditStop={handleRowEditStop}
+               processRowUpdate={handleRowUpdate}
+               onProcessRowUpdateError={handleRowUpdateError}
+               hideFooter={true}
+               density='compact'
+               disableColumnFilter={true}
+               disableColumnSelector={true}
+               disableColumnSorting={true}
+               disableMultipleRowSelection={true}
+               disableColumnMenu={true}
+               disableDensitySelector={true}
+               onRowEditStart={handleRowEditStart}
+               apiRef={gridApi}
+               ref={gridRef}
+               slots={{ noRowsOverlay: () => NoRowsOverlay }}
+               sx={{
+                  fontSize: '1em',
+                  width: '100%',
+                  '&.MuiDataGrid-root': {
+                     width: '100%'
+                  },
+                  '& .actions': {
+                     color: 'text.secondary'
+                  },
+                  '& .textPrimary': {
+                     color: 'text.primary'
+                  },
+                  '& :focus': {
+                     outline: 'none !important'
+                  },
+                  '& .MuiOutlinedInput-notchedOutline': {
+                     borderWidth: 0
+                  },
+                  '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
+                     borderWidth: '0 !important'
+                  },
+                  '& .MuiDataGrid-row--editing .MuiDataGrid-cell': {
+                     backgroundColor: 'transparent !important'
+                  },
+                  '& .MuiInputBase-input': {
+                     padding: '0 9px',
+                     fontSize: '13px'
+                  },
+                  '& .MuiAutocomplete-input, & .MuiAutocomplete-input': {
+                     padding: '2px 3px !important',
+                     fontSize: '13px'
+                  },
+                  '& .MuiSelect-select': {
+                     paddingTop: '1px'
+                  },
+                  '& .Mui-error': {
+                     backgroundColor: 'var(--theia-inputValidation-errorBackground)',
+                     color: 'var(--theia-inputValidation-errorBorder)'
+                  },
+                  '& .MuiDataGrid-columnHeader': {
+                     textTransform: 'uppercase',
+                     fontSize: '0.75em',
+                     letterSpacing: '0.1em'
+                  }
+               }}
+               {...props}
+            />
+         </div>
+      </Box>
    );
 }
 

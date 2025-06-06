@@ -68,6 +68,7 @@
     "Modelserver",
     "Navigatable",
     "tabbar",
+    "theia",
     "uinteger",
     "Validateable"
   ],

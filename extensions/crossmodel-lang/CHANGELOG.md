@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.6](https://github.com/crossmodel/crossmodel-core/compare/v0.2.5...v0.2.6) (2025-06-10)
+
+
+### Bug Fixes
+
+* Avoid validating package.json as it is not a language file ([#149](https://github.com/crossmodel/crossmodel-core/issues/149)) ([60eae34](https://github.com/crossmodel/crossmodel-core/commit/60eae34f1d0f1ce9f81a741288341164b71b4e6a))
+
+
+
+
+
 ## [0.2.5](https://github.com/crossmodel/crossmodel-core/compare/v0.2.4...v0.2.5) (2025-06-04)
 
 

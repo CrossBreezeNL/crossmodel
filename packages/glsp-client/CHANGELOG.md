@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.7](https://github.com/crossmodel/crossmodel-core/compare/v0.2.6...v0.2.7) (2025-06-10)
+
+
+### Bug Fixes
+
+* Ensure edge padding is properly considered ([#150](https://github.com/crossmodel/crossmodel-core/issues/150)) ([a20b705](https://github.com/crossmodel/crossmodel-core/commit/a20b705dce16329e40f06b4fb8dbc405ff0fe69b)), closes [#133](https://github.com/crossmodel/crossmodel-core/issues/133)
+
+
+
+
+
 ## [0.2.5](https://github.com/crossmodel/crossmodel-core/compare/v0.2.4...v0.2.5) (2025-06-04)
 
 

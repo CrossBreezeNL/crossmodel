@@ -4,29 +4,21 @@
 /** @jsx svg */
 /* eslint-disable react/no-unknown-property */
 /* eslint-disable react/jsx-key */
-import {
-   GGraph,
-   GGraphView,
-   PolylineEdgeViewWithGapsOnIntersections,
-   RenderingContext,
-   TYPES,
-   ViewerOptions,
-   svg
-} from '@eclipse-glsp/client';
+import { GGraph, GGraphView, RenderingContext, TYPES, ViewerOptions, svg } from '@eclipse-glsp/client';
 import { inject } from '@theia/core/shared/inversify';
 import { injectable } from 'inversify';
 import { ReactNode } from 'react';
 import { VNode, VNodeStyle } from 'snabbdom';
-import { DiagramNodeView } from '../views';
+import { CrossModelEdgeView, DiagramNodeView } from '../views';
 
 @injectable()
 export class EntityNodeView extends DiagramNodeView {}
 
 @injectable()
-export class RelationshipEdgeView extends PolylineEdgeViewWithGapsOnIntersections {}
+export class RelationshipEdgeView extends CrossModelEdgeView {}
 
 @injectable()
-export class InheritanceEdgeView extends PolylineEdgeViewWithGapsOnIntersections {}
+export class InheritanceEdgeView extends CrossModelEdgeView {}
 
 const MARKER_INHERITANCE_ID = 'marker-inheritance';
 const MARKER_INHERITANCE_SELECTED_ID = 'marker-inheritance-selected';

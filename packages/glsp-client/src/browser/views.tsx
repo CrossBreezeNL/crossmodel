@@ -6,9 +6,13 @@
 /* eslint-disable max-len */
 
 import {
+   EdgePadding,
    GCompartmentView,
+   GEdge,
    GNode,
    Hoverable,
+   Point,
+   PolylineEdgeViewWithGapsOnIntersections,
    RenderingContext,
    RoundedCornerNodeView,
    RoundedCornerWrapper,
@@ -70,5 +74,36 @@ export class AttributeCompartmentView extends GCompartmentView {
       ) as any;
 
       return vnode;
+   }
+}
+
+@injectable()
+export class CrossModelEdgeView extends PolylineEdgeViewWithGapsOnIntersections {
+   protected override renderAdditionals(edge: GEdge, segments: Point[], context: RenderingContext): VNode[] {
+      const edgePadding = EdgePadding.from(edge);
+      return edgePadding ? [this.renderMouseHandle(segments, edgePadding)] : [];
+   }
+
+   protected renderMouseHandle(segments: Point[], padding: number): VNode {
+      return (
+         <path
+            class-mouse-handle
+            d={this.createPathForSegments(segments)}
+            style-stroke-width={padding * 2}
+            style-stroke='transparent'
+            style-stroke-dasharray='none'
+            style-stroke-dashoffset='0'
+         />
+      );
+   }
+
+   protected createPathForSegments(segments: Point[]): string {
+      const firstPoint = segments[0];
+      let path = `M ${firstPoint.x},${firstPoint.y}`;
+      for (let i = 1; i < segments.length; i++) {
+         const p = segments[i];
+         path += ` L ${p.x},${p.y}`;
+      }
+      return path;
    }
 }

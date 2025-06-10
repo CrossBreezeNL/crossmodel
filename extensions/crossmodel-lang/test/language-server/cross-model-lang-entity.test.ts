@@ -42,7 +42,7 @@ describe('CrossModel language Entity', () => {
       });
 
       test('entity with attributes coming before the description and name', async () => {
-         const entity = await parseLogicalEntity({ services, text: entity4 }, { parserErrors: 2 });
+         const entity = await parseLogicalEntity({ services, text: entity4 }, { parserErrors: 1 });
          expect(entity.id).toBe('Customer');
          expect(entity.name).toBeUndefined();
          expect(entity.description).toBeUndefined();

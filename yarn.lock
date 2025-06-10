@@ -11420,7 +11420,18 @@ langium-railroad@~3.3.0:
     langium "~3.3.0"
     railroad-diagrams "~1.0.0"
 
-langium@^3.3.0, langium@~3.3.0:
+langium@^3.5.0:
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/langium/-/langium-3.5.0.tgz#110ca6cd66e3863a978dfe82998201eaa767ba40"
+  integrity sha512-tnqVzWOkUcoiY0bWlyE8diFrZjmGBCF7MesC1bjUaZM+YGQSfdPC+KkhmHM0DWFG+uLcPxidKaPP1SYGtg3J0Q==
+  dependencies:
+    chevrotain "~11.0.3"
+    chevrotain-allstar "~0.3.0"
+    vscode-languageserver "~9.0.1"
+    vscode-languageserver-textdocument "~1.0.11"
+    vscode-uri "~3.0.8"
+
+langium@~3.3.0:
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/langium/-/langium-3.3.0.tgz#25e4a3ef9476a9e52863bb2b93eefefaeaac4e3c"
   integrity sha512-y1n1MxeHtXvE0Ksi/HjLCvesHm3/Vr0pyyuA1fn+vmGSYR81NkxnC3bU4kd2o0CrZaz8xekz9rhm+lGfRgNFzw==

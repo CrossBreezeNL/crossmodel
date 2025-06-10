@@ -1,0 +1,10 @@
+entity:
+    id: Country
+    name: "Country"
+    attributes:
+      - id: Country_ID
+        name: "Country ID"
+        datatype: "Text"
+      - id: Country_Name
+        name: "Country Name"
+        datatype: "Text"

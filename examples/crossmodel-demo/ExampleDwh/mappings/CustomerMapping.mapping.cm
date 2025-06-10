@@ -4,6 +4,13 @@ mapping:
       - id: ClientSourceObject
         entity: example-source.Client
         join: from
+      - id: CountrySourceObject
+        entity: example-source.Country
+        join: left-join
+        dependencies:
+          - ClientSourceObject
+        conditions:
+          - ClientSourceObject.Country_ID = CountrySourceObject.Country_ID
     target:
         entity: Customer
         mappings:
@@ -15,3 +22,6 @@ mapping:
               - ClientSourceObject.Last_Name
               - ClientSourceObject.First_Name
             expression: "{{ClientSourceObject.First_Name}} || ' ' || {{ClientSourceObject.Last_Name}}"
+          - attribute: Country_Name
+            sources:
+              - CountrySourceObject.Country_Name

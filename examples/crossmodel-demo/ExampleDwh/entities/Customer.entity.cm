@@ -10,3 +10,6 @@ entity:
       - id: Name
         name: "Name"
         datatype: "Text"
+      - id: Country_Name
+        name: "Country Name"
+        datatype: "Text"

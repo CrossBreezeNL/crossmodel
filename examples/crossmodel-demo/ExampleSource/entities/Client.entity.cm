@@ -12,3 +12,6 @@ entity:
       - id: Last_Name
         name: "Last Name"
         datatype: "Text"
+      - id: Country_ID
+        name: "Country ID"
+        datatype: "Text"

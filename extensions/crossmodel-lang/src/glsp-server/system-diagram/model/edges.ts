@@ -9,7 +9,7 @@ import {
    REFERENCE_VALUE,
    RELATIONSHIP_EDGE_TYPE
 } from '@crossmodel/protocol';
-import { GEdge, GEdgeBuilder } from '@eclipse-glsp/server';
+import { ArgsUtil, GEdge, GEdgeBuilder } from '@eclipse-glsp/server';
 import { combineIds } from '../../../language-server/cross-model-naming.js';
 import { InheritanceEdge, RelationshipEdge } from '../../../language-server/generated/ast.js';
 import { SystemModelIndex } from './system-model-index.js';
@@ -26,7 +26,7 @@ export class GRelationshipEdgeBuilder extends GEdgeBuilder<GRelationshipEdge> {
    set(edge: RelationshipEdge, index: SystemModelIndex): this {
       this.id(index.createId(edge));
       this.addCssClasses('diagram-edge', 'relationship');
-      this.addArg('edgePadding', 5);
+      this.addArgs(ArgsUtil.edgePadding(5));
       this.routerKind('libavoid');
       this.addArg(REFERENCE_CONTAINER_TYPE, RelationshipEdge);
       this.addArg(REFERENCE_PROPERTY, 'relationship');

@@ -7,3 +7,14 @@ systemDiagram:
         y: 187
         width: 153.649658203125
         height: 96
+      - id: CountryNode
+        entity: Country
+        x: 440
+        y: 198
+        width: 141.6986665725708
+        height: 75.57143020629883
+    edges:
+      - id: Client_to_CountryEdge
+        relationship: example-source.Client_to_Country
+        sourceNode: ClientNode
+        targetNode: CountryNode

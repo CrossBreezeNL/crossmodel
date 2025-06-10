@@ -1,0 +1,8 @@
+relationship:
+    id: Client_to_Country
+    name: "Client to Country"
+    parent: Country
+    child: Client
+    attributes:
+      - parent: Country.Country_ID
+        child: Client.Country_ID

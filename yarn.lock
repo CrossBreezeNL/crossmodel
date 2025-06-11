@@ -1174,7 +1174,7 @@
   resolved "https://registry.yarnpkg.com/@discoveryjs/json-ext/-/json-ext-0.5.7.tgz#1d572bfbbe14b7704e0ba0f39b74815b84870d70"
   integrity sha512-dBVuXR082gk3jsFp7Rd/JI4kytwGHecnCoTtXFb7DB6CNHp4rg5k1bhg0nWdLGLnOV71lmDzGQaLMy8iPLY0pw==
 
-"@eclipse-glsp/client@2.4.0", "@eclipse-glsp/client@next":
+"@eclipse-glsp/client@2.4.0", "@eclipse-glsp/client@^2.4.0":
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/@eclipse-glsp/client/-/client-2.4.0.tgz#b4ef78cb82c93e43298c6eed9941f037ad329e7c"
   integrity sha512-NAWab8EDc3GkqXUH/pr0fbLH3pIShT/N0myliPYEXl/m3NYM4WAtn6HoMypBP2D8amd/PRLayXBxThTcsPofxw==
@@ -1186,7 +1186,7 @@
     snabbdom "~3.5.1"
     vscode-jsonrpc "8.2.0"
 
-"@eclipse-glsp/glsp-playwright@2.4.0":
+"@eclipse-glsp/glsp-playwright@^2.4.0":
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/@eclipse-glsp/glsp-playwright/-/glsp-playwright-2.4.0.tgz#f0f8a6426f4f656af8dbe039ad134e68a84e5208"
   integrity sha512-hr2m7wYA7a3vy4CxjxEJREanA3V9AzxobKrt1epBDUrAVCctsrAhZ7khJ0lRRr4e3uP7brQV2rhLq2DJ2KHmFw==
@@ -1195,14 +1195,14 @@
     ts-dedent "^2.2.0"
     uuid "^9.0.0"
 
-"@eclipse-glsp/graph@2.5.0-next.123+948f71a":
-  version "2.5.0-next.123"
-  resolved "https://registry.yarnpkg.com/@eclipse-glsp/graph/-/graph-2.5.0-next.123.tgz#adb4f43c0d859c99b58a47b3914088690405a34f"
-  integrity sha512-Yb9PaumWm+HQMFZdjHGxx5T7bc5FO4vSd0pr+R5r31z60nUb2kfjUWaknDbzORlccaPnvFw1b0MyOY3FwCI5bQ==
+"@eclipse-glsp/graph@2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@eclipse-glsp/graph/-/graph-2.4.0.tgz#3f5fc5bf5684d2540e7051a2b6712362adaadeed"
+  integrity sha512-ppCYuz5cQcBpkle9l0tjsaUJth6MKAiiur62svpoXyKrQaEHB/ze1HsECak+b2Bc3h79xC+frFdp1CMdvqvKpg==
   dependencies:
-    "@eclipse-glsp/protocol" next
+    "@eclipse-glsp/protocol" "2.4.0"
 
-"@eclipse-glsp/protocol@2.4.0", "@eclipse-glsp/protocol@next":
+"@eclipse-glsp/protocol@2.4.0", "@eclipse-glsp/protocol@^2.4.0":
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/@eclipse-glsp/protocol/-/protocol-2.4.0.tgz#ac1192a367cefb7c654d0055d7403c3377ff4fe9"
   integrity sha512-JFu3D51i/mw19WOk4v+m3JoPQpQPZTKcfL6zvsukQkx3rEqi0f1is+PRmJBwlLRZJU6UXGuIKXDo+ubvQUm8Aw==
@@ -1211,13 +1211,13 @@
     uuid "~10.0.0"
     vscode-jsonrpc "8.2.0"
 
-"@eclipse-glsp/server@next":
-  version "2.5.0-next.123"
-  resolved "https://registry.yarnpkg.com/@eclipse-glsp/server/-/server-2.5.0-next.123.tgz#a355e348b5188b527ee1915f2fab593ce106d3d1"
-  integrity sha512-Q3+mseCWm/rSYQvTsnI8P5e+M+DIxONv3TmsxjdJQLKWphgR3tmsKah8h4Cf9ALZ8DELSV7zmw+2R2dd8ixuUQ==
+"@eclipse-glsp/server@^2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@eclipse-glsp/server/-/server-2.4.0.tgz#f13a98bcecfb7e0eff086f8d09f2144d0db51dec"
+  integrity sha512-NOdS254tGMiXVb7ApKfykQJJ/c6fDgolRhE3SM94erVQTkuHfQWZRxSoWQHBBmmTizNHshumPRI2AYpORKCArg==
   dependencies:
-    "@eclipse-glsp/graph" "2.5.0-next.123+948f71a"
-    "@eclipse-glsp/protocol" next
+    "@eclipse-glsp/graph" "2.4.0"
+    "@eclipse-glsp/protocol" "2.4.0"
     "@types/uuid" "8.3.1"
     commander "^8.3.0"
     fast-json-patch "^3.1.0"
@@ -1238,10 +1238,10 @@
     sprotty-protocol "1.4.0"
     vscode-jsonrpc "8.2.0"
 
-"@eclipse-glsp/theia-integration@latest":
-  version "2.4.0-theia.1.60.0"
-  resolved "https://registry.yarnpkg.com/@eclipse-glsp/theia-integration/-/theia-integration-2.4.0-theia.1.60.0.tgz#1ed87503f59da3895b687f95322ef1decb8b291c"
-  integrity sha512-aGpqwh4yWxlG5X4m8KvBLv1saqAU4K6gVh5yuBT1WCpTEI0sJODAhEs/aXplPVzpx7GfsjDRK1mglkjNwEQfZQ==
+"@eclipse-glsp/theia-integration@^2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@eclipse-glsp/theia-integration/-/theia-integration-2.4.0.tgz#ced92162fc9b969d3570d1c727e3e90d40f156fd"
+  integrity sha512-1hmZxE57Fqd4KivTGvzktDWXYtFTPnbfONpRYSS/eKqG+l/1JQYearE4zrnthuvud5DRb2fNXtJE//hZgg5YeQ==
   dependencies:
     "@eclipse-glsp/client" "2.4.0"
     ws "~8.11.0"
@@ -8123,6 +8123,11 @@ entities@^4.2.0, entities@^4.4.0:
   resolved "https://registry.yarnpkg.com/entities/-/entities-4.5.0.tgz#5d268ea5e7113ec74c4d033b79ea5a35a488fb48"
   integrity sha512-V0hjH4dGPh9Ao5p0MoRY6BVqtwCjhz6vI5LT8AJ55H+4g9/4vbHx1I54fS0XuclLhDHArPQCiMjDxjaL8fPxhw==
 
+entities@~1.1.1:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/entities/-/entities-1.1.2.tgz#bdfa735299664dfafd34529ed4f8522a275fea56"
+  integrity sha512-f2LZMYl1Fzu7YSBKg+RoROelpOaNrcGmE9AZubeDfrCEia483oW4MI4VyFd5VNHIgQ/7qm1I0wUHK1eJnn2y2w==
+
 entities@~2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/entities/-/entities-2.1.0.tgz#992d3129cf7df6870b96c57858c249a120f8b8b5"
@@ -11613,6 +11618,13 @@ lines-and-columns@^1.1.6:
   resolved "https://registry.yarnpkg.com/lines-and-columns/-/lines-and-columns-1.2.4.tgz#eca284f75d2965079309dc0ad9255abb2ebc1632"
   integrity sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==
 
+linkify-it@^2.0.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/linkify-it/-/linkify-it-2.2.0.tgz#e3b54697e78bf915c70a38acd78fd09e0058b1cf"
+  integrity sha512-GnAl/knGn+i1U/wjBz3akz2stz+HrHLsxMwHQGofCDfPvlf+gDKN58UtfmUquTY4/MXeE2x7k19KQmeoZi94Iw==
+  dependencies:
+    uc.micro "^1.0.1"
+
 linkify-it@^3.0.1:
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/linkify-it/-/linkify-it-3.0.3.tgz#a98baf44ce45a550efb4d49c769d07524cc2fa2e"
@@ -12037,6 +12049,17 @@ markdown-it@^12.3.2:
     argparse "^2.0.1"
     entities "~2.1.0"
     linkify-it "^3.0.1"
+    mdurl "^1.0.1"
+    uc.micro "^1.0.5"
+
+markdown-it@^8.4.1:
+  version "8.4.2"
+  resolved "https://registry.yarnpkg.com/markdown-it/-/markdown-it-8.4.2.tgz#386f98998dc15a37722aa7722084f4020bdd9b54"
+  integrity sha512-GcRz3AWTqSUphY3vsUqQSFMbgR38a4Lh3GWlHRh/7MRwz8mcu9n2IO7HOh+bXHrR9kOPDl5RNCaEsrneb+xhHQ==
+  dependencies:
+    argparse "^1.0.7"
+    entities "~1.1.1"
+    linkify-it "^2.0.0"
     mdurl "^1.0.1"
     uc.micro "^1.0.5"
 
@@ -14406,7 +14429,7 @@ redent@^3.0.0:
     indent-string "^4.0.0"
     strip-indent "^3.0.0"
 
-reflect-metadata@^0.2.2:
+reflect-metadata@^0.2.2, reflect-metadata@~0.2.2:
   version "0.2.2"
   resolved "https://registry.yarnpkg.com/reflect-metadata/-/reflect-metadata-0.2.2.tgz#400c845b6cba87a21f2c65c4aeb158f4fa4d9c5b"
   integrity sha512-urBwgfrvVP/eAyXx4hluJivBKzuEbSQs9rKWCrCkbSxNv8mxPcUZKeuoF3Uy4mJl3Lwprp6yy5/39VWigZ4K6Q==
@@ -16239,7 +16262,7 @@ tweetnacl@^0.14.3, tweetnacl@~0.14.0:
   resolved "https://registry.yarnpkg.com/tweetnacl/-/tweetnacl-0.14.5.tgz#5ae68177f192d4456269d108afa93ff8743f4f64"
   integrity sha512-KXXFFdAbFXY4geFIwoyNK+f5Z1b7swfXABfL7HXCmoIWMKU3dmS26672A4EeQtDzLKy7SXmfBu51JolvEKwtGA==
 
-typanion@^3.8.0:
+typanion@3.14.0, typanion@^3.8.0:
   version "3.14.0"
   resolved "https://registry.yarnpkg.com/typanion/-/typanion-3.14.0.tgz#a766a91810ce8258033975733e836c43a2929b94"
   integrity sha512-ZW/lVMRabETuYCd9O9ZvMhAh8GslSqaUjxmK/JLPCh6l73CvLBiuXswj/+7LdnWOgYsQ130FqLzFz5aGT4I3Ug==

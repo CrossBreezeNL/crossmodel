@@ -2,7 +2,7 @@
   "name": "crossmodel-app",
   "version": "0.2.8",
   "private": true,
-  "description": "CrossModel Community Edition",
+  "description": "CrossModel Core Edition",
   "homepage": "https://github.com/crossmodel/crossmodel-core",
   "repository": {
     "type": "git",
@@ -61,12 +61,12 @@
     "electron": "30.1.2",
     "electron-builder": "^23.6.0"
   },
-  "productName": "CrossModel Community Edition",
+  "productName": "CrossModel Core Edition",
   "theia": {
     "target": "electron",
     "frontend": {
       "config": {
-        "applicationName": "CrossModel Community Edition",
+        "applicationName": "CrossModel Core Edition",
         "defaultTheme": {
           "light": "crossmodel-light",
           "dark": "crossmodel-dark"

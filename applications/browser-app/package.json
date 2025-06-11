@@ -2,7 +2,7 @@
   "name": "crossmodel-browser-app",
   "version": "0.2.8",
   "private": true,
-  "description": "CrossModel Community Edition",
+  "description": "CrossModel Core Edition",
   "homepage": "https://github.com/crossmodel/crossmodel-core",
   "repository": {
     "type": "git",
@@ -51,12 +51,12 @@
   "devDependencies": {
     "@theia/cli": "1.60.2"
   },
-  "productName": "CrossModel Community Edition",
+  "productName": "CrossModel Core Edition",
   "theia": {
     "target": "browser",
     "frontend": {
       "config": {
-        "applicationName": "CrossModel Community Edition",
+        "applicationName": "CrossModel Core Edition",
         "defaultTheme": {
           "light": "crossmodel-light",
           "dark": "crossmodel-dark"

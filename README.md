@@ -1,4 +1,4 @@
-# CrossModel Community Edition
+# CrossModel Core Edition
 
 ## Getting started
 
@@ -73,9 +73,9 @@ Any code changes will be automatically detected and the application will be re-c
 If you only made changes to the frontend or plugins, simply reloading the running application with `F5` is enough.
 If you also made changes to the backend, you can close and restart the application without manual re-compilation.
 
-### Developing in Dev Container
+### Developing on Windows (in Dev Container)
 
-You can work on CrossModel from within a Dev Container. The best way to do so is create a new Dev Container and cloning the repository in there. For instructions please consult [this](https://code.visualstudio.com/docs/devcontainers/containers#_quick-start-open-a-git-repository-or-github-pr-in-an-isolated-container-volume) page.
+When developing on Windows you can develop CrossModel from within a Dev Container (using WSL2). The best way to do so is create a new Dev Container and cloning the repository in there. For instructions please consult [this](https://code.visualstudio.com/docs/devcontainers/containers#_quick-start-open-a-git-repository-or-github-pr-in-an-isolated-container-volume) page.
 
 Short steps:
 
@@ -141,8 +141,8 @@ The repository itself contains the following components structured as follows:
 
 ## Used libraries and license
 
--  mui-x : MUI X is open core—base components are MIT-licensed, while more advanced features require a Pro or Premium commercial license. We are currently only using core-base
--  react-tabs: MIT
--  chevrotain: This library is a dependency of langium. To get the Yaml language working in crossmodel an example implementation of the python language of chevrotain has been used. This example has been modified to make it work for the yaml language.
-   -  <https://github.com/Chevrotain/chevrotain>
-   -  example that has been used: <https://github.com/Chevrotain/chevrotain/tree/master/examples/lexer/python_indentation>
+- mui-x : MUI X is open core—base components are MIT-licensed, while more advanced features require a Pro or Premium commercial license. We are currently only using core-base
+- react-tabs: MIT
+- chevrotain: This library is a dependency of langium. To get the Yaml language working in crossmodel an example implementation of the python language of chevrotain has been used. This example has been modified to make it work for the yaml language.
+   - <https://github.com/Chevrotain/chevrotain>
+   - example that has been used: <https://github.com/Chevrotain/chevrotain/tree/master/examples/lexer/python_indentation>

@@ -10963,7 +10963,7 @@ kuler@^2.0.0:
   resolved "https://registry.yarnpkg.com/kuler/-/kuler-2.0.0.tgz#e2c570a3800388fb44407e851531c1d670b061b3"
   integrity sha512-Xq9nH7KlWZmXAtodXDDRE7vs6DU1gTU8zYDHDiWLSip45Egwq3plLHzPn27NgvzL2r1LMPC1vdqh98sQxtqj4A==
 
-langium-cli@^3.3.0:
+langium-cli@^3.5.0:
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/langium-cli/-/langium-cli-3.5.0.tgz#bee367892a491230ba008ad0909031f2465093bc"
   integrity sha512-TPIzIiMAQwTPPphtHGSrFXo4t0orx3aRh0syg9jnOihvBkBDvsQdJP9fBo9hp5Qaosklpc2CfbH0wh/dkgZcJA==

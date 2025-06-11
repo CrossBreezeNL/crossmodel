@@ -1,6 +1,6 @@
 {
   "name": "crossmodel-app",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "private": true,
   "description": "CrossModel Community Edition",
   "homepage": "https://github.com/crossmodel/crossmodel-core",
@@ -32,13 +32,13 @@
     "watch": "theia build --watch --mode development"
   },
   "dependencies": {
-    "@crossmodel/composite-editor": "0.2.7",
-    "@crossmodel/core": "0.2.5",
-    "@crossmodel/form-client": "0.2.5",
-    "@crossmodel/glsp-client": "0.2.7",
+    "@crossmodel/composite-editor": "0.2.8",
+    "@crossmodel/core": "0.2.8",
+    "@crossmodel/form-client": "0.2.8",
+    "@crossmodel/glsp-client": "0.2.8",
     "@crossmodel/model-service": "0.2.5",
     "@crossmodel/product": "0.2.5",
-    "@crossmodel/property-view": "0.2.7",
+    "@crossmodel/property-view": "0.2.8",
     "@theia/core": "1.60.2",
     "@theia/editor": "1.60.2",
     "@theia/electron": "1.60.2",

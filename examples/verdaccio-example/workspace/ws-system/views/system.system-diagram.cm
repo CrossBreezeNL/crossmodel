@@ -1,0 +1,26 @@
+diagram:
+    id: system
+    nodes:
+     - id: nodeA
+       entity: entities.A
+       x: 10
+       y: 10
+       width: 76
+       height: 32
+     - id: nodeB
+       entity: exampleLibrary.B
+       x: 122
+       y: 8
+       width: 70
+       height: 37
+     - id: nodeC
+       entity: exampleLibrary.C
+       x: 222
+       y: 11
+       width: 77
+       height: 33
+    edges:
+     - id: aToB
+       relationship: exampleLibrary.aToB
+       sourceNode: nodeA
+       targetNode: nodeB

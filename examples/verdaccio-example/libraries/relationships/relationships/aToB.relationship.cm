@@ -1,5 +1,7 @@
-relationship aToB {
-    source := entities/A;
-    target := entities/B;
-    type := 1:1;
-}
+relationship:
+    id: aToB
+    name: "A - B"
+    parent: entities.A
+    parentCardinality: one
+    child: entities.B
+    childCardinality: one

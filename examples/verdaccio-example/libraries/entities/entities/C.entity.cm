@@ -1,0 +1,7 @@
+entity:
+    id: C
+    name: "C"
+    description: "hello"
+    attributes:
+      - id: A
+        name: "A"

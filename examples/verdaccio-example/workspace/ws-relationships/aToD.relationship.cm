@@ -1,5 +1,7 @@
-relationship aToD {
-    source := A;
-    target := entities/D;
-    type := 1:n;
-}
+relationship:
+  id: aToD
+  name: "A - D"
+  parent: A
+  parentCardinality: one
+  child: entities.D
+  childCardinality: multiple

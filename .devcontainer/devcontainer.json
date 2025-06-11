@@ -11,7 +11,7 @@
   },
   "customizations": {
     "vscode": {
-      // Install a list of extensions in the Dev Container so everything is reasdy to develop and test.
+      // Install a list of extensions in the Dev Container so everything is ready to develop and test.
       "extensions": [
         "langium.langium-vscode",
         "esbenp.prettier-vscode",
@@ -24,11 +24,14 @@
       ]
     }
   },
-  // Allow port 3000 to be forwarded.
-  "forwardPorts": [3000],
+  // Allow port 3000 & 4873 to be forwarded.
+  "forwardPorts": [3000, 4873],
   "portsAttributes": {
     "3000": {
       "label": "Theia Backend"
+    },
+    "4873": {
+      "label": "Verdaccio (NPM Registry)"
     }
   },
   // Install the playwright dependencies.

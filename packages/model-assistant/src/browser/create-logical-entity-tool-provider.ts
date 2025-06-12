@@ -1,8 +1,8 @@
 /********************************************************************************
  * Copyright (c) 2025 CrossBreeze.
  ********************************************************************************/
-import { ModelService } from '@crossbreezenl/model-service/lib/common';
-import { LogicalAttribute, OpenModelArgs, SaveModelArgs } from '@crossbreezenl/protocol';
+import { ModelService } from '@crossmodel/model-service/lib/common';
+import { LogicalAttribute, OpenModelArgs, SaveModelArgs } from '@crossmodel/protocol';
 import { ToolProvider, ToolRequest } from '@theia/ai-core';
 import { CommandRegistry, URI } from '@theia/core';
 import { inject, injectable } from '@theia/core/shared/inversify';

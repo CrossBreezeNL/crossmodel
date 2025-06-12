@@ -25,11 +25,11 @@
     "watch": "theia build --watch --mode development"
   },
   "dependencies": {
-    "@crossbreezenl/model-assistant": "0.2.0",
     "@crossmodel/composite-editor": "0.2.9",
     "@crossmodel/core": "0.2.9",
     "@crossmodel/form-client": "0.2.9",
     "@crossmodel/glsp-client": "0.2.9",
+    "@crossmodel/model-assistant": "0.2.0",
     "@crossmodel/model-service": "0.2.9",
     "@crossmodel/product": "0.2.9",
     "@crossmodel/property-view": "0.2.9",

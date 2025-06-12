@@ -1,12 +1,12 @@
 {
-  "name": "@crossbreezenl/model-assistant",
+  "name": "@crossmodel/model-assistant",
   "version": "0.2.0",
   "private": true,
   "description": "Modeling assistant for crossmodel",
-  "homepage": "https://github.com/CrossBreezeNL/crossmodel",
+  "homepage": "https://github.com/crossmodel/crossmodel-core",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/CrossBreezeNL/crossmodel"
+    "url": "git+https://github.com/crossmodel/crossmodel-core.git"
   },
   "license": "AGPL-3.0-or-later",
   "author": {
@@ -27,8 +27,8 @@
     "watch": "tsc -w"
   },
   "dependencies": {
-    "@crossbreezenl/model-service": "0.2.0",
-    "@crossbreezenl/protocol": "0.2.0",
+    "@crossmodel/model-service": "0.2.5",
+    "@crossmodel/protocol": "0.2.5",
     "@theia/ai-chat": "1.60.2",
     "@theia/ai-chat-ui": "1.60.2",
     "@theia/ai-code-completion": "1.60.2",

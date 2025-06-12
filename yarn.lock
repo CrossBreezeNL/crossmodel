@@ -1116,7 +1116,7 @@
   resolved "https://registry.yarnpkg.com/@discoveryjs/json-ext/-/json-ext-0.5.7.tgz#1d572bfbbe14b7704e0ba0f39b74815b84870d70"
   integrity sha512-dBVuXR082gk3jsFp7Rd/JI4kytwGHecnCoTtXFb7DB6CNHp4rg5k1bhg0nWdLGLnOV71lmDzGQaLMy8iPLY0pw==
 
-"@eclipse-glsp/client@2.4.0", "@eclipse-glsp/client@^2.4.0":
+"@eclipse-glsp/client@2.4.0", "@eclipse-glsp/client@~2.4.0":
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/@eclipse-glsp/client/-/client-2.4.0.tgz#b4ef78cb82c93e43298c6eed9941f037ad329e7c"
   integrity sha512-NAWab8EDc3GkqXUH/pr0fbLH3pIShT/N0myliPYEXl/m3NYM4WAtn6HoMypBP2D8amd/PRLayXBxThTcsPofxw==
@@ -1128,7 +1128,7 @@
     snabbdom "~3.5.1"
     vscode-jsonrpc "8.2.0"
 
-"@eclipse-glsp/glsp-playwright@^2.4.0":
+"@eclipse-glsp/glsp-playwright@~2.4.0":
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/@eclipse-glsp/glsp-playwright/-/glsp-playwright-2.4.0.tgz#f0f8a6426f4f656af8dbe039ad134e68a84e5208"
   integrity sha512-hr2m7wYA7a3vy4CxjxEJREanA3V9AzxobKrt1epBDUrAVCctsrAhZ7khJ0lRRr4e3uP7brQV2rhLq2DJ2KHmFw==
@@ -1144,7 +1144,7 @@
   dependencies:
     "@eclipse-glsp/protocol" "2.4.0"
 
-"@eclipse-glsp/protocol@2.4.0", "@eclipse-glsp/protocol@^2.4.0":
+"@eclipse-glsp/protocol@2.4.0", "@eclipse-glsp/protocol@~2.4.0":
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/@eclipse-glsp/protocol/-/protocol-2.4.0.tgz#ac1192a367cefb7c654d0055d7403c3377ff4fe9"
   integrity sha512-JFu3D51i/mw19WOk4v+m3JoPQpQPZTKcfL6zvsukQkx3rEqi0f1is+PRmJBwlLRZJU6UXGuIKXDo+ubvQUm8Aw==
@@ -1153,7 +1153,7 @@
     uuid "~10.0.0"
     vscode-jsonrpc "8.2.0"
 
-"@eclipse-glsp/server@^2.4.0":
+"@eclipse-glsp/server@~2.4.0":
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/@eclipse-glsp/server/-/server-2.4.0.tgz#f13a98bcecfb7e0eff086f8d09f2144d0db51dec"
   integrity sha512-NOdS254tGMiXVb7ApKfykQJJ/c6fDgolRhE3SM94erVQTkuHfQWZRxSoWQHBBmmTizNHshumPRI2AYpORKCArg==
@@ -1180,7 +1180,7 @@
     sprotty-protocol "1.4.0"
     vscode-jsonrpc "8.2.0"
 
-"@eclipse-glsp/theia-integration@^2.4.0":
+"@eclipse-glsp/theia-integration@~2.4.0":
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/@eclipse-glsp/theia-integration/-/theia-integration-2.4.0.tgz#ced92162fc9b969d3570d1c727e3e90d40f156fd"
   integrity sha512-1hmZxE57Fqd4KivTGvzktDWXYtFTPnbfONpRYSS/eKqG+l/1JQYearE4zrnthuvud5DRb2fNXtJE//hZgg5YeQ==

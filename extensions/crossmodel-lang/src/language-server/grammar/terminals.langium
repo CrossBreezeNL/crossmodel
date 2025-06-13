@@ -2,8 +2,9 @@
 
 // Scalar values
 terminal STRING: /"[^"]*"|'[^']*'/;
-terminal NUMBER returns number: /(-)?[0-9]+(\.[0-9]+)?/;
-terminal VERSION returns string: /[0-9]+\.[0-9]+\.[0-9]+/;
+terminal INT returns number: ('0'..'9')+;
+terminal NUMBER returns number: '-'? INT ('.' INT)?;
+terminal VERSION returns string: ('^' | '~')? INT '.' INT '.' INT;
 terminal ID: /\^?[_a-zA-Z][\w_\-~$#@/\d]*/;
 
 // Identification for cross references

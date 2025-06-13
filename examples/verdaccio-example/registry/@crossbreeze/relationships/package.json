@@ -3,27 +3,28 @@
 	"versions": {
 		"1.0.0": {
 			"name": "@crossbreeze/relationships",
+			"type": "logical",
 			"version": "1.0.0",
 			"dependencies": {
 				"@crossbreeze/entities": "1.0.0"
 			},
 			"alias": "relationships",
-			"gitHead": "4e8796028c3ef56b5ecc5132b6cce37ac4bdb065",
 			"_id": "@crossbreeze/relationships@1.0.0",
-			"_nodeVersion": "16.19.1",
-			"_npmVersion": "8.19.3",
+			"gitHead": "be3096c412edbf477efac162817e3d1f18c6793a",
+			"_nodeVersion": "20.19.2",
+			"_npmVersion": "10.8.2",
 			"dist": {
-				"integrity": "sha512-qxNxPkTgwYXF9mKZOLKATbNPTvoh+rSqPWAhXej30HLZLRxuZPKiSV3Po1JPtQDJh2OWLROXRSlhAf7uxVaTbg==",
-				"shasum": "e22694cfac961435fb097648ebba4d48b8e49986",
+				"integrity": "sha512-Z9I/pzIMRQZYQV4dWQDdeuRVTjnIQxr5Tocd1sZoyksSfRJN/n4GMaEfHAHZutAF6/CBSW0go8CB1LtLs+xYGw==",
+				"shasum": "fef1afc20264097496344138b48d164110c46b8a",
 				"tarball": "http://localhost:4873/@crossbreeze/relationships/-/@crossbreeze/relationships-1.0.0.tgz"
 			},
 			"contributors": []
 		}
 	},
 	"time": {
-		"modified": "2023-03-31T08:42:37.330Z",
-		"created": "2023-03-31T08:42:37.330Z",
-		"1.0.0": "2023-03-31T08:42:37.330Z"
+		"modified": "2025-06-11T20:57:00.694Z",
+		"created": "2025-06-11T20:57:00.694Z",
+		"1.0.0": "2025-06-11T20:57:00.694Z"
 	},
 	"users": {},
 	"dist-tags": {
@@ -33,11 +34,11 @@
 	"_distfiles": {},
 	"_attachments": {
 		"relationships-1.0.0.tgz": {
-			"shasum": "e22694cfac961435fb097648ebba4d48b8e49986",
+			"shasum": "fef1afc20264097496344138b48d164110c46b8a",
 			"version": "1.0.0"
 		}
 	},
-	"_rev": "3-5c330fbbb727b9ec",
+	"_rev": "3-bb6333860de9ab90",
 	"_id": "@crossbreeze/relationships",
 	"readme": "ERROR: No README data found!"
 }

@@ -3,27 +3,28 @@
 	"versions": {
 		"1.0.0": {
 			"name": "@crossbreeze/system",
+			"type": "logical",
 			"version": "1.0.0",
 			"dependencies": {
 				"@crossbreeze/relationships": "1.0.0"
 			},
 			"alias": "system",
-			"gitHead": "4e8796028c3ef56b5ecc5132b6cce37ac4bdb065",
 			"_id": "@crossbreeze/system@1.0.0",
-			"_nodeVersion": "16.19.1",
-			"_npmVersion": "8.19.3",
+			"gitHead": "be3096c412edbf477efac162817e3d1f18c6793a",
+			"_nodeVersion": "20.19.2",
+			"_npmVersion": "10.8.2",
 			"dist": {
-				"integrity": "sha512-UKwkWMjOA0DPikPNNrCw8xTFns9r4+phmHX8bRW+OLlpCT8JsfsEGNY1BnsMcs+rmoelFzvtcPBuR/aQmubw4w==",
-				"shasum": "93ff2e80320125174a26cf7d09a0dcb9a856fdbc",
+				"integrity": "sha512-IHmyoUwNCoRT6+bgXuIRVt53+vuWDJO3WEbxzxc4UHtlrqD4SJSviHRIBgvlSPy9ZM0Jd+9G2KUG24CsPAGbKw==",
+				"shasum": "7d2590a5d99be9ddc39feac7c3983118a5c4ef09",
 				"tarball": "http://localhost:4873/@crossbreeze/system/-/@crossbreeze/system-1.0.0.tgz"
 			},
 			"contributors": []
 		}
 	},
 	"time": {
-		"modified": "2023-03-31T08:42:25.136Z",
-		"created": "2023-03-31T08:42:25.136Z",
-		"1.0.0": "2023-03-31T08:42:25.136Z"
+		"modified": "2025-06-11T20:57:10.812Z",
+		"created": "2025-06-11T20:57:10.812Z",
+		"1.0.0": "2025-06-11T20:57:10.812Z"
 	},
 	"users": {},
 	"dist-tags": {
@@ -33,11 +34,11 @@
 	"_distfiles": {},
 	"_attachments": {
 		"system-1.0.0.tgz": {
-			"shasum": "93ff2e80320125174a26cf7d09a0dcb9a856fdbc",
+			"shasum": "7d2590a5d99be9ddc39feac7c3983118a5c4ef09",
 			"version": "1.0.0"
 		}
 	},
-	"_rev": "3-651ce3fc5caa95f7",
+	"_rev": "3-32840028821a3b6c",
 	"_id": "@crossbreeze/system",
 	"readme": "ERROR: No README data found!"
 }

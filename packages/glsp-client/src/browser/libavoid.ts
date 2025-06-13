@@ -21,6 +21,7 @@ export type LibavoidShapeConnectionPin = AvoidInterface['ShapeConnectionPin'];
 
 // eslint-disable-next-line no-shadow
 export enum LibavoidRouteType {
+   // eslint-disable-next-line no-shadow
    PolyLine = 1,
    Orthogonal = 2
 }

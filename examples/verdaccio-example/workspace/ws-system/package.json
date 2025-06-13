@@ -3,5 +3,9 @@
     "type": "logical",
     "version": "1.0.0",
     "private": true,
-    "dependencies": { "@crossbreeze/example-library": "1.0.0", "@crossbreeze/ws-relationships": "1.0.0", "@crossbreeze/system": "1.0.0" }
+    "dependencies": {
+        "@crossbreeze/example-library": "1.0.0",
+        "@crossbreeze/ws-relationships": "1.0.0",
+        "@crossbreeze/system": "1.0.0"
+    }
 }

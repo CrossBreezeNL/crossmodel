@@ -1,4 +1,4 @@
-# Tests: CrossModel Community Edition
+# Tests: CrossModel Core Edition
 
 ## Getting started
 

@@ -1,4 +1,4 @@
-storage: ./examples/registry
+storage: ./examples/verdaccio-example/registry
 uplinks:
 packages:
    '@*/*':
@@ -12,3 +12,5 @@ packages:
       access: '@all'
       publish: '@all'
 log: { type: stdout, format: pretty, level: http }
+listen:
+  - 0.0.0.0:4873

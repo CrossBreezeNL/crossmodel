@@ -1,0 +1,26 @@
+systemDiagram:
+    id: system
+    nodes:
+      - id: nodeA
+        entity: entities.A
+        x: 12
+        y: 67.5
+        width: 76
+        height: 32
+      - id: nodeB
+        entity: entities.B
+        x: 138
+        y: 65
+        width: 70
+        height: 37
+      - id: nodeD
+        entity: E
+        x: 275
+        y: 66
+        width: 77
+        height: 33
+    edges:
+      - id: aToB
+        relationship: relationships.aToB
+        sourceNode: nodeA
+        targetNode: nodeB

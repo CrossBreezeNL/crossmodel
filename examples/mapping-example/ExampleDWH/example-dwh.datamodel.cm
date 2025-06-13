@@ -1,0 +1,10 @@
+datamodel:
+    id: example-dwh
+    name: "Example DWH"
+    description: "Example Data Warehouse Logical Data Model"
+    type: "logical"
+    dependencies:
+        - datamodel: example-crm
+          version: "1.0.0"
+        - datamodel: example-masterdata
+          version: "1.0.0"

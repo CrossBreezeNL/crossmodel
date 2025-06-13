@@ -1,0 +1,4 @@
+datamodel:
+    id: example-crm
+    name: "Example CRM"
+    type: "logical"

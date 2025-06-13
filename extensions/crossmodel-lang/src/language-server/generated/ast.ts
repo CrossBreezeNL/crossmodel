@@ -38,6 +38,7 @@ export type CrossModelKeywordNames =
     | "child"
     | "childCardinality"
     | "childRole"
+    | "conceptual"
     | "conditions"
     | "cross-join"
     | "customProperties"
@@ -59,6 +60,7 @@ export type CrossModelKeywordNames =
     | "join"
     | "left-join"
     | "length"
+    | "logical"
     | "mapping"
     | "mappings"
     | "multiple"
@@ -70,6 +72,7 @@ export type CrossModelKeywordNames =
     | "parentRole"
     | "precision"
     | "primary"
+    | "relational"
     | "relationship"
     | "scale"
     | "sourceNode"
@@ -101,6 +104,12 @@ export type Cardinality = 'multiple' | 'one' | 'zero';
 
 export function isCardinality(item: unknown): item is Cardinality {
     return item === 'zero' || item === 'one' || item === 'multiple';
+}
+
+export type DataModelType = 'conceptual' | 'logical' | 'relational';
+
+export function isDataModelType(item: unknown): item is DataModelType {
+    return item === 'conceptual' || item === 'logical' || item === 'relational';
 }
 
 export type IDReference = string;

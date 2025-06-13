@@ -11,7 +11,7 @@ DataModel returns DataModel:
     'datamodel' ':'
         INDENT
             NamedObjectFragment
-            'type' ':' type=STRING
+            'type' ':' type=DataModelType
             ('version' ':' version=VERSION)?
             ('dependencies' ':'
                 INDENT
@@ -21,6 +21,8 @@ DataModel returns DataModel:
             CustomPropertiesFragment?
         DEDENT
 ;
+
+DataModelType returns string: 'conceptual' | 'logical' | 'relational';
 
 interface DataModelDependency {
     datamodel: @DataModel;

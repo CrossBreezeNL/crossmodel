@@ -1,6 +1,6 @@
 {
   "name": "@crossmodel/react-model-ui",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "description": "CrossModel React-based UI components",
   "keywords": [
     "theia-extension"
@@ -30,7 +30,7 @@
     "watch": "tsc -w"
   },
   "dependencies": {
-    "@crossmodel/protocol": "0.2.5",
+    "@crossmodel/protocol": "0.2.9",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^7.1.1",

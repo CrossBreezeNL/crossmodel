@@ -15,3 +15,6 @@ entity:
       - id: Country_ID
         name: "Country ID"
         datatype: "Text"
+      - id: Age
+        name: "Age"
+        datatype: "Integer"

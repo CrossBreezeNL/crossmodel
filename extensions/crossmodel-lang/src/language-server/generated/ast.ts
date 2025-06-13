@@ -9,6 +9,7 @@ import * as langium from 'langium';
 export const CrossModelTerminals = {
     STRING: /"[^"]*"|'[^']*'/,
     NUMBER: /(-)?[0-9]+(\.[0-9]+)?/,
+    VERSION: /[0-9]+\.[0-9]+\.[0-9]+/,
     ID: /\^?[_a-zA-Z][\w_\-~$#@/\d]*/,
     SL_COMMENT: /#[^\n\r]*/,
     INDENT: /:synthetic-indent:/,
@@ -40,6 +41,7 @@ export type CrossModelKeywordNames =
     | "conditions"
     | "cross-join"
     | "customProperties"
+    | "datamodel"
     | "datatype"
     | "dependencies"
     | "description"
@@ -77,7 +79,9 @@ export type CrossModelKeywordNames =
     | "target"
     | "targetNode"
     | "true"
+    | "type"
     | "value"
+    | "version"
     | "width"
     | "x"
     | "y"
@@ -159,6 +163,7 @@ export function isBinaryExpression(item: unknown): item is BinaryExpression {
 
 export interface CrossModelRoot extends langium.AstNode {
     readonly $type: 'CrossModelRoot';
+    datamodel?: DataModel;
     entity?: LogicalEntity;
     mapping?: Mapping;
     relationship?: Relationship;
@@ -171,8 +176,21 @@ export function isCrossModelRoot(item: unknown): item is CrossModelRoot {
     return reflection.isInstance(item, CrossModelRoot);
 }
 
+export interface DataModelDependency extends langium.AstNode {
+    readonly $container: DataModel;
+    readonly $type: 'DataModelDependency';
+    datamodel: langium.Reference<DataModel>;
+    version?: string;
+}
+
+export const DataModelDependency = 'DataModelDependency';
+
+export function isDataModelDependency(item: unknown): item is DataModelDependency {
+    return reflection.isInstance(item, DataModelDependency);
+}
+
 export interface IdentifiedObject extends langium.AstNode {
-    readonly $type: 'CustomProperty' | 'DataElement' | 'DataElementContainer' | 'DataElementContainerLink' | 'DataElementContainerMapping' | 'DataElementMapping' | 'IdentifiedObject' | 'InheritanceEdge' | 'LogicalAttribute' | 'LogicalEntity' | 'LogicalEntityNode' | 'LogicalEntityNodeAttribute' | 'LogicalIdentifier' | 'Mapping' | 'NamedObject' | 'Relationship' | 'RelationshipEdge' | 'SourceDataElementContainer' | 'SourceObject' | 'SourceObjectAttribute' | 'SystemDiagram' | 'SystemDiagramEdge' | 'TargetObjectAttribute';
+    readonly $type: 'CustomProperty' | 'DataElement' | 'DataElementContainer' | 'DataElementContainerLink' | 'DataElementContainerMapping' | 'DataElementMapping' | 'DataModel' | 'IdentifiedObject' | 'InheritanceEdge' | 'LogicalAttribute' | 'LogicalEntity' | 'LogicalEntityNode' | 'LogicalEntityNodeAttribute' | 'LogicalIdentifier' | 'Mapping' | 'NamedObject' | 'Relationship' | 'RelationshipEdge' | 'SourceDataElementContainer' | 'SourceObject' | 'SourceObjectAttribute' | 'SystemDiagram' | 'SystemDiagramEdge' | 'TargetObjectAttribute';
     id?: string;
 }
 
@@ -243,7 +261,7 @@ export function isStringLiteral(item: unknown): item is StringLiteral {
 }
 
 export interface WithCustomProperties extends langium.AstNode {
-    readonly $type: 'AttributeMapping' | 'LogicalAttribute' | 'LogicalEntity' | 'LogicalEntityNodeAttribute' | 'LogicalIdentifier' | 'Mapping' | 'Relationship' | 'RelationshipAttribute' | 'SourceObject' | 'SourceObjectAttribute' | 'TargetObject' | 'TargetObjectAttribute' | 'WithCustomProperties';
+    readonly $type: 'AttributeMapping' | 'DataModel' | 'LogicalAttribute' | 'LogicalEntity' | 'LogicalEntityNodeAttribute' | 'LogicalIdentifier' | 'Mapping' | 'Relationship' | 'RelationshipAttribute' | 'SourceObject' | 'SourceObjectAttribute' | 'TargetObject' | 'TargetObjectAttribute' | 'WithCustomProperties';
     customProperties: Array<CustomProperty>;
 }
 
@@ -291,7 +309,7 @@ export function isLogicalEntityNode(item: unknown): item is LogicalEntityNode {
 }
 
 export interface NamedObject extends IdentifiedObject {
-    readonly $type: 'CustomProperty' | 'DataElement' | 'DataElementContainer' | 'DataElementContainerLink' | 'LogicalAttribute' | 'LogicalEntity' | 'LogicalEntityNodeAttribute' | 'LogicalIdentifier' | 'NamedObject' | 'Relationship' | 'SourceObjectAttribute' | 'TargetObjectAttribute';
+    readonly $type: 'CustomProperty' | 'DataElement' | 'DataElementContainer' | 'DataElementContainerLink' | 'DataModel' | 'LogicalAttribute' | 'LogicalEntity' | 'LogicalEntityNodeAttribute' | 'LogicalIdentifier' | 'NamedObject' | 'Relationship' | 'SourceObjectAttribute' | 'TargetObjectAttribute';
     description?: string;
     name?: string;
 }
@@ -348,6 +366,20 @@ export const AttributeMapping = 'AttributeMapping';
 
 export function isAttributeMapping(item: unknown): item is AttributeMapping {
     return reflection.isInstance(item, AttributeMapping);
+}
+
+export interface DataModel extends NamedObject, WithCustomProperties {
+    readonly $container: CrossModelRoot;
+    readonly $type: 'DataModel';
+    dependencies: Array<DataModelDependency>;
+    type: string;
+    version?: string;
+}
+
+export const DataModel = 'DataModel';
+
+export function isDataModel(item: unknown): item is DataModel {
+    return reflection.isInstance(item, DataModel);
 }
 
 export interface LogicalAttribute extends DataElement, WithCustomProperties {
@@ -576,6 +608,8 @@ export type CrossModelAstType = {
     DataElementContainerLink: DataElementContainerLink
     DataElementContainerMapping: DataElementContainerMapping
     DataElementMapping: DataElementMapping
+    DataModel: DataModel
+    DataModelDependency: DataModelDependency
     IdentifiedObject: IdentifiedObject
     InheritanceEdge: InheritanceEdge
     JoinCondition: JoinCondition
@@ -607,7 +641,7 @@ export type CrossModelAstType = {
 export class CrossModelAstReflection extends langium.AbstractAstReflection {
 
     getAllTypes(): string[] {
-        return [AttributeMapping, AttributeMappingSource, AttributeMappingTarget, BinaryExpression, BooleanExpression, CrossModelRoot, CustomProperty, DataElement, DataElementContainer, DataElementContainerLink, DataElementContainerMapping, DataElementMapping, IdentifiedObject, InheritanceEdge, JoinCondition, LogicalAttribute, LogicalEntity, LogicalEntityNode, LogicalEntityNodeAttribute, LogicalIdentifier, Mapping, NamedObject, NumberLiteral, Relationship, RelationshipAttribute, RelationshipEdge, SourceDataElementContainer, SourceObject, SourceObjectAttribute, SourceObjectAttributeReference, SourceObjectCondition, SourceObjectDependency, StringLiteral, SystemDiagram, SystemDiagramEdge, TargetObject, TargetObjectAttribute, WithCustomProperties];
+        return [AttributeMapping, AttributeMappingSource, AttributeMappingTarget, BinaryExpression, BooleanExpression, CrossModelRoot, CustomProperty, DataElement, DataElementContainer, DataElementContainerLink, DataElementContainerMapping, DataElementMapping, DataModel, DataModelDependency, IdentifiedObject, InheritanceEdge, JoinCondition, LogicalAttribute, LogicalEntity, LogicalEntityNode, LogicalEntityNodeAttribute, LogicalIdentifier, Mapping, NamedObject, NumberLiteral, Relationship, RelationshipAttribute, RelationshipEdge, SourceDataElementContainer, SourceObject, SourceObjectAttribute, SourceObjectAttributeReference, SourceObjectCondition, SourceObjectDependency, StringLiteral, SystemDiagram, SystemDiagramEdge, TargetObject, TargetObjectAttribute, WithCustomProperties];
     }
 
     protected override computeIsSubtype(subtype: string, supertype: string): boolean {
@@ -632,6 +666,10 @@ export class CrossModelAstReflection extends langium.AbstractAstReflection {
             case SystemDiagramEdge: {
                 return this.isSubtype(IdentifiedObject, supertype);
             }
+            case DataModel:
+            case LogicalIdentifier: {
+                return this.isSubtype(NamedObject, supertype) || this.isSubtype(WithCustomProperties, supertype);
+            }
             case InheritanceEdge:
             case RelationshipEdge: {
                 return this.isSubtype(SystemDiagramEdge, supertype);
@@ -649,9 +687,6 @@ export class CrossModelAstReflection extends langium.AbstractAstReflection {
             case SourceObjectAttribute:
             case TargetObjectAttribute: {
                 return this.isSubtype(LogicalAttribute, supertype);
-            }
-            case LogicalIdentifier: {
-                return this.isSubtype(NamedObject, supertype) || this.isSubtype(WithCustomProperties, supertype);
             }
             case Mapping: {
                 return this.isSubtype(DataElementContainerMapping, supertype) || this.isSubtype(WithCustomProperties, supertype);
@@ -682,6 +717,9 @@ export class CrossModelAstReflection extends langium.AbstractAstReflection {
             }
             case 'AttributeMappingTarget:value': {
                 return TargetObjectAttribute;
+            }
+            case 'DataModelDependency:datamodel': {
+                return DataModel;
             }
             case 'InheritanceEdge:baseNode':
             case 'InheritanceEdge:superNode':
@@ -746,10 +784,20 @@ export class CrossModelAstReflection extends langium.AbstractAstReflection {
                 return {
                     name: CrossModelRoot,
                     properties: [
+                        { name: 'datamodel' },
                         { name: 'entity' },
                         { name: 'mapping' },
                         { name: 'relationship' },
                         { name: 'systemDiagram' }
+                    ]
+                };
+            }
+            case DataModelDependency: {
+                return {
+                    name: DataModelDependency,
+                    properties: [
+                        { name: 'datamodel' },
+                        { name: 'version' }
                     ]
                 };
             }
@@ -882,6 +930,20 @@ export class CrossModelAstReflection extends langium.AbstractAstReflection {
                         { name: 'customProperties', defaultValue: [] },
                         { name: 'expression' },
                         { name: 'sources', defaultValue: [] }
+                    ]
+                };
+            }
+            case DataModel: {
+                return {
+                    name: DataModel,
+                    properties: [
+                        { name: 'customProperties', defaultValue: [] },
+                        { name: 'dependencies', defaultValue: [] },
+                        { name: 'description' },
+                        { name: 'id' },
+                        { name: 'name' },
+                        { name: 'type' },
+                        { name: 'version' }
                     ]
                 };
             }

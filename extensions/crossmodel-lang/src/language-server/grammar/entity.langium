@@ -2,9 +2,9 @@ import 'terminals'
 import 'common'
 
 interface LogicalEntity extends DataElementContainer, WithCustomProperties {
-    superEntities: @LogicalEntity[]
-    attributes: LogicalAttribute[]
-    identifiers: LogicalIdentifier[]
+    superEntities: @LogicalEntity[];
+    attributes: LogicalAttribute[];
+    identifiers: LogicalIdentifier[];
 }
 
 // LogicalEntity definition 
@@ -50,7 +50,7 @@ LogicalAttribute returns LogicalAttribute:
 
 interface LogicalIdentifier extends NamedObject, WithCustomProperties {
     primary?: boolean;
-    attributes: @LogicalAttribute[]
+    attributes: @LogicalAttribute[];
 }
 
 LogicalIdentifier returns LogicalIdentifier:

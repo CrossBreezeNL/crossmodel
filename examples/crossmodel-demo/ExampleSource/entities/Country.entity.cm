@@ -8,3 +8,6 @@ entity:
       - id: Country_Name
         name: "Country Name"
         datatype: "Text"
+      - id: Country_Leader
+        name: "Country Leader"
+        datatype: "Text"

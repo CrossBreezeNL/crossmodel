@@ -89,7 +89,7 @@
   ],
   "dependencies": {
     "@crossmodel/protocol": "0.2.5",
-    "@eclipse-glsp/server": "~2.4.0",
+    "@eclipse-glsp/server": "2.4.0",
     "chalk": "~5.4.1",
     "chevrotain": "~11.0.3",
     "commander": "~14.0.0",

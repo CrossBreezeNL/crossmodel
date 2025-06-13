@@ -30,7 +30,7 @@
     "@crossmodel/core": "0.2.8",
     "@crossmodel/form-client": "0.2.8",
     "@crossmodel/glsp-client": "0.2.8",
-    "@eclipse-glsp/theia-integration": "~2.4.0",
+    "@eclipse-glsp/theia-integration": "2.4.0-theia1.60.0",
     "@theia/core": "1.60.2",
     "@theia/editor": "1.60.2",
     "@theia/editor-preview": "1.60.2",

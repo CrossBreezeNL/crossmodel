@@ -1,0 +1,5 @@
+datamodel:
+    id: example-crm
+    name: "Example CRM"
+    type: logical
+    version: 1.0.0

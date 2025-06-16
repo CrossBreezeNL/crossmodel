@@ -1,15 +1,15 @@
 {
-  "name": "@crossbreezenl/product",
-  "version": "0.2.0",
+  "name": "@crossmodel/product",
+  "version": "0.2.9",
   "private": true,
   "description": "CrossModel Product Branding",
   "keywords": [
     "theia-extension"
   ],
-  "homepage": "https://github.com/CrossBreezeNL/crossmodel",
+  "homepage": "https://github.com/crossmodel/crossmodel-core",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/crossbreezenl/crossmodel.git"
+    "url": "git+https://github.com/crossmodel/crossmodel-core.git"
   },
   "license": "AGPL-3.0-or-later",
   "author": {
@@ -37,7 +37,8 @@
     "@theia/property-view": "1.60.2",
     "@theia/scm": "1.60.2",
     "@theia/search-in-workspace": "1.60.2",
-    "@theia/workspace": "1.60.2"
+    "@theia/workspace": "1.60.2",
+    "markdown-it": "^8.4.1"
   },
   "theiaExtensions": [
     {

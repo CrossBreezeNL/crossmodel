@@ -2,20 +2,29 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { ModelService, ModelServiceClient } from '@crossbreezenl/model-service/lib/common';
-import { CrossModelDocument, CrossModelRoot, ModelDiagnostic, ModelUpdatedEvent, RenderProps } from '@crossbreezenl/protocol';
+import { ModelService, ModelServiceClient } from '@crossmodel/model-service/lib/common';
+import {
+   AttributeMappingTargetType,
+   AttributeMappingType,
+   CrossModelDocument,
+   CrossModelRoot,
+   ModelDiagnostic,
+   ModelUpdatedEvent,
+   RenderProps
+} from '@crossmodel/protocol';
 import {
    EntityComponent,
    ErrorView,
    MappingComponent,
    MappingRenderProps,
    ModelProviderProps,
+   NewMappingRenderProps,
    OpenCallback,
    RelationshipComponent,
    SaveCallback,
    SourceObjectComponent,
    SourceObjectRenderProps
-} from '@crossbreezenl/react-model-ui';
+} from '@crossmodel/react-model-ui';
 import { Emitter, Event, ResourceProvider } from '@theia/core';
 import { LabelProvider, Message, OpenerService, ReactWidget, Saveable, open } from '@theia/core/lib/browser';
 import { ThemeService } from '@theia/core/lib/browser/theming';
@@ -131,10 +140,7 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
    }
 
    async revert(options?: Saveable.RevertOptions | undefined): Promise<void> {
-      // Dummy implementation to allow saving untitled but modified form editor.
-      if (this.document?.uri && new URI(this.document.uri).scheme === 'untitled') {
-         this.setDirty(false);
-      }
+      // empty implementation
    }
 
    protected async saveModel(doc = this.document): Promise<void> {
@@ -192,12 +198,32 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
          return <RelationshipComponent {...this.getModelProviderProps()} {...this.getRenderProperties()} />;
       }
       if (this.document?.root?.mapping) {
-         const renderProps = this.getRenderProperties() as RenderProps & MappingRenderProps & SourceObjectRenderProps;
-         if (renderProps?.mappingIndex >= 0) {
-            return <MappingComponent {...this.getModelProviderProps()} {...renderProps} />;
+         const renderProps = this.getRenderProperties();
+         if (renderProps.mappingIndex !== undefined && renderProps.mappingIndex >= 0) {
+            const mappingProps = renderProps as RenderProps & MappingRenderProps;
+            return <MappingComponent {...this.getModelProviderProps()} {...mappingProps} />;
          }
-         if (renderProps?.sourceObjectIndex >= 0) {
-            return <SourceObjectComponent {...this.getModelProviderProps()} {...renderProps} />;
+         if (renderProps?.attributeId) {
+            const mappingProps = renderProps as RenderProps & NewMappingRenderProps;
+            let mappingIndex = this.document.root.mapping.target.mappings.findIndex(
+               mapping => mapping.attribute?.value === mappingProps.attributeId
+            );
+            if (mappingIndex === -1) {
+               this.document.root.mapping.target.mappings.push({
+                  $type: AttributeMappingType,
+                  sources: [],
+                  attribute: {
+                     $type: AttributeMappingTargetType,
+                     value: mappingProps.attributeId
+                  }
+               });
+               mappingIndex = this.document.root.mapping.target.mappings.length - 1;
+            }
+            return <MappingComponent {...this.getModelProviderProps()} {...mappingProps} mappingIndex={mappingIndex} />;
+         }
+         if (renderProps.sourceObjectIndex !== undefined && renderProps?.sourceObjectIndex >= 0) {
+            const sourceObjectRenderProps = renderProps as RenderProps & SourceObjectRenderProps;
+            return <SourceObjectComponent {...this.getModelProviderProps()} {...sourceObjectRenderProps} />;
          }
       }
       if (this.error) {
@@ -206,7 +232,7 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
       return <div className='theia-widget-noInfo'>No properties available.</div>;
    }
 
-   protected getRenderProperties(): RenderProps {
+   protected getRenderProperties(): RenderProps & Partial<MappingRenderProps & NewMappingRenderProps & SourceObjectRenderProps> {
       return {
          theme: this.themeService.getCurrentTheme().type
       };

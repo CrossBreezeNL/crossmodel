@@ -1,14 +1,14 @@
 {
-  "name": "@crossbreezenl/composite-editor",
-  "version": "0.2.1",
+  "name": "@crossmodel/composite-editor",
+  "version": "0.2.9",
   "description": "CrossModel Editor Contribution",
   "keywords": [
     "theia-extension"
   ],
-  "homepage": "https://github.com/CrossBreezeNL/crossmodel",
+  "homepage": "https://github.com/crossmodel/crossmodel-core",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/crossbreezenl/crossmodel.git"
+    "url": "git+https://github.com/crossmodel/crossmodel-core.git"
   },
   "license": "AGPL-3.0-or-later",
   "author": {
@@ -27,14 +27,16 @@
     "watch": "tsc -w"
   },
   "dependencies": {
-    "@crossbreezenl/core": "0.2.0",
-    "@crossbreezenl/form-client": "0.2.0",
-    "@crossbreezenl/glsp-client": "0.2.1",
-    "@eclipse-glsp/theia-integration": "latest",
+    "@crossmodel/core": "0.2.9",
+    "@crossmodel/form-client": "0.2.9",
+    "@crossmodel/glsp-client": "0.2.9",
+    "@eclipse-glsp/theia-integration": "2.4.0-theia1.60.0",
     "@theia/core": "1.60.2",
     "@theia/editor": "1.60.2",
     "@theia/editor-preview": "1.60.2",
-    "@theia/filesystem": "1.60.2"
+    "@theia/filesystem": "1.60.2",
+    "@theia/messages": "1.60.2",
+    "@theia/monaco": "1.60.2"
   },
   "theiaExtensions": [
     {

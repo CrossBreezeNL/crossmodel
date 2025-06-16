@@ -10,7 +10,7 @@ import {
    ModelDiagnostic,
    ReferenceableElement,
    Relationship
-} from '@crossbreezenl/protocol';
+} from '@crossmodel/protocol';
 import * as React from 'react';
 import { DispatchAction, ModelReducer } from './ModelReducer';
 

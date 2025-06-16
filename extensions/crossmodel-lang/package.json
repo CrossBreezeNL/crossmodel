@@ -1,16 +1,16 @@
 {
   "name": "crossmodel-lang",
   "displayName": "crossmodel-lang",
-  "version": "0.2.1",
+  "version": "0.2.9",
   "private": true,
   "description": "CrossModel Language",
   "categories": [
     "Programming Languages"
   ],
-  "homepage": "https://github.com/CrossBreezeNL/crossmodel",
+  "homepage": "https://github.com/crossmodel/crossmodel-core",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/crossbreezenl/crossmodel.git"
+    "url": "git+https://github.com/crossmodel/crossmodel-core.git"
   },
   "license": "AGPL-3.0-or-later",
   "author": {
@@ -88,26 +88,25 @@
     "onStartupFinished"
   ],
   "dependencies": {
-    "@crossbreezenl/protocol": "0.2.0",
-    "@eclipse-glsp/server": "next",
-    "chalk": "~4.1.2",
+    "@crossmodel/protocol": "0.2.9",
+    "@eclipse-glsp/server": "2.4.0",
+    "chalk": "~5.4.1",
     "chevrotain": "~11.0.3",
-    "commander": "~10.0.0",
+    "commander": "~14.0.0",
     "elkjs": "^0.10.0",
-    "langium": "^3.3.0",
-    "p-debounce": "2.1.0",
+    "langium": "^3.5.0",
+    "p-debounce": "^2.1.0",
     "prettier": "^3.1.0",
     "type-fest": "^4.18.2",
-    "uuid": "~10.0.0",
+    "uuid": "~11.1.0",
     "vscode-languageclient": "9.0.1",
     "vscode-languageserver": "9.0.1",
     "vscode-languageserver-protocol": "^3.17.5",
-    "vscode-languageserver-textdocument": "^1.0.11",
-    "vscode-uri": "^3.0.2"
+    "vscode-languageserver-textdocument": "^1.0.12",
+    "vscode-uri": "^3.1.0"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.6",
-    "@types/node": "~16.18.41",
+    "@types/jest": "^29.5.14",
     "@types/vscode": "^1.95.0",
     "@typescript-eslint/eslint-plugin": "~6.4.1",
     "@typescript-eslint/parser": "~6.4.1",
@@ -115,9 +114,10 @@
     "cross-env": "~7.0.3",
     "esbuild": "~0.19.7",
     "eslint": "^8.17.0",
-    "langium-cli": "^3.3.0",
-    "ts-loader": "^9.4.2",
-    "typescript": "~5.3.2"
+    "langium-cli": "^3.5.0",
+    "ts-loader": "^9.5.2",
+    "typescript": "^5.8.3",
+    "webpack": "^5.0.0"
   },
   "engines": {
     "vscode": "^1.95.0"

@@ -1,9 +1,9 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { AstNode, DefaultWorkspaceManager, Deferred, FileSystemNode, LangiumDocument } from 'langium';
+import { AstNode, DefaultWorkspaceManager, Deferred, FileSelector, FileSystemNode, LangiumDocument, UriUtils } from 'langium';
 import { CancellationToken, Emitter, Event, WorkspaceFolder } from 'vscode-languageserver';
-import { URI, Utils } from 'vscode-uri';
+import { URI } from 'vscode-uri';
 import { CrossModelSharedServices } from './cross-model-module.js';
 
 /**
@@ -49,19 +49,11 @@ export class CrossModelWorkspaceManager extends DefaultWorkspaceManager {
       return this.services.workspace.PackageManager.initialize(folders);
    }
 
-   protected override includeEntry(_workspaceFolder: WorkspaceFolder, entry: FileSystemNode, fileExtensions: string[]): boolean {
-      // Note: same as super implementation but we also allow 'node_modules' directories to be scanned
-      const name = Utils.basename(entry.uri);
-      if (name.startsWith('.')) {
-         return false;
+   protected override includeEntry(_workspaceFolder: WorkspaceFolder, entry: FileSystemNode, selector: FileSelector): boolean {
+      const name = UriUtils.basename(entry.uri);
+      if (entry.isDirectory && name === 'node_modules') {
+         return true; // Allow 'node_modules' directories to be scanned
       }
-      if (entry.isDirectory) {
-         // CHANGE: Also support 'node_modules' directory
-         return name !== 'out';
-      } else if (entry.isFile) {
-         const extname = Utils.extname(entry.uri);
-         return fileExtensions.includes(extname);
-      }
-      return false;
+      return super.includeEntry(_workspaceFolder, entry, selector);
    }
 }

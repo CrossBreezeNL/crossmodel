@@ -3,24 +3,25 @@
 	"versions": {
 		"1.0.0": {
 			"name": "@crossbreeze/example-library",
+			"type": "logical",
 			"version": "1.0.0",
 			"alias": "exampleLibrary",
-			"gitHead": "4e8796028c3ef56b5ecc5132b6cce37ac4bdb065",
 			"_id": "@crossbreeze/example-library@1.0.0",
-			"_nodeVersion": "16.19.1",
-			"_npmVersion": "8.19.3",
+			"gitHead": "be3096c412edbf477efac162817e3d1f18c6793a",
+			"_nodeVersion": "20.19.2",
+			"_npmVersion": "10.8.2",
 			"dist": {
-				"integrity": "sha512-kaZMb3z3os4UPrpMcj9ZzJzkiPOG5EAkr/KQJsicQVEuHjH4p5AE5CvBWhLOBX2Ym9GFWdsKadIwzTvGcDK+DA==",
-				"shasum": "364fb0f1a0510cfb11609af5c2675a855918391c",
+				"integrity": "sha512-GvxZ1YSdGQUFN+4+nFVPK20DwpmJDz3owQhJOvO88AZYLI+LqkYFnpWRT/d1+lk9KBCRQ0FTuc9qMy23RpoFUQ==",
+				"shasum": "fd095d813f92519a7777174933702cb0fab04108",
 				"tarball": "http://localhost:4873/@crossbreeze/example-library/-/@crossbreeze/example-library-1.0.0.tgz"
 			},
 			"contributors": []
 		}
 	},
 	"time": {
-		"modified": "2023-03-31T08:43:00.605Z",
-		"created": "2023-03-31T08:43:00.605Z",
-		"1.0.0": "2023-03-31T08:43:00.605Z"
+		"modified": "2025-06-11T20:56:51.296Z",
+		"created": "2025-06-11T20:56:51.296Z",
+		"1.0.0": "2025-06-11T20:56:51.296Z"
 	},
 	"users": {},
 	"dist-tags": {
@@ -30,11 +31,11 @@
 	"_distfiles": {},
 	"_attachments": {
 		"example-library-1.0.0.tgz": {
-			"shasum": "364fb0f1a0510cfb11609af5c2675a855918391c",
+			"shasum": "fd095d813f92519a7777174933702cb0fab04108",
 			"version": "1.0.0"
 		}
 	},
-	"_rev": "3-473fb6ef4301de3b",
+	"_rev": "3-c3ef1463ada8d46b",
 	"_id": "@crossbreeze/example-library",
 	"readme": "ERROR: No README data found!"
 }

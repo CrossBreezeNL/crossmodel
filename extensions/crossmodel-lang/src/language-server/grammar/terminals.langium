@@ -3,7 +3,7 @@
 // Scalar values
 terminal STRING: /"[^"]*"|'[^']*'/;
 terminal NUMBER returns number: /(-)?[0-9]+(\.[0-9]+)?/;
-terminal ID: /[_a-zA-Z][\w_\-~$#@/\d]*/;
+terminal ID: /\^?[_a-zA-Z][\w_\-~$#@/\d]*/;
 
 // Identification for cross references
 IDReference returns string:

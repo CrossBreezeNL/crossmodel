@@ -2,7 +2,7 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 
-import { createLeftPortId, createRightPortId, EnableDefaultToolsAction, EnableToolsAction } from '@crossbreezenl/protocol';
+import { createLeftPortId, createRightPortId, EnableDefaultToolsAction, EnableToolsAction } from '@crossmodel/protocol';
 import {
    Action,
    AnchorComputerRegistry,

@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { DefaultDocumentBuilder } from 'langium';
+import { DefaultDocumentBuilder, LangiumDocument } from 'langium';
 import { CancellationToken } from 'vscode-languageclient';
 import { URI, Utils as UriUtils } from 'vscode-uri';
 import { CrossModelSharedServices } from './cross-model-module.js';
@@ -17,6 +17,11 @@ export class CrossModelDocumentBuilder extends DefaultDocumentBuilder {
    constructor(protected services: CrossModelSharedServices) {
       super(services);
       this.languageFileExtensions = this.serviceRegistry.all.flatMap(service => service.LanguageMetaData.fileExtensions);
+   }
+
+   protected override shouldValidate(document: LangiumDocument): boolean {
+      // do not validate package URIs, as they are not language files
+      return isPackageUri(document.uri) ? false : super.shouldValidate(document);
    }
 
    override update(changed: URI[], deleted: URI[], cancelToken?: CancellationToken | undefined): Promise<void> {

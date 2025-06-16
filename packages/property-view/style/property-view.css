@@ -1,3 +1,13 @@
 #property-view {
    overflow-y: auto;
 }
+
+/* While editing, nested forms seem to have a wrong margin applied. */
+.MuiDataGrid-cell--editing .MuiFormControl-root {
+   margin-top: 6px;
+}
+
+/* weird effect for opacity 1 where the checkbox looks larger than necessary during editing */
+.MuiDataGrid-editBooleanCell input[type='checkbox']:focus {
+   opacity: 0;
+}

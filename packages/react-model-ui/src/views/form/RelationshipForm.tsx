@@ -9,7 +9,7 @@ import {
    ModelStructure,
    ReferenceableElement,
    toId
-} from '@crossbreezenl/protocol';
+} from '@crossmodel/protocol';
 import { Autocomplete, TextField } from '@mui/material';
 import * as React from 'react';
 import { useDiagnostics, useModelDispatch, useModelQueryApi, useReadonly, useRelationship, useUntitled, useUri } from '../../ModelContext';

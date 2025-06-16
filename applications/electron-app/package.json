@@ -1,12 +1,12 @@
 {
   "name": "crossmodel-app",
-  "version": "0.2.1",
+  "version": "0.2.9",
   "private": true,
-  "description": "CrossModel Community Edition",
-  "homepage": "https://github.com/CrossBreezeNL/crossmodel",
+  "description": "CrossModel Core Edition",
+  "homepage": "https://github.com/crossmodel/crossmodel-core",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/crossbreezenl/crossmodel.git"
+    "url": "git+https://github.com/crossmodel/crossmodel-core.git"
   },
   "license": "AGPL-3.0-or-later",
   "author": {
@@ -16,7 +16,7 @@
   "main": "scripts/electron-main.js",
   "scripts": {
     "build": "yarn -s rebuild && theia build --app-target=\"electron\" --mode development && yarn download:plugins",
-    "postbuild": "cp -f ../../node_modules/libavoid-js/dist/libavoid.wasm ../../applications/electron-app/lib/frontend/libavoid.wasm",
+    "postbuild": "shx cp  ../../node_modules/libavoid-js/dist/libavoid.wasm ../../applications/electron-app/lib/frontend/libavoid.wasm",
     "bundle": "cross-env NODE_OPTIONS=--max-old-space-size=8192 && yarn build",
     "clean": "theia clean && rimraf lib src-gen",
     "deploy": "rimraf dist && electron-builder -c.mac.identity=null --publish always",
@@ -32,13 +32,13 @@
     "watch": "theia build --watch --mode development"
   },
   "dependencies": {
-    "@crossbreezenl/composite-editor": "0.2.1",
-    "@crossbreezenl/core": "0.2.0",
-    "@crossbreezenl/form-client": "0.2.0",
-    "@crossbreezenl/glsp-client": "0.2.1",
-    "@crossbreezenl/model-service": "0.2.0",
-    "@crossbreezenl/product": "0.2.0",
-    "@crossbreezenl/property-view": "0.2.1",
+    "@crossmodel/composite-editor": "0.2.9",
+    "@crossmodel/core": "0.2.9",
+    "@crossmodel/form-client": "0.2.9",
+    "@crossmodel/glsp-client": "0.2.9",
+    "@crossmodel/model-service": "0.2.9",
+    "@crossmodel/product": "0.2.9",
+    "@crossmodel/property-view": "0.2.9",
     "@theia/core": "1.60.2",
     "@theia/editor": "1.60.2",
     "@theia/electron": "1.60.2",
@@ -61,12 +61,12 @@
     "electron": "30.1.2",
     "electron-builder": "^23.6.0"
   },
-  "productName": "CrossModel Community Edition",
+  "productName": "CrossModel Core Edition",
   "theia": {
     "target": "electron",
     "frontend": {
       "config": {
-        "applicationName": "CrossModel Community Edition",
+        "applicationName": "CrossModel Core Edition",
         "defaultTheme": {
           "light": "crossmodel-light",
           "dark": "crossmodel-dark"

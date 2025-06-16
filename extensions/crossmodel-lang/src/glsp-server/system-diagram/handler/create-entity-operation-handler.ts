@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
-import { ENTITY_NODE_TYPE, findNextUnique } from '@crossbreezenl/protocol';
+import { ENTITY_NODE_TYPE, findNextUnique, toIdReference } from '@crossmodel/protocol';
 import {
    Action,
    ActionDispatcher,
@@ -43,7 +43,7 @@ export class SystemDiagramCreateEntityOperationHandler extends JsonCreateNodeOpe
          $container: container,
          id: this.modelState.idProvider.findNextId(LogicalEntityNode, entity.name + 'Node', container),
          entity: {
-            $refText: this.modelState.idProvider.getNodeId(entity) || entity.id || '',
+            $refText: toIdReference(this.modelState.idProvider.getNodeId(entity) || entity.id || ''),
             ref: entity
          },
          x: location.x,

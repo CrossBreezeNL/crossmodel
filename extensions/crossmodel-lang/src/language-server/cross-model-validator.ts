@@ -11,7 +11,7 @@ import {
    isMemberPermittedInModel,
    ModelFileExtensions,
    ModelMemberPermissions
-} from '@crossbreezenl/protocol';
+} from '@crossmodel/protocol';
 import { AstNode, GrammarUtils, Reference, UriUtils, ValidationAcceptor, ValidationChecks } from 'langium';
 import { Diagnostic } from 'vscode-languageserver-protocol';
 import type { CrossModelServices } from './cross-model-module.js';
@@ -149,7 +149,7 @@ export class CrossModelValidator {
          });
          return;
       }
-      const allElements = Array.from(this.services.shared.workspace.IndexManager.allElements());
+      const allElements = Array.from(this.services.shared.workspace.IndexManager.allElements(identifiedObject.$type));
       const duplicates = allElements.filter(description => description.name === globalId);
       if (duplicates.length > 1) {
          accept('error', 'Must provide a unique id.', {
@@ -179,7 +179,7 @@ export class CrossModelValidator {
       this.markDuplicateIds(node.customProperties, accept);
    }
 
-   protected markDuplicateIds(nodes: IdentifiableAstNode[], accept: ValidationAcceptor): void {
+   protected markDuplicateIds(nodes: IdentifiableAstNode[] = [], accept: ValidationAcceptor): void {
       const knownIds: string[] = [];
       for (const node of nodes) {
          if (node.id && knownIds.includes(node.id)) {

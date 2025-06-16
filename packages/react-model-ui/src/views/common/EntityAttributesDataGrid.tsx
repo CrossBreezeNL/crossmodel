@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { LogicalAttribute, LogicalAttributeType, findNextUnique, toId } from '@crossbreezenl/protocol';
+import { LogicalAttribute, LogicalAttributeType, findNextUnique, identifier, toId } from '@crossmodel/protocol';
 import CheckBoxOutlineBlankOutlined from '@mui/icons-material/CheckBoxOutlineBlankOutlined';
 import CheckBoxOutlined from '@mui/icons-material/CheckBoxOutlined';
 import { GridColDef } from '@mui/x-data-grid';
@@ -34,9 +34,10 @@ export function EntityAttributesDataGrid(): React.ReactElement {
    const handleAddAttribute = React.useCallback(
       (attribute: EntityAttributeRow): void => {
          if (attribute.name) {
+            const id = findNextUnique(toId(findNextUnique(attribute.name, entity.attributes, identifier)), entity.attributes, identifier);
             dispatch({
                type: 'entity:attribute:add-attribute',
-               attribute: { ...attribute, id: findNextUnique(toId(attribute.name), entity.attributes, attr => attr.id!) }
+               attribute: { ...attribute, id }
             });
          }
       },

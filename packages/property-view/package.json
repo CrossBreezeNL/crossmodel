@@ -1,14 +1,14 @@
 {
-  "name": "@crossbreezenl/property-view",
-  "version": "0.2.1",
+  "name": "@crossmodel/property-view",
+  "version": "0.2.9",
   "description": "Property view for crossmodel",
   "keywords": [
     "theia-extension"
   ],
-  "homepage": "https://github.com/CrossBreezeNL/crossmodel",
+  "homepage": "https://github.com/crossmodel/crossmodel-core",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/crossbreezenl/crossmodel.git"
+    "url": "git+https://github.com/crossmodel/crossmodel-core.git"
   },
   "license": "AGPL-3.0-or-later",
   "author": {
@@ -29,11 +29,11 @@
     "watch": "tsc -w"
   },
   "dependencies": {
-    "@crossbreezenl/glsp-client": "0.2.1",
-    "@crossbreezenl/model-service": "0.2.0",
-    "@crossbreezenl/protocol": "0.2.0",
-    "@crossbreezenl/react-model-ui": "0.2.0",
-    "@eclipse-glsp/theia-integration": "latest",
+    "@crossmodel/glsp-client": "0.2.9",
+    "@crossmodel/model-service": "0.2.9",
+    "@crossmodel/protocol": "0.2.9",
+    "@crossmodel/react-model-ui": "0.2.9",
+    "@eclipse-glsp/theia-integration": "2.4.0-theia1.60.0",
     "@theia/core": "1.60.2",
     "@theia/filesystem": "1.60.2",
     "@theia/property-view": "1.60.2"

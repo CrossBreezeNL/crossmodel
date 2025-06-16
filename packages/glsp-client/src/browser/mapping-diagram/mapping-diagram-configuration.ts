@@ -8,7 +8,7 @@ import {
    SOURCE_STRING_NODE_TYPE,
    TARGET_ATTRIBUTE_MAPPING_EDGE_TYPE,
    TARGET_OBJECT_NODE_TYPE
-} from '@crossbreezenl/protocol';
+} from '@crossmodel/protocol';
 import {
    ContainerConfiguration,
    DefaultTypes,

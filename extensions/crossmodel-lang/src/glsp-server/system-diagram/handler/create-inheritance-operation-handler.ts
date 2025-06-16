@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2025 CrossBreeze.
  ********************************************************************************/
-import { INHERITANCE_EDGE_TYPE } from '@crossbreezenl/protocol';
+import { INHERITANCE_EDGE_TYPE, toIdReference } from '@crossmodel/protocol';
 import {
    ActionDispatcher,
    Command,
@@ -73,11 +73,11 @@ export class SystemDiagramCreateInheritanceOperationHandler extends JsonCreateEd
          id: this.modelState.idProvider.findNextId(InheritanceEdge, baseEntityNode.id + 'InheritanceEdge', this.modelState.systemDiagram),
          baseNode: {
             ref: baseEntityNode,
-            $refText: this.modelState.idProvider.getNodeId(baseEntityNode) || baseEntityNode.id || ''
+            $refText: toIdReference(this.modelState.idProvider.getNodeId(baseEntityNode) || baseEntityNode.id || '')
          },
          superNode: {
             ref: superEntityNode,
-            $refText: this.modelState.idProvider.getNodeId(superEntityNode) || superEntityNode.id || ''
+            $refText: toIdReference(this.modelState.idProvider.getNodeId(superEntityNode) || superEntityNode.id || '')
          }
       };
       this.modelState.systemDiagram.edges.push(edge);
@@ -111,7 +111,7 @@ export class AddInheritanceCommand implements Command {
 
       baseEntity.superEntities.push({
          ref: superEntity,
-         $refText: this.modelState.idProvider.getGlobalId(superEntity) || superEntity.id || ''
+         $refText: toIdReference(this.modelState.idProvider.getGlobalId(superEntity) || superEntity.id || '')
       });
 
       const document = findDocument<CrossModelRoot>(baseEntity)!;

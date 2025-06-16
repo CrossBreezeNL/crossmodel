@@ -1,11 +1,11 @@
 {
-  "name": "@crossbreezenl/protocol",
-  "version": "0.2.0",
+  "name": "@crossmodel/protocol",
+  "version": "0.2.9",
   "description": "CrossModel Protocol Extensions between Server and Client",
-  "homepage": "https://github.com/CrossBreezeNL/crossmodel",
+  "homepage": "https://github.com/crossmodel/crossmodel-core",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/crossbreezenl/crossmodel.git"
+    "url": "git+https://github.com/crossmodel/crossmodel-core.git"
   },
   "license": "AGPL-3.0-or-later",
   "author": {
@@ -26,7 +26,7 @@
     "watch": "tsc -w"
   },
   "dependencies": {
-    "@eclipse-glsp/protocol": "next",
+    "@eclipse-glsp/protocol": "2.4.0",
     "vscode-jsonrpc": "8.2.0"
   }
 }

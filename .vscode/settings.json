@@ -57,7 +57,6 @@
     }
   },
   "jest.jestCommandLine": "yarn test",
-  "jest.debugMode": true,
   "cSpell.enabled": true,
   "cSpell.words": [
     "Chevrotain",
@@ -66,9 +65,11 @@
     "CrossModel",
     "dedents",
     "Langium",
+    "Libavoid",
     "Modelserver",
     "Navigatable",
     "tabbar",
+    "theia",
     "uinteger",
     "Validateable"
   ],

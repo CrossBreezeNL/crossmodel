@@ -11,6 +11,10 @@ import { FormSection } from '../FormSection';
 import { AttributeMappingSourcesDataGrid } from '../common/AttributeMappingSourcesDataGrid';
 import { Form } from './Form';
 
+export interface NewMappingRenderProps {
+   attributeId: string;
+}
+
 export interface MappingRenderProps {
    mappingIndex: number;
 }

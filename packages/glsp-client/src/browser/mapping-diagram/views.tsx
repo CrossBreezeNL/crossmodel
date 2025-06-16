@@ -9,13 +9,12 @@ import {
    isHoverable,
    isSelectable,
    IViewArgs,
-   PolylineEdgeViewWithGapsOnIntersections,
    RenderingContext,
    SEdgeImpl
 } from '@eclipse-glsp/client';
 import { injectable } from 'inversify';
 import { VNode } from 'snabbdom';
-import { DiagramNodeView } from '../views';
+import { CrossModelEdgeView, DiagramNodeView } from '../views';
 
 @injectable()
 export class SourceObjectNodeView extends DiagramNodeView {}
@@ -30,7 +29,7 @@ export class SourceStringNodeView extends DiagramNodeView {}
 export class TargetObjectNodeView extends DiagramNodeView {}
 
 @injectable()
-export class AttributeMappingEdgeView extends PolylineEdgeViewWithGapsOnIntersections {
+export class AttributeMappingEdgeView extends CrossModelEdgeView {
    override render(edge: Readonly<SEdgeImpl>, context: RenderingContext, args?: IViewArgs): VNode | undefined {
       const view = super.render(edge, context);
       if (view?.data?.class) {

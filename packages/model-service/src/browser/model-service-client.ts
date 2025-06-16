@@ -2,7 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { ModelUpdatedEvent, SystemUpdatedEvent } from '@crossbreezenl/protocol';
+import { ModelUpdatedEvent, SystemUpdatedEvent } from '@crossmodel/protocol';
 import { Emitter } from '@theia/core';
 import { injectable } from '@theia/core/shared/inversify';
 import { ModelServiceClient } from '../common/model-service-rpc';

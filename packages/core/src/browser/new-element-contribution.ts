@@ -1,7 +1,7 @@
 /** ******************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { ModelService } from '@crossbreezenl/model-service/lib/common';
+import { ModelService } from '@crossmodel/model-service/lib/common';
 import {
    ID_REGEX,
    LogicalEntityType,
@@ -16,8 +16,9 @@ import {
    packageNameToId,
    quote,
    toId,
+   toIdReference,
    toPascal
-} from '@crossbreezenl/protocol';
+} from '@crossmodel/protocol';
 import {
    Command,
    CommandContribution,
@@ -75,6 +76,10 @@ const INITIAL_MAPPING_CONTENT = `mapping:
         entity: \${target}
 `;
 
+function resolvePlaceholder(content: string, parameters: Record<string, string>): string {
+   return Object.entries(parameters).reduce((result, [key, value]) => result.replace(new RegExp(`\\$\\{${key}\\}`, 'gi'), value), content);
+}
+
 const TEMPLATE_CATEGORY = 'New Element';
 
 const NEW_ELEMENT_TEMPLATES: ReadonlyArray<NewElementTemplate> = [
@@ -108,7 +113,7 @@ const NEW_ELEMENT_TEMPLATES: ReadonlyArray<NewElementTemplate> = [
       category: TEMPLATE_CATEGORY,
       validateName: validateObjectName,
       iconClass: ModelStructure.SystemDiagram.ICON_CLASS,
-      content: (_, __, { name }) => INITIAL_DIAGRAM_CONTENT.replace(/\$\{name\}/gi, quote(name)).replace(/\$\{id\}/gi, toId(name))
+      content: (_, __, { name }) => resolvePlaceholder(INITIAL_DIAGRAM_CONTENT, { name: quote(name), id: toId(name) })
    },
    {
       id: 'crossbreeze.new.mapping',
@@ -118,7 +123,7 @@ const NEW_ELEMENT_TEMPLATES: ReadonlyArray<NewElementTemplate> = [
       category: TEMPLATE_CATEGORY,
       iconClass: ModelStructure.Mapping.ICON_CLASS,
       validateName: validateObjectName,
-      content: (_, __, { name, target }) => INITIAL_MAPPING_CONTENT.replace(/\$\{id\}/gi, toId(name)).replace(/\$\{target\}/gi, target),
+      content: (_, __, { name, target }) => resolvePlaceholder(INITIAL_MAPPING_CONTENT, { id: toId(name), target: toIdReference(target) }),
       async getInputOptions(parent, modelService) {
          const elements = await modelService.findReferenceableElements({
             container: { uri: parent.toString(), type: this.memberType },
@@ -261,12 +266,10 @@ export class CrossModelWorkspaceContribution extends WorkspaceCommandContributio
                mapping: {
                   id: mappingName,
                   target: {
-                     entity: entityElement.label,
-                     mappings: [] as { attribute: string }[]
+                     entity: toIdReference(entityElement.label)
                   }
                }
             };
-            entity.attributes.forEach(attribute => mapping.mapping.target.mappings.push({ attribute: attribute.id }));
             const content = yaml.stringify(mapping, { indent: 4 });
             await this.fileService.create(mappingUri, content);
             this.fireCreateNewFile({ parent: parentUri, uri: mappingUri });

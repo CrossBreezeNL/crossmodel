@@ -1,5 +1,7 @@
-relationship aToB {
-    source := A;
-    target := B;
-    type := 1:1;
-}
+relationship:
+    id: aToB
+    name: "A - B"
+    parent: A
+    parentCardinality: one
+    child: B
+    childCardinality: one

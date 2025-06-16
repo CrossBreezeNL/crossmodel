@@ -2,7 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 
-import { DropEntityOperation } from '@crossbreezenl/protocol';
+import { DropEntityOperation, toIdReference } from '@crossmodel/protocol';
 import { Command, JsonOperationHandler, ModelState } from '@eclipse-glsp/server';
 import { inject, injectable } from 'inversify';
 import { URI } from 'vscode-uri';
@@ -39,7 +39,7 @@ export class SystemDiagramDropEntityOperationHandler extends JsonOperationHandle
                $container: container,
                id: this.modelState.idProvider.findNextId(LogicalEntityNode, entity.id + 'Node', this.modelState.systemDiagram),
                entity: {
-                  $refText: this.modelState.idProvider.getGlobalId(entity) || entity.id || '',
+                  $refText: toIdReference(this.modelState.idProvider.getGlobalId(entity) || entity.id || ''),
                   ref: entity
                },
                x: (x += 10),

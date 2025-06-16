@@ -33,14 +33,19 @@ export namespace RenderProps {
    }
 
    export function read(args: Args): Partial<RenderProps> {
-      return Object.keys(args).reduce((renderProps, argKey) => {
-         if (argKey.startsWith('render-prop-')) {
-            renderProps[argKey.substring('render-prop-'.length)] = args[argKey];
+      return Object.keys(args).reduce((renderProps, propKey) => {
+         if (propKey.startsWith('render-prop-')) {
+            renderProps[propKey.substring('render-prop-'.length)] = args[propKey];
          }
          return renderProps;
       }, {} as Args);
    }
+   export const TARGET_ATTRIBUTE_IDX_NAME = 'attributeId';
+   export const TARGET_ATTRIBUTE_IDX = RenderProps.key(TARGET_ATTRIBUTE_IDX_NAME);
 
-   export const TARGET_ATTRIBUTE_MAPPING_IDX = RenderProps.key('mappingIndex');
-   export const SOURCE_OBJECT_IDX = RenderProps.key('sourceObjectIndex');
+   export const TARGET_ATTRIBUTE_MAPPING_IDX_NAME = 'mappingIndex';
+   export const TARGET_ATTRIBUTE_MAPPING_IDX = RenderProps.key(TARGET_ATTRIBUTE_MAPPING_IDX_NAME);
+
+   export const SOURCE_OBJECT_IDX_NAME = 'sourceObjectIndex';
+   export const SOURCE_OBJECT_IDX = RenderProps.key(SOURCE_OBJECT_IDX_NAME);
 }

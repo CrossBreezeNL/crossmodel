@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
-import { SOURCE_NUMBER_NODE_TYPE, SOURCE_OBJECT_NODE_TYPE, SOURCE_STRING_NODE_TYPE, isLeftPortId } from '@crossbreezenl/protocol';
+import { SOURCE_NUMBER_NODE_TYPE, SOURCE_OBJECT_NODE_TYPE, SOURCE_STRING_NODE_TYPE, isLeftPortId } from '@crossmodel/protocol';
 import {
    Bounds,
    GCompartment,

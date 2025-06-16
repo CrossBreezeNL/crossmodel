@@ -9,7 +9,7 @@ import {
    isRootElementReference,
    isSyntheticDocument,
    ReferenceableElement
-} from '@crossbreezenl/protocol';
+} from '@crossmodel/protocol';
 import {
    AstNode,
    AstNodeDescription,
@@ -243,7 +243,8 @@ export class CrossModelScopeProvider extends PackageScopeProvider {
       if (isSourceObjectAttributeReference(container)) {
          // we are in a join condition of a source object, only show our own and our dependent source object references
          const sourceObject = container.$container.$container.$container;
-         const allowedOwners = [sourceObject.id, ...sourceObject.dependencies.map(dependency => dependency.source.$refText)];
+         const dependencies = sourceObject.dependencies ?? [];
+         const allowedOwners = [sourceObject.id, ...dependencies.map(dependency => dependency.source.$refText)];
          return !!allowedOwners.find(allowedOwner => description.name.startsWith(allowedOwner + '.'));
       }
       return !isGlobalDescriptionForLocalPackage(description, packageId);

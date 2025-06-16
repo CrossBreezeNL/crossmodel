@@ -1,0 +1,13 @@
+entity:
+    id: Order
+    name: "Order"
+    attributes:
+      - id: Order_ID
+        name: "Order ID"
+        datatype: "Text"
+      - id: Customer_ID
+        name: "Customer ID"
+        datatype: "Text"
+      - id: Description
+        name: "Description"
+        datatype: "Text"

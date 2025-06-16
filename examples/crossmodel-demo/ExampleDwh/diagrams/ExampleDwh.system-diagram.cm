@@ -7,3 +7,14 @@ systemDiagram:
         y: 150
         width: 10
         height: 10
+      - id: OrderNode
+        entity: Order
+        x: 77
+        y: 176
+        width: 10
+        height: 10
+    edges:
+      - id: Order_to_CustomerEdge
+        relationship: example-dwh.Order_to_Customer
+        sourceNode: OrderNode
+        targetNode: CustomerNode

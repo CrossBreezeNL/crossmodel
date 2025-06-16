@@ -1,0 +1,5 @@
+relationship:
+    id: Order_to_Customer
+    name: "Order to Customer"
+    parent: Order
+    child: example-dwh.Customer

@@ -7,3 +7,9 @@ systemDiagram:
         y: 150
         width: 10
         height: 10
+      - id: ProductNode
+        entity: Product
+        x: 55
+        y: 154
+        width: 135.82327461242676
+        height: 74.48245906829834

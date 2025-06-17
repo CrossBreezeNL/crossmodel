@@ -1,0 +1,16 @@
+entity:
+    id: Address
+    name: "Address"
+    attributes:
+      - id: Address_ID
+        name: "Address ID"
+        datatype: "Text"
+      - id: Street
+        name: "Street"
+        datatype: "Text"
+      - id: Postal_Code
+        name: "Postal Code"
+        datatype: "Text"
+      - id: Customer_ID
+        name: "Customer ID"
+        datatype: "Text"

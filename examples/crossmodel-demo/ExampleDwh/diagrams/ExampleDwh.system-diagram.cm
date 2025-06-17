@@ -10,11 +10,21 @@ systemDiagram:
       - id: OrderNode
         entity: Order
         x: 77
-        y: 176
-        width: 10
-        height: 10
+        y: 154
+        width: 136.39159107208252
+        height: 95.42857360839844
+      - id: AddressNode
+        entity: Address
+        x: 297
+        y: 319
+        width: 136.39159107208252
+        height: 115.28571701049805
     edges:
       - id: Order_to_CustomerEdge
         relationship: example-dwh.Order_to_Customer
         sourceNode: OrderNode
         targetNode: CustomerNode
+      - id: Customer_to_AddressEdge
+        relationship: example-dwh.Customer_to_Address
+        sourceNode: CustomerNode
+        targetNode: AddressNode

@@ -88,8 +88,8 @@
     "onStartupFinished"
   ],
   "dependencies": {
-    "@crossmodel/protocol": "0.2.5",
-    "@eclipse-glsp/server": "~2.4.0",
+    "@crossmodel/protocol": "0.2.9",
+    "@eclipse-glsp/server": "2.4.0",
     "chalk": "~4.1.2",
     "chevrotain": "~11.0.3",
     "commander": "~14.0.0",

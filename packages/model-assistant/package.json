@@ -1,6 +1,6 @@
 {
   "name": "@crossmodel/model-assistant",
-  "version": "0.2.0",
+  "version": "0.2.9",
   "private": true,
   "description": "Modeling assistant for crossmodel",
   "homepage": "https://github.com/crossmodel/crossmodel-core",
@@ -27,8 +27,8 @@
     "watch": "tsc -w"
   },
   "dependencies": {
-    "@crossmodel/model-service": "0.2.5",
-    "@crossmodel/protocol": "0.2.5",
+    "@crossmodel/model-service": "0.2.9",
+    "@crossmodel/protocol": "0.2.9",
     "@theia/ai-chat": "1.60.2",
     "@theia/ai-chat-ui": "1.60.2",
     "@theia/ai-code-completion": "1.60.2",

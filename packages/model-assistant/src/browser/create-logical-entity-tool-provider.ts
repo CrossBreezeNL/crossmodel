@@ -55,8 +55,9 @@ export class CreateLogicalEntityToolProvider implements ToolProvider {
       }
       const newEntityName = args.name;
       const projectFolderUri = await this.getProjectFolder();
+      const entityFolderUri = projectFolderUri.resolve('entities');
       // Execute the command to create a new entity
-      const entityUri = await this.commandRegistry.executeCommand('crossmodel.logical.entity.create', projectFolderUri, {
+      const entityUri = await this.commandRegistry.executeCommand('crossmodel.logical.entity.create', entityFolderUri, {
          name: newEntityName,
          description: args.description
       });
@@ -87,7 +88,7 @@ export class CreateLogicalEntityToolProvider implements ToolProvider {
    getTool(): ToolRequest {
       return {
          id: CreateLogicalEntityToolProvider.ID,
-         name: 'create-logical-entity',
+         name: CreateLogicalEntityToolProvider.ID,
          description: 'Create an entity in a logical data model',
          parameters: {
             type: 'object',

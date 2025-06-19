@@ -2061,6 +2061,15 @@
   dependencies:
     make-plural "^7.0.0"
 
+"@modelcontextprotocol/sdk@1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@modelcontextprotocol/sdk/-/sdk-1.0.1.tgz#810684e7c11b7e056adab895edf3c4a1bc796205"
+  integrity sha512-slLdFaxQJ9AlRg+hw28iiTtGvShAOgOKXcD0F91nUcRYiOMuS9ZBYjcdNZRXW9G5JQ511GRTdUy1zQVZDpJ+4w==
+  dependencies:
+    content-type "^1.0.5"
+    raw-body "^3.0.0"
+    zod "^3.23.8"
+
 "@msgpackr-extract/msgpackr-extract-darwin-arm64@3.0.3":
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/@msgpackr-extract/msgpackr-extract-darwin-arm64/-/msgpackr-extract-darwin-arm64-3.0.3.tgz#9edec61b22c3082018a79f6d1c30289ddf3d9d11"
@@ -2926,6 +2935,34 @@
     "@theia/workspace" "1.60.2"
     minimatch "^5.1.0"
     tslib "^2.6.2"
+
+"@theia/ai-ide@1.60.2":
+  version "1.60.2"
+  resolved "https://registry.yarnpkg.com/@theia/ai-ide/-/ai-ide-1.60.2.tgz#bce523901e296480159ebbe5bfa59cc163a573ed"
+  integrity sha512-sBPu7sJ3H2FTBPG2KQxFbOebB0U7kdlRKAYJKl08k9rDI0zDZW4ulfWUqa24ru0AdZTl3TZN9CNbG6L28qbBOQ==
+  dependencies:
+    "@theia/ai-chat" "1.60.2"
+    "@theia/ai-chat-ui" "1.60.2"
+    "@theia/ai-core" "1.60.2"
+    "@theia/ai-mcp" "1.60.2"
+    "@theia/core" "1.60.2"
+    "@theia/filesystem" "1.60.2"
+    "@theia/markers" "1.60.2"
+    "@theia/monaco" "1.60.2"
+    "@theia/navigator" "1.60.2"
+    "@theia/terminal" "1.60.2"
+    "@theia/workspace" "1.60.2"
+    ignore "^6.0.0"
+    minimatch "^9.0.0"
+
+"@theia/ai-mcp@1.60.2":
+  version "1.60.2"
+  resolved "https://registry.yarnpkg.com/@theia/ai-mcp/-/ai-mcp-1.60.2.tgz#27d6830881b2da655b85f4c52144c5fd407ef5b5"
+  integrity sha512-N7lwv4eaYBRCfEOUgUdfi9CHEdKhCSOi3Fyo21eHjLwC7Lrj/eSdeq8R2iCgQ14p7LWerFszB12q5QFm3d81XQ==
+  dependencies:
+    "@modelcontextprotocol/sdk" "1.0.1"
+    "@theia/ai-core" "1.60.2"
+    "@theia/core" "1.60.2"
 
 "@theia/ai-openai@1.60.2":
   version "1.60.2"
@@ -6874,7 +6911,7 @@ content-disposition@0.5.4:
   dependencies:
     safe-buffer "5.2.1"
 
-content-type@~1.0.4, content-type@~1.0.5:
+content-type@^1.0.5, content-type@~1.0.4, content-type@~1.0.5:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/content-type/-/content-type-1.0.5.tgz#8b773162656d1d1086784c8f23a54ce6d73d7918"
   integrity sha512-nTjqfcBFEipKdXCv4YDQWCfmcLZKm81ldF0pAopTvyrFGVbcR6P/VAAd5G7N+0tTr8QqiU0tFadD6FK4NtJwOA==
@@ -9807,6 +9844,11 @@ ignore@^5.0.4, ignore@^5.2.0, ignore@^5.2.4:
   version "5.3.2"
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-5.3.2.tgz#3cd40e729f3643fd87cb04e50bf0eb722bc596f5"
   integrity sha512-hsBTNUqQTDwkWtcdYI2i06Y/nUBEsNEDJKjWdigLvegy8kDuJAS8uRlpkkcQpyEXL0Z/pjDy5HBmMjRCJ2gq+g==
+
+ignore@^6.0.0:
+  version "6.0.2"
+  resolved "https://registry.yarnpkg.com/ignore/-/ignore-6.0.2.tgz#77cccb72a55796af1b6d2f9eb14fa326d24f4283"
+  integrity sha512-InwqeHHN2XpumIkMvpl/DCJVrAHgCsG5+cn1XlnLWGwtZBm8QJfSusItfrwx81CTp5agNZqpKU2J/ccC5nGT4A==
 
 image-size@~0.5.0:
   version "0.5.5"
@@ -13886,6 +13928,16 @@ raw-body@2.5.2:
     bytes "3.1.2"
     http-errors "2.0.0"
     iconv-lite "0.4.24"
+    unpipe "1.0.0"
+
+raw-body@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/raw-body/-/raw-body-3.0.0.tgz#25b3476f07a51600619dae3fe82ddc28a36e5e0f"
+  integrity sha512-RmkhL8CAyCRPXCE28MMH0z2PNWQBNk2Q09ZdxM9IOOXwxwZbN+qbWaatPkdkWIKL2ZVDImrN/pK5HTRz2PcS4g==
+  dependencies:
+    bytes "3.1.2"
+    http-errors "2.0.0"
+    iconv-lite "0.6.3"
     unpipe "1.0.0"
 
 rc@^1.2.7:

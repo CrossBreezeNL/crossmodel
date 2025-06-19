@@ -1,58 +1,58 @@
 systemDiagram:
-	id:JUICEERP
-	nodes:
-		- id: CUSTOMER
-		  entity: CUSTOMER
-		  x: -1993
-		  y: 0
-		  width: 273.236111111111
-		  height: 104.847222222222
-		- id: SALESORDER
-		  entity: SALESORDER
-		  x: -1555
-		  y: 0
-		  width: 263.930555555556
-		  height: 91.6527777777778
-		- id: SALESORDERLINE
-		  entity: SALESORDERLINE
-		  x: -1521
-		  y: 334
-		  width: 232.458333333333
-		  height: 104.847222222222
-		- id: PRODUCT
-		  entity: PRODUCT
-		  x: -1509
-		  y: 691
-		  width: 259.625
-		  height: 91.6527777777778
-		- id: DIGITALPRODUCT
-		  entity: DIGITALPRODUCT
-		  x: -1759
-		  y: 1078
-		  width: 319.736111111111
-		  height: 118.041666666667
-		- id: PHYSICALPRODUCT
-		  entity: PHYSICALPRODUCT
-		  x: -1277
-		  y: 1087
-		  width: 261.791666666667
-		  height: 144.430555555556
-	edges:
-		- id: CUSTOMER_SALESORDER
-		  relationship: CUSTOMER_SALESORDER
-		  sourceNode: CUSTOMER
-		  targetNode: SALESORDER
-		- id: SALESORDER_SALESORDERLINE
-		  relationship: SALESORDER_SALESORDERLINE
-		  sourceNode: SALESORDER
-		  targetNode: SALESORDERLINE
-		- id: PRODUCT_SALESORDERLINE
-		  relationship: PRODUCT_SALESORDERLINE
-		  sourceNode: PRODUCT
-		  targetNode: SALESORDERLINE
-		- id: PRODUCT_-_PRODUCTINHERITANCE_-_DIGITALPRODUCT
-		  baseNode: DIGITALPRODUCT
-		  superNode: PRODUCT
-		- id: PRODUCT_-_PRODUCTINHERITANCE_-_PHYSICALPRODUCT
-		  baseNode: PHYSICALPRODUCT
-		  superNode: PRODUCT
+    id: JUICEERP
+    nodes:
+      - id: CUSTOMER
+        entity: CUSTOMER
+        x: -22
+        y: 242
+        width: 175
+        height: 134.00000190734863
+      - id: SALESORDER
+        entity: SALESORDER
+        x: -22
+        y: 44
+        width: 175
+        height: 114.11548233032227
+      - id: SALESORDERLINE
+        entity: SALESORDERLINE
+        x: 253
+        y: 33
+        width: 175
+        height: 134.00000190734863
+      - id: PRODUCT
+        entity: PRODUCT
+        x: 550
+        y: 44
+        width: 175
+        height: 114.33333492279053
+      - id: DIGITALPRODUCT
+        entity: DIGITALPRODUCT
+        x: 638
+        y: 341
+        width: 218.07292699813843
+        height: 153.83960221749723
+      - id: PHYSICALPRODUCT
+        entity: PHYSICALPRODUCT
+        x: 440
+        y: 341
+        width: 175
+        height: 193.00000286102295
+    edges:
+      - id: CUSTOMER_SALESORDER
+        relationship: CUSTOMER_SALESORDER
+        sourceNode: CUSTOMER
+        targetNode: SALESORDER
+      - id: SALESORDER_SALESORDERLINE
+        relationship: SALESORDER_SALESORDERLINE
+        sourceNode: SALESORDER
+        targetNode: SALESORDERLINE
+      - id: PRODUCT_SALESORDERLINE
+        relationship: PRODUCT_SALESORDERLINE
+        sourceNode: PRODUCT
+        targetNode: SALESORDERLINE
+      - id: PRODUCT_-_PRODUCTINHERITANCE_-_DIGITALPRODUCT
+        baseNode: DIGITALPRODUCT
+        superNode: PRODUCT
+      - id: PRODUCT_-_PRODUCTINHERITANCE_-_PHYSICALPRODUCT
+        baseNode: PHYSICALPRODUCT
+        superNode: PRODUCT

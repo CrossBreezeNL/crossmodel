@@ -1,0 +1,28 @@
+mapping:
+    id: JuiceERP_CustomerWithOrderCount
+    sources:
+      - id: CUSTOMERSourceObject
+        entity: JuiceERP.CUSTOMER
+        join: from
+      - id: SALESORDERSourceObject
+        entity: JuiceERP.SALESORDER
+        join: left-join
+        dependencies:
+          - CUSTOMERSourceObject
+        conditions:
+          - CUSTOMERSourceObject.CUSTOMERID = SALESORDERSourceObject.CUSTOMERID
+    target:
+        entity: CustomerWithOrderCount
+        mappings:
+          - attribute: FullName
+            sources:
+              - CUSTOMERSourceObject.FIRSTNAME
+              - CUSTOMERSourceObject.LASTNAME
+            expression: "CONCAT({{CUSTOMERSourceObject.FIRSTNAME}}, ' ', {{CUSTOMERSourceObject.LASTNAME}})"
+          - attribute: Customer_ID
+            sources:
+              - CUSTOMERSourceObject.CUSTOMERID
+          - attribute: OrderCount
+            sources:
+              - SALESORDERSourceObject.SALESORDERID
+            expression: "COUNT({{SALESORDERSourceObject.SALESORDERID}})"

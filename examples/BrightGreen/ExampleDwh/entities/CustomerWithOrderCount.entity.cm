@@ -1,0 +1,14 @@
+entity:
+    id: CustomerWithOrderCount
+    name: "CustomerWithOrderCount"
+    attributes:
+      - id: Customer_ID
+        name: "Customer ID"
+        datatype: "Text"
+        identifier: true
+      - id: FullName
+        name: "FullName"
+        datatype: "Text"
+      - id: OrderCount
+        name: "OrderCount"
+        datatype: "Integer"

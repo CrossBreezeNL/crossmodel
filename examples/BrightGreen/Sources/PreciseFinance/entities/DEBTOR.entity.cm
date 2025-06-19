@@ -1,0 +1,17 @@
+entity:
+   id: DEBTOR
+   name: "Debtor"
+   attributes:
+   - id: DEBTORID
+     name: "DebtorId"
+     datatype: "Integer"  
+     identifier: true
+   - id: NAME
+     name: "NAME"
+     datatype: "Text"
+   - id: IBAN
+     name: "IBAN"
+     datatype: "Text"
+   - id: JUICEERPCUSTOMERID
+     name: "JUICEERPCUSTOMERID"
+     datatype: "Integer"

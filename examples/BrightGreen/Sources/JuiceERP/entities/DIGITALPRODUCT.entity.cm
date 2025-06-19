@@ -1,0 +1,25 @@
+entity:
+   id: DIGITALPRODUCT
+   name: "DigitalProduct"
+   inherits:
+   - PRODUCT
+   attributes:
+   - id: PRODUCTID
+     name: "ProductID"
+     datatype: "Integer"  
+     identifier: true
+   - id: EANCODE
+     name: "EANCode"
+     datatype: "Text"
+   - id: DESCRIPTION
+     name: "Description"
+     datatype: "Text"
+   - id: ITEMPRICE
+     name: "ItemPrice"
+     datatype: "Decimal"
+   - id: ACTIVATIONURL
+     name: "ActivationURL"
+     datatype: "Text"
+   - id: EXPIRATIONPERIODINDAYS
+     name: "ExpirationPeriodInDays"
+     datatype: "Integer"

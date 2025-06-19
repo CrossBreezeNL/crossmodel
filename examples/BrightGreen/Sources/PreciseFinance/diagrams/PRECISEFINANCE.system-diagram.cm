@@ -1,0 +1,30 @@
+systemDiagram:
+	id:PRECISEFINANCE
+	nodes:
+		- id: DEBTOR
+		  entity: DEBTOR
+		  x: -1567
+		  y: 0
+		  width: 333.319444444444
+		  height: 91.6527777777778
+		- id: INVOICE
+		  entity: INVOICE
+		  x: -1286
+		  y: 275
+		  width: 341.152777777778
+		  height: 104.847222222222
+		- id: INVOICELINE
+		  entity: INVOICELINE
+		  x: -1286
+		  y: 625
+		  width: 311.125
+		  height: 118.041666666667
+	edges:
+		- id: FK_INVOICE_INVOICE_D_DEBTOR
+		  relationship: FK_INVOICE_INVOICE_D_DEBTOR
+		  sourceNode: DEBTOR
+		  targetNode: INVOICE
+		- id: FK_INVOICEL_INVOICELI_INVOICE
+		  relationship: FK_INVOICEL_INVOICELI_INVOICE
+		  sourceNode: INVOICE
+		  targetNode: INVOICELINE

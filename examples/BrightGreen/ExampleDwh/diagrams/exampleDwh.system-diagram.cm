@@ -1,0 +1,9 @@
+systemDiagram:
+    id: exampleDwh
+    nodes:
+      - id: CustomerWithOrderCountNode
+        entity: CustomerWithOrderCount
+        x: 286
+        y: 110
+        width: 10
+        height: 10

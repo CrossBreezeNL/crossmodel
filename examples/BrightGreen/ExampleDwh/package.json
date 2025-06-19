@@ -1,0 +1,9 @@
+{
+    "name": "example-dwh",
+    "version": "1.0.0",
+    "type": "logical",
+    "dependencies": {
+        "JuiceERP": "1.0.0",
+        "PreciseFinance": "1.0.0"
+    }
+}

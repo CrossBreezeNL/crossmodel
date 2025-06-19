@@ -1,0 +1,10 @@
+relationship:
+   id: FK_INVOICE_INVOICE_D_DEBTOR
+   name: "FK_INVOICE_INVOICE_D_DEBTOR"
+   parent: DEBTOR   
+   parentCardinality: one
+   child: INVOICE   
+   childCardinality: multiple
+   attributes:
+      - parent: DEBTOR.DEBTORID
+        child: INVOICE.DEBTORID

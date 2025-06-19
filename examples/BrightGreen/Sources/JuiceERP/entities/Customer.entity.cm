@@ -1,20 +1,20 @@
 entity:
-   id: CUSTOMER
+   id: Customer
    name: "Customer"
    attributes:
-   - id: CUSTOMERID
+   - id: CustomerID
      name: "CustomerID"
      datatype: "Integer"  
      identifier: true
-   - id: FIRSTNAME
+   - id: FirstName
      name: "FirstName"
      datatype: "Text"
-   - id: LASTNAME
+   - id: LastName
      name: "LastName"
      datatype: "Text"
-   - id: DATEOFBIRTH
+   - id: DateOfBirth
      name: "DateOfBirth"
      datatype: "Date"
-   - id: EMAILADDRESS
+   - id: EmailAddress
      name: "EmailAddress"
      datatype: "Text"

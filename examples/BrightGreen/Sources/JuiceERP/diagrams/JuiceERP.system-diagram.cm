@@ -1,0 +1,58 @@
+systemDiagram:
+    id: JuiceERP
+    nodes:
+      - id: Customer
+        entity: Customer
+        x: -22
+        y: 242
+        width: 175
+        height: 134.00000190734863
+      - id: SalesOrder
+        entity: SalesOrder
+        x: -22
+        y: 44
+        width: 175
+        height: 114.11548233032227
+      - id: SalesOrderLine
+        entity: SalesOrderLine
+        x: 253
+        y: 33
+        width: 175
+        height: 134.00000190734863
+      - id: Product
+        entity: Product
+        x: 550
+        y: 44
+        width: 175
+        height: 114.33333492279053
+      - id: DigitalProduct
+        entity: DigitalProduct
+        x: 638
+        y: 341
+        width: 218.07292699813843
+        height: 153.83960221749723
+      - id: PhysicalProduct
+        entity: PhysicalProduct
+        x: 440
+        y: 341
+        width: 175
+        height: 193.00000286102295
+    edges:
+      - id: Customer_SalesOrder
+        relationship: Customer_SalesOrder
+        sourceNode: Customer
+        targetNode: SalesOrder
+      - id: SalesOrder_SalesOrderLine
+        relationship: SalesOrder_SalesOrderLine
+        sourceNode: SalesOrder
+        targetNode: SalesOrderLine
+      - id: PRODUCT_SALESORDERLINE
+        relationship: Product_SalesOrderLine
+        sourceNode: Product
+        targetNode: SalesOrderLine
+      - id: PRODUCT_-_PRODUCTINHERITANCE_-_DIGITALPRODUCT
+        baseNode: DigitalProduct
+        superNode: Product
+      - id: PRODUCT_-_PRODUCTINHERITANCE_-_PHYSICALPRODUCT
+        baseNode: PhysicalProduct
+        superNode: Product

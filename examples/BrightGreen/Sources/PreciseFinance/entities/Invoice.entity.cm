@@ -1,0 +1,20 @@
+entity:
+    id: INVOICE
+    name: "Invoice"
+    attributes:
+      - id: INVOICENO
+        name: "InvoiceNo"
+        datatype: "Integer"
+        identifier: true
+      - id: DEBTORID
+        name: "DebtorID"
+        datatype: "Integer"
+      - id: INVOICEDATE
+        name: "InvoiceDate"
+        datatype: "Date"
+      - id: INVOICESTATUS
+        name: "InvoiceStatus"
+        datatype: "Text"
+      - id: JUICEERPSALESORDERID
+        name: "JuiceERP_SalesOrderID"
+        datatype: "Integer"

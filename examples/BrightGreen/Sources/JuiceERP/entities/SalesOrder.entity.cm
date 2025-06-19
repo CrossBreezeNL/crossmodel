@@ -1,17 +1,17 @@
 entity:
-   id: SALESORDER
+   id: SalesOrder
    name: "SalesOrder"
    attributes:
-   - id: SALESORDERID
+   - id: SalesOrderID
      name: "SalesOrderID"
      datatype: "Integer"  
      identifier: true
-   - id: ORDERDATE
+   - id: OrderDate
      name: "OrderDate"
      datatype: "Date"
-   - id: CUSTOMERID
+   - id: CustomerID
      name: "CustomerID"
      datatype: "Integer"
-   - id: ORDERSTATUS
+   - id: OrderStatus
      name: "OrderStatus"
      datatype: "Text"

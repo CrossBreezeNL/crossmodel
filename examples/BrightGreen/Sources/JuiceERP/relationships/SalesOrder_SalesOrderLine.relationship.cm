@@ -1,0 +1,10 @@
+relationship:
+   id: SalesOrder_SalesOrderLine
+   name: "SalesOrder_SalesOrderLine"
+   parent: SalesOrder   
+   parentCardinality: multiple
+   child: SalesOrderLine   
+   childCardinality: multiple
+   attributes:
+      - parent: SalesOrder.SalesOrderID
+        child: SalesOrderLine.SalesOrderID

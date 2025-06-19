@@ -1,17 +1,17 @@
 entity:
-   id: PRODUCT
+   id: Product
    name: "Product"
    attributes:
-   - id: PRODUCTID
+   - id: ProductID
      name: "ProductID"
      datatype: "Integer"  
      identifier: true
-   - id: EANCODE
+   - id: EANCode
      name: "EANCode"
      datatype: "Text"
-   - id: DESCRIPTION
+   - id: Description
      name: "Description"
      datatype: "Text"
-   - id: ITEMPRICE
+   - id: ItemPrice
      name: "ItemPrice"
      datatype: "Decimal"

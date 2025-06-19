@@ -1,31 +1,31 @@
 entity:
-   id: PHYSICALPRODUCT
+   id: PhysicalProduct
    name: "PhysicalProduct"
    inherits:
-   - PRODUCT
+   - Product
    attributes:
-   - id: PRODUCTID
+   - id: ProductID
      name: "ProductID"
      datatype: "Integer"  
      identifier: true
-   - id: EANCODE
+   - id: EANCode
      name: "EANCode"
      datatype: "Text"
-   - id: DESCRIPTION
+   - id: Description
      name: "Description"
      datatype: "Text"
-   - id: ITEMPRICE
+   - id: ItemPrice
      name: "ItemPrice"
      datatype: "Decimal"
-   - id: WIDTHINCM
+   - id: WidthInCm
      name: "WidthInCm"
      datatype: "Integer"
-   - id: LENGTHINCM
+   - id: LengthInCm
      name: "LengthInCm"
      datatype: "Integer"
-   - id: HEIGHTINCM
+   - id: HeightInCm
      name: "HeightInCm"
      datatype: "Integer"
-   - id: WEIGHTINKG
+   - id: WeightInKG
      name: "WeightInKG"
      datatype: "Decimal"

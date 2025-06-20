@@ -34,7 +34,6 @@
     "@theia/ai-code-completion": "1.60.2",
     "@theia/ai-core": "1.60.2",
     "@theia/ai-history": "1.60.2",
-    "@theia/ai-ide": "1.60.2",
     "@theia/ai-openai": "1.60.2",
     "@theia/ai-terminal": "1.60.2"
   },

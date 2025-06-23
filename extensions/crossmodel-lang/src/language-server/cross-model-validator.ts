@@ -2,42 +2,42 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 import {
-   CrossModelValidationErrors,
-   findAllExpressions,
-   getExpression,
-   getExpressionPosition,
-   getExpressionText,
-   getSemanticRoot,
-   isMemberPermittedInModel,
-   ModelFileExtensions,
-   ModelMemberPermissions
+    CrossModelValidationErrors,
+    findAllExpressions,
+    getExpression,
+    getExpressionPosition,
+    getExpressionText,
+    getSemanticRoot,
+    isMemberPermittedInModel,
+    ModelFileExtensions,
+    ModelMemberPermissions
 } from '@crossmodel/protocol';
 import { AstNode, GrammarUtils, Reference, UriUtils, ValidationAcceptor, ValidationChecks } from 'langium';
 import { Diagnostic } from 'vscode-languageserver-protocol';
 import type { CrossModelServices } from './cross-model-module.js';
 import { ID_PROPERTY, IdentifiableAstNode } from './cross-model-naming.js';
 import {
-   AttributeMapping,
-   CrossModelAstType,
-   IdentifiedObject,
-   InheritanceEdge,
-   isCrossModelRoot,
-   isLogicalEntity,
-   isMapping,
-   isSystemDiagram,
-   LogicalAttribute,
-   LogicalEntity,
-   Mapping,
-   NamedObject,
-   Relationship,
-   RelationshipEdge,
-   SourceObject,
-   SourceObjectAttribute,
-   SourceObjectCondition,
-   SourceObjectDependency,
-   TargetObject,
-   TargetObjectAttribute,
-   WithCustomProperties
+    AttributeMapping,
+    CrossModelAstType,
+    IdentifiedObject,
+    InheritanceEdge,
+    isCrossModelRoot,
+    isLogicalEntity,
+    isMapping,
+    isSystemDiagram,
+    LogicalAttribute,
+    LogicalEntity,
+    Mapping,
+    NamedObject,
+    Relationship,
+    RelationshipEdge,
+    SourceObject,
+    SourceObjectAttribute,
+    SourceObjectCondition,
+    SourceObjectDependency,
+    TargetObject,
+    TargetObjectAttribute,
+    WithCustomProperties
 } from './generated/ast.js';
 import { findDocument, getOwner, isSemanticRoot } from './util/ast-util.js';
 
@@ -199,7 +199,7 @@ export class CrossModelValidator {
          return;
       }
       const semanticRoot = getSemanticRoot(node);
-      const info = this.services.shared.workspace.PackageManager.getPackageInfoByDocument(node.$document);
+      const info = this.services.shared.workspace.DataModelManager.getDataModelInfoByDocument(node.$document);
       const packageType = info?.type;
       // The problem is with the system type, not necessarily anything under it.
       if (!packageType || !(packageType in ModelMemberPermissions) || !semanticRoot) {

@@ -147,8 +147,8 @@ export function SourceObjectDependencyDataGrid({ mapping, sourceObjectIdx }: Sou
 
    return (
       <GridComponent
+         key={sourceObject.id + '-dependency-grid'}
          style={{ flexGrow: 1 }}
-         autoHeight
          gridColumns={columns}
          gridData={dependencies}
          noEntriesText='No Dependencies'

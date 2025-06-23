@@ -1,4 +1,4 @@
 datamodel:
-    id: example-other-model
+    id: ExampleOtherModel
     name: "Example Other Model"
     type: logical

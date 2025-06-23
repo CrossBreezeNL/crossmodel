@@ -11,6 +11,7 @@ import {
    AttributeMappingSource,
    AttributeMappingTarget,
    CrossModelRoot,
+   DataModel,
    LogicalAttribute,
    LogicalEntity,
    LogicalEntityNode,
@@ -24,6 +25,7 @@ import {
    TargetObject,
    TargetObjectAttribute,
    isCrossModelRoot,
+   isDataModel,
    isLogicalEntity,
    isMapping,
    isRelationship,
@@ -210,7 +212,7 @@ export function createRelationshipEdge(
 export function createSourceObject(entity: LogicalEntity | AstNodeDescription, container: Mapping, idProvider: IdProvider): SourceObject {
    const entityId = isAstNodeDescription(entity)
       ? getLocalName(entity)
-      : entity.id ?? idProvider.getLocalId(entity) ?? entity.name ?? 'unknown';
+      : (entity.id ?? idProvider.getLocalId(entity) ?? entity.name ?? 'unknown');
    const ref = isAstNodeDescription(entity) ? undefined : entity;
    const $refText = isAstNodeDescription(entity) ? entity.name : idProvider.getGlobalId(entity) || entity.id || '';
    return {
@@ -298,7 +300,7 @@ export function isSemanticRoot(element: unknown): element is SemanticRoot {
 export function findSemanticRoot(input: DocumentContent): SemanticRoot | undefined;
 export function findSemanticRoot<T extends SemanticRoot>(input: DocumentContent, guard: TypeGuard<T>): T | undefined;
 export function findSemanticRoot<T extends SemanticRoot>(input: DocumentContent, guard?: TypeGuard<T>): SemanticRoot | T | undefined {
-   const root = isAstNode(input) ? input.$document?.parseResult?.value ?? AstUtils.findRootNode(input) : input.parseResult?.value;
+   const root = isAstNode(input) ? (input.$document?.parseResult?.value ?? AstUtils.findRootNode(input)) : input.parseResult?.value;
    if (!isCrossModelRoot(root)) {
       return undefined;
    }
@@ -319,6 +321,10 @@ export function findSystemDiagram(input: DocumentContent): SystemDiagram | undef
 
 export function findMapping(input: DocumentContent): Mapping | undefined {
    return findSemanticRoot(input, isMapping);
+}
+
+export function findDataModel(input: DocumentContent): DataModel | undefined {
+   return findSemanticRoot(input, isDataModel);
 }
 
 export function hasSemanticRoot<T extends SemanticRoot>(document: LangiumDocument<any>, guard: (item: unknown) => item is T): boolean {

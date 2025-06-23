@@ -59,6 +59,9 @@ export default function AsyncAutoComplete<T>({
          disabled={readonly}
          disableClearable={true}
          handleHomeEndKeys={true}
+         autoSelect={true}
+         autoHighlight={true}
+         autoComplete={true}
          {...props}
          renderInput={params => (
             <TextField

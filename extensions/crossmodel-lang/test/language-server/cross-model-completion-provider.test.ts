@@ -6,8 +6,9 @@ import { expandToString } from 'langium/generate';
 import { expectCompletion } from 'langium/test';
 import { address } from './test-utils/test-documents/entity/address.js';
 import { customer } from './test-utils/test-documents/entity/customer.js';
+import { dataModelA, dataModelB } from './test-utils/test-documents/entity/datamodels.js';
 import { order } from './test-utils/test-documents/entity/order.js';
-import { createCrossModelTestServices, MockFileSystem, parseProject, testUri } from './test-utils/utils.js';
+import { createCrossModelTestServices, MockFileSystem, parseDocuments, testUri } from './test-utils/utils.js';
 
 const services = createCrossModelTestServices(MockFileSystem);
 const assertCompletion = expectCompletion(services);
@@ -21,22 +22,16 @@ describe.only('CrossModelCompletionProvider', () => {
     `;
 
    beforeAll(async () => {
-      const packageA = await parseProject({
-         package: { services, uri: testUri('projectA', 'package.json'), content: { name: 'ProjectA', version: '1.0.0' } },
-         documents: [
-            { services, text: address, documentUri: testUri('projectA', 'address.entity.cm') },
-            { services, text: order, documentUri: testUri('projectA', 'order.entity.cm') }
-         ]
-      });
+      await parseDocuments(
+         { services, text: dataModelA, documentUri: testUri('projectA', 'datamodel.cm') },
+         { services, text: address, documentUri: testUri('projectA', 'address.entity.cm') },
+         { services, text: order, documentUri: testUri('projectA', 'order.entity.cm') }
+      );
 
-      await parseProject({
-         package: {
-            services,
-            uri: testUri('projectB', 'package.json'),
-            content: { name: 'ProjectB', version: '1.0.0', dependencies: { ...packageA } }
-         },
-         documents: [{ services, text: customer, documentUri: testUri('projectB', 'customer.entity.cm') }]
-      });
+      await parseDocuments(
+         { services, text: dataModelB, documentUri: testUri('projectB', 'datamodel.cm') },
+         { services, text: customer, documentUri: testUri('projectB', 'customer.entity.cm') }
+      );
    });
 
    test('Completion for entity references in project A', async () => {
@@ -64,7 +59,7 @@ describe.only('CrossModelCompletionProvider', () => {
          text,
          parseOptions: { documentUri: testUri('projectB', 'rel.relationship.cm') },
          index: 0,
-         expectedItems: ['Customer', 'ProjectA.Address', 'ProjectA.Order'],
+         expectedItems: ['Customer', 'DataModelA.Address', 'DataModelA.Order'],
          disposeAfterCheck: true
       });
    });

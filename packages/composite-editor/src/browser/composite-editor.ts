@@ -7,7 +7,7 @@ import { FormEditorOpenHandler, FormEditorWidget } from '@crossmodel/form-client
 import { MappingDiagramManager, SystemDiagramManager } from '@crossmodel/glsp-client/lib/browser/';
 import { MappingDiagramLanguage, SystemDiagramLanguage } from '@crossmodel/glsp-client/lib/common';
 import { ModelService } from '@crossmodel/model-service/lib/common';
-import { ModelFileType, codiconCSSString, getSemanticRoot } from '@crossmodel/protocol';
+import { DataModelType, ModelFileExtensions, ModelFileType, codiconCSSString, getSemanticRoot } from '@crossmodel/protocol';
 import { FocusStateChangedAction, SetDirtyStateAction, toTypeGuard } from '@eclipse-glsp/client';
 import { GLSPDiagramWidget, GLSPDiagramWidgetContainer, GLSPDiagramWidgetOptions, GLSPSaveable } from '@eclipse-glsp/theia-integration';
 import { GLSPDiagramLanguage } from '@eclipse-glsp/theia-integration/lib/common';
@@ -214,11 +214,15 @@ export class CompositeEditor extends BaseWidget implements DefaultSaveAsSaveable
          if (!node) {
             return;
          }
-         const fullExtension = this.resourceUri.path.base.slice(this.resourceUri.path.base.indexOf('.'));
-         const newId = node.id;
-         return this.resourceUri.withScheme('file').parent.resolve(`${newId}${fullExtension}`);
+         if (node.$type === DataModelType) {
+            // replace the parent directory name of the file with the user-specified id
+            return this.resourceUri.withScheme('file').parent.parent.resolve(node.id).resolve(this.resourceUri.path.base);
+         } else {
+            // replace the default base name of the file with the user-specified id
+            return this.resourceUri.withScheme('file').parent.resolve(`${node.id}${ModelFileExtensions.getFileExtension(uri)}`);
+         }
       } finally {
-         await this.modelService.close({ uri: this.resourceUri.toString(), clientId: 'save' });
+         await this.modelService.close({ uri, clientId: 'save' });
       }
    }
 
@@ -259,6 +263,8 @@ export class CompositeEditor extends BaseWidget implements DefaultSaveAsSaveable
 
    protected async createPrimaryWidget(options: CompositeWidgetOptions): Promise<Widget> {
       switch (this.fileType) {
+         case 'DataModel':
+            return this.createFormWidget(options);
          case 'LogicalEntity':
             return this.createFormWidget(options);
          case 'Relationship':

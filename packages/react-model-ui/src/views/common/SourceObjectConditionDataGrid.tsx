@@ -199,8 +199,8 @@ export function SourceObjectConditionDataGrid({
 
    return (
       <GridComponent
+         key={sourceObject.id + '-condition-grid'}
          {...props}
-         autoHeight
          gridColumns={columns}
          gridData={conditions}
          noEntriesText={'No Conditions'}

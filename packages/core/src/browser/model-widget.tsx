@@ -13,6 +13,7 @@ import {
    RenderProps
 } from '@crossmodel/protocol';
 import {
+   DataModelComponent,
    EntityComponent,
    ErrorView,
    MappingComponent,
@@ -102,7 +103,7 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
          const document = await this.modelService.open({ clientId, version, text, uri });
          return document;
       } catch (error) {
-         this.error = error instanceof Error ? error.message : error?.toString() ?? 'Unknown error.';
+         this.error = error instanceof Error ? error.message : (error?.toString() ?? 'Unknown error.');
          return undefined;
       }
    }
@@ -191,6 +192,9 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
    }
 
    render(): React.ReactNode {
+      if (this.document?.root?.datamodel) {
+         return <DataModelComponent {...this.getModelProviderProps()} {...this.getRenderProperties()} />;
+      }
       if (this.document?.root?.entity) {
          return <EntityComponent {...this.getModelProviderProps()} {...this.getRenderProperties()} />;
       }

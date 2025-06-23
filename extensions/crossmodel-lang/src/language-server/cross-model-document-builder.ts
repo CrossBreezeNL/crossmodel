@@ -1,11 +1,10 @@
 /********************************************************************************
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
-import { DefaultDocumentBuilder, LangiumDocument } from 'langium';
+import { DefaultDocumentBuilder } from 'langium';
 import { CancellationToken } from 'vscode-languageclient';
 import { URI, Utils as UriUtils } from 'vscode-uri';
 import { CrossModelSharedServices } from './cross-model-module.js';
-import { isPackageUri } from './cross-model-package-manager.js';
 import { Utils } from './util/uri-util.js';
 
 /**
@@ -17,11 +16,6 @@ export class CrossModelDocumentBuilder extends DefaultDocumentBuilder {
    constructor(protected services: CrossModelSharedServices) {
       super(services);
       this.languageFileExtensions = this.serviceRegistry.all.flatMap(service => service.LanguageMetaData.fileExtensions);
-   }
-
-   protected override shouldValidate(document: LangiumDocument): boolean {
-      // do not validate package URIs, as they are not language files
-      return isPackageUri(document.uri) ? false : super.shouldValidate(document);
    }
 
    override update(changed: URI[], deleted: URI[], cancelToken?: CancellationToken | undefined): Promise<void> {
@@ -43,7 +37,7 @@ export class CrossModelDocumentBuilder extends DefaultDocumentBuilder {
    }
 
    protected isLanguageFile(uri: URI): boolean {
-      return this.languageFileExtensions.includes(UriUtils.extname(uri)) || isPackageUri(uri);
+      return this.languageFileExtensions.includes(UriUtils.extname(uri));
    }
 
    protected collectDeletedURIs(uri: URI): URI[] {
@@ -57,7 +51,7 @@ export class CrossModelDocumentBuilder extends DefaultDocumentBuilder {
          .filter(doc => doc.uri.path.startsWith(dirPath))
          .map(doc => doc.uri)
          .toArray();
-      const deletedPackages = this.services.workspace.PackageManager.getPackageInfos()
+      const deletedPackages = this.services.workspace.DataModelManager.getDataModelInfos()
          .filter(info => Utils.isChildOf(uri, info.uri))
          .map(info => info.uri);
       return [...deletedDocuments, ...deletedPackages, uri];

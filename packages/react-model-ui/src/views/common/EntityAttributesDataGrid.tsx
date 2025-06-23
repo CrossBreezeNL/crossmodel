@@ -154,7 +154,7 @@ export function EntityAttributesDataGrid(): React.ReactElement {
    }
    return (
       <GridComponent<LogicalAttribute>
-         autoHeight
+         key={entity.id + '-grid'}
          gridColumns={columns}
          gridData={entity.attributes}
          defaultEntry={defaultEntry}

@@ -1,5 +1,5 @@
 datamodel:
-    id: example-masterdata
+    id: ExampleMasterdata
     name: "Example Masterdata"
     type: logical
     version: 1.0.0

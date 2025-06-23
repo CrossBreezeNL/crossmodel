@@ -2,6 +2,7 @@
  * Copyright (c) 2023 CrossBreeze.
  ********************************************************************************/
 import { CrossModelRoot } from '@crossmodel/protocol';
+import { DataModelDispatchAction, DataModelReducer, isDataModelDispatchAction } from './DataModelReducer';
 import { EntityDispatchAction, EntityModelReducer, isEntityDispatchAction } from './EntityModelReducer';
 import { MappingSourcesDispatchAction, MappingSourcesModelReducer, isMappingSourcesDispatchAction } from './MappingSourcesReducer';
 import { MappingTargetDispatchAction, MappingTargetModelReducer, isMappingTargetDispatchAction } from './MappingTargetReducer';
@@ -18,6 +19,7 @@ export interface ModelUpdateAction extends ModelAction {
 
 export type DispatchAction =
    | ModelUpdateAction
+   | DataModelDispatchAction
    | EntityDispatchAction
    | RelationshipDispatchAction
    | MappingTargetDispatchAction
@@ -39,6 +41,9 @@ export function ModelReducer(state: ModelState, action: DispatchAction): ModelSt
    if (action.type === 'model:update') {
       state.model = action.model;
       return state;
+   }
+   if (isDataModelDispatchAction(action)) {
+      return DataModelReducer(state, action);
    }
    if (isEntityDispatchAction(action)) {
       return EntityModelReducer(state, action);

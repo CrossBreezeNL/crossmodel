@@ -226,6 +226,59 @@
    width: 100%;
 }
 
+.diagram-edge.relationship-child-zero {
+   marker-end: var(--svg-def-marker-relation-child-one);
+}
+.diagram-edge.relationship-child-zero.selected,
+.diagram-edge.relationship-child-zero.mouseover {
+   marker-end: var(--svg-def-marker-relation-child-one-sel);
+}
+
+.diagram-edge.relationship-child-one.selected,
+.diagram-edge.relationship-child-one.mouseover {
+   marker-end: var(--svg-def-marker-relation-child-one-m-sel);
+}
+
+.diagram-edge.relationship-child-one {
+   marker-end: var(--svg-def-marker-relation-child-one-m);
+}
+.diagram-edge.relationship-child-one.selected,
+.diagram-edge.relationship-child-one.mouseover {
+   marker-end: var(--svg-def-marker-relation-child-one-m-sel);
+}
+
+.diagram-edge.relationship-child-multiple {
+   marker-end: var(--svg-def-marker-relation-child-multiple);
+}
+.diagram-edge.relationship-child-multiple.selected,
+.diagram-edge.relationship-child-multiple.mouseover {
+   marker-end: var(--svg-def-marker-relation-child-multiple-sel);
+}
+
+.diagram-edge.relationship-parent-zero {
+   marker-start: var(--svg-def-marker-relation-parent-one);
+}
+.diagram-edge.relationship-parent-zero.selected,
+.diagram-edge.relationship-parent-zero.mouseover {
+   marker-start: var(--svg-def-marker-relation-parent-one-sel);
+}
+
+.diagram-edge.relationship-parent-one {
+   marker-start: var(--svg-def-marker-relation-parent-one-m);
+}
+.diagram-edge.relationship-parent-one.selected,
+.diagram-edge.relationship-parent-one.mouseover {
+   marker-start: var(--svg-def-marker-relation-parent-one-m-sel);
+}
+
+.diagram-edge.relationship-parent-multiple {
+   marker-start: var(--svg-def-marker-relation-parent-multiple);
+}
+.diagram-edge.relationship-parent-multiple.selected,
+.diagram-edge.relationship-parent-multiple.mouseover {
+   marker-start: var(--svg-def-marker-relation-parent-multiple-sel);
+}
+
 .diagram-edge.inheritance {
    marker-end: var(--svg-def-marker-inheritance);
 }

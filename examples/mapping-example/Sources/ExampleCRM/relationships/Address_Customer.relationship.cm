@@ -2,9 +2,9 @@ relationship:
     id: Address_Customer
     name: "Address - Customer"
     parent: Customer
-    parentCardinality: multiple
+    parentCardinality: 0..N
     child: ExampleCRM.Address
-    childCardinality: one
+    childCardinality: 1
     attributes:
       - parent: Customer.Customer_ID
         child: ExampleCRM.Address.Customer_ID

@@ -2,6 +2,6 @@ relationship:
     id: aToB
     name: "A - B"
     parent: A
-    parentCardinality: one
+    parentCardinality: 1
     child: B
-    childCardinality: one
+    childCardinality: 1

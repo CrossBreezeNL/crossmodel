@@ -2,9 +2,9 @@ relationship:
     id: Order_Customer
     name: "Order - Customer"
     parent: Customer
-    parentCardinality: one
+    parentCardinality: 1
     child: Order
-    childCardinality: multiple
+    childCardinality: 0..N
     attributes:
         - parent: Customer.Customer_Id
           child: Order.Customer_Id

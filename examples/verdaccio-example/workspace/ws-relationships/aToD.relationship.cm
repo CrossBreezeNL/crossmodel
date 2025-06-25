@@ -2,6 +2,6 @@ relationship:
   id: aToD
   name: "A - D"
   parent: A
-  parentCardinality: one
+  parentCardinality: 1
   child: entities.D
-  childCardinality: multiple
+  childCardinality: 0..N

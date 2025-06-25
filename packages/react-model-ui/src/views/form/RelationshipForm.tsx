@@ -56,20 +56,20 @@ export function RelationshipForm(): React.ReactElement {
    );
 
    const handleParentChange = React.useCallback(
-      (_: React.SyntheticEvent, newRef: string) => {
-         dispatch({ type: 'relationship:change-parent', parent: newRef });
+      (_: React.SyntheticEvent, newParentRef: string) => {
+         dispatch({ type: 'relationship:change-parent', parent: newParentRef });
          if (untitled && usingDefaultName) {
-            updateNameAndId(newRef, relationship.child);
+            updateNameAndId(newParentRef, relationship.child);
          }
       },
       [dispatch, untitled, usingDefaultName, relationship, updateNameAndId]
    );
 
    const handleChildChange = React.useCallback(
-      (_: React.SyntheticEvent, newRef: string) => {
-         dispatch({ type: 'relationship:change-child', child: newRef });
+      (_: React.SyntheticEvent, newChildRef: string) => {
+         dispatch({ type: 'relationship:change-child', child: newChildRef });
          if (untitled && usingDefaultName) {
-            updateNameAndId(relationship.parent, newRef);
+            updateNameAndId(relationship.parent, newChildRef);
          }
       },
       [dispatch, untitled, usingDefaultName, relationship, updateNameAndId]
@@ -123,10 +123,11 @@ export function RelationshipForm(): React.ReactElement {
                options={cardinalities}
                disabled={readonly}
                handleHomeEndKeys={true}
+               value={relationship.parentCardinality ?? ''}
                onChange={(_evt, newParentCardinality) =>
                   dispatch({ type: 'relationship:change-parent-cardinality', parentCardinality: newParentCardinality ?? '' })
                }
-               renderInput={params => <TextField {...params} label='Parent Cardinality' value={relationship.parentCardinality ?? ''} />}
+               renderInput={params => <TextField {...params} label='Parent Cardinality' />}
             />
 
             <AsyncAutoComplete
@@ -144,10 +145,11 @@ export function RelationshipForm(): React.ReactElement {
                options={cardinalities}
                disabled={readonly}
                handleHomeEndKeys={true}
+               value={relationship.childCardinality ?? ''}
                onChange={(_evt, newChildCardinality) =>
                   dispatch({ type: 'relationship:change-child-cardinality', childCardinality: newChildCardinality ?? '' })
                }
-               renderInput={params => <TextField {...params} label='Child Cardinality' value={relationship.childCardinality ?? ''} />}
+               renderInput={params => <TextField {...params} label='Child Cardinality' />}
             />
          </FormSection>
          <FormSection label='Attributes'>

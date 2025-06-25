@@ -20,6 +20,20 @@ export class RelationshipEdgeView extends CrossModelEdgeView {}
 @injectable()
 export class InheritanceEdgeView extends CrossModelEdgeView {}
 
+const MARKER_RELATIONSHIP_CARDINALITY_PARENT_ONE_ID = 'marker-relationship-parent-one';
+const MARKER_RELATIONSHIP_CARDINALITY_PARENT_ONE_SEL_ID = 'marker-relationship-parent-one-selected';
+const MARKER_RELATIONSHIP_CARDINALITY_PARENT_ONE_MANDATORY_ID = 'marker-relationship-parent-one-mandatory';
+const MARKER_RELATIONSHIP_CARDINALITY_PARENT_ONE_MAND_SEL_ID = 'marker-relationship-parent-one-mandatory-selected';
+const MARKER_RELATIONSHIP_CARDINALITY_PARENT_MULTIPLE_ID = 'marker-relationship-parent-multiple';
+const MARKER_RELATIONSHIP_CARDINALITY_PARENT_MULTI_SEL_ID = 'marker-relationship-parent-multiple-selected';
+
+const MARKER_RELATIONSHIP_CARDINALITY_CHILD_ONE_ID = 'marker-relationship-child-one';
+const MARKER_RELATIONSHIP_CARDINALITY_CHILD_ONE_SEL_ID = 'marker-relationship-child-one-selected';
+const MARKER_RELATIONSHIP_CARDINALITY_CHILD_ONE_MANDATORY_ID = 'marker-relationship-child-one-mandatory';
+const MARKER_RELATIONSHIP_CARDINALITY_CHILD_ONE_MAND_SEL_ID = 'marker-relationship-child-one-mandatory-selected';
+const MARKER_RELATIONSHIP_CARDINALITY_CHILD_MULTIPLE_ID = 'marker-relationship-child-multiple';
+const MARKER_RELATIONSHIP_CARDINALITY_CHILD_MULTIPLE_SEL_ID = 'marker-relationship-child-multiple-selected';
+
 const MARKER_INHERITANCE_ID = 'marker-inheritance';
 const MARKER_INHERITANCE_SELECTED_ID = 'marker-inheritance-selected';
 
@@ -51,9 +65,163 @@ export class SystemGraphView extends GGraphView {
       const directedEdgeAdds: any = [
          <defs>
             <marker
+               id={this.createDefId(MARKER_RELATIONSHIP_CARDINALITY_PARENT_ONE_ID)}
+               viewBox='0 0 20 10'
+               refX='0'
+               refY='5'
+               markerUnits='userSpaceOnUse'
+               markerWidth='20'
+               markerHeight='10'
+               orient='auto'
+            >
+               <circle cx='14' cy='5' r='4' stroke='var(--sprotty-edge)' fill='var(--sprotty-background)' />
+            </marker>
+            <marker
+               id={this.createDefId(MARKER_RELATIONSHIP_CARDINALITY_PARENT_ONE_SEL_ID)}
+               viewBox='0 0 20 10'
+               refX='0'
+               refY='5'
+               markerUnits='userSpaceOnUse'
+               markerWidth='20'
+               markerHeight='10'
+               orient='auto'
+            >
+               <circle cx='14' cy='5' r='4' stroke='var(--sprotty-edge-selected)' fill='var(--sprotty-background)' />
+            </marker>
+
+            <marker
+               id={this.createDefId(MARKER_RELATIONSHIP_CARDINALITY_PARENT_ONE_MANDATORY_ID)}
+               viewBox='0 0 12 10'
+               refX='0'
+               refY='5'
+               markerUnits='userSpaceOnUse'
+               markerWidth='12'
+               markerHeight='10'
+               orient='auto'
+            >
+               <path d='M 10 0 L 10 10' stroke='var(--sprotty-edge)' fill='var(--sprotty-background)' fill-opacity='0' />
+            </marker>
+            <marker
+               id={this.createDefId(MARKER_RELATIONSHIP_CARDINALITY_PARENT_ONE_MAND_SEL_ID)}
+               viewBox='0 0 12 10'
+               refX='0'
+               refY='5'
+               markerUnits='userSpaceOnUse'
+               markerWidth='12'
+               markerHeight='10'
+               orient='auto'
+            >
+               <path d='M 10 0 L 10 10' stroke='var(--sprotty-edge-selected)' fill='var(--sprotty-background)' fill-opacity='0' />
+            </marker>
+
+            <marker
+               id={this.createDefId(MARKER_RELATIONSHIP_CARDINALITY_PARENT_MULTIPLE_ID)}
+               viewBox='0 0 20 10'
+               refX='0'
+               refY='5'
+               markerUnits='userSpaceOnUse'
+               markerWidth='20'
+               markerHeight='10'
+               orient='auto'
+            >
+               <path d='M 0 0 L 10 5 L 0 10' stroke='var(--sprotty-edge)' fill='var(--sprotty-background)' fill-opacity='0' />
+               <circle cx='14' cy='5' r='4' stroke='var(--sprotty-edge)' fill='var(--sprotty-background)' />
+            </marker>
+            <marker
+               id={this.createDefId(MARKER_RELATIONSHIP_CARDINALITY_PARENT_MULTI_SEL_ID)}
+               viewBox='0 0 20 10'
+               refX='0'
+               refY='5'
+               markerUnits='userSpaceOnUse'
+               markerWidth='20'
+               markerHeight='10'
+               orient='auto'
+            >
+               <path d='M 0 0 L 10 5 L 0 10' stroke='var(--sprotty-edge-selected)' fill='var(--sprotty-background)' fill-opacity='0' />
+               <circle cx='14' cy='5' r='4' stroke='var(--sprotty-edge-selected)' fill='var(--sprotty-background)' />
+            </marker>
+
+            <marker
+               id={this.createDefId(MARKER_RELATIONSHIP_CARDINALITY_CHILD_ONE_ID)}
+               viewBox='0 0 20 10'
+               refX='20'
+               refY='5'
+               markerUnits='userSpaceOnUse'
+               markerWidth='20'
+               markerHeight='10'
+               orient='auto-start-reverse'
+            >
+               <circle cx='6' cy='5' r='4' stroke='var(--sprotty-edge)' fill='var(--sprotty-background)' />
+            </marker>
+            <marker
+               id={this.createDefId(MARKER_RELATIONSHIP_CARDINALITY_CHILD_ONE_SEL_ID)}
+               viewBox='0 0 20 10'
+               refX='20'
+               refY='5'
+               markerUnits='userSpaceOnUse'
+               markerWidth='20'
+               markerHeight='10'
+               orient='auto-start-reverse'
+            >
+               <circle cx='6' cy='5' r='4' stroke='var(--sprotty-edge-selected)' fill='var(--sprotty-background)' />
+            </marker>
+
+            <marker
+               id={this.createDefId(MARKER_RELATIONSHIP_CARDINALITY_CHILD_ONE_MANDATORY_ID)}
+               viewBox='0 0 12 10'
+               refX='12'
+               refY='5'
+               markerUnits='userSpaceOnUse'
+               markerWidth='12'
+               markerHeight='10'
+               orient='auto-start-reverse'
+            >
+               <path d='M 2 0 L 2 10' stroke='var(--sprotty-edge)' fill='var(--sprotty-background)' fill-opacity='0' />
+            </marker>
+            <marker
+               id={this.createDefId(MARKER_RELATIONSHIP_CARDINALITY_CHILD_ONE_MAND_SEL_ID)}
+               viewBox='0 0 12 10'
+               refX='12'
+               refY='5'
+               markerUnits='userSpaceOnUse'
+               markerWidth='12'
+               markerHeight='10'
+               orient='auto-start-reverse'
+            >
+               <path d='M 2 0 L 2 10' stroke='var(--sprotty-edge-selected)' fill='var(--sprotty-background)' fill-opacity='0' />
+            </marker>
+
+            <marker
+               id={this.createDefId(MARKER_RELATIONSHIP_CARDINALITY_CHILD_MULTIPLE_ID)}
+               viewBox='0 0 20 10'
+               refX='20'
+               refY='5'
+               markerUnits='userSpaceOnUse'
+               markerWidth='20'
+               markerHeight='10'
+               orient='auto-start-reverse'
+            >
+               <path d='M 20 0 l -10 5 L 20 10' stroke='var(--sprotty-edge)' fill='var(--sprotty-background)' fill-opacity='0' />
+               <circle cx='6' cy='5' r='4' stroke='var(--sprotty-edge)' fill='var(--sprotty-background)' />
+            </marker>
+            <marker
+               id={this.createDefId(MARKER_RELATIONSHIP_CARDINALITY_CHILD_MULTIPLE_SEL_ID)}
+               viewBox='0 0 20 10'
+               refX='20'
+               refY='5'
+               markerUnits='userSpaceOnUse'
+               markerWidth='20'
+               markerHeight='10'
+               orient='auto-start-reverse'
+            >
+               <path d='M 20 0 l -10 5 L 20 10' stroke='var(--sprotty-edge-selected)' fill='var(--sprotty-background)' fill-opacity='0' />
+               <circle cx='6' cy='5' r='4' stroke='var(--sprotty-edge-selected)' fill='var(--sprotty-background)' />
+            </marker>
+
+            <marker
                id={this.createDefId(MARKER_INHERITANCE_ID)}
                viewBox='0 0 10 10'
-               refX='10'
+               refX='0'
                refY='5'
                markerUnits='userSpaceOnUse'
                markerWidth='20'
@@ -83,6 +251,18 @@ export class SystemGraphView extends GGraphView {
    protected renderStyle(context: RenderingContext): VNodeStyle {
       return {
          height: '100%',
+         '--svg-def-marker-relation-parent-one': `url(#${this.createDefId(MARKER_RELATIONSHIP_CARDINALITY_PARENT_ONE_ID)})`,
+         '--svg-def-marker-relation-parent-one-sel': `url(#${this.createDefId(MARKER_RELATIONSHIP_CARDINALITY_PARENT_ONE_SEL_ID)})`,
+         '--svg-def-marker-relation-parent-one-m': `url(#${this.createDefId(MARKER_RELATIONSHIP_CARDINALITY_PARENT_ONE_MANDATORY_ID)})`,
+         '--svg-def-marker-relation-parent-one-m-sel': `url(#${this.createDefId(MARKER_RELATIONSHIP_CARDINALITY_PARENT_ONE_MAND_SEL_ID)})`,
+         '--svg-def-marker-relation-parent-multiple': `url(#${this.createDefId(MARKER_RELATIONSHIP_CARDINALITY_PARENT_MULTIPLE_ID)})`,
+         '--svg-def-marker-relation-parent-multiple-sel': `url(#${this.createDefId(MARKER_RELATIONSHIP_CARDINALITY_PARENT_MULTI_SEL_ID)})`,
+         '--svg-def-marker-relation-child-one': `url(#${this.createDefId(MARKER_RELATIONSHIP_CARDINALITY_CHILD_ONE_ID)})`,
+         '--svg-def-marker-relation-child-one-sel': `url(#${this.createDefId(MARKER_RELATIONSHIP_CARDINALITY_CHILD_ONE_SEL_ID)})`,
+         '--svg-def-marker-relation-child-one-m': `url(#${this.createDefId(MARKER_RELATIONSHIP_CARDINALITY_CHILD_ONE_MANDATORY_ID)})`,
+         '--svg-def-marker-relation-child-one-m-sel': `url(#${this.createDefId(MARKER_RELATIONSHIP_CARDINALITY_CHILD_ONE_MAND_SEL_ID)})`,
+         '--svg-def-marker-relation-child-multiple': `url(#${this.createDefId(MARKER_RELATIONSHIP_CARDINALITY_CHILD_MULTIPLE_ID)})`,
+         '--svg-def-marker-relation-child-multiple-sel': `url(#${this.createDefId(MARKER_RELATIONSHIP_CARDINALITY_CHILD_MULTIPLE_SEL_ID)})`,
          '--svg-def-marker-inheritance': `url(#${this.createDefId(MARKER_INHERITANCE_ID)})`,
          '--svg-def-marker-inheritance-selected': `url(#${this.createDefId(MARKER_INHERITANCE_SELECTED_ID)})`
       };

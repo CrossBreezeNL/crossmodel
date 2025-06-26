@@ -1,5 +1,7 @@
 relationship:
     id: Order_Customer
     name: "Order - Customer"
-    parent: Address
+    parent: Customer
+    parentCardinality: 0..1
     child: Order
+    childCardinality: 0..N

@@ -106,6 +106,7 @@ export function RelationshipForm(): React.ReactElement {
                rows={2}
                value={relationship.description ?? ''}
                disabled={readonly}
+               error={!!diagnostics.description?.length}
                onChange={event => dispatch({ type: 'relationship:change-description', description: event.target.value ?? '' })}
             />
 
@@ -130,6 +131,15 @@ export function RelationshipForm(): React.ReactElement {
                renderInput={params => <TextField {...params} label='Parent Cardinality' />}
             />
 
+            <TextField
+               label='Parent Role'
+               multiline={true}
+               value={relationship.parentRole ?? ''}
+               disabled={readonly}
+               error={!!diagnostics.parentRole?.length}
+               onChange={event => dispatch({ type: 'relationship:change-parent-role', parentRole: event.target.value ?? '' })}
+            />
+
             <AsyncAutoComplete
                label='Child'
                optionLoader={referenceableElements}
@@ -150,6 +160,15 @@ export function RelationshipForm(): React.ReactElement {
                   dispatch({ type: 'relationship:change-child-cardinality', childCardinality: newChildCardinality ?? '' })
                }
                renderInput={params => <TextField {...params} label='Child Cardinality' />}
+            />
+
+            <TextField
+               label='Child Role'
+               multiline={true}
+               value={relationship.childRole ?? ''}
+               disabled={readonly}
+               error={!!diagnostics.childRole?.length}
+               onChange={event => dispatch({ type: 'relationship:change-child-role', childRole: event.target.value ?? '' })}
             />
          </FormSection>
          <FormSection label='Attributes'>

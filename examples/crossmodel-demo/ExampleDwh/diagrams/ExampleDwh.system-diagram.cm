@@ -3,22 +3,52 @@ systemDiagram:
     nodes:
       - id: CustomerNode
         entity: example-dwh.Customer
-        x: 288
-        y: 150
-        width: 10
-        height: 10
+        x: 297
+        y: 143
+        width: 141.6986665725708
+        height: 95.42857360839844
       - id: OrderNode
         entity: Order
-        x: 77
-        y: 154
+        x: 66
+        y: 143
         width: 136.39159107208252
         height: 95.42857360839844
       - id: AddressNode
         entity: Address
         x: 297
-        y: 319
+        y: 308
         width: 136.39159107208252
         height: 115.28571701049805
+      - id: ProductNode
+        entity: Product
+        x: 66
+        y: 363
+        width: 135.82812976837158
+        height: 75.57143020629883
+      - id: OrderLineNode
+        entity: OrderLine
+        x: -154
+        y: 143
+        width: 130.52832508087158
+        height: 95.42857360839844
+      - id: DigitalProductNode
+        entity: DigitalProduct
+        x: -11
+        y: 539
+        width: 136.29867792129517
+        height: 56.54302787780762
+      - id: PhysicalProductNode
+        entity: PhysicalProduct
+        x: 187
+        y: 539
+        width: 147.5580358505249
+        height: 55.71428680419922
+      - id: PerishableProductNode
+        entity: PerishableProduct
+        x: 418
+        y: 616
+        width: 10
+        height: 10
     edges:
       - id: Order_to_CustomerEdge
         relationship: example-dwh.Order_to_Customer
@@ -28,3 +58,20 @@ systemDiagram:
         relationship: example-dwh.Customer_to_Address
         sourceNode: CustomerNode
         targetNode: AddressNode
+      - id: Order_to_OrderLineEdge
+        relationship: example-dwh.Order_to_OrderLine
+        sourceNode: OrderNode
+        targetNode: OrderLineNode
+      - id: OrderLine_to_ProductEdge
+        relationship: example-dwh.OrderLine_to_Product
+        sourceNode: OrderLineNode
+        targetNode: ProductNode
+      - id: DigitalProductNodeInheritanceEdge
+        baseNode: DigitalProductNode
+        superNode: ProductNode
+      - id: PhysicalProductNodeInheritanceEdge
+        baseNode: PhysicalProductNode
+        superNode: ProductNode
+      - id: PerishableProductNodeInheritanceEdge
+        baseNode: PerishableProductNode
+        superNode: PhysicalProductNode

@@ -1,0 +1,5 @@
+relationship:
+    id: OrderLine_to_Product
+    name: "OrderLine to Product"
+    parent: OrderLine
+    child: Product

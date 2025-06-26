@@ -1,0 +1,9 @@
+entity:
+    id: PhysicalProduct
+    name: "PhysicalProduct"
+    inherits:
+      - example-dwh.Product
+    attributes:
+      - id: WeightInKG
+        name: "WeightInKG"
+        datatype: "Decimal"

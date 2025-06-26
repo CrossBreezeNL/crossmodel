@@ -1,0 +1,9 @@
+entity:
+    id: PerishableProduct
+    name: "PerishableProduct"
+    inherits:
+      - example-dwh.PhysicalProduct
+    attributes:
+      - id: BestBefore
+        name: "BestBefore"
+        datatype: "Date"

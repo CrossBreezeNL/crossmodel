@@ -1,0 +1,9 @@
+entity:
+    id: DigitalProduct
+    name: "DigitalProduct"
+    inherits:
+      - example-dwh.Product
+    attributes:
+      - id: SizeInMB
+        name: "SizeInMB"
+        datatype: "Integer"

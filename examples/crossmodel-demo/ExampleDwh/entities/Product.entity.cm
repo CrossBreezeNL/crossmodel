@@ -1,0 +1,10 @@
+entity:
+    id: Product
+    name: "Product"
+    attributes:
+      - id: Product_ID
+        name: "Product ID"
+        datatype: "Text"
+      - id: Description
+        name: "Description"
+        datatype: "Text"

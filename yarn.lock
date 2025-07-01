@@ -15,6 +15,19 @@
     "@jridgewell/gen-mapping" "^0.3.5"
     "@jridgewell/trace-mapping" "^0.3.24"
 
+"@anthropic-ai/sdk@^0.39.0":
+  version "0.39.0"
+  resolved "https://registry.yarnpkg.com/@anthropic-ai/sdk/-/sdk-0.39.0.tgz#624d5b33413a9cc322febb64e9d48bdcf5a98cdc"
+  integrity sha512-eMyDIPRZbt1CCLErRCi3exlAvNkBtRe+kW5vvJyef93PmNr/clstYgHhtvmkxN82nlKgzyGPCyGxrm0JQ1ZIdg==
+  dependencies:
+    "@types/node" "^18.11.18"
+    "@types/node-fetch" "^2.6.4"
+    abort-controller "^3.0.0"
+    agentkeepalive "^4.2.1"
+    form-data-encoder "1.7.2"
+    formdata-node "^4.3.2"
+    node-fetch "^2.6.7"
+
 "@azure/abort-controller@^2.0.0":
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/@azure/abort-controller/-/abort-controller-2.1.2.tgz#42fe0ccab23841d9905812c58f1082d27784566d"
@@ -2853,6 +2866,15 @@
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@testing-library/dom" "^7.28.1"
+
+"@theia/ai-anthropic@1.60.2":
+  version "1.60.2"
+  resolved "https://registry.yarnpkg.com/@theia/ai-anthropic/-/ai-anthropic-1.60.2.tgz#89b1f1b1bf410273f36b7fc162ab08ac55c42e5c"
+  integrity sha512-Bdw2gEmP2gLgzIRN+TstMVxIUmAyVGf7xptqyJLuyOplcfPpZgnJMvUzjaI0Wh6ghLJCXWQltDqgQ6BQNISkYA==
+  dependencies:
+    "@anthropic-ai/sdk" "^0.39.0"
+    "@theia/ai-core" "1.60.2"
+    "@theia/core" "1.60.2"
 
 "@theia/ai-chat-ui@1.60.2":
   version "1.60.2"

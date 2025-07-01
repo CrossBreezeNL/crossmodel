@@ -27,7 +27,7 @@ export class ModelAssistantAgent extends AbstractStreamParsingChatAgent {
    override languageModelRequirements: LanguageModelRequirement[] = [
       {
          purpose: 'chat',
-         identifier: 'openai/gpt-4o'
+         identifier: 'anthropic/claude-3-7-sonnet-latest'
       }
    ];
 }

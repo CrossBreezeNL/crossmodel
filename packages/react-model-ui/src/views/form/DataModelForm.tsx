@@ -77,6 +77,7 @@ export function DataModelForm(): React.ReactElement {
                margin='normal'
                variant='outlined'
                disabled={readonly}
+               required={true}
                value={dataModel.name ?? ''}
                error={!!diagnostics.name?.length}
                helperText={diagnostics.name?.at(0)?.message}

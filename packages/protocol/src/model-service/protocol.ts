@@ -115,8 +115,10 @@ export interface Relationship extends CrossModelElement, NamedObject, WithCustom
    attributes: Array<RelationshipAttribute>;
    parent?: Reference<LogicalEntity>;
    parentCardinality?: string;
+   parentRole?: string;
    child?: Reference<LogicalEntity>;
    childCardinality?: string;
+   childRole?: string;
 }
 
 export const RelationshipAttributeType = 'RelationshipAttribute';

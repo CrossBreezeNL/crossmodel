@@ -43,7 +43,7 @@ export function RelationshipForm(): React.ReactElement {
    );
    const referenceLabelProvider = (element: ReferenceableElement): string => element.label;
 
-   const cardinalities = ['zero', 'one', 'multiple'];
+   const cardinalities = ['0..1', '1', '0..N', '1..N'];
 
    const updateNameAndId = React.useCallback(
       (parent?: string, child?: string) => {
@@ -56,20 +56,20 @@ export function RelationshipForm(): React.ReactElement {
    );
 
    const handleParentChange = React.useCallback(
-      (_: React.SyntheticEvent, newRef: string) => {
-         dispatch({ type: 'relationship:change-parent', parent: newRef });
+      (_: React.SyntheticEvent, newParentRef: string) => {
+         dispatch({ type: 'relationship:change-parent', parent: newParentRef });
          if (untitled && usingDefaultName) {
-            updateNameAndId(newRef, relationship.child);
+            updateNameAndId(newParentRef, relationship.child);
          }
       },
       [dispatch, untitled, usingDefaultName, relationship, updateNameAndId]
    );
 
    const handleChildChange = React.useCallback(
-      (_: React.SyntheticEvent, newRef: string) => {
-         dispatch({ type: 'relationship:change-child', child: newRef });
+      (_: React.SyntheticEvent, newChildRef: string) => {
+         dispatch({ type: 'relationship:change-child', child: newChildRef });
          if (untitled && usingDefaultName) {
-            updateNameAndId(relationship.parent, newRef);
+            updateNameAndId(relationship.parent, newChildRef);
          }
       },
       [dispatch, untitled, usingDefaultName, relationship, updateNameAndId]
@@ -106,6 +106,7 @@ export function RelationshipForm(): React.ReactElement {
                rows={2}
                value={relationship.description ?? ''}
                disabled={readonly}
+               error={!!diagnostics.description?.length}
                onChange={event => dispatch({ type: 'relationship:change-description', description: event.target.value ?? '' })}
             />
 
@@ -123,10 +124,20 @@ export function RelationshipForm(): React.ReactElement {
                options={cardinalities}
                disabled={readonly}
                handleHomeEndKeys={true}
+               value={relationship.parentCardinality ?? ''}
                onChange={(_evt, newParentCardinality) =>
                   dispatch({ type: 'relationship:change-parent-cardinality', parentCardinality: newParentCardinality ?? '' })
                }
-               renderInput={params => <TextField {...params} label='Parent Cardinality' value={relationship.parentCardinality ?? ''} />}
+               renderInput={params => <TextField {...params} label='Parent Cardinality' />}
+            />
+
+            <TextField
+               label='Parent Role'
+               multiline={true}
+               value={relationship.parentRole ?? ''}
+               disabled={readonly}
+               error={!!diagnostics.parentRole?.length}
+               onChange={event => dispatch({ type: 'relationship:change-parent-role', parentRole: event.target.value ?? '' })}
             />
 
             <AsyncAutoComplete
@@ -144,10 +155,20 @@ export function RelationshipForm(): React.ReactElement {
                options={cardinalities}
                disabled={readonly}
                handleHomeEndKeys={true}
+               value={relationship.childCardinality ?? ''}
                onChange={(_evt, newChildCardinality) =>
                   dispatch({ type: 'relationship:change-child-cardinality', childCardinality: newChildCardinality ?? '' })
                }
-               renderInput={params => <TextField {...params} label='Child Cardinality' value={relationship.childCardinality ?? ''} />}
+               renderInput={params => <TextField {...params} label='Child Cardinality' />}
+            />
+
+            <TextField
+               label='Child Role'
+               multiline={true}
+               value={relationship.childRole ?? ''}
+               disabled={readonly}
+               error={!!diagnostics.childRole?.length}
+               onChange={event => dispatch({ type: 'relationship:change-child-role', childRole: event.target.value ?? '' })}
             />
          </FormSection>
          <FormSection label='Attributes'>

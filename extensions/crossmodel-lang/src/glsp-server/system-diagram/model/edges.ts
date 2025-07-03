@@ -32,6 +32,14 @@ export class GRelationshipEdgeBuilder extends GEdgeBuilder<GRelationshipEdge> {
       this.addArg(REFERENCE_PROPERTY, 'relationship');
       this.addArg(REFERENCE_VALUE, edge.relationship.$refText);
 
+      // Add cardinality css classes
+      if (edge.relationship.ref?.parentCardinality) {
+         this.addCssClasses('relationship-parent-'.concat(edge.relationship.ref?.parentCardinality.replace('..', '_')));
+      }
+      if (edge.relationship?.ref?.childCardinality) {
+         this.addCssClasses('relationship-child-'.concat(edge.relationship.ref?.childCardinality.replace('..', '_')));
+      }
+
       const sourceId = index.createId(edge.sourceNode?.ref);
       const targetId = index.createId(edge.targetNode?.ref);
 

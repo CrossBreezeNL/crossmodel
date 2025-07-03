@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0](https://github.com/crossmodel/crossmodel-core/compare/v0.3.0...v0.4.0) (2025-07-03)
+
+
+### Features
+
+* Refactored relationship cardinality and added to diagram ([#154](https://github.com/crossmodel/crossmodel-core/issues/154)) ([5c28c63](https://github.com/crossmodel/crossmodel-core/commit/5c28c63e20865c6ba1804c8e23315e82bdc5c3fb))
+
+
+
+
+
 # [0.3.0](https://github.com/crossmodel/crossmodel-core/compare/v0.2.9...v0.3.0) (2025-07-03)
 
 **Note:** Version bump only for package @crossmodel/glsp-client

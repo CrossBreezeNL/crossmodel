@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/crossmodel/crossmodel-core/compare/v0.2.9...v0.3.0) (2025-07-03)
+
+
+### Features
+
+* Add datamodel to crossmodel language ([#153](https://github.com/crossmodel/crossmodel-core/issues/153)) ([77fb7c5](https://github.com/crossmodel/crossmodel-core/commit/77fb7c57cffe99f1f49e4a455c5dec1c8cbda765))
+
+
+
+
+
 ## [0.2.9](https://github.com/crossmodel/crossmodel-core/compare/v0.2.8...v0.2.9) (2025-06-13)
 
 **Note:** Version bump only for package crossmodel-core

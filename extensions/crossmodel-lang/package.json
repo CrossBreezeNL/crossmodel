@@ -1,7 +1,7 @@
 {
   "name": "crossmodel-lang",
   "displayName": "crossmodel-lang",
-  "version": "0.2.9",
+  "version": "0.3.0",
   "private": true,
   "description": "CrossModel Language",
   "categories": [
@@ -88,7 +88,7 @@
     "onStartupFinished"
   ],
   "dependencies": {
-    "@crossmodel/protocol": "0.2.9",
+    "@crossmodel/protocol": "0.3.0",
     "@eclipse-glsp/server": "2.4.0",
     "chalk": "~5.4.1",
     "chevrotain": "~11.0.3",

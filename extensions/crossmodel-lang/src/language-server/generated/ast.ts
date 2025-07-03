@@ -24,6 +24,10 @@ export type CrossModelTerminalNames = keyof typeof CrossModelTerminals;
 export type CrossModelKeywordNames =
     | "!="
     | "."
+    | "0..1"
+    | "0..N"
+    | "1"
+    | "1..N"
     | ":"
     | "<"
     | "<="
@@ -63,10 +67,8 @@ export type CrossModelKeywordNames =
     | "logical"
     | "mapping"
     | "mappings"
-    | "multiple"
     | "name"
     | "nodes"
-    | "one"
     | "parent"
     | "parentCardinality"
     | "parentRole"
@@ -87,8 +89,7 @@ export type CrossModelKeywordNames =
     | "version"
     | "width"
     | "x"
-    | "y"
-    | "zero";
+    | "y";
 
 export type CrossModelTokenNames = CrossModelTerminalNames | CrossModelKeywordNames;
 
@@ -100,10 +101,10 @@ export function isBooleanExpression(item: unknown): item is BooleanExpression {
     return reflection.isInstance(item, BooleanExpression);
 }
 
-export type Cardinality = 'multiple' | 'one' | 'zero';
+export type Cardinality = '0..1' | '0..N' | '1' | '1..N';
 
 export function isCardinality(item: unknown): item is Cardinality {
-    return item === 'zero' || item === 'one' || item === 'multiple';
+    return item === '0..1' || item === '1' || item === '0..N' || item === '1..N';
 }
 
 export type DataModelType = 'conceptual' | 'logical' | 'relational';

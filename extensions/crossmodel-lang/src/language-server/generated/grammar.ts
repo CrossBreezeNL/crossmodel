@@ -1364,15 +1364,19 @@ export const CrossModelGrammar = (): Grammar => loadedCrossModelGrammar ?? (load
         "elements": [
           {
             "$type": "Keyword",
-            "value": "zero"
+            "value": "0..1"
           },
           {
             "$type": "Keyword",
-            "value": "one"
+            "value": "1"
           },
           {
             "$type": "Keyword",
-            "value": "multiple"
+            "value": "0..N"
+          },
+          {
+            "$type": "Keyword",
+            "value": "1..N"
           }
         ]
       },

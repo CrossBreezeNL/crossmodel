@@ -279,7 +279,7 @@ export class SystemGraphView extends GGraphView {
             <marker
                id={this.createDefId(MARKER_INHERITANCE_ID)}
                viewBox='0 0 10 10'
-               refX='0'
+               refX='10'
                refY='5'
                markerUnits='userSpaceOnUse'
                markerWidth='20'

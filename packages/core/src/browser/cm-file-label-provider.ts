@@ -23,7 +23,7 @@ export class CrossModelLabelProvider implements LabelProviderContribution, TreeD
    @postConstruct()
    protected init(): void {
       this.modelService.onReady(() => this.fireDidChangeDecorations(tree => this.collectDecorators(tree)));
-      this.modelService.onSystemUpdate(() => this.fireDidChangeDecorations(tree => this.collectDecorators(tree)));
+      this.modelService.onDataModelUpdate(() => this.fireDidChangeDecorations(tree => this.collectDecorators(tree)));
    }
 
    canHandle(element: object): number {
@@ -31,22 +31,32 @@ export class CrossModelLabelProvider implements LabelProviderContribution, TreeD
    }
 
    getIcon(node: FileStatNode): string {
-      if (this.isSystemDirectory(node)) {
+      if (this.isDataModelDirectory(node)) {
          return ModelStructure.System.ICON_CLASS + ' default-folder-icon';
       }
-      if (this.isSystemDirectory(node.parent) && node.fileStat.name === ModelStructure.LogicalEntity.FOLDER) {
+      if (this.isDataModelDirectory(node.parent) && node.fileStat.name === ModelStructure.LogicalEntity.FOLDER) {
          return ModelStructure.LogicalEntity.ICON_CLASS + ' default-folder-icon';
       }
-      if (this.isSystemDirectory(node.parent) && node.fileStat.name === ModelStructure.Relationship.FOLDER) {
+      if (this.isDataModelDirectory(node.parent) && node.fileStat.name === ModelStructure.Relationship.FOLDER) {
          return ModelStructure.Relationship.ICON_CLASS + ' default-folder-icon';
       }
-      if (this.isSystemDirectory(node.parent) && node.fileStat.name === ModelStructure.SystemDiagram.FOLDER) {
+      if (this.isDataModelDirectory(node.parent) && node.fileStat.name === ModelStructure.SystemDiagram.FOLDER) {
          return ModelStructure.SystemDiagram.ICON_CLASS + ' default-folder-icon';
       }
-      if (this.isSystemDirectory(node.parent) && node.fileStat.name === ModelStructure.Mapping.FOLDER) {
+      if (this.isDataModelDirectory(node.parent) && node.fileStat.name === ModelStructure.Mapping.FOLDER) {
          return ModelStructure.Mapping.ICON_CLASS + ' default-folder-icon';
       }
+      if (this.isDataModelDirectory(node.parent) && node.fileStat.name === ModelStructure.DataModel.FILE) {
+         return ModelStructure.DataModel.ICON_CLASS + ' default-file-icon';
+      }
       return this.labelProvider.getIcon(node.fileStat);
+   }
+
+   getName(node: FileStatNode): string | undefined {
+      if (this.isDataModelDirectory(node)) {
+         return this.modelService.dataModels.find(dataModel => dataModel.directory === node.fileStat.resource.path.fsPath())?.name;
+      }
+      return this.labelProvider.getName(node.fileStat);
    }
 
    protected fireDidChangeDecorations(event: (tree: Tree) => Map<string, WidgetDecoration.Data>): void {
@@ -64,9 +74,9 @@ export class CrossModelLabelProvider implements LabelProviderContribution, TreeD
          return result;
       }
       for (const node of new DepthFirstTreeIterator(tree.root)) {
-         if (FileStatNode.is(node) && this.isSystemDirectory(node)) {
+         if (FileStatNode.is(node) && this.isDataModelDirectory(node)) {
             const decorations: WidgetDecoration.Data = {
-               captionSuffixes: [{ data: 'System' }]
+               captionSuffixes: [{ data: 'Data Model' }]
             };
             result.set(node.id, decorations);
          }
@@ -74,11 +84,11 @@ export class CrossModelLabelProvider implements LabelProviderContribution, TreeD
       return result;
    }
 
-   protected isSystemDirectory(node?: TreeNode): boolean {
+   protected isDataModelDirectory(node?: TreeNode): boolean {
       return (
          FileStatNode.is(node) &&
          node.fileStat.isDirectory &&
-         this.modelService.systems.some(system => system.directory === node.fileStat.resource.path.fsPath())
+         this.modelService.dataModels.some(dataModel => dataModel.directory === node.fileStat.resource.path.fsPath())
       );
    }
 }

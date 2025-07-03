@@ -3,7 +3,7 @@
  ********************************************************************************/
 
 import { ModelService } from '@crossmodel/model-service/lib/common';
-import { ModelFileExtensions, ModelFileType, ModelStructure, SystemInfo } from '@crossmodel/protocol';
+import { DataModelInfo, ModelFileExtensions, ModelFileType, ModelStructure } from '@crossmodel/protocol';
 import {
    CancellationTokenSource,
    Command,
@@ -27,7 +27,6 @@ import { NAVIGATOR_CONTEXT_MENU } from '@theia/navigator/lib/browser/navigator-c
 import { WorkspaceService } from '@theia/workspace/lib/browser';
 import { inject, injectable } from 'inversify';
 // eslint-disable-next-line import/no-unresolved
-import { PackageJson } from 'type-fest';
 import * as yaml from 'yaml';
 
 const FILE_DOWNLOAD_UPLOAD = [...CommonMenus.FILE, '4_downloadupload'];
@@ -35,24 +34,24 @@ const FILE_IMPORT_EXPORT_SUBMENU = [...FILE_DOWNLOAD_UPLOAD, '1_import_export'];
 
 const NAV_DOWNLOAD_UPLOAD = [...NAVIGATOR_CONTEXT_MENU, '6_downloadupload'];
 
-const EXPORT_YAML_SYSTEM_NAV: Command = {
+const EXPORT_YAML_DATAMODEL_NAV: Command = {
    id: 'crossmodel.export.yaml.nav',
-   label: 'Export System to File'
+   label: 'Export Data Model to File'
 };
 
-const EXPORT_YAML_SYSTEM_FILE: Command = {
+const EXPORT_YAML_DATAMODEL_FILE: Command = {
    id: 'crossmodel.export.yaml.file',
-   label: 'Export System to File'
+   label: 'Export Data Model to File'
 };
 
-const IMPORT_YAML_SYSTEM_NAV: Command = {
+const IMPORT_YAML_DATAMODEL_NAV: Command = {
    id: 'crossmodel.import.yaml.nav',
-   label: 'Import System from File'
+   label: 'Import Data Model from File'
 };
 
-const IMPORT_YAML_SYSTEM_FILE: Command = {
+const IMPORT_YAML_DATAMODEL_FILE: Command = {
    id: 'crossmodel.import.yaml.file',
-   label: 'Import System from File'
+   label: 'Import Data Model from File'
 };
 
 const EXPORT_FILE_EXTENSION = 'cmexport';
@@ -77,27 +76,27 @@ export class ImportExportContribution implements CommandContribution, MenuContri
 
    registerCommands(commands: CommandRegistry): void {
       // File commands (only work with workspace context)
-      commands.registerCommand(EXPORT_YAML_SYSTEM_FILE, {
-         execute: async () => this.exportSystem(await this.querySystemFromUser()),
-         isVisible: () => this.modelService.systems.length > 0
+      commands.registerCommand(EXPORT_YAML_DATAMODEL_FILE, {
+         execute: async () => this.exportDataModel(await this.queryDataModelFromUser()),
+         isVisible: () => this.modelService.dataModels.length > 0
       });
-      commands.registerCommand(IMPORT_YAML_SYSTEM_FILE, {
-         execute: () => this.importSystem(this.workspaceService.tryGetRoots()[0].resource),
+      commands.registerCommand(IMPORT_YAML_DATAMODEL_FILE, {
+         execute: () => this.importDataModel(this.workspaceService.tryGetRoots()[0].resource),
          isVisible: () => this.workspaceService.tryGetRoots().length > 0
       });
 
       // Navigator commands (consider selected elements in the tree)
       commands.registerCommand(
-         EXPORT_YAML_SYSTEM_NAV,
+         EXPORT_YAML_DATAMODEL_NAV,
          UriAwareCommandHandler.MonoSelect(this.selectionService, {
-            execute: uri => this.exportSystem(this.findSystemToExport(uri)),
-            isVisible: uri => !!this.findSystemToExport(uri)
+            execute: uri => this.exportDataModel(this.findDataModelToExport(uri)),
+            isVisible: uri => !!this.findDataModelToExport(uri)
          })
       );
       commands.registerCommand(
-         IMPORT_YAML_SYSTEM_NAV,
+         IMPORT_YAML_DATAMODEL_NAV,
          UriAwareCommandHandler.MonoSelect(this.selectionService, {
-            execute: uri => this.importSystem(this.findDirectoryToImport(uri)!),
+            execute: uri => this.importDataModel(this.findDirectoryToImport(uri)!),
             isVisible: uri => !!this.findDirectoryToImport(uri)
          })
       );
@@ -105,61 +104,58 @@ export class ImportExportContribution implements CommandContribution, MenuContri
 
    registerMenus(menus: MenuModelRegistry): void {
       menus.registerSubmenu(FILE_IMPORT_EXPORT_SUBMENU, 'Import / Export', { order: 'c' });
-      menus.registerMenuAction(FILE_IMPORT_EXPORT_SUBMENU, { commandId: IMPORT_YAML_SYSTEM_FILE.id, order: 'a' });
-      menus.registerMenuAction(FILE_IMPORT_EXPORT_SUBMENU, { commandId: EXPORT_YAML_SYSTEM_FILE.id, order: 'b' });
+      menus.registerMenuAction(FILE_IMPORT_EXPORT_SUBMENU, { commandId: IMPORT_YAML_DATAMODEL_FILE.id, order: 'a' });
+      menus.registerMenuAction(FILE_IMPORT_EXPORT_SUBMENU, { commandId: EXPORT_YAML_DATAMODEL_FILE.id, order: 'b' });
 
-      menus.registerMenuAction(NAV_DOWNLOAD_UPLOAD, { commandId: IMPORT_YAML_SYSTEM_NAV.id, order: 'b' });
-      menus.registerMenuAction(NAV_DOWNLOAD_UPLOAD, { commandId: EXPORT_YAML_SYSTEM_NAV.id, order: 'bb' });
+      menus.registerMenuAction(NAV_DOWNLOAD_UPLOAD, { commandId: IMPORT_YAML_DATAMODEL_NAV.id, order: 'b' });
+      menus.registerMenuAction(NAV_DOWNLOAD_UPLOAD, { commandId: EXPORT_YAML_DATAMODEL_NAV.id, order: 'bb' });
    }
 
    //
    // EXPORT
    //
 
-   protected findSystemToExport(uri: URI): SystemInfo | undefined {
+   protected findDataModelToExport(uri: URI): DataModelInfo | undefined {
       const contextPath = uri.path.fsPath();
-      return this.modelService.systems.find(system => system.directory === contextPath);
+      return this.modelService.dataModels.find(dataModel => dataModel.directory === contextPath);
    }
 
-   protected async querySystemFromUser(): Promise<SystemInfo | undefined> {
-      if (this.modelService.systems.length === 0) {
+   protected async queryDataModelFromUser(): Promise<DataModelInfo | undefined> {
+      if (this.modelService.dataModels.length === 0) {
          return undefined;
       }
-      const systemPick = await this.quickPick.show(this.modelService.systems.map(system => this.toQuickPickItem(system)));
-      return systemPick?.system;
+      const dataModelPick = await this.quickPick.show(this.modelService.dataModels.map(dataModel => this.toQuickPickItem(dataModel)));
+      return dataModelPick?.dataModel;
    }
 
-   protected toQuickPickItem(system: SystemInfo): QuickPickItem & { system: SystemInfo } {
-      const directory = URI.fromFilePath(system.directory);
+   protected toQuickPickItem(dataModel: DataModelInfo): QuickPickItem & { dataModel: DataModelInfo } {
+      const directory = URI.fromFilePath(dataModel.directory);
       const wsRoot = this.workspaceService.getWorkspaceRootUri(directory);
       const location = wsRoot?.relative(directory)?.fsPath() ?? directory.path.fsPath();
-      return { label: system.name, description: system.id, detail: location, system };
+      return { label: dataModel.name, description: dataModel.id, detail: location, dataModel };
    }
 
-   async exportSystem(context?: SystemInfo): Promise<void> {
+   async exportDataModel(context?: DataModelInfo): Promise<void> {
       if (!context) {
          return;
       }
 
-      const system = await this.modelService.getSystemInfo({ contextUri: context.packageFilePath });
-      if (!system) {
-         this.messageService.error('Could not find system for ' + context.directory);
+      const dataModel = await this.modelService.getDataModelInfo({ contextUri: context.dataModelFilePath });
+      if (!dataModel) {
+         this.messageService.error('Could not find data model for ' + context.directory);
          return;
       }
-      const systemPackageUri = URI.fromFilePath(system.packageFilePath);
-      const systemPackageContent = await this.fileService.read(systemPackageUri);
-      const systemPackageJson = JSON.parse(systemPackageContent.value) as PackageJson;
+      const dataModelFileUri = URI.fromFilePath(dataModel.dataModelFilePath);
+      const dataModelDirectory = URI.fromFilePath(dataModel.directory);
 
-      const systemDirectory = URI.fromFilePath(system.directory);
-
-      const saveUri = this.workspaceService.getWorkspaceRootUri(systemPackageUri) ?? systemPackageUri.parent;
+      const saveUri = this.workspaceService.getWorkspaceRootUri(dataModelFileUri) ?? dataModelFileUri.parent;
       const saveDirectory = await this.fileService.resolve(saveUri);
       const exportFileUri = await this.fileDialogService.showSaveDialog(
          {
-            title: `Export ${system.name} to File`,
+            title: `Export ${dataModel.name} to File`,
             saveLabel: 'Export',
-            inputValue: system.name + '.' + EXPORT_FILE_EXTENSION,
-            filters: { ['System Export Files (*.' + EXPORT_FILE_EXTENSION + ')']: [EXPORT_FILE_EXTENSION], 'All Files': [] }
+            inputValue: dataModel.name + '.' + EXPORT_FILE_EXTENSION,
+            filters: { ['Data Model Export Files (*.' + EXPORT_FILE_EXTENSION + ')']: [EXPORT_FILE_EXTENSION], 'All Files': [] }
          },
          saveDirectory
       );
@@ -171,33 +167,34 @@ export class ImportExportContribution implements CommandContribution, MenuContri
       const cancel = new CancellationTokenSource();
       const progress = await this.messageService.showProgress(
          {
-            text: `Export ${system.name} with ${system.modelFilePaths.length} files`,
+            text: `Export ${dataModel.name} with ${dataModel.modelFilePaths.length + 1} files`,
             options: { cancelable: true, timeout: 2000 }
          },
          () => cancel.cancel()
       );
 
-      const totalWork = system.modelFilePaths.length + 2; // +1 for package.json document, +1 for writing result
+      const totalWork = dataModel.modelFilePaths.length + 2; // +1 for datamodel.cm document, +1 for writing result
       const documents: yaml.Document[] = [];
 
       try {
-         progress.report({ message: system.packageFilePath, work: { done: 0, total: totalWork } });
-         const packageYaml = yaml.stringify(systemPackageJson);
-         const packageDocument = yaml.parseDocument(packageYaml);
-         this.addMetadata(packageDocument, {
+         // First, add the datamodel.cm file
+         progress.report({ message: dataModel.dataModelFilePath, work: { done: 0, total: totalWork } });
+         const dataModelContent = await this.fileService.read(dataModelFileUri);
+         const dataModelDocument = yaml.parseDocument(dataModelContent.value);
+         this.addMetadata(dataModelDocument, {
             APPLICATION: FrontendApplicationConfigProvider.get().applicationName,
             TIME: time,
-            ORIGIN: systemPackageUri.path.base
+            ORIGIN: dataModelFileUri.path.base
          });
-         documents.push(packageDocument);
+         documents.push(dataModelDocument);
 
-         for (const [idx, modelFilePath] of system.modelFilePaths.entries()) {
+         for (const [idx, modelFilePath] of dataModel.modelFilePaths.entries()) {
             if (cancel.token.isCancellationRequested) {
                return;
             }
             const modelFileUri = URI.fromFilePath(modelFilePath);
-            const systemRelativePath = systemDirectory.relative(modelFileUri);
-            const modelPath = systemRelativePath?.toString() ?? modelFilePath;
+            const dataModelRelativePath = dataModelDirectory.relative(modelFileUri);
+            const modelPath = dataModelRelativePath?.toString() ?? modelFilePath;
 
             progress.report({ message: modelPath, work: { done: idx + 1, total: totalWork } });
             const modelContent = await this.fileService.read(modelFileUri);
@@ -214,8 +211,8 @@ export class ImportExportContribution implements CommandContribution, MenuContri
          }
 
          progress.report({ message: 'Writing Export', work: { done: totalWork, total: totalWork } });
-         const systemYaml = documents.map(doc => doc.toString()).join(this.documentDelimiter());
-         await this.fileService.write(exportFileUri, systemYaml);
+         const dataModelYaml = documents.map(doc => doc.toString()).join(this.documentDelimiter());
+         await this.fileService.write(exportFileUri, dataModelYaml);
 
          if (this.workspaceService.getWorkspaceRootUri(exportFileUri)) {
             // file was saved in workspace
@@ -257,22 +254,22 @@ export class ImportExportContribution implements CommandContribution, MenuContri
          // not a directory
          return;
       }
-      if (this.modelService.systems.find(system => URI.fromFilePath(system.directory).isEqualOrParent(uri))) {
+      if (this.modelService.dataModels.find(dataModel => URI.fromFilePath(dataModel.directory).isEqualOrParent(uri))) {
          return undefined;
       }
       return uri;
    }
 
-   async importSystem(directory: URI): Promise<void> {
+   async importDataModel(directory: URI): Promise<void> {
       if (!directory) {
          return;
       }
       const workspaceImport = directory === this.workspaceService.tryGetRoots()[0].resource;
       const selectedExport = await this.fileDialogService.showOpenDialog({
-         title: workspaceImport ? 'Select System File to Import into Workspace' : 'Select System File to Import into Folder',
+         title: workspaceImport ? 'Select Data Model File to Import into Workspace' : 'Select Data Model File to Import into Folder',
          canSelectFiles: true,
          openLabel: 'Import',
-         filters: { ['System Export Files (*.' + EXPORT_FILE_EXTENSION + ')']: [EXPORT_FILE_EXTENSION], 'All Files': [] }
+         filters: { ['Data Model Export Files (*.' + EXPORT_FILE_EXTENSION + ')']: [EXPORT_FILE_EXTENSION], 'All Files': [] }
       });
       if (!selectedExport) {
          return;
@@ -284,21 +281,21 @@ export class ImportExportContribution implements CommandContribution, MenuContri
       });
 
       try {
-         let systemName = selectedExport.path.name;
-         const systemContent = await this.fileService.read(selectedExport);
+         let dataModelName = selectedExport.path.name;
+         const exportContent = await this.fileService.read(selectedExport);
 
          const filesToWrite = new Map<string, string>();
-         const documents = yaml.parseAllDocuments(systemContent.value);
+         const documents = yaml.parseAllDocuments(exportContent.value);
          for (const document of documents) {
             const metadata = this.parseMetadata(document);
             this.removeMetadata(document);
 
             const origin = new Path(metadata.ORIGIN);
-            if (origin.base === 'package.json') {
-               // special handling for package.json as we do not want to store it as YAML
+            if (origin.base === 'datamodel.cm') {
+               // Handle datamodel.cm file
                const content = document.toJSON();
-               systemName = content.name ?? systemName;
-               filesToWrite.set(origin.base, JSON.stringify(content, undefined, 4));
+               dataModelName = content.datamodel?.name ?? dataModelName;
+               filesToWrite.set(origin.base, this.readModelContent(document));
             } else {
                const modelName = this.readModelId(document) ?? ModelFileExtensions.getName(origin.base);
                const modelContent = this.readModelContent(document);
@@ -309,13 +306,13 @@ export class ImportExportContribution implements CommandContribution, MenuContri
             }
          }
 
-         const systemDirectory = directory.resolve(systemName);
-         if (await this.fileService.exists(systemDirectory)) {
+         const dataModelDirectory = directory.resolve(dataModelName);
+         if (await this.fileService.exists(dataModelDirectory)) {
             const wsRoot = this.workspaceService.getWorkspaceRootUri(directory);
             const location = wsRoot?.relative(directory)?.fsPath() ?? directory.path.fsPath();
             const overwrite = await new ConfirmDialog({
-               title: 'System folder already exists',
-               msg: `System folder '${systemName}' already exists at  '${location}'. Do you want to overwrite any content?`,
+               title: 'Data Model folder already exists',
+               msg: `Data Model folder '${dataModelName}' already exists at  '${location}'. Do you want to overwrite any content?`,
                ok: 'Overwrite',
                cancel: 'Abort Import'
             }).open();
@@ -324,10 +321,10 @@ export class ImportExportContribution implements CommandContribution, MenuContri
                return;
             }
          } else {
-            await this.fileService.createFolder(systemDirectory);
+            await this.fileService.createFolder(dataModelDirectory);
          }
          for (const [relativePath, content] of filesToWrite) {
-            await this.fileService.write(systemDirectory.resolve(relativePath), content);
+            await this.fileService.write(dataModelDirectory.resolve(relativePath), content);
          }
       } finally {
          progress.cancel();
@@ -367,7 +364,7 @@ export class ImportExportContribution implements CommandContribution, MenuContri
       if (modelType === 'Mapping') {
          return ModelStructure.Mapping.FOLDER + '/';
       }
-      return '';
+      return ''; // Generic files (including datamodel.cm) go in the root directory
    }
 
    protected removeMetadata(document: yaml.Document): void {

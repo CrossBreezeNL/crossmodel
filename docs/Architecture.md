@@ -16,15 +16,13 @@ If the user makes any changes using the [Monaco editor](https://microsoft.github
 
 The code responsible for this functionality can be found in [`extension.ts`](../extensions/crossmodel-lang/src/extension.ts) for the language client and starting the server process, [`main.ts`](../extensions/crossmodel-lang/src/main.ts) for the actual server process and the [`language-server`](../extensions/crossmodel-lang/src/language-server/) directory for the overall language server implementation.
 
-### Package Manager
+### DataModel Manager
 
 In general, the language server protocol does not contain any dedicated project-like semantics, only the concept of a workspace.
 In CrossModel, however, we want to be able to support multiple closed systems where elements can only be referenced within that system but also allow references between systems if declared explicitly.
-For this reason, we are defining that any directory with a [`package.json`](https://docs.npmjs.com/cli/v9/configuring-npm/package-json) file is considered a closed system and can only see elements within that system as well as any direct or indirect dependency declared through the `package.json`.
-By re-using the `package.json` format from npm, we also gain automatic support for publishing systems and libraries on an npm registry that can be automatically downloaded through the npm CLI.
-The task of the package manager is to introduce that mechanism in the language server.
+For this reason, we are defining that any directory with a `datamodel.cm` file is considered a closed system and can only see elements within that system as well as any direct or indirect dependency declared through the `datamodel.cm`.
 
-The code responsible for this functionality can be found in [`cross-model-package-manager.ts`](../extensions/crossmodel-lang/src/language-server/cross-model-package-manager.ts).
+The code responsible for this functionality can be found in [`cross-model-datamodel-manager.ts`](../extensions/crossmodel-lang/src/language-server/cross-model-datamodel-manager.ts).
 
 ### Model Service Facade
 

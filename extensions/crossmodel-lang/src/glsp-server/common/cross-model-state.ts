@@ -32,7 +32,7 @@ export class CrossModelState extends DefaultModelState implements JsonModelState
    setSemanticRoot(uri: string, semanticRoot: CrossModelRoot): void {
       this._semanticUri = uri;
       this._semanticRoot = semanticRoot;
-      this._packageId = this.services.shared.workspace.PackageManager.getPackageIdByUri(URI.parse(uri));
+      this._packageId = this.services.shared.workspace.DataModelManager.getDataModelIdByUri(URI.parse(uri));
       this.index.indexSemanticRoot(this.semanticRoot);
    }
 

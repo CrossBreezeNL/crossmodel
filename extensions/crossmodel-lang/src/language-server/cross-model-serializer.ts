@@ -11,9 +11,13 @@ import {
    BooleanExpression,
    CrossModelRoot,
    CustomProperty,
+   DataModel,
+   DataModelDependency,
    InheritanceEdge,
    isAttributeMappingSource,
    isAttributeMappingTarget,
+   isDataModel,
+   isDataModelDependency,
    isJoinCondition,
    isLogicalAttribute,
    isLogicalIdentifier,
@@ -76,7 +80,9 @@ const PROPERTY_ORDER = new Map<string, string[]>([
    [TargetObject, ['entity', 'mappings', ...CUSTOM_PROPERTIES]],
    [AttributeMapping, ['attribute', 'sources', 'expression', ...CUSTOM_PROPERTIES]],
    [CustomProperty, [...NAMED_OBJECT_PROPERTIES, 'value']],
-   [LogicalIdentifier, [...NAMED_OBJECT_PROPERTIES, 'primary', 'attributes', ...CUSTOM_PROPERTIES]]
+   [LogicalIdentifier, [...NAMED_OBJECT_PROPERTIES, 'primary', 'attributes', ...CUSTOM_PROPERTIES]],
+   [DataModel, [...NAMED_OBJECT_PROPERTIES, 'type', 'version', 'dependencies', ...CUSTOM_PROPERTIES]],
+   [DataModelDependency, ['datamodel', 'version']]
 ]);
 PROPERTY_ORDER.set(SourceObjectAttribute, PROPERTY_ORDER.get(LogicalAttribute) ?? []);
 PROPERTY_ORDER.set(TargetObjectAttribute, PROPERTY_ORDER.get(LogicalAttribute) ?? []);
@@ -129,7 +135,10 @@ export class CrossModelSerializer implements Serializer<CrossModelRoot> {
       if (
          propertyOf(parent, key, isRelationship, 'parentCardinality') ||
          propertyOf(parent, key, isRelationship, 'childCardinality') ||
-         propertyOf(parent, key, isSourceObject, 'join')
+         propertyOf(parent, key, isSourceObject, 'join') ||
+         propertyOf(parent, key, isDataModel, 'type') ||
+         propertyOf(parent, key, isDataModel, 'version') ||
+         propertyOf(parent, key, isDataModelDependency, 'version')
       ) {
          // values that we do not want to quote
          return value;

@@ -22,13 +22,13 @@ import { Serializer } from '../model-server/serializer.js';
 import { ClientLogger } from './cross-model-client-logger.js';
 import { CrossModelCodeActionProvider } from './cross-model-code-action-provider.js';
 import { CrossModelCompletionProvider } from './cross-model-completion-provider.js';
+import { CrossModelDataModelManager } from './cross-model-datamodel-manager.js';
 import { CrossModelDocumentBuilder } from './cross-model-document-builder.js';
 import { CrossModelModelFormatter } from './cross-model-formatter.js';
 import { CrossModelIndexManager } from './cross-model-index-manager.js';
 import { CrossModelLangiumDocuments } from './cross-model-langium-documents.js';
 import { CrossModelLanguageServer } from './cross-model-language-server.js';
 import { DefaultIdProvider } from './cross-model-naming.js';
-import { CrossModelPackageManager } from './cross-model-package-manager.js';
 import { CrossModelScopeProvider } from './cross-model-scope-provider.js';
 import { CrossModelScopeComputation } from './cross-model-scope.js';
 import { CrossModelSerializer } from './cross-model-serializer.js';
@@ -82,7 +82,7 @@ export interface CrossModelAddedSharedServices {
 
    workspace: {
       /* override */ WorkspaceManager: CrossModelWorkspaceManager;
-      PackageManager: CrossModelPackageManager;
+      DataModelManager: CrossModelDataModelManager;
       LangiumDocuments: CrossModelLangiumDocuments;
       IndexManager: CrossModelIndexManager;
    };
@@ -106,7 +106,7 @@ export const CrossModelSharedModule: Module<
    ServiceRegistry: () => new DefaultExtendedServiceRegistry(),
    workspace: {
       WorkspaceManager: services => new CrossModelWorkspaceManager(services),
-      PackageManager: services => new CrossModelPackageManager(services),
+      DataModelManager: services => new CrossModelDataModelManager(services),
       LangiumDocuments: services => new CrossModelLangiumDocuments(services),
       TextDocuments: services => new OpenableTextDocuments(TextDocument, services),
       TextDocumentManager: services => new OpenTextDocumentManager(services),

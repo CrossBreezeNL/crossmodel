@@ -140,7 +140,6 @@ export function AttributeMappingSourcesDataGrid({ mapping, mappingIdx }: Attribu
 
    return (
       <GridComponent
-         autoHeight
          columnHeaderHeight={0}
          gridColumns={columns}
          gridData={sources}

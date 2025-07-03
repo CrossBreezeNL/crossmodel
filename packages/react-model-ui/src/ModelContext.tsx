@@ -4,6 +4,7 @@
 import {
    CrossModelRoot,
    CrossReferenceContext,
+   DataModel,
    FindIdArgs,
    LogicalEntity,
    Mapping,
@@ -96,4 +97,8 @@ export function useRelationship(): Relationship {
 
 export function useMapping(): Mapping {
    return useModel().mapping!;
+}
+
+export function useDataModel(): DataModel {
+   return useModel().datamodel!;
 }

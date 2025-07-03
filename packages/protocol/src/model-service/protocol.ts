@@ -48,6 +48,7 @@ export interface CrossModelDocument<T = CrossModelRoot, D = ModelDiagnostic> {
 
 export interface CrossModelRoot extends CrossModelElement {
    readonly $type: 'CrossModelRoot';
+   datamodel?: DataModel;
    entity?: LogicalEntity;
    relationship?: Relationship;
    mapping?: Mapping;
@@ -63,7 +64,7 @@ type AllKeys<T, ArrayMembers extends any[] = []> = {
    [Key in keyof T]: Exclude<keyof T, Key> extends never ? readonly [...ArrayMembers, Key] : AllKeys<Omit<T, Key>, [...ArrayMembers, Key]>;
 }[keyof T];
 
-export const ROOT_KEYS = ['entity', 'mapping', 'relationship', 'systemDiagram'] as const satisfies AllKeys<RootContainer>;
+export const ROOT_KEYS = ['datamodel', 'entity', 'mapping', 'relationship', 'systemDiagram'] as const satisfies AllKeys<RootContainer>;
 
 export function getSemanticRoot<T extends Partial<{ [key in keyof RootContainer]: any }>, U extends T[keyof RootContainer]>(
    root: T,
@@ -249,6 +250,22 @@ export interface RelationshipEdge extends CrossModelElement, IdentifiedObject, W
    targetNode: Reference<EntityNode>;
 }
 
+export const DataModelType = 'DataModel';
+export type DataModelType = 'conceptual' | 'logical' | 'relational';
+export interface DataModel extends CrossModelElement, NamedObject, WithCustomProperties {
+   readonly $type: typeof DataModelType;
+   type: DataModelType;
+   version?: string;
+   dependencies: Array<DataModelDependency>;
+}
+
+export const DataModelDependencyType = 'DataModelDependency';
+export interface DataModelDependency extends CrossModelElement {
+   readonly $type: typeof DataModelDependencyType;
+   datamodel: Reference<DataModel>;
+   version?: string;
+}
+
 export const EntityNodeType = 'EntityNode';
 export interface EntityNode extends CrossModelElement, IdentifiedObject, WithCustomProperties {
    readonly $container: SystemDiagram;
@@ -414,24 +431,24 @@ export interface ResolvedElement {
    model: CrossModelRoot;
 }
 
-export interface SystemInfoArgs {
+export interface DataModelInfoArgs {
    contextUri: string;
 }
 
-export interface SystemInfo {
+export interface DataModelInfo {
    id: string;
    name: string;
    type: string;
    directory: string;
-   packageFilePath: string;
+   dataModelFilePath: string;
    modelFilePaths: string[];
 }
 
-export interface SystemUpdatedEvent {
-   system: SystemInfo;
+export interface DataModelUpdatedEvent {
+   dataModel: DataModelInfo;
    reason: 'added' | 'removed';
 }
-export type SystemUpdateListener = (event: SystemUpdatedEvent) => void | Promise<void>;
+export type DataModelUpdateListener = (event: DataModelUpdatedEvent) => void | Promise<void>;
 
 export const OpenModel = new rpc.RequestType1<OpenModelArgs, CrossModelDocument | undefined, void>('server/open');
 export const CloseModel = new rpc.RequestType1<CloseModelArgs, void, void>('server/close');
@@ -447,14 +464,29 @@ export const SaveModel = new rpc.RequestType1<SaveModelArgs, void, void>('server
 export const OnModelSaved = new rpc.NotificationType1<ModelSavedEvent>('server/onSave');
 export const OnModelUpdated = new rpc.NotificationType1<ModelUpdatedEvent>('server/onUpdated');
 
-export const RequestSystemInfos = new rpc.RequestType1<void, SystemInfo[], void>('server/systems');
-export const RequestSystemInfo = new rpc.RequestType1<SystemInfoArgs, SystemInfo | undefined, void>('server/system');
-export const OnSystemsUpdated = new rpc.NotificationType1<SystemUpdatedEvent>('server/onSystemsUpdated');
+export const RequestDataModelInfos = new rpc.RequestType1<void, DataModelInfo[], void>('server/dataModels');
+export const RequestDataModelInfo = new rpc.RequestType1<DataModelInfoArgs, DataModelInfo | undefined, void>('server/dataModel');
+export const OnDataModelsUpdated = new rpc.NotificationType1<DataModelUpdatedEvent>('server/onDataModelsUpdated');
+
+export interface DataModelTypeInfo {
+   value: DataModelType;
+   label: string;
+   description: string;
+}
+
+export const DataModelTypeInfos = {
+   conceptual: { value: 'conceptual', label: 'Conceptual', description: 'High-level conceptual data model' },
+   logical: { value: 'logical', label: 'Logical', description: 'Logical data model with entities and relationships' },
+   relational: { value: 'relational', label: 'Relational', description: 'Physical relational database model' }
+} as const satisfies Record<DataModelType, DataModelTypeInfo>;
+
+export const AllDataModelTypeInfos = Object.values(DataModelTypeInfos) as DataModelTypeInfo[];
 
 export const ModelMemberPermissions = {
-   logical: ['LogicalEntity', 'Mapping', 'Relationship', 'SystemDiagram'],
-   relational: []
-} as const satisfies Record<string, readonly RootObjectTypeName[]>;
+   logical: ['LogicalEntity', 'Mapping', 'Relationship', 'SystemDiagram', 'DataModel'],
+   relational: ['DataModel'],
+   conceptual: ['DataModel']
+} as const satisfies Record<DataModelType, readonly RootObjectTypeName[]>;
 
 export function isMemberPermittedInModel(packageType: string, memberType: string): boolean {
    const permittedTypes = ModelMemberPermissions[packageType as keyof typeof ModelMemberPermissions] as readonly string[] | undefined;

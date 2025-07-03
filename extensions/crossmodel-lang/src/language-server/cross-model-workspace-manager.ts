@@ -30,6 +30,12 @@ export class CrossModelWorkspaceManager extends DefaultWorkspaceManager {
          await super.initializeWorkspace(folders, cancelToken);
          this.logger.info('Workspace Initialized');
          const uris = this.folders?.map(folder => this.getRootFolder(folder)) || [];
+
+         // relink all data models as their dependencies might not have properly resolved due to the order in which files are processed
+         const update = this.services.workspace.DataModelManager.getDataModelInfos().map(info => info.uri);
+         await this.documentBuilder.update(update, [], cancelToken);
+
+         // notify that the workspace is initialized
          this.workspaceInitializedDeferred.resolve(uris);
          this.onWorkspaceInitializedEmitter.fire(uris);
       } catch (error) {
@@ -45,8 +51,8 @@ export class CrossModelWorkspaceManager extends DefaultWorkspaceManager {
       folders: WorkspaceFolder[],
       _collector: (document: LangiumDocument<AstNode>) => void
    ): Promise<void> {
-      // build up package-system based on the workspace
-      return this.services.workspace.PackageManager.initialize(folders);
+      // build up datamodel-system based on the workspace
+      return this.services.workspace.DataModelManager.initialize(folders);
    }
 
    protected override includeEntry(_workspaceFolder: WorkspaceFolder, entry: FileSystemNode, selector: FileSelector): boolean {

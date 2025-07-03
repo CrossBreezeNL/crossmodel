@@ -2,27 +2,29 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 import { expect, test } from '@playwright/test';
-import { TheiaTextEditor } from '@theia/playwright';
 import { CMApp } from '../../page-objects/cm-app';
-import { CMNewModelInputDialog } from '../../page-objects/cm-new-model-dialog';
+import { CMCompositeEditor } from '../../page-objects/cm-composite-editor';
 
-async function confirmCreationDialog(app: CMApp, entityName: string, modelType: string, version: string): Promise<void> {
-   const newModelDIalog = new CMNewModelInputDialog(app);
-   newModelDIalog.waitForVisible();
-   expect(await newModelDIalog.title()).toBe('New Data Model...');
-   await newModelDIalog.enterName(entityName);
-   await newModelDIalog.enterVersion(version);
-   await newModelDIalog.selectType(modelType);
-   await newModelDIalog.waitUntilMainButtonIsEnabled();
-   await newModelDIalog.confirm();
-   await newModelDIalog.waitForClosed();
+async function confirmCreationEditor(app: CMApp, parentPathFragment: string, name: string, type: string, version: string): Promise<void> {
+   const untitledEditor = new CMCompositeEditor(parentPathFragment + '/datamodel.cm', app, 'untitled');
+   await untitledEditor.waitForVisible();
+   const formEditor = await untitledEditor.switchToFormEditor();
+   const form = (await formEditor.formFor('dataModel')).generalSection;
+   await form.setName(name);
+   await form.setType(type);
+   await form.setVersion(version);
+   formEditor.waitForDirty();
+   formEditor.saveAndClose();
 }
 
-test.describe.serial('Add/Edit/Delete model from explorer', () => {
+test.describe.serial('Add/Edit/Delete data model from explorer', () => {
    let app: CMApp;
-   const NEW_MODEL_PATH = 'testFolder/NewDataModel';
-   const NEW_MODEL_PACKAGE_PATH = 'testFolder/NewDataModel/package.json';
-   const NEW_MODEL2_PATH = 'testFolder/NewDataModel2';
+   const NEW_DATA_MODEL_ID = 'New_Data_Model';
+   const NEW_MODEL_PATH = 'testFolder/' + NEW_DATA_MODEL_ID;
+   const NEW_MODEL_DATAMODEL_PATH = NEW_MODEL_PATH + '/datamodel.cm';
+
+   const NEW_DATA_MODEL_2_ID = 'New_Data_Model_2';
+   const NEW_MODEL2_PATH = 'testFolder/' + NEW_DATA_MODEL_2_ID;
    test.beforeAll(async ({ browser, playwright }) => {
       app = await CMApp.load({ browser, playwright });
    });
@@ -40,23 +42,25 @@ test.describe.serial('Add/Edit/Delete model from explorer', () => {
       if (!tabBarToolbarNewModel) {
          return;
       }
-      const name = 'new-data-model';
-      const modelType = 'logical';
-      const version = '0.0.1';
       await tabBarToolbarNewModel.trigger();
-      await confirmCreationDialog(app, name, modelType, version);
+
+      const name = 'New Data Model';
+      const modelType = 'Logical';
+      const version = '0.0.1';
+      await confirmCreationEditor(app, 'testFolder/_/', name, modelType, version);
 
       // Verify that the model was created as expected
       await explorer.activate();
-      expect(await explorer.existsDirectoryNode(NEW_MODEL_PATH)).toBeTruthy();
+      expect(await explorer.existsFileNode(NEW_MODEL_DATAMODEL_PATH)).toBeTruthy();
 
       // Verify the model file contents is as expected.
-      const editor = await app.openEditor(NEW_MODEL_PACKAGE_PATH, TheiaTextEditor);
-      expect((await editor.textContentOfLineByLineNumber(2))?.trim()).toBe(`"name": "${name}",`);
-      expect((await editor.textContentOfLineByLineNumber(3))?.trim()).toBe(`"version": "${version}",`);
-      expect((await editor.textContentOfLineByLineNumber(4))?.trim()).toBe(`"type": "${modelType}",`);
-      expect((await editor.textContentOfLineByLineNumber(5))?.trim()).toBe('"dependencies": {}');
-      await editor.saveAndClose();
+      const savedEditor = await app.openCompositeEditor(NEW_MODEL_DATAMODEL_PATH, 'Code Editor');
+      expect((await savedEditor.textContentOfLineByLineNumber(2))?.trim()).toBe(`id: ${NEW_DATA_MODEL_ID}`);
+      expect((await savedEditor.textContentOfLineByLineNumber(3))?.trim()).toBe(`name: "${name}"`);
+      expect((await savedEditor.textContentOfLineByLineNumber(4))?.trim()).toBe('type: logical');
+      expect((await savedEditor.textContentOfLineByLineNumber(5))?.trim()).toBe(`version: ${version}`);
+      await savedEditor.saveAndClose();
+
       await explorer.activate();
       await explorer.selectTreeNode(NEW_MODEL_PATH);
       const expectedTabbarToolbarItems = await Promise.all([
@@ -85,7 +89,11 @@ test.describe.serial('Add/Edit/Delete model from explorer', () => {
       const menuItem = await contextMenu.menuItemByNamePath('New Element', 'Data Model...');
       expect(menuItem).toBeDefined();
       await menuItem?.click();
-      await confirmCreationDialog(app, 'new-data-model-2', 'relational', '0.0.2');
+
+      const name = 'New Data Model 2';
+      const modelType = 'Relational';
+      const version = '0.0.1';
+      await confirmCreationEditor(app, 'testFolder/_/', name, modelType, version);
       await explorer.activate();
 
       // Verify that the model was created as expected

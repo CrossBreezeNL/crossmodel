@@ -7,15 +7,15 @@ import {
    CrossModelDocument,
    CrossReference,
    CrossReferenceContext,
+   DataModelInfo,
+   DataModelInfoArgs,
+   DataModelUpdatedEvent,
    FindIdArgs,
    ModelUpdatedEvent,
    OpenModelArgs,
    ReferenceableElement,
    ResolvedElement,
    SaveModelArgs,
-   SystemInfo,
-   SystemInfoArgs,
-   SystemUpdatedEvent,
    UpdateModelArgs
 } from '@crossmodel/protocol';
 import { Event, RpcServer } from '@theia/core';
@@ -26,8 +26,8 @@ export const MODEL_SERVICE_PATH = '/services/model-service';
 export const ModelService = Symbol('ModelService');
 export interface ModelService
    extends Omit<ModelServiceServer, 'setClient' | 'getClient' | 'dispose'>,
-      Omit<ModelServiceClient, 'getName' | 'updateModel' | 'updateSystem' | 'ready'> {
-   systems: SystemInfo[];
+      Omit<ModelServiceClient, 'getName' | 'updateModel' | 'updateDataModel' | 'ready'> {
+   dataModels: DataModelInfo[];
 }
 
 /**
@@ -47,9 +47,9 @@ export interface ModelServiceServer extends RpcServer<ModelServiceClient> {
    resolveReference(reference: CrossReference): Promise<ResolvedElement | undefined>;
    findNextId(args: FindIdArgs): Promise<string>;
 
-   // System API
-   getSystemInfos(): Promise<SystemInfo[]>;
-   getSystemInfo(args: SystemInfoArgs): Promise<SystemInfo | undefined>;
+   // DataModel API
+   getDataModelInfos(): Promise<DataModelInfo[]>;
+   getDataModelInfo(args: DataModelInfoArgs): Promise<DataModelInfo | undefined>;
 }
 
 export const ModelServiceClient = Symbol('ModelServiceClient');
@@ -59,6 +59,6 @@ export interface ModelServiceClient {
    onReady: Event<void>;
    updateModel(args: ModelUpdatedEvent): Promise<void>;
    onModelUpdate: Event<ModelUpdatedEvent>;
-   updateSystem(args: SystemUpdatedEvent): Promise<void>;
-   onSystemUpdate: Event<SystemUpdatedEvent>;
+   updateDataModel(args: DataModelUpdatedEvent): Promise<void>;
+   onDataModelUpdate: Event<DataModelUpdatedEvent>;
 }

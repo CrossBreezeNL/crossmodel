@@ -22,11 +22,11 @@ export class CrossModelCompletionProvider extends DefaultCompletionProvider {
       triggerCharacters: ['\n', ' ', '{']
    };
 
-   protected declare readonly scopeProvider: CrossModelScopeProvider;
+   declare protected readonly scopeProvider: CrossModelScopeProvider;
 
    constructor(
       protected services: CrossModelServices,
-      protected packageManager = services.shared.workspace.PackageManager
+      protected dataModelManager = services.shared.workspace.DataModelManager
    ) {
       super(services);
    }
@@ -206,7 +206,7 @@ export class CrossModelCompletionProvider extends DefaultCompletionProvider {
       crossRef: NextFeature<GrammarAST.CrossReference>,
       acceptor: CompletionAcceptor
    ): MaybePromise<void> {
-      this.packageId = this.packageManager.getPackageIdByDocument(context.document);
+      this.packageId = this.dataModelManager.getDataModelIdByDocument(context.document);
       try {
          super.completionForCrossReference(context, crossRef, acceptor);
       } finally {

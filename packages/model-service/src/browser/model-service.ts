@@ -7,15 +7,15 @@ import {
    CrossModelDocument,
    CrossReference,
    CrossReferenceContext,
+   DataModelInfo,
+   DataModelInfoArgs,
+   DataModelUpdatedEvent,
    FindIdArgs,
    ModelUpdatedEvent,
    OpenModelArgs,
    ReferenceableElement,
    ResolvedElement,
    SaveModelArgs,
-   SystemInfo,
-   SystemInfoArgs,
-   SystemUpdatedEvent,
    UpdateModelArgs
 } from '@crossmodel/protocol';
 import { Event } from '@theia/core';
@@ -27,21 +27,21 @@ export class ModelServiceImpl implements ModelService {
    @inject(ModelServiceServer) protected readonly server: ModelServiceServer;
    @inject(ModelServiceClient) protected readonly client: ModelServiceClient;
 
-   systems: SystemInfo[] = [];
+   dataModels: DataModelInfo[] = [];
 
    @postConstruct()
    protected init(): void {
-      this.initSystemInfos();
+      this.initDataModelInfos();
    }
 
-   protected async initSystemInfos(): Promise<void> {
-      this.systems = await this.server.getSystemInfos();
-      this.client.onSystemUpdate(event => {
-         this.systems = this.systems.filter(
-            system => system.id !== event.system.id || system.packageFilePath !== event.system.packageFilePath
+   protected async initDataModelInfos(): Promise<void> {
+      this.dataModels = await this.server.getDataModelInfos();
+      this.client.onDataModelUpdate(event => {
+         this.dataModels = this.dataModels.filter(
+            dataModel => dataModel.id !== event.dataModel.id || dataModel.dataModelFilePath !== event.dataModel.dataModelFilePath
          );
          if (event.reason === 'added') {
-            this.systems.push(event.system);
+            this.dataModels.push(event.dataModel);
          }
       });
    }
@@ -78,20 +78,20 @@ export class ModelServiceImpl implements ModelService {
       return this.server.findNextId(args);
    }
 
-   getSystemInfos(): Promise<SystemInfo[]> {
-      return this.server.getSystemInfos();
+   getDataModelInfos(): Promise<DataModelInfo[]> {
+      return this.server.getDataModelInfos();
    }
 
-   getSystemInfo(args: SystemInfoArgs): Promise<SystemInfo | undefined> {
-      return this.server.getSystemInfo(args);
+   getDataModelInfo(args: DataModelInfoArgs): Promise<DataModelInfo | undefined> {
+      return this.server.getDataModelInfo(args);
    }
 
    get onModelUpdate(): Event<ModelUpdatedEvent> {
       return this.client.onModelUpdate;
    }
 
-   get onSystemUpdate(): Event<SystemUpdatedEvent> {
-      return this.client.onSystemUpdate;
+   get onDataModelUpdate(): Event<DataModelUpdatedEvent> {
+      return this.client.onDataModelUpdate;
    }
 
    get onReady(): Event<void> {

@@ -6,21 +6,21 @@ import {
    CloseModelArgs,
    CrossReference,
    CrossReferenceContext,
+   DATAMODEL_FILE,
+   DataModelInfo,
+   DataModelInfoArgs,
+   DataModelUpdatedEvent,
    ModelSavedEvent,
    ModelUpdatedEvent,
    OpenModelArgs,
    ReferenceableElement,
    SaveModelArgs,
-   SystemInfo,
-   SystemInfoArgs,
-   SystemUpdatedEvent,
    UpdateModelArgs
 } from '@crossmodel/protocol';
-import { AstNode, Deferred, DocumentState, isAstNode } from 'langium';
+import { AstNode, Deferred, DocumentState, isAstNode, UriUtils } from 'langium';
 import { Disposable, OptionalVersionedTextDocumentIdentifier, Range, TextDocumentEdit, TextEdit, uinteger } from 'vscode-languageserver';
-import { URI, Utils as UriUtils } from 'vscode-uri';
+import { URI } from 'vscode-uri';
 import { CrossModelServices, CrossModelSharedServices } from '../language-server/cross-model-module.js';
-import { PACKAGE_JSON } from '../language-server/cross-model-package-manager.js';
 import { CrossModelRoot, isCrossModelRoot } from '../language-server/generated/ast.js';
 import { findDocument } from '../language-server/util/ast-util.js';
 import { AstCrossModelDocument } from './open-text-document-manager.js';
@@ -239,24 +239,24 @@ export class ModelService {
       return this.shared.ServiceRegistry.CrossModel.references.ScopeProvider.resolveCrossReference(args);
    }
 
-   async getSystemInfos(): Promise<SystemInfo[]> {
-      return this.shared.workspace.PackageManager.getPackageInfos().map(info =>
-         this.shared.workspace.PackageManager.convertPackageInfoToSystemInfo(info)
+   async getDataModelInfos(): Promise<DataModelInfo[]> {
+      return this.shared.workspace.DataModelManager.getDataModelInfos().map(info =>
+         this.shared.workspace.DataModelManager.convertDataModelInfoToProtocolDataModelInfo(info)
       );
    }
 
-   async getSystemInfo(args: SystemInfoArgs): Promise<SystemInfo | undefined> {
+   async getDataModelInfo(args: DataModelInfoArgs): Promise<DataModelInfo | undefined> {
       const contextUri = URI.parse(args.contextUri);
-      const packageInfo =
-         this.shared.workspace.PackageManager.getPackageInfoByURI(contextUri) ??
-         this.shared.workspace.PackageManager.getPackageInfoByURI(UriUtils.joinPath(contextUri, PACKAGE_JSON));
-      if (!packageInfo) {
+      const dataModelInfo =
+         this.shared.workspace.DataModelManager.getDataModelInfoByURI(contextUri) ??
+         this.shared.workspace.DataModelManager.getDataModelInfoByURI(UriUtils.joinPath(contextUri, DATAMODEL_FILE));
+      if (!dataModelInfo) {
          return undefined;
       }
-      return this.shared.workspace.PackageManager.convertPackageInfoToSystemInfo(packageInfo);
+      return this.shared.workspace.DataModelManager.convertDataModelInfoToProtocolDataModelInfo(dataModelInfo);
    }
 
-   onSystemUpdated(listener: (event: SystemUpdatedEvent) => void): Disposable {
-      return this.shared.workspace.PackageManager.onUpdate(listener);
+   onDataModelUpdated(listener: (event: DataModelUpdatedEvent) => void): Disposable {
+      return this.shared.workspace.DataModelManager.onUpdate(listener);
    }
 }

@@ -7,7 +7,7 @@ export class CMNewModelInputDialog extends TheiaDialog {
    protected gridSelector = '.new-model-input-grid';
 
    async enterName(inputValue: string): Promise<void> {
-      return this.enterByLabel('Model Name', inputValue);
+      return this.enterByLabel('Name', inputValue);
    }
 
    async enterVersion(inputValue: string): Promise<void> {

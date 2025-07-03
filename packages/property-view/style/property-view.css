@@ -7,6 +7,10 @@
    margin-top: 6px;
 }
 
+.MuiDataGrid-cell--editing .MuiAutocomplete-root .MuiFormControl-root {
+   margin-top: 0;
+}
+
 /* weird effect for opacity 1 where the checkbox looks larger than necessary during editing */
 .MuiDataGrid-editBooleanCell input[type='checkbox']:focus {
    opacity: 0;

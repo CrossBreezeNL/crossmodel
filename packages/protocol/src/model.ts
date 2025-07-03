@@ -2,8 +2,11 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 
+export const DATAMODEL_FILE = 'datamodel.cm';
+
 const ModelFileTypeValues = {
    Generic: 'Generic',
+   DataModel: 'DataModel',
    LogicalEntity: 'LogicalEntity',
    Relationship: 'Relationship',
    Mapping: 'Mapping',
@@ -14,6 +17,8 @@ export const ModelFileType = {
    ...ModelFileTypeValues,
    getIconClass: (type: ModelFileType) => {
       switch (type) {
+         case 'DataModel':
+            return ModelStructure.System.ICON_CLASS;
          case 'LogicalEntity':
             return ModelStructure.LogicalEntity.ICON_CLASS;
          case 'Relationship':
@@ -28,6 +33,8 @@ export const ModelFileType = {
    },
    getFileExtension(type: ModelFileType): string | undefined {
       switch (type) {
+         case 'DataModel':
+            return ModelFileExtensions.DataModel;
          case 'LogicalEntity':
             return ModelFileExtensions.LogicalEntity;
          case 'Generic':
@@ -45,6 +52,7 @@ export type ModelFileType = (typeof ModelFileTypeValues)[keyof typeof ModelFileT
 
 export const ModelFileExtensions = {
    Generic: '.cm',
+   DataModel: '.cm',
    LogicalEntity: '.entity.cm',
    Relationship: '.relationship.cm',
    Mapping: '.mapping.cm',
@@ -54,6 +62,10 @@ export const ModelFileExtensions = {
 
    isModelFile(uri: string): boolean {
       return uri.endsWith(this.Generic);
+   },
+
+   isDataModelFile(uri: string): boolean {
+      return uri.endsWith(DATAMODEL_FILE);
    },
 
    isEntityFile(uri: string): boolean {
@@ -95,6 +107,9 @@ export const ModelFileExtensions = {
    },
 
    getFileType(uri: string): ModelFileType | undefined {
+      if (this.isDataModelFile(uri)) {
+         return 'DataModel';
+      }
       if (this.isMappingFile(uri)) {
          return 'Mapping';
       }
@@ -124,6 +139,8 @@ export const ModelFileExtensions = {
          return undefined;
       }
       switch (fileType) {
+         case 'DataModel':
+            return ModelStructure.System.ICON_CLASS;
          case 'LogicalEntity':
             return ModelStructure.LogicalEntity.ICON_CLASS;
          case 'Relationship':
@@ -138,6 +155,9 @@ export const ModelFileExtensions = {
    },
 
    detectFileType(content: string): ModelFileType | undefined {
+      if (content.startsWith('datamodel')) {
+         return 'DataModel';
+      }
       if (content.startsWith('entity')) {
          return 'LogicalEntity';
       }
@@ -186,5 +206,11 @@ export const ModelStructure = {
       FOLDER: 'mappings',
       ICON_CLASS: 'codicon codicon-group-by-ref-type',
       ICON: 'group-by-ref-type'
+   },
+
+   DataModel: {
+      FILE: DATAMODEL_FILE,
+      ICON_CLASS: 'codicon codicon-globe',
+      ICON: 'globe'
    }
 };

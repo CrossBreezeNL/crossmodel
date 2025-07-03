@@ -9,25 +9,25 @@ import {
    CrossModelRoot,
    CrossReference,
    CrossReferenceContext,
+   DataModelInfo,
+   DataModelInfoArgs,
    FindIdArgs,
    FindNextId,
    FindReferenceableElements,
    ModelDiagnostic,
+   OnDataModelsUpdated,
    OnModelSaved,
    OnModelUpdated,
-   OnSystemsUpdated,
    OpenModel,
    OpenModelArgs,
    ReferenceableElement,
+   RequestDataModelInfo,
+   RequestDataModelInfos,
    RequestModel,
-   RequestSystemInfo,
-   RequestSystemInfos,
    ResolveReference,
    ResolvedElement,
    SaveModel,
    SaveModelArgs,
-   SystemInfo,
-   SystemInfoArgs,
    UpdateModel,
    UpdateModelArgs
 } from '@crossmodel/protocol';
@@ -64,17 +64,17 @@ export class ModelServer implements Disposable {
       this.toDispose.push(connection.onRequest(FindNextId, args => this.findNextId(args)));
       this.toDispose.push(connection.onRequest(UpdateModel, args => this.updateModel(args)));
       this.toDispose.push(connection.onRequest(SaveModel, args => this.saveModel(args)));
-      this.toDispose.push(connection.onRequest(RequestSystemInfo, args => this.systemInfo(args)));
-      this.toDispose.push(connection.onRequest(RequestSystemInfos, args => this.systemInfos()));
-      this.toDispose.push(this.modelService.onSystemUpdated(event => this.connection.sendNotification(OnSystemsUpdated, event)));
+      this.toDispose.push(connection.onRequest(RequestDataModelInfo, args => this.dataModelInfo(args)));
+      this.toDispose.push(connection.onRequest(RequestDataModelInfos, () => this.dataModelInfos()));
+      this.toDispose.push(this.modelService.onDataModelUpdated(event => this.connection.sendNotification(OnDataModelsUpdated, event)));
    }
 
-   protected systemInfo(args: SystemInfoArgs): Promise<SystemInfo | undefined> {
-      return this.modelService.getSystemInfo(args);
+   protected dataModelInfo(args: DataModelInfoArgs): Promise<DataModelInfo | undefined> {
+      return this.modelService.getDataModelInfo(args);
    }
 
-   protected systemInfos(): Promise<SystemInfo[]> {
-      return this.modelService.getSystemInfos();
+   protected dataModelInfos(): Promise<DataModelInfo[]> {
+      return this.modelService.getDataModelInfos();
    }
 
    protected complete(args: CrossReferenceContext): Promise<ReferenceableElement[]> {

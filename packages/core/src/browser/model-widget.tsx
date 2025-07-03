@@ -13,6 +13,7 @@ import {
    RenderProps
 } from '@crossmodel/protocol';
 import {
+   DataModelComponent,
    EntityComponent,
    ErrorView,
    MappingComponent,
@@ -69,9 +70,7 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
       this.setModel(this.options.uri);
 
       this.toDispose.pushAll([
-         this.serviceClient.onModelUpdate(event => {
-            this.handleExternalUpdate(event);
-         }),
+         this.serviceClient.onModelUpdate(event => this.handleUpdate(event)),
          this.themeService.onDidColorThemeChange(() => this.update())
       ]);
    }
@@ -102,7 +101,7 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
          const document = await this.modelService.open({ clientId, version, text, uri });
          return document;
       } catch (error) {
-         this.error = error instanceof Error ? error.message : error?.toString() ?? 'Unknown error.';
+         this.error = error instanceof Error ? error.message : (error?.toString() ?? 'Unknown error.');
          return undefined;
       }
    }
@@ -121,15 +120,18 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
       return this.saveModel();
    }
 
-   protected async handleExternalUpdate({ document, reason, sourceClientId }: ModelUpdatedEvent): Promise<void> {
-      if (this.document && (!deepEqual(this.document.root, document.root) || !deepEqual(this.document.diagnostics, document.diagnostics))) {
+   protected async handleUpdate({ document, reason, sourceClientId }: ModelUpdatedEvent): Promise<void> {
+      if (
+         this.document?.uri === document.uri &&
+         (!deepEqual(this.document.root, document.root) || !deepEqual(this.document.diagnostics, document.diagnostics))
+      ) {
          console.debug(`[${this.options.clientId}] Receive update from ${sourceClientId} due to '${reason}'`);
          this.document = document;
          this.update();
       }
    }
 
-   protected async updateModel(root: CrossModelRoot): Promise<void> {
+   protected async sendUpdate(root: CrossModelRoot): Promise<void> {
       if (this.document && !deepEqual(this.document.root, root)) {
          this.document.root = root;
          this.setDirty(true);
@@ -176,7 +178,7 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
    }
 
    protected handleUpdateRequest = debounce(async (root: CrossModelRoot): Promise<void> => {
-      await this.updateModel(root);
+      await this.sendUpdate(root);
    }, 200);
 
    protected handleSaveRequest?: SaveCallback = () => this.save();
@@ -191,6 +193,9 @@ export class CrossModelWidget extends ReactWidget implements Saveable {
    }
 
    render(): React.ReactNode {
+      if (this.document?.root?.datamodel) {
+         return <DataModelComponent {...this.getModelProviderProps()} {...this.getRenderProperties()} />;
+      }
       if (this.document?.root?.entity) {
          return <EntityComponent {...this.getModelProviderProps()} {...this.getRenderProperties()} />;
       }

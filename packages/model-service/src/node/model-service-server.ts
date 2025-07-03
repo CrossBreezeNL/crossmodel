@@ -8,25 +8,26 @@ import {
    CrossModelRoot,
    CrossReference,
    CrossReferenceContext,
+   DataModelInfo,
+   DataModelInfoArgs,
+   DataModelUpdatedEvent,
    FindIdArgs,
    FindNextId,
    FindReferenceableElements,
    MODELSERVER_PORT_COMMAND,
+   OnDataModelsUpdated,
    OnModelSaved,
    OnModelUpdated,
-   OnSystemsUpdated,
    OpenModel,
    OpenModelArgs,
    ReferenceableElement,
+   RequestDataModelInfo,
+   RequestDataModelInfos,
    RequestModel,
-   RequestSystemInfo,
-   RequestSystemInfos,
    ResolveReference,
    ResolvedElement,
    SaveModel,
    SaveModelArgs,
-   SystemInfo,
-   SystemInfoArgs,
    UpdateModel,
    UpdateModelArgs
 } from '@crossmodel/protocol';
@@ -185,14 +186,14 @@ export class ModelServiceServerImpl implements ModelServiceServer {
       return this.connection.sendRequest(FindNextId, args);
    }
 
-   async getSystemInfos(): Promise<SystemInfo[]> {
+   async getDataModelInfos(): Promise<DataModelInfo[]> {
       await this.initializeServerConnection();
-      return this.connection.sendRequest(RequestSystemInfos, undefined);
+      return this.connection.sendRequest(RequestDataModelInfos, undefined);
    }
 
-   async getSystemInfo(args: SystemInfoArgs): Promise<SystemInfo | undefined> {
+   async getDataModelInfo(args: DataModelInfoArgs): Promise<DataModelInfo | undefined> {
       await this.initializeServerConnection();
-      return this.connection.sendRequest(RequestSystemInfo, args);
+      return this.connection.sendRequest(RequestDataModelInfo, args);
    }
 
    protected setUpListeners(): void {
@@ -202,8 +203,8 @@ export class ModelServiceServerImpl implements ModelServiceServer {
       this.connection.onNotification(OnModelUpdated, event => {
          this.client?.updateModel(event);
       });
-      this.connection.onNotification(OnSystemsUpdated, event => {
-         this.client?.updateSystem(event);
+      this.connection.onNotification(OnDataModelsUpdated, (event: DataModelUpdatedEvent) => {
+         this.client?.updateDataModel(event);
       });
    }
 }

@@ -7,6 +7,7 @@ import { join } from 'path';
 import { CMCompositeEditor, hasViewError } from '../cm-composite-editor';
 import { IntegratedEditor } from '../cm-integrated-editor';
 import { CMForm } from './cm-form';
+import { DataModelForm } from './datamodel-form';
 import { LogicalEntityForm } from './entity-form';
 import { RelationshipForm } from './relationship-form';
 export class IntegratedFormEditor extends IntegratedEditor {
@@ -30,9 +31,14 @@ export class IntegratedFormEditor extends IntegratedEditor {
 
    async formFor(logicalEntity: 'entity'): Promise<LogicalEntityForm>;
    async formFor(relationship: 'relationship'): Promise<RelationshipForm>;
-   async formFor(string: 'entity' | 'relationship'): Promise<CMForm> {
+   async formFor(dataModel: 'dataModel'): Promise<DataModelForm>;
+   async formFor(string: 'entity' | 'relationship' | 'dataModel'): Promise<CMForm> {
       if (string === 'entity') {
          const form = new LogicalEntityForm(this, '');
+         await form.waitForVisible();
+         return form;
+      } else if (string === 'dataModel') {
+         const form = new DataModelForm(this, '');
          await form.waitForVisible();
          return form;
       } else {

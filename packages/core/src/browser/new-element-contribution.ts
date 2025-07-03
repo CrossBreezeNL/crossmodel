@@ -3,17 +3,17 @@
  ********************************************************************************/
 import { ModelService } from '@crossmodel/model-service/lib/common';
 import {
+   DATAMODEL_FILE,
+   DataModelType,
+   DataModelTypeInfos,
    ID_REGEX,
    LogicalEntityType,
    MappingType,
    ModelFileExtensions,
-   ModelMemberPermissions,
    ModelStructure,
-   NPM_PACKAGE_NAME_REGEX,
    RelationshipType,
    TargetObjectType,
    isMemberPermittedInModel,
-   packageNameToId,
    quote,
    toId,
    toIdReference,
@@ -55,6 +55,13 @@ interface NewElementTemplate<T extends readonly InputOptions[] = readonly InputO
    validateName?(name: string): string | undefined;
    getInputOptions?(parent: URI, modelService: ModelService): MaybePromise<T>;
 }
+
+const INITIAL_DATAMODEL_CONTENT = `datamodel:
+    id: _
+    name: ""
+    type: ${DataModelTypeInfos.logical.value}
+    version: 1.0.0
+`;
 
 const INITIAL_ENTITY_CONTENT = `entity:
     id: _
@@ -139,24 +146,12 @@ const NEW_ELEMENT_TEMPLATES: ReadonlyArray<NewElementTemplate> = [
    {
       id: 'crossbreeze.new.data-model',
       label: 'Data Model',
-      memberType: 'DataModel',
+      memberType: DataModelType,
       category: TEMPLATE_CATEGORY,
-      validateName: validatePackageName,
+      validateName: validateDataModelName,
       iconClass: ModelStructure.System.ICON_CLASS,
-      toUri: (selectedDirectory, name) => selectedDirectory.resolve(packageNameToId(name)).resolve('package.json'),
-      content: (_, __, options) => JSON.stringify({ ...options, dependencies: {} }, undefined, 4),
-      getInputOptions() {
-         return [
-            { id: 'name', label: 'Model Name', placeholder: 'new-data-model', value: 'new-data-model' },
-            { id: 'version', label: 'Version', placeholder: '1.0.0', value: '1.0.0' },
-            {
-               value: 'logical',
-               id: 'type',
-               label: 'Type',
-               options: Object.fromEntries(Object.keys(ModelMemberPermissions).map(key => [key, toPascal(key)]))
-            }
-         ] as const;
-      }
+      toUri: (parent, name) => parent.resolve(toId(name)).resolve(DATAMODEL_FILE),
+      content: INITIAL_DATAMODEL_CONTENT
    }
 ];
 
@@ -282,7 +277,11 @@ export class CrossModelWorkspaceContribution extends WorkspaceCommandContributio
       const parent = await this.getDirectory(uri);
       if (parent) {
          const parentUri = parent.resource;
-         if (template.memberType === LogicalEntityType || template.memberType === RelationshipType) {
+         if (
+            template.memberType === LogicalEntityType ||
+            template.memberType === RelationshipType ||
+            template.memberType === DataModelType
+         ) {
             const fileUri = template.toUri(parent.resource, '');
             const content =
                typeof template.content === 'string' ? template.content : await template.content(parent.resource, this.modelService, {});
@@ -415,9 +414,9 @@ function doesTemplateFitPackage(target: URI | undefined, modelService: ModelServ
    if (!target) {
       return false;
    }
-   const model = modelService.systems.find(candidate => URI.fromFilePath(candidate.directory).isEqualOrParent(target));
+   const model = modelService.dataModels.find(candidate => URI.fromFilePath(candidate.directory).isEqualOrParent(target));
    if (!model) {
-      return template.memberType === 'DataModel';
+      return template.memberType === DataModelType;
    }
    return isMemberPermittedInModel(model.type, template.memberType);
 }
@@ -442,13 +441,9 @@ function validateObjectName(input: string): string | undefined {
    return undefined;
 }
 
-function validatePackageName(input: string): string | undefined {
-   if (!NPM_PACKAGE_NAME_REGEX.test(input)) {
-      return `Name must match '${NPM_PACKAGE_NAME_REGEX}'.`;
-   }
-   const asId = packageNameToId(input);
-   if (!ID_REGEX.test(asId)) {
-      return `Derived ID '${asId}' does not match '${ID_REGEX}'.`;
+function validateDataModelName(input: string): string | undefined {
+   if (!ID_REGEX.test(input)) {
+      return `Data Model ID '${input}' does not match '${ID_REGEX}'.`;
    }
    return undefined;
 }

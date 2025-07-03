@@ -11,7 +11,8 @@ export const FormIcons = {
    LogicalEntity: 'codicon-git-commit',
    Relationship: 'codicon-git-compare',
    SystemDiagram: 'codicon-type-hierarchy-sub',
-   Mapping: 'codicon-group-by-ref-type'
+   Mapping: 'codicon-group-by-ref-type',
+   DataModel: 'codicon-globe'
 };
 
 export type FormType = keyof typeof FormIcons;

@@ -159,7 +159,7 @@ describe('CrossModelLexer', () => {
       const customerDocumentUri = testUri('customer');
 
       beforeAll(async () => {
-         await parseDocuments([{ services, text: customer, documentUri: customerDocumentUri }]);
+         await parseDocuments({ services, text: customer, documentUri: customerDocumentUri });
       });
 
       test('Single inheritance', async () => {

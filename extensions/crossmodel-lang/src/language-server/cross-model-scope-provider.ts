@@ -27,9 +27,11 @@ import {
 } from 'langium';
 import { CrossModelServices } from './cross-model-module.js';
 import { QUALIFIED_ID_SEPARATOR } from './cross-model-naming.js';
-import { GlobalAstNodeDescription, isGlobalDescriptionForLocalPackage, PackageAstNodeDescription } from './cross-model-scope.js';
+import { DataModelScopedAstNodeDescription, GlobalAstNodeDescription, isGlobalDescriptionForDataModel } from './cross-model-scope.js';
 import {
+   DataModelDependency,
    isAttributeMapping,
+   isDataModelDependency,
    isRelationshipAttribute,
    isSourceObject,
    isSourceObjectAttributeReference,
@@ -44,7 +46,7 @@ import { findDocument, fixDocument } from './util/ast-util.js';
 export class PackageScopeProvider extends DefaultScopeProvider {
    constructor(
       protected services: CrossModelServices,
-      protected packageManager = services.shared.workspace.PackageManager,
+      protected dataModelManager = services.shared.workspace.DataModelManager,
       protected idProvider = services.references.IdProvider
    ) {
       super(services);
@@ -56,10 +58,10 @@ export class PackageScopeProvider extends DefaultScopeProvider {
     * @param description node description
     * @returns package identifier
     */
-   protected getPackageId(description: AstNodeDescription): string {
-      return description instanceof PackageAstNodeDescription
-         ? description.packageId
-         : this.packageManager.getPackageIdByUri(description.documentUri);
+   protected getDataModelId(description: AstNodeDescription): string {
+      return description instanceof DataModelScopedAstNodeDescription
+         ? description.dataModelId
+         : this.dataModelManager.getDataModelIdByUri(description.documentUri);
    }
 
    protected override getGlobalScope(referenceType: string, context: ReferenceInfo): Scope {
@@ -71,9 +73,14 @@ export class PackageScopeProvider extends DefaultScopeProvider {
       // the global scope contains all elements known to the language server
       const globalScope = this.getDefaultGlobalScope(referenceType, context);
 
+      // if we are referencing from a datamodel, all elements are visible
+      if (context.container.$type === DataModelDependency) {
+         return globalScope;
+      }
+
       // see from which package this request is coming from based on the given context
       const source = AstUtils.getDocument(context.container);
-      const sourcePackage = this.packageManager.getPackageIdByUri(source.uri);
+      const sourceDataModel = this.dataModelManager.getDataModelIdByUri(source.uri);
 
       // dependencyScope: hide those elements from the global scope that are not visible from the requesting package
       const dependencyScope = new StreamScope(
@@ -82,14 +89,14 @@ export class PackageScopeProvider extends DefaultScopeProvider {
             .filter(
                description =>
                   description instanceof GlobalAstNodeDescription &&
-                  this.packageManager.isVisible(sourcePackage, this.getPackageId(description))
+                  this.dataModelManager.isVisible(sourceDataModel, this.getDataModelId(description))
             )
       );
 
       // create a package-local scope that is considered first with the dependency scope being considered second
       // i.e., we build a hierarchy of scopes
       const packageScope = new StreamScope(
-         globalScope.getAllElements().filter(description => sourcePackage === this.getPackageId(description)),
+         globalScope.getAllElements().filter(description => sourceDataModel === this.getDataModelId(description)),
          dependencyScope
       );
 
@@ -176,10 +183,10 @@ export class CrossModelScopeProvider extends PackageScopeProvider {
    getCompletionScope(ctx: CrossReferenceContext | ReferenceInfo): CompletionScope {
       const referenceInfo = 'reference' in ctx ? ctx : this.referenceContextToInfo(ctx);
       const document = AstUtils.getDocument(referenceInfo.container);
-      const packageId = this.packageManager.getPackageIdByDocument(document);
+      const dataModelId = this.dataModelManager.getDataModelIdByDocument(document);
       const filteredDescriptions = this.getScope(referenceInfo)
          .getAllElements()
-         .filter(description => this.filterCompletion(description, document, packageId, referenceInfo.container, referenceInfo.property))
+         .filter(description => this.filterCompletion(description, document, dataModelId, referenceInfo.container, referenceInfo.property))
          .distinct(description => description.name)
          .toArray()
          .sort((left, right) => this.sortText(left).localeCompare(this.sortText(right)));
@@ -206,7 +213,7 @@ export class CrossModelScopeProvider extends PackageScopeProvider {
    filterCompletion(
       description: AstNodeDescription,
       document: LangiumDocument<AstNode>,
-      packageId: string,
+      dataModelId: string,
       container?: AstNode,
       property?: string
    ): boolean {
@@ -235,7 +242,7 @@ export class CrossModelScopeProvider extends PackageScopeProvider {
          const sourceObject = isSourceObjectDependency(container) ? container.$container : container;
          return (
             !(description instanceof GlobalAstNodeDescription) &&
-            !(description instanceof PackageAstNodeDescription) &&
+            !(description instanceof DataModelScopedAstNodeDescription) &&
             !(description.name === sourceObject.id) &&
             description.documentUri.toString() === document.uri.toString()
          );
@@ -247,7 +254,12 @@ export class CrossModelScopeProvider extends PackageScopeProvider {
          const allowedOwners = [sourceObject.id, ...dependencies.map(dependency => dependency.source.$refText)];
          return !!allowedOwners.find(allowedOwner => description.name.startsWith(allowedOwner + '.'));
       }
-      return !isGlobalDescriptionForLocalPackage(description, packageId);
+      if (isDataModelDependency(container)) {
+         // filter ourselves out as we do not want to depend on ourselves
+         const ourselves = container.$container;
+         return !isGlobalDescriptionForDataModel(description, dataModelId) && ourselves.id !== description.name;
+      }
+      return !isGlobalDescriptionForDataModel(description, dataModelId);
    }
 }
 

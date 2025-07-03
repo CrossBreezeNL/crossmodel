@@ -40,7 +40,7 @@ export function EditAttributePropertyComponent({
    const referenceCtx: CrossReferenceContext = React.useMemo(
       () => ({
          container: { globalId: relationship!.id! },
-         syntheticElements: [{ property: 'attributes', type: 'RelationshipAttribute' }],
+         syntheticElements: [{ property: 'attributes', type: RelationshipAttributeType }],
          property
       }),
       [relationship, property]
@@ -174,7 +174,7 @@ export function RelationshipAttributesDataGrid({ diagnostics }: RelationshipAttr
 
    return (
       <GridComponent
-         autoHeight
+         key={relationship.id + '-grid'}
          gridColumns={columns}
          gridData={relationship.attributes}
          defaultEntry={{ $type: RelationshipAttributeType }}

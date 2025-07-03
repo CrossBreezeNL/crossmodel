@@ -57,10 +57,6 @@ function createClientOptions(context: vscode.ExtensionContext): LanguageClientOp
    const crossModelWatcher = vscode.workspace.createFileSystemWatcher('**/*.cm');
    context.subscriptions.push(crossModelWatcher);
 
-   // watch changes to package.json as it contains the dependencies between our systems
-   const packageWatcher = vscode.workspace.createFileSystemWatcher('**/package.json');
-   context.subscriptions.push(packageWatcher);
-
    // we listen to directories separately as when we import a library, e.g., a directory within node_modules,
    // we only get that notification but not for nested files
    const directoryWatcher = vscode.workspace.createFileSystemWatcher('**/*/');
@@ -70,12 +66,11 @@ function createClientOptions(context: vscode.ExtensionContext): LanguageClientOp
    return {
       documentSelector: [
          { scheme: 'untitled', language: 'cross-model' },
-         { scheme: 'file', language: 'cross-model' },
-         { scheme: 'file', pattern: '**/package.json' }
+         { scheme: 'file', language: 'cross-model' }
       ],
       synchronize: {
          // Notify the server about file changes to files contained in the workspace
-         fileEvents: [crossModelWatcher, packageWatcher, directoryWatcher]
+         fileEvents: [crossModelWatcher, directoryWatcher]
       }
    };
 }

@@ -270,7 +270,7 @@ export default function GridComponent<T extends GridValidRowModel>({
    const NoRowsOverlay = React.useMemo(() => <GridOverlay>{noEntriesText ?? 'No Entries'}</GridOverlay>, [noEntriesText]);
 
    return (
-      <Box sx={{ width: '100%' }}>
+      <Box sx={{ width: '100%', minHeight: '150px' }}>
          <EditToolbar />
          <div style={{ display: 'flex', flexDirection: 'column' }}>
             <DataGrid<GridComponentRow<T>>

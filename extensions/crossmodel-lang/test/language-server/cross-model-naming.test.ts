@@ -83,4 +83,54 @@ describe('NameUtil', () => {
          expect(services.references.IdProvider.findNextId(LogicalEntityNode, 'nodeA', diagram)).toBe('nodeA3');
       });
    });
+
+   describe('getGlobalId', () => {
+      test('should not duplicate datamodel ID when local ID equals package name', () => {
+         const idProvider = services.references.IdProvider;
+
+         // Create a mock node with ID that matches the package name
+         const mockNode = {
+            id: 'example-dwh',
+            $type: 'DataModel',
+            $container: undefined
+         };
+
+         // Mock the getPackageName method to return the same ID
+         const originalGetPackageName = idProvider.getDataModelId;
+         idProvider.getDataModelId = () => 'example-dwh';
+
+         try {
+            const globalId = idProvider.getGlobalId(mockNode);
+            // Should return just 'example-dwh', not 'example-dwh.example-dwh'
+            expect(globalId).toBe('example-dwh');
+         } finally {
+            // Restore original method
+            idProvider.getDataModelId = originalGetPackageName;
+         }
+      });
+
+      test('should combine package name and local ID when they differ', () => {
+         const idProvider = services.references.IdProvider;
+
+         // Create a mock node with ID different from package name
+         const mockNode = {
+            id: 'entity1',
+            $type: 'LogicalEntity',
+            $container: undefined
+         };
+
+         // Mock the getPackageName method
+         const originalGetPackageName = idProvider.getDataModelId;
+         idProvider.getDataModelId = () => 'example-dwh';
+
+         try {
+            const globalId = idProvider.getGlobalId(mockNode);
+            // Should return 'example-dwh.entity1'
+            expect(globalId).toBe('example-dwh.entity1');
+         } finally {
+            // Restore original method
+            idProvider.getDataModelId = originalGetPackageName;
+         }
+      });
+   });
 });

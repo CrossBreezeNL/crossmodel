@@ -5,8 +5,9 @@
 import { findNextUnique, identity } from '@crossmodel/protocol';
 import { AstNode, AstUtils, CstNode, GrammarUtils, isAstNode, NameProvider } from 'langium';
 import { URI } from 'vscode-uri';
+import { UNKNOWN_DATAMODEL_REFERENCE } from './cross-model-datamodel-manager.js';
 import { CrossModelServices } from './cross-model-module.js';
-import { UNKNOWN_PROJECT_REFERENCE } from './cross-model-package-manager.js';
+import { isDataModel } from './generated/ast.js';
 import { findDocument, getOwner } from './util/ast-util.js';
 import { Utils } from './util/uri-util.js';
 
@@ -48,12 +49,12 @@ export function combineIds(...ids: string[]): string {
  * A name provider that returns the fully qualified ID of a node by default but also exposes methods to get other names:
  * - The Node ID is just the id of the node itself if it has an id.
  * - The Local ID is the Node ID itself plus the Node ID of all it's parents within the same document.
- * - The External ID is the Local ID prefixed with the package name.
+ * - The External ID is the Local ID prefixed with the datamodel reference.
  */
 export class DefaultIdProvider implements NameProvider, IdProvider {
    constructor(
       protected services: CrossModelServices,
-      protected packageManager = services.shared.workspace.PackageManager
+      protected dataModelManager = services.shared.workspace.DataModelManager
    ) {}
 
    /**
@@ -95,24 +96,26 @@ export class DefaultIdProvider implements NameProvider, IdProvider {
    }
 
    /**
-    * Returns the fully-qualified / package-local name, i.e., the package name plus the document-local name.
+    * Returns the fully-qualified / datamodel-local name, i.e., the datamodel name plus the document-local name.
     *
     * @param node node
-    * @param packageName package name
-    * @returns fully qualified, package-local name
+    * @param dataModelReference datamodel reference
+    * @returns fully qualified, datamodel-local name
     */
-   getGlobalId(node?: AstNode, packageName = this.getPackageName(node)): string | undefined {
+   getGlobalId(node?: AstNode, dataModelReference = this.getDataModelId(node)): string | undefined {
       const localId = this.getLocalId(node);
       if (!localId) {
          return undefined;
       }
-      return combineIds(packageName, localId);
+      if (isDataModel(node)) {
+         // the datamodel id does not need to be prefixed with it's own name
+         return dataModelReference;
+      }
+      return combineIds(dataModelReference, localId);
    }
 
-   getPackageName(node?: AstNode): string {
-      return !node
-         ? UNKNOWN_PROJECT_REFERENCE
-         : this.packageManager.getPackageInfoByDocument(findDocument(node))?.referenceName ?? UNKNOWN_PROJECT_REFERENCE;
+   getDataModelId(node?: AstNode): string {
+      return this.dataModelManager.getDataModelInfoByDocument(findDocument(node))?.referenceName ?? UNKNOWN_DATAMODEL_REFERENCE;
    }
 
    getName(node?: AstNode): string | undefined {

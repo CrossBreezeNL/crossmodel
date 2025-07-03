@@ -7,14 +7,15 @@ import { EmptyFileSystem, FileSystemNode, FileSystemProvider, LangiumDocument, U
 import { DefaultSharedModuleContext, LangiumServices } from 'langium/lsp';
 import { ParseHelperOptions, parseDocument as langiumParseDocument } from 'langium/test';
 import path from 'path';
-import { PackageJson } from 'type-fest';
 import { CrossModelServices, createCrossModelServices } from '../../../src/language-server/cross-model-module.js';
 import {
    CrossModelRoot,
+   DataModel,
    LogicalEntity,
    Mapping,
    Relationship,
    SystemDiagram,
+   isDataModel,
    isLogicalEntity,
    isMapping,
    isRelationship,
@@ -27,17 +28,8 @@ export function createCrossModelTestServices(context: DefaultSharedModuleContext
 }
 
 export interface ProjectInput {
-   package: PackageInput;
    documents: DocumentInput[];
 }
-
-export interface PackageInput {
-   services: LangiumServices;
-   uri: string;
-   content: PackageJson & { name: string; version: string };
-}
-
-export type PackageDependency = Record<string, string>;
 
 export interface DocumentInput extends ParseHelperOptions {
    services: LangiumServices;
@@ -47,17 +39,6 @@ export interface DocumentInput extends ParseHelperOptions {
 export interface ParseAssert {
    lexerErrors?: number;
    parserErrors?: number;
-}
-
-export async function parseProject(input: ProjectInput): Promise<PackageDependency> {
-   const projectDependency = await parsePackage(input.package);
-   await parseDocuments(input.documents);
-   return projectDependency;
-}
-
-export async function parsePackage(input: PackageInput): Promise<PackageDependency> {
-   await parseDocument({ text: JSON.stringify(input.content), documentUri: input.uri, services: input.services });
-   return { [input.content.name]: input.content.version };
 }
 
 export async function parseDocument(input: DocumentInput): Promise<LangiumDocument<CrossModelRoot>> {
@@ -70,7 +51,7 @@ export async function parseDocument(input: DocumentInput): Promise<LangiumDocume
    return langiumParseDocument<CrossModelRoot>(input.services, input.text, input);
 }
 
-export async function parseDocuments(inputs: DocumentInput[]): Promise<LangiumDocument<CrossModelRoot>[]> {
+export async function parseDocuments(...inputs: DocumentInput[]): Promise<LangiumDocument<CrossModelRoot>[]> {
    return Promise.all(inputs.map(parseDocument));
 }
 
@@ -102,6 +83,10 @@ export async function parseSystemDiagram(input: DocumentInput, assert: ParseAsse
 
 export async function parseMapping(input: DocumentInput, assert: ParseAssert = {}): Promise<WithDocument<Mapping>> {
    return parseSemanticRoot(input, assert, isMapping);
+}
+
+export async function parseDataModel(input: DocumentInput, assert: ParseAssert = {}): Promise<WithDocument<DataModel>> {
+   return parseSemanticRoot(input, assert, isDataModel);
 }
 
 export const MockFileSystem: DefaultSharedModuleContext = {

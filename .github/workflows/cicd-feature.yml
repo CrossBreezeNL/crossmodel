@@ -56,5 +56,5 @@ jobs:
         with:
           name: windows
           path: |
-            applications/electron/dist/**
+            applications/electron-app/dist/**
           retention-days: 1

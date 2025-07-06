@@ -3,9 +3,8 @@
  ********************************************************************************/
 
 import { ElementHandle, Page } from '@playwright/test';
-import { OSUtil, TheiaEditor, isElementVisible, normalizeId, urlEncodePath } from '@theia/playwright';
+import { TheiaEditor, isElementVisible, normalizeId } from '@theia/playwright';
 import { TheiaMonacoEditor } from '@theia/playwright/lib/theia-monaco-editor';
-import { join } from 'path';
 import { CMApp } from './cm-app';
 import { IntegratedEditor, IntegratedTextEditor } from './cm-integrated-editor';
 import { IntegratedFormEditor } from './form/integrated-form-editor';
@@ -29,16 +28,8 @@ export class CMCompositeEditor extends TheiaEditor {
       // code-editor-opener:file:///c%3A/Users/user/AppData/Local/Temp/cloud-ws-JBUhb6/sample.txt:1
       super(
          {
-            tabSelector: normalizeId(
-               `#shell-tab-cm-composite-editor-handler:${scheme === 'file' ? 'file://' : `${scheme}:`}${urlEncodePath(
-                  join(app.workspace.escapedPath, OSUtil.fileSeparator, filePath)
-               )}`
-            ),
-            viewSelector: normalizeId(
-               `#cm-composite-editor-handler:${scheme === 'file' ? 'file://' : `${scheme}:`}${urlEncodePath(
-                  join(app.workspace.escapedPath, OSUtil.fileSeparator, filePath)
-               )}`
-            )
+            tabSelector: normalizeId(`#shell-tab-cm-composite-editor-handler:${app.workspace.pathAsUrl(filePath)}`),
+            viewSelector: normalizeId(`#cm-composite-editor-handler:${app.workspace.pathAsUrl(filePath)}`)
          },
          app
       );
@@ -101,11 +92,7 @@ export class IntegratedCodeEditor extends IntegratedTextEditor {
       // shell-tab-code-editor-opener:file:///c%3A/Users/user/AppData/Local/Temp/cloud-ws-JBUhb6/sample.txt:1
       // code-editor-opener:file:///c%3A/Users/user/AppData/Local/Temp/cloud-ws-JBUhb6/sample.txt:1
       super(filePath, parent);
-      this.data.viewSelector = normalizeId(
-         `#code-editor-opener:${parent.scheme === 'file' ? 'file://' : `${parent.scheme}:`}${urlEncodePath(
-            join(this.app.workspace.escapedPath, OSUtil.fileSeparator, filePath)
-         )}`
-      );
+      this.data.viewSelector = normalizeId(`#code-editor-opener:${parent.app.workspace.pathAsUrl(filePath)}`);
       this.data.tabSelector = tabSelector;
       this.monacoEditor = new TheiaMonacoEditor(this.viewSelector, parent.app);
    }
@@ -116,9 +103,7 @@ export class IntegratedMappingDiagramEditor extends IntegratedEditor {
       super(
          {
             tabSelector,
-            viewSelector: normalizeId(
-               `#mapping-diagram:file://${urlEncodePath(join(parent.app.workspace.escapedPath, OSUtil.fileSeparator, filePath))}`
-            )
+            viewSelector: normalizeId(`#mapping-diagram:${parent.app.workspace.pathAsUrl(filePath)}`)
          },
          parent
       );

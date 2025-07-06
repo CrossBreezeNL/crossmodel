@@ -16,6 +16,7 @@ import { useDataModel, useDiagnostics, useModelDispatch, useModelQueryApi, useRe
 import { modelComponent } from '../../ModelViewer';
 import { themed } from '../../ThemedViewer';
 import AsyncAutoComplete from '../common/AsyncAutoComplete';
+import { DataModelCustomPropertiesDataGrid } from '../common/DataModelCustomPropertiesDataGrid';
 import { DataModelDependenciesDataGrid } from '../common/DataModelDependenciesDataGrid';
 import { FormSection } from '../FormSection';
 import { Form } from './Form';
@@ -124,6 +125,9 @@ export function DataModelForm(): React.ReactElement {
          </FormSection>
          <FormSection label='Dependencies'>
             <DataModelDependenciesDataGrid />
+         </FormSection>
+         <FormSection label='Custom properties'>
+            <DataModelCustomPropertiesDataGrid />
          </FormSection>
       </Form>
    );

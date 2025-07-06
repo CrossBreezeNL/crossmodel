@@ -2,7 +2,7 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 
-import { LogicalAttribute, unreachable } from '@crossmodel/protocol';
+import { CustomProperty, LogicalAttribute, unreachable } from '@crossmodel/protocol';
 import { DispatchAction, ModelAction, ModelState, moveDown, moveUp, undefinedIfEmpty } from './ModelReducer';
 
 export interface EntityChangeNameAction extends ModelAction {
@@ -46,6 +46,32 @@ export interface LogicalAttributeDeleteAction extends ModelAction {
    attributeIdx: number;
 }
 
+export interface CustomPropertyUpdateAction extends ModelAction {
+   type: 'entity:customProperty:update';
+   customPropertyIdx: number;
+   customProperty: CustomProperty;
+}
+
+export interface CustomPropertyAddEmptyAction extends ModelAction {
+   type: 'entity:customProperty:add-customProperty';
+   customProperty: CustomProperty;
+}
+
+export interface CustomPropertyMoveUpAction extends ModelAction {
+   type: 'entity:customProperty:move-customProperty-up';
+   customPropertyIdx: number;
+}
+
+export interface CustomPropertyMoveDownAction extends ModelAction {
+   type: 'entity:customProperty:move-customProperty-down';
+   customPropertyIdx: number;
+}
+
+export interface CustomPropertyDeleteAction extends ModelAction {
+   type: 'entity:customProperty:delete-customProperty';
+   customPropertyIdx: number;
+}
+
 export type EntityDispatchAction =
    | EntityChangeNameAction
    | EntityChangeIdAction
@@ -54,7 +80,12 @@ export type EntityDispatchAction =
    | LogicalAttributeAddEmptyAction
    | LogicalAttributeMoveUpAction
    | LogicalAttributeMoveDownAction
-   | LogicalAttributeDeleteAction;
+   | LogicalAttributeDeleteAction
+   | CustomPropertyUpdateAction
+   | CustomPropertyAddEmptyAction
+   | CustomPropertyMoveUpAction
+   | CustomPropertyMoveDownAction
+   | CustomPropertyDeleteAction;
 
 export function isEntityDispatchAction(action: DispatchAction): action is EntityDispatchAction {
    return action.type.startsWith('entity:');
@@ -102,6 +133,31 @@ export function EntityModelReducer(state: ModelState, action: EntityDispatchActi
       case 'entity:attribute:move-attribute-down':
          moveDown(entity.attributes, action.attributeIdx);
          break;
+
+      case 'entity:customProperty:update':
+         entity.customProperties![action.customPropertyIdx] = {
+            ...action.customProperty,
+            name: undefinedIfEmpty(action.customProperty.name),
+            description: undefinedIfEmpty(action.customProperty.description)
+         };
+         break;
+
+      case 'entity:customProperty:add-customProperty':
+         entity.customProperties!.push(action.customProperty);
+         break;
+
+      case 'entity:customProperty:delete-customProperty':
+         entity.customProperties!.splice(action.customPropertyIdx, 1);
+         break;
+
+      case 'entity:customProperty:move-customProperty-up':
+         moveUp(entity.customProperties!, action.customPropertyIdx);
+         break;
+
+      case 'entity:customProperty:move-customProperty-down':
+         moveDown(entity.customProperties!, action.customPropertyIdx);
+         break;
+
       default:
          unreachable(action);
    }

@@ -38,7 +38,7 @@ export interface WithCustomProperties {
 
 export const CustomPropertyType = 'CustomProperty';
 export interface CustomProperty extends CrossModelElement, NamedObject {
-   readonly $type: typeof LogicalAttributeType;
+   readonly $type: typeof CustomPropertyType;
    value?: string;
 }
 

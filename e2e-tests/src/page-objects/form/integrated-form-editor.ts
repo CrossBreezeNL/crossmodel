@@ -16,7 +16,7 @@ export class IntegratedFormEditor extends IntegratedEditor {
             tabSelector,
             viewSelector: normalizeId(
                // eslint-disable-next-line max-len
-               `#form-editor-opener:${parent.app.workspace.pathAsUrl(filePath)}`
+               `#form-editor-opener:${parent.app.workspace.pathAsUrl(filePath).replace('file://', `${parent.scheme}://`)}`
             )
          },
          parent

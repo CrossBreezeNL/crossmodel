@@ -3,8 +3,7 @@
  ********************************************************************************/
 
 import { GLSPBaseCommandPalette, InteractablePosition, PModelElement, PModelElementConstructor } from '@eclipse-glsp/glsp-playwright';
-import { OSUtil, normalizeId, urlEncodePath } from '@theia/playwright';
-import { join } from 'path';
+import { normalizeId } from '@theia/playwright';
 import { CMCompositeEditor, hasViewError } from '../cm-composite-editor';
 import { IntegratedEditor } from '../cm-integrated-editor';
 import { EntityPropertiesView } from '../cm-properties-view';
@@ -19,9 +18,7 @@ export class IntegratedSystemDiagramEditor extends IntegratedEditor {
       super(
          {
             tabSelector,
-            viewSelector: normalizeId(
-               `#system-diagram:file://${urlEncodePath(join(parent.app.workspace.escapedPath, OSUtil.fileSeparator, filePath))}`
-            )
+            viewSelector: normalizeId(`#system-diagram:${parent.app.workspace.pathAsUrl(filePath)}`)
          },
          parent
       );

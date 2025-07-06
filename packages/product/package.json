@@ -29,15 +29,15 @@
     "watch": "tsc -w"
   },
   "dependencies": {
-    "@theia/core": "1.60.2",
-    "@theia/getting-started": "1.60.2",
-    "@theia/markers": "1.60.2",
-    "@theia/monaco": "1.60.2",
-    "@theia/navigator": "1.60.2",
-    "@theia/property-view": "1.60.2",
-    "@theia/scm": "1.60.2",
-    "@theia/search-in-workspace": "1.60.2",
-    "@theia/workspace": "1.60.2",
+    "@theia/core": "1.63.1",
+    "@theia/getting-started": "1.63.1",
+    "@theia/markers": "1.63.1",
+    "@theia/monaco": "1.63.1",
+    "@theia/navigator": "1.63.1",
+    "@theia/property-view": "1.63.1",
+    "@theia/scm": "1.63.1",
+    "@theia/search-in-workspace": "1.63.1",
+    "@theia/workspace": "1.63.1",
     "markdown-it": "^8.4.1"
   },
   "theiaExtensions": [

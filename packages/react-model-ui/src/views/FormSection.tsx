@@ -3,6 +3,7 @@
  ********************************************************************************/
 
 import { Accordion, AccordionDetails, AccordionSummary, Typography } from '@mui/material';
+import { GridExpandMoreIcon } from '@mui/x-data-grid';
 import * as React from 'react';
 
 export interface FormSectionProps extends React.PropsWithChildren {
@@ -13,6 +14,7 @@ export function FormSection({ label, children }: FormSectionProps): React.ReactE
    return (
       <Accordion>
          <AccordionSummary
+            expandIcon={<GridExpandMoreIcon />}
             sx={{
                '& .MuiAccordionSummary-content': {
                   m: '0.5em 0'

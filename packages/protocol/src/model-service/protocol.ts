@@ -36,7 +36,9 @@ export interface WithCustomProperties {
    customProperties?: Array<CustomProperty>;
 }
 
-export interface CustomProperty extends NamedObject {
+export const CustomPropertyType = 'CustomProperty';
+export interface CustomProperty extends CrossModelElement, NamedObject {
+   readonly $type: typeof LogicalAttributeType;
    value?: string;
 }
 

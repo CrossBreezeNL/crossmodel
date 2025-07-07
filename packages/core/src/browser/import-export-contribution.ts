@@ -103,7 +103,7 @@ export class ImportExportContribution implements CommandContribution, MenuContri
    }
 
    registerMenus(menus: MenuModelRegistry): void {
-      menus.registerSubmenu(FILE_IMPORT_EXPORT_SUBMENU, 'Import / Export', { order: 'c' });
+      menus.registerSubmenu(FILE_IMPORT_EXPORT_SUBMENU, 'Import / Export', { sortString: 'c' });
       menus.registerMenuAction(FILE_IMPORT_EXPORT_SUBMENU, { commandId: IMPORT_YAML_DATAMODEL_FILE.id, order: 'a' });
       menus.registerMenuAction(FILE_IMPORT_EXPORT_SUBMENU, { commandId: EXPORT_YAML_DATAMODEL_FILE.id, order: 'b' });
 

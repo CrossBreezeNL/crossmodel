@@ -2,8 +2,7 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 
-import { OSUtil, normalizeId, urlEncodePath } from '@theia/playwright';
-import { join } from 'path';
+import { normalizeId } from '@theia/playwright';
 import { CMCompositeEditor, hasViewError } from '../cm-composite-editor';
 import { IntegratedEditor } from '../cm-integrated-editor';
 import { CMForm } from './cm-form';
@@ -16,9 +15,12 @@ export class IntegratedFormEditor extends IntegratedEditor {
          {
             tabSelector,
             viewSelector: normalizeId(
-               `#form-editor-opener:${parent.scheme === 'file' ? 'file://' : `${parent.scheme}:`}${urlEncodePath(
-                  join(parent.app.workspace.escapedPath, OSUtil.fileSeparator, filePath)
-               )}`
+               // eslint-disable-next-line max-len
+               `#form-editor-opener:${
+                  parent.scheme === 'file'
+                     ? parent.app.workspace.pathAsUrl(filePath)
+                     : parent.app.workspace.pathAsUrl(filePath).replace('file://', `${parent.scheme}:`)
+               }`
             )
          },
          parent

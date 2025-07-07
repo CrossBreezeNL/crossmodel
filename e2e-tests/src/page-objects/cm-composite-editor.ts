@@ -100,7 +100,7 @@ export class IntegratedCodeEditor extends IntegratedTextEditor {
          `#code-editor-opener:${parent.app.workspace.pathAsUrl(filePath).replace('file://', `${parent.scheme}://`)}`
       );
       this.data.tabSelector = tabSelector;
-      this.monacoEditor = new TheiaMonacoEditor(this.viewSelector, parent.app);
+      this.monacoEditor = new TheiaMonacoEditor(this.page.locator(this.viewSelector), parent.app);
    }
 }
 

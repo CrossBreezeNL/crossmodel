@@ -29,10 +29,14 @@ export class CMCompositeEditor extends TheiaEditor {
       super(
          {
             tabSelector: normalizeId(
-               `#shell-tab-cm-composite-editor-handler:${app.workspace.pathAsUrl(filePath).replace('file://', `${scheme}://`)}`
+               `#shell-tab-cm-composite-editor-handler:${
+                  scheme === 'file' ? app.workspace.pathAsUrl(filePath) : app.workspace.pathAsUrl(filePath).replace('file://', `${scheme}:`)
+               }`
             ),
             viewSelector: normalizeId(
-               `#cm-composite-editor-handler:${app.workspace.pathAsUrl(filePath).replace('file://', `${scheme}://`)}`
+               `#cm-composite-editor-handler:${
+                  scheme === 'file' ? app.workspace.pathAsUrl(filePath) : app.workspace.pathAsUrl(filePath).replace('file://', `${scheme}:`)
+               }`
             )
          },
          app
@@ -97,7 +101,11 @@ export class IntegratedCodeEditor extends IntegratedTextEditor {
       // code-editor-opener:file:///c%3A/Users/user/AppData/Local/Temp/cloud-ws-JBUhb6/sample.txt:1
       super(filePath, parent);
       this.data.viewSelector = normalizeId(
-         `#code-editor-opener:${parent.app.workspace.pathAsUrl(filePath).replace('file://', `${parent.scheme}://`)}`
+         `#code-editor-opener:${
+            parent.scheme === 'file'
+               ? parent.app.workspace.pathAsUrl(filePath)
+               : parent.app.workspace.pathAsUrl(filePath).replace('file://', `${parent.scheme}:`)
+         }`
       );
       this.data.tabSelector = tabSelector;
       this.monacoEditor = new TheiaMonacoEditor(this.page.locator(this.viewSelector), parent.app);

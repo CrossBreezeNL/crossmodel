@@ -1,5 +1,5 @@
-# We use the Node-16 on Debian Bullseye.
-ARG VARIANT="20-bookworm"
+# We use the Node-22 on Debian Bookworm.
+ARG VARIANT="22-bookworm"
 FROM mcr.microsoft.com/devcontainers/typescript-node:${VARIANT}
 
 # Install OS packages needed for building Theia.

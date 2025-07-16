@@ -18,6 +18,7 @@ import { themed } from '../../ThemedViewer';
 import { FormSection } from '../FormSection';
 import AsyncAutoComplete from '../common/AsyncAutoComplete';
 import { RelationshipAttributesDataGrid } from '../common/RelationshipAttributesDataGrid';
+import { RelationshipCustomPropertiesDataGrid } from '../common/RelationshipCustomPropertiesDataGrid';
 import { Form } from './Form';
 
 // Form with tabs to edit an relationship's properties and attributes.
@@ -173,6 +174,9 @@ export function RelationshipForm(): React.ReactElement {
          </FormSection>
          <FormSection label='Attributes'>
             <RelationshipAttributesDataGrid diagnostics={diagnostics} />
+         </FormSection>
+         <FormSection label='Custom properties'>
+            <RelationshipCustomPropertiesDataGrid />
          </FormSection>
       </Form>
    );

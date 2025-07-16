@@ -2,7 +2,7 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 
-import { RelationshipAttribute, unreachable } from '@crossmodel/protocol';
+import { CustomProperty, RelationshipAttribute, unreachable } from '@crossmodel/protocol';
 import { DispatchAction, ModelAction, ModelState, moveDown, moveUp, undefinedIfEmpty } from './ModelReducer';
 
 export interface RelationshipChangeNameAction extends ModelAction {
@@ -76,6 +76,32 @@ export interface RelationshipAttributeDeleteAction extends ModelAction {
    attributeIdx: number;
 }
 
+export interface CustomPropertyUpdateAction extends ModelAction {
+   type: 'relationship:customProperty:update';
+   customPropertyIdx: number;
+   customProperty: CustomProperty;
+}
+
+export interface CustomPropertyAddEmptyAction extends ModelAction {
+   type: 'relationship:customProperty:add-customProperty';
+   customProperty: CustomProperty;
+}
+
+export interface CustomPropertyMoveUpAction extends ModelAction {
+   type: 'relationship:customProperty:move-customProperty-up';
+   customPropertyIdx: number;
+}
+
+export interface CustomPropertyMoveDownAction extends ModelAction {
+   type: 'relationship:customProperty:move-customProperty-down';
+   customPropertyIdx: number;
+}
+
+export interface CustomPropertyDeleteAction extends ModelAction {
+   type: 'relationship:customProperty:delete-customProperty';
+   customPropertyIdx: number;
+}
+
 export type RelationshipDispatchAction =
    | RelationshipChangeNameAction
    | RelationshipChangeIdAction
@@ -90,7 +116,12 @@ export type RelationshipDispatchAction =
    | RelationshipAttributeAddEmptyAction
    | RelationshipAttributeMoveUpAction
    | RelationshipAttributeMoveDownAction
-   | RelationshipAttributeDeleteAction;
+   | RelationshipAttributeDeleteAction
+   | CustomPropertyUpdateAction
+   | CustomPropertyAddEmptyAction
+   | CustomPropertyMoveUpAction
+   | CustomPropertyMoveDownAction
+   | CustomPropertyDeleteAction;
 
 export function isRelationshipDispatchAction(action: DispatchAction): action is RelationshipDispatchAction {
    return action.type.startsWith('relationship:');
@@ -158,6 +189,31 @@ export function RelationshipModelReducer(state: ModelState, action: Relationship
       case 'relationship:attribute:delete-attribute':
          relationship.attributes.splice(action.attributeIdx, 1);
          break;
+
+      case 'relationship:customProperty:update':
+         relationship.customProperties![action.customPropertyIdx] = {
+            ...action.customProperty,
+            name: undefinedIfEmpty(action.customProperty.name),
+            description: undefinedIfEmpty(action.customProperty.description)
+         };
+         break;
+
+      case 'relationship:customProperty:add-customProperty':
+         relationship.customProperties!.push(action.customProperty);
+         break;
+
+      case 'relationship:customProperty:delete-customProperty':
+         relationship.customProperties!.splice(action.customPropertyIdx, 1);
+         break;
+
+      case 'relationship:customProperty:move-customProperty-up':
+         moveUp(relationship.customProperties!, action.customPropertyIdx);
+         break;
+
+      case 'relationship:customProperty:move-customProperty-down':
+         moveDown(relationship.customProperties!, action.customPropertyIdx);
+         break;
+
       default:
          return unreachable(action);
    }

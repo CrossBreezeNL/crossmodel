@@ -2,7 +2,7 @@
  * Copyright (c) 2025 CrossBreeze.
  ********************************************************************************/
 
-import { DataModelDependency, unreachable } from '@crossmodel/protocol';
+import { CustomProperty, DataModelDependency, unreachable } from '@crossmodel/protocol';
 import { DispatchAction, ModelAction, ModelState, moveDown, moveUp, undefinedIfEmpty } from './ModelReducer';
 
 export interface DataModelChangeIdAction extends ModelAction {
@@ -56,6 +56,32 @@ export interface DataModelDependencyDeleteAction extends ModelAction {
    dependencyIdx: number;
 }
 
+export interface CustomPropertyUpdateAction extends ModelAction {
+   type: 'datamodel:customProperty:update';
+   customPropertyIdx: number;
+   customProperty: CustomProperty;
+}
+
+export interface CustomPropertyAddEmptyAction extends ModelAction {
+   type: 'datamodel:customProperty:add-customProperty';
+   customProperty: CustomProperty;
+}
+
+export interface CustomPropertyMoveUpAction extends ModelAction {
+   type: 'datamodel:customProperty:move-customProperty-up';
+   customPropertyIdx: number;
+}
+
+export interface CustomPropertyMoveDownAction extends ModelAction {
+   type: 'datamodel:customProperty:move-customProperty-down';
+   customPropertyIdx: number;
+}
+
+export interface CustomPropertyDeleteAction extends ModelAction {
+   type: 'datamodel:customProperty:delete-customProperty';
+   customPropertyIdx: number;
+}
+
 export type DataModelDispatchAction =
    | DataModelChangeIdAction
    | DataModelChangeNameAction
@@ -66,7 +92,12 @@ export type DataModelDispatchAction =
    | DataModelDependencyAddAction
    | DataModelDependencyMoveUpAction
    | DataModelDependencyMoveDownAction
-   | DataModelDependencyDeleteAction;
+   | DataModelDependencyDeleteAction
+   | CustomPropertyUpdateAction
+   | CustomPropertyAddEmptyAction
+   | CustomPropertyMoveUpAction
+   | CustomPropertyMoveDownAction
+   | CustomPropertyDeleteAction;
 
 export function isDataModelDispatchAction(action: DispatchAction): action is DataModelDispatchAction {
    return action.type.startsWith('datamodel:');
@@ -128,6 +159,31 @@ export function DataModelReducer(state: ModelState, action: DataModelDispatchAct
             moveDown(dataModel.dependencies, action.dependencyIdx);
          }
          break;
+
+      case 'datamodel:customProperty:update':
+         dataModel.customProperties![action.customPropertyIdx] = {
+            ...action.customProperty,
+            name: undefinedIfEmpty(action.customProperty.name),
+            description: undefinedIfEmpty(action.customProperty.description)
+         };
+         break;
+
+      case 'datamodel:customProperty:add-customProperty':
+         dataModel.customProperties!.push(action.customProperty);
+         break;
+
+      case 'datamodel:customProperty:delete-customProperty':
+         dataModel.customProperties!.splice(action.customPropertyIdx, 1);
+         break;
+
+      case 'datamodel:customProperty:move-customProperty-up':
+         moveUp(dataModel.customProperties!, action.customPropertyIdx);
+         break;
+
+      case 'datamodel:customProperty:move-customProperty-down':
+         moveDown(dataModel.customProperties!, action.customPropertyIdx);
+         break;
+
       default:
          unreachable(action);
    }

@@ -1,0 +1,20 @@
+entity:
+   id: SALESORDERLINE
+   name: "SalesOrderLine"
+   attributes:
+   - id: SALESORDERID
+     name: "SalesOrderID"
+     datatype: "Integer"  
+     identifier: true
+   - id: PRODUCTID
+     name: "ProductID"
+     datatype: "Integer"
+   - id: ITEMPRICE
+     name: "ItemPrice"
+     datatype: "Decimal"
+   - id: QUANTITY
+     name: "Quantity"
+     datatype: "Integer"
+   - id: LINEAMT
+     name: "LineAmt"
+     datatype: "Decimal"

@@ -2,11 +2,12 @@
  * Copyright (c) 2024 CrossBreeze.
  ********************************************************************************/
 import { expect, test } from '@playwright/test';
+import { join } from 'path';
 import { CMApp } from '../../page-objects/cm-app';
 import { CMCompositeEditor } from '../../page-objects/cm-composite-editor';
 
 async function confirmCreationEditor(app: CMApp, parentPathFragment: string, entityName: string, description?: string): Promise<void> {
-   const untitledEditor = new CMCompositeEditor(parentPathFragment + '/NewLogicalEntity.entity.cm', app, 'untitled');
+   const untitledEditor = new CMCompositeEditor(join(parentPathFragment, 'NewLogicalEntity.entity.cm'), app, 'untitled');
    await untitledEditor.waitForVisible();
    const formEditor = await untitledEditor.switchToFormEditor();
    const form = (await formEditor.formFor('entity')).generalSection;
